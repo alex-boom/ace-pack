@@ -262,6 +262,12 @@ preserved and updated idempotently.
 
 ## Development
 
+### Developing ACE with ACE
+
+This repository dogfoods ACE while building ACE. Read
+[`DEVELOPING.md`](./DEVELOPING.md) before changing package behavior so you do
+not confuse the shipped product layer with this repo's local `.ai/**` memory.
+
 ```bash
 git clone https://github.com/alex-boom/ace-pack.git
 cd ace-pack

@@ -76,6 +76,18 @@ const freshness = getFreshnessStatus(generatedAt, currentTaskTimestamp, handoffT
 const currentTaskVersion = extractLabeledValue(lifecycle, 'Version') || 'unknown'
 const currentTaskTier = extractLabeledValue(lifecycle, 'Task Tier') || 'unknown'
 const unresolvedReflections = extractUnresolvedReflections(reflectionLogContent ?? '', 5)
+let xmlReportStatus = '- XML bundle skipped because `AI_REPORT_SKIP_XML=1`.'
+
+if (!shouldSkipXml) {
+  try {
+    await runRepomix(rootDir)
+    xmlReportStatus = '- XML bundle generated at `.ai/report-full.xml` for parsable handoff.'
+  } catch (error) {
+    xmlReportStatus = `- XML bundle not generated: ${formatErrorMessage(error)}`
+    process.stderr.write(`Skipped XML report: ${formatErrorMessage(error)}\n`)
+  }
+}
+
 const fullReport = `# AI Full Report
 
 Project: \`${packageJson.name}\`
@@ -146,16 +158,13 @@ ${unresolvedReflections.length > 0 ? unresolvedReflections.map((item) => `- ${it
 ## Overall Progress
 - Completion checklist: ${checklist.complete}/${checklist.total}
 - Canonical context lives in \`.ai/*\`.
-- XML bundle generated at \`.ai/report-full.xml\` for parsable handoff.
+${xmlReportStatus}
 `
 
 await writeTextFile(fullReportPath, fullReport)
-if (!shouldSkipXml) {
-  await runRepomix(rootDir)
-}
 process.stderr.write(`Generated ${fullReportPath}\n`)
 
-if (!shouldSkipXml) {
+if (!shouldSkipXml && xmlReportStatus.includes('generated at')) {
   process.stderr.write(`Generated ${xmlReportPath}\n`)
 }
 
@@ -182,4 +191,8 @@ async function runRepomix(cwd) {
       reject(new Error(`repomix exited with code ${code ?? 'unknown'}`))
     })
   })
+}
+
+function formatErrorMessage(error) {
+  return error instanceof Error ? error.message.replace(/\s+/g, ' ').trim() : String(error)
 }

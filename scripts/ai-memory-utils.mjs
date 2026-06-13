@@ -193,8 +193,16 @@ export function countCheckboxes(content) {
 }
 
 export function extractTopDecision(content) {
-  const match = content.match(/^## .+?(?:\r?\n[\s\S]*?)(?=^## |\Z)/m)
-  return match ? match[0].trim() : ''
+  const headings = [...content.matchAll(/^## .+$/gm)]
+  const heading = headings.at(-1)
+
+  if (!heading || heading.index === undefined) {
+    return ''
+  }
+
+  const start = heading.index
+
+  return content.slice(start).trim()
 }
 
 export function extractChangedFileTitles(content, limit = 8) {

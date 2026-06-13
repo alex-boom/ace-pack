@@ -130,6 +130,17 @@ Reason:
 
 Impact:
 - Prefer summaries over repetition.
+
+## 2026-04-24 12:30 (release)
+
+Decision:
+- Use the latest durable decision in generated reports.
+
+Reason:
+- Handoffs should surface the newest policy.
+
+Impact:
+- Brief and full reports should not pin old decisions.
 `,
     'utf8',
   )
@@ -214,6 +225,8 @@ describe('ai report scripts', () => {
     expect(briefReport).toContain('## Business Value')
     expect(briefReport).toContain('Reports can hide recurring friction')
     expect(briefReport).toContain('Verification level: smoke-tested')
+    expect(briefReport).toContain('Use the latest durable decision in generated reports.')
+    expect(briefReport).not.toContain('Keep reports compact.')
     expect(briefReport).toContain('Next.js 16 | TypeScript strict | Vitest')
     expect(briefReport).not.toContain('Historical task - 2026-04-24 10:00')
     expect(briefReport).toContain(
@@ -228,9 +241,12 @@ describe('ai report scripts', () => {
     expect(fullReport).toContain('## Verification')
     expect(fullReport).toContain('## Technical Approach')
     expect(fullReport).toContain('## Quality Review')
+    expect(fullReport).toContain('Use the latest durable decision in generated reports.')
+    expect(fullReport).not.toContain('Keep reports compact.')
     expect(fullReport).toContain('Reports can hide recurring friction')
     expect(fullReport).toContain('`pnpm.cmd agent-memory:check` passed in')
     expect(fullReport).toContain('Loaded `/dashboard` in the browser.')
     expect(fullReport).toContain('Next.js 16 | TypeScript strict | Vitest')
+    expect(fullReport).toContain('XML bundle skipped because `AI_REPORT_SKIP_XML=1`.')
   })
 })
