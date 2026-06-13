@@ -1,116 +1,72 @@
 # Current Task
 
 ## Feature Name
-Initialize ACE in this repository and mark dogfooding boundaries
+Balanced ACE NPM positioning refresh
 
 ## Lifecycle
-Status: active
+Status: complete
 Version: v1
-Task Tier: large
-Design Review Required: yes
-Started: 2026-06-13 20:59
+Task Tier: small
+Design Review Required: no
+Started: 2026-06-14 00:29
 Ready For Archive: yes
 
 ## Goal
-Install ACE project memory and workflow files into the ACE package repository
-itself so future agent sessions can recover project rules and release context
-from the repo. Clearly separate the ACE product layer from this repository's
-repo-local ACE dogfooding layer.
+Refresh ACE package metadata and GitHub/npm README positioning so the product
+is described as local AgentOps for AI coding agents, with durable memory,
+guardrails, quality gates, and practical vibe coding value.
 
 ## Business Value / Product Alignment
-The repository now carries its own agent instructions, memory, and handoff
-discipline instead of depending on chat history. This makes future package,
-README, and npm release work easier to resume.
+The npm listing now communicates ACE's value in a concrete developer-facing way
+without drifting into fear-based copy or implying direct vendor integrations.
+The change preserves the roadmap promise: local-first, zero-dependency AgentOps
+for AI-assisted development in real repositories.
 
 ## Technical Approach
 Option 1:
-- Manually create `.ai/*`, `AGENTS.md`, and scripts. This risks drifting from
-  the package's own installer behavior.
+- Apply only the package description suggested in the attachment. This would be
+  fast, but it would miss `README.npm.md` and understate the semver impact.
 
 Option 2:
-- Run the local `install-ace-pack.mjs init . --apply` installer. This uses the
-  same path consumers use and validates the package against itself.
+- Refresh package metadata plus both GitHub and npm README surfaces, keeping the
+  wording balanced and patch-bumping the shipped package.
 
 Chosen Approach:
-- Use the local installer with `--apply`, then run ACE and test checks. This is
-  the least surprising path and keeps the repository aligned with shipped
-  scaffold behavior.
+- Use Option 2. It updates the actual npm payload, preserves product trust, and
+  follows the documented versioning policy.
 
 ## Current Status
-- [x] Ran local ACE installer in the repository root.
-- [x] Applied onboarding recommendations.
-- [x] Verified `ace:check`, `ace:classify`, and tests.
-- [x] Fixed report decision extraction so the latest durable decision appears in generated reports.
-- [x] Added project-specific command notes for npm-based ACE usage when `pnpm` is unavailable.
-- [x] Made XML report generation best-effort so Markdown reports still complete without `pnpm.cmd`.
-- [x] Added top-level meta-architecture warnings to local agent instruction files.
-- [x] Documented product-vs-dogfooding file ownership for fork maintainers.
-- [x] Added repeatable npm payload guard to prevent repo-local ACE history from shipping.
-- [x] Added versioning policy for publishable package changes.
-- [x] Updated npm keywords for AgentOps SEO and bumped package version to 0.1.4.
-- [x] Replaced local Node path/version hardcoding with generic active Node `>=20` guidance.
-- [x] Hardened npm release commands for Windows/Git Bash and verified dry publish flow.
-- [x] Added vibe coding positioning and bumped package version to 0.1.5.
-- [x] Formalized ACE roadmap, anti-goals, minimalism constraints, and explicit AI opt-in policy.
-- [x] Added a mandatory npm publish decision rule for future task handoffs.
+- [x] Replaced the academic package description with balanced AgentOps wording.
+- [x] Added focused discovery keywords for Cursor, Claude Code, Aider, GitHub
+  Copilot, and ChatGPT.
+- [x] Updated GitHub and npm README hero/intro positioning.
+- [x] Replaced the remaining "cognitive architecture" README positioning with
+  "local AgentOps control layer" wording.
+- [x] Verified the staged npm payload and dry publish flow.
 
 ## Affected Areas
 - `package.json`
-- `AGENTS.md`
-- `CLAUDE.md`
-- `.ai/**`
-- `DEVELOPING.md`
 - `README.md`
 - `README.npm.md`
-- `ROADMAP.md`
-- `tools/check-npm-payload.mjs`
-- `scripts/ai-memory-utils.mjs`
-- `scripts/ai-report.mjs`
-- `tests/ai-report.test.ts`
-- `tools/build-npm-package.mjs`
-- `.vscode/tasks.json`
+- `.ai/**` closeout notes
 
 ## Constraints
-- Preserve existing package scripts and npm publish workflow.
-- Do not overwrite source scripts or README/logo work outside ACE setup.
-- Keep generated ACE files plain Markdown/JSON for future agent sessions.
-- Prefer `npm run ace:*` commands in this repo when `pnpm` is not available on PATH.
-- XML report generation should not block Markdown report generation or task closeout.
-- Repo-local dogfooding files must stay excluded from the npm payload.
-- Changes to ACE behavior for users belong in `scripts/*`, not local `.ai/**`.
-- Bump `package.json` before publishing changes that affect shipped package
-  payload or user-visible ACE behavior.
-- Keep keyword updates metadata/docs-only: do not change CLI behavior or templates.
-- Do not hardcode a maintainer-local Node executable path; switch with nvm and
-  use any active Node version that satisfies the package engine for tests and
-  publish checks.
-- Do not spawn `npm.cmd` directly with `execFile` on Windows; route npm CLI
-  subprocesses through `cmd.exe` or use package scripts/VS Code tasks that call
-  `npm.cmd` explicitly.
-- Treat `ROADMAP.md` as GitHub-only strategy. Do not add it to npm payload.
-- Future AI-assisted documentation generation must be explicit opt-in; default
-  provider is `off`, and ACE must never make hidden local or cloud AI calls.
-- Every future task handoff must state whether npm publish is required and why.
-  Use staged npm payload impact as the decision boundary.
+- Do not rename `ace-pack`; package-name ambiguity is a separate migration
+  decision.
+- Do not change CLI behavior, installed templates, runtime APIs, or scripts.
+- Keep wording balanced: useful and searchable without excessive hype.
+- Treat `README.npm.md` as the npm README source.
 
 ## Acceptance Criteria
-- ACE memory files exist in `.ai/`.
-- Agent instruction files exist at repo root.
-- `package.json` exposes `ace:*` workflow scripts.
-- `npm run ace:check` passes.
-- Generated reports include the latest durable decision from `.ai/decisions.md`.
-- `ai-report.mjs` writes the Markdown report even when XML generation is skipped or unavailable.
-- `AGENTS.md` and `CLAUDE.md` start with the meta-architecture warning block.
-- `npm run check:npm-payload` fails if `.ai/**`, `AGENTS.md`, `CLAUDE.md`, or `DEVELOPING.md` enter the package.
-- Versioning policy distinguishes publishable product changes from repo-local
-  dogfooding changes.
-- `package.json` keywords match the approved AgentOps SEO list plus `vibe-coding`.
-- `package.json` version is `0.1.5`.
-- Repo-local instructions do not point to a maintainer-specific Node executable.
-- `npm run release:npm:dry` verifies payload guard, pack dry-run, and publish dry-run.
-- `ROADMAP.md` exists and records vision, anti-goals, roadmap, v2.0+ research seeds,
-  and explicit AI opt-in policy.
-- Agent instructions define when npm publish is required vs not required.
+- `package.json` version is `0.1.6`.
+- `package.json` description uses the approved local AgentOps positioning.
+- Keywords include `cursor`, `claude-code`, `aider`, `github-copilot`, and
+  `chatgpt`.
+- `README.md` and `README.npm.md` share the approved hero tagline and mention
+  Cursor, Claude Code, Aider, ChatGPT, GitHub Copilot, and other assistants
+  without implying direct integrations.
+- `npm.cmd run ace:check`, `npm.cmd run check:npm-payload`,
+  `npm.cmd run preview:npm`, and `npm.cmd run release:npm:dry` pass.
 
 ## Completion Checklist
 - [x] Goal completed
@@ -119,10 +75,5 @@ Chosen Approach:
 - [x] `.ai/session-handoff.md` updated
 - [x] `.ai/changed-files.md` updated
 - [x] `.ai/work-log.md` updated
-- [x] `npm run ace:check` passed
-- [x] `.ai/reflection-log.md` updated if the task exposed friction or repeated mistakes
-- [x] `.ai/decisions.md` updated if needed
-- [x] `.ai/tech-docs.md` updated if architecture or technical state changed
-- [x] `.ai/product-roadmap.md` updated if business or roadmap state changed
-- [x] Final snapshot archived to `.ai/archive/tasks/` for large tasks
-- [x] Next version/task defined if work continues
+- [x] `npm.cmd run ace:check` passed
+- [x] NPM publish decision recorded in handoff/final response

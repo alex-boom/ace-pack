@@ -1,7 +1,7 @@
 {
   "name": "ace-pack",
-  "version": "0.1.5",
-  "description": "Zero-dependency cognitive architecture framework for AI-driven development.",
+  "version": "0.1.6",
+  "description": "Local AgentOps for AI coding agents: durable memory, guardrails, and quality gates for vibe coding in real repositories.",
   "type": "module",
   "license": "MIT",
   "author": "Alexandr Dudka <dudka.alexandr83@gmail.com>",
@@ -25,6 +25,11 @@
     "vibe-coding",
     "developer-tools",
     "guardrails",
+    "cursor",
+    "claude-code",
+    "aider",
+    "github-copilot",
+    "chatgpt",
     "cursor-rules",
     "cli"
   ],

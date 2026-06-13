@@ -8,15 +8,17 @@
 [![zero dependencies](https://img.shields.io/badge/runtime-zero_dependencies-111827)](#)
 [![license](https://img.shields.io/badge/license-MIT-2563eb)](#)
 
-**The zero-dependency cognitive architecture framework for AI-driven development.**
+**Zero-dependency local AgentOps for AI coding agents. Vibe coding that survives real repositories.**
 
-ACE (Agentic Context Engine) gives AI coding agents a deterministic memory
-layer, repository-aware risk rules, and repeatable quality gates using plain
-Markdown and native Node.js scripts.
+ACE (Agentic Context Engine) is a local AgentOps control layer for developers
+using Cursor, Claude Code, Aider, ChatGPT, GitHub Copilot, and other AI coding
+assistants. It gives agents durable project memory, repository-aware risk
+rules, and repeatable quality gates through plain Markdown and native Node.js
+scripts.
 
-AI agents are brilliant, but stateless by default. ACE gives them the project
-memory, guardrails, and closeout discipline they need to behave like reliable
-engineering teammates inside real repositories.
+AI coding assistants are powerful, but stateless by default. ACE gives them the
+project memory, guardrails, and closeout discipline they need to behave like
+reliable engineering teammates inside real repositories.
 
 Vibe coding is fast when the idea is small, but it gets fragile when projects
 grow and the AI loses context. ACE adds the memory, risk rules, and repeatable
@@ -65,8 +67,8 @@ With ACE, the repository carries the discipline:
 - `ace:finish` commits decisions, changed files, validation notes, and
   reflection back into project memory.
 
-ACE is not a prompt library. It is cognitive architecture for managing AI
-coding agents inside real repositories.
+ACE is not a prompt library. It is a local AgentOps control layer for managing
+AI coding agents inside real repositories.
 
 ## What ACE Boosts
 

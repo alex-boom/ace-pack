@@ -3,71 +3,61 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-13 23:14
+- Generated: 2026-06-14 00:30
 - Freshness: Fresh
 - Current task version: v1
-- Current task tier: large
-- Source current-task: 2026-06-13 23:14
-- Source session-handoff: 2026-06-13 23:14
+- Current task tier: small
+- Source current-task: 2026-06-14 00:30
+- Source session-handoff: 2026-06-14 00:30
 - Verification level: test-backed
 
 ## Stack
 
 
 ## Current Task
-Initialize ACE in this repository and mark dogfooding boundaries
+Balanced ACE NPM positioning refresh
 
 ## Lifecycle
-Status: active
+Status: complete
 Version: v1
-Task Tier: large
-Design Review Required: yes
-Started: 2026-06-13 20:59
+Task Tier: small
+Design Review Required: no
+Started: 2026-06-14 00:29
 Ready For Archive: yes
 
 ## Goal
-Install ACE project memory and workflow files into the ACE package repository
-itself so future agent sessions can recover project rules and release context
-from the repo. Clearly separate the ACE product layer from this repository's
-repo-local ACE dogfooding layer.
+Refresh ACE package metadata and GitHub/npm README positioning so the product
+is described as local AgentOps for AI coding agents, with durable memory,
+guardrails, quality gates, and practical vibe coding value.
 
 ## Business Value
-The repository now carries its own agent instructions, memory, and handoff
-discipline instead of depending on chat history. This makes future package,
-README, and npm release work easier to resume.
+The npm listing now communicates ACE's value in a concrete developer-facing way
+without drifting into fear-based copy or implying direct vendor integrations.
+The change preserves the roadmap promise: local-first, zero-dependency AgentOps
+for AI-assisted development in real repositories.
 
 ## Current Status
-- [x] Ran local ACE installer in the repository root.
-- [x] Applied onboarding recommendations.
-- [x] Verified `ace:check`, `ace:classify`, and tests.
-- [x] Fixed report decision extraction so the latest durable decision appears in generated reports.
-- [x] Added project-specific command notes for npm-based ACE usage when `pnpm` is unavailable.
-- [x] Made XML report generation best-effort so Markdown reports still complete without `pnpm.cmd`.
-- [x] Added top-level meta-architecture warnings to local agent instruction files.
-- [x] Documented product-vs-dogfooding file ownership for fork maintainers.
-- [x] Added repeatable npm payload guard to prevent repo-local ACE history from shipping.
-- [x] Added versioning policy for publishable package changes.
-- [x] Updated npm keywords for AgentOps SEO and bumped package version to 0.1.4.
-- [x] Replaced local Node path/version hardcoding with generic active Node `>=20` guidance.
-- [x] Hardened npm release commands for Windows/Git Bash and verified dry publish flow.
-- [x] Added vibe coding positioning and bumped package version to 0.1.5.
-- [x] Formalized ACE roadmap, anti-goals, minimalism constraints, and explicit AI opt-in policy.
-- [x] Added a mandatory npm publish decision rule for future task handoffs.
+- [x] Replaced the academic package description with balanced AgentOps wording.
+- [x] Added focused discovery keywords for Cursor, Claude Code, Aider, GitHub
+  Copilot, and ChatGPT.
+- [x] Updated GitHub and npm README hero/intro positioning.
+- [x] Replaced the remaining "cognitive architecture" README positioning with
+  "local AgentOps control layer" wording.
+- [x] Verified the staged npm payload and dry publish flow.
 
 ## Next Steps
-- Commit the ACE initialization files when ready.
-- Use `npm run ace:check` before handoff and `npm run ace:finish` for future
-  large tasks after updating `.ai/*` notes.
+- Publish with `npm.cmd run release:npm` when ready.
 
 ## Risks / Blockers
-- Plain `npm test` fails if the active Node version is below the package engine
-  requirement because Vitest/Rolldown expects newer Node APIs.
+- None for this metadata/docs change.
 
 ## Verification
-- `npm run ace:check` passed.
-- `npm run ace:classify` passed and reported tier `large`.
-- Vitest passed on an active Node version that satisfies `>=20`: 7 files, 38 tests.
-- Report parser test coverage added for durable decisions.
+- `npm.cmd run ace:classify` passed before implementation and reported tier
+`small`.
+- `npm.cmd run ace:check` passed.
+- `npm.cmd run check:npm-payload` passed and checked 27 packed files.
+- `npm.cmd run preview:npm` passed and produced dry-run package
+`ace-pack-0.1.6.tgz`.
 
 ## Recent Decision
 ## 2026-06-13 23:12
@@ -90,13 +80,11 @@ Impact:
 - No unresolved reflections recorded.
 
 ## Changed Areas
-- `AGENTS.md`
-- `CLAUDE.md`
-- `.ai/**`
 - `package.json`
 - `README.md`
 - `README.npm.md`
+- `.ai/**`
 
 ## Overall Progress
-- Completion checklist: 13/13
+- Completion checklist: 8/8
 - Source of truth: `.ai/*` files remain authoritative.

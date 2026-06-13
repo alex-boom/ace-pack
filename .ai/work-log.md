@@ -66,3 +66,14 @@
 - Added a required task handoff rule: future agents must explicitly report
   whether npm publish is required, using staged npm payload impact as the
   decision boundary.
+
+## 2026-06-14 00:29
+
+- Refreshed package metadata and README positioning around zero-dependency
+  local AgentOps for AI coding agents.
+- Bumped package version to `0.1.6` because `package.json` and
+  `README.npm.md` are shipped npm payload files.
+- Added Cursor, Claude Code, Aider, GitHub Copilot, and ChatGPT discovery
+  keywords while keeping product behavior unchanged.
+- Verified `ace:check`, npm payload guard, npm pack preview, and npm publish
+  dry-run.
