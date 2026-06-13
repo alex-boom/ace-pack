@@ -1,30 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <title>KundeHub</title>
-  <style>
-    .icon-dark-part {
-      fill: #0f172a;
-    }
-    .icon-pink-part {
-      fill: #db2777;
-    }
-    @media (prefers-color-scheme: dark) {
-      .icon-dark-part {
-        fill: #f8fafc;
-      }
-    }
-  </style>
-  <rect class="icon-dark-part" x="15.2" y="7.3" width="1.6" height="5.3" rx="0.8" />
-  <rect class="icon-dark-part" x="15.2" y="19.4" width="1.6" height="5.3" rx="0.8" />
-  <rect class="icon-dark-part" x="7.3" y="15.2" width="5.3" height="1.6" rx="0.8" />
-  <rect class="icon-dark-part" x="19.4" y="15.2" width="5.3" height="1.6" rx="0.8" />
-  <rect class="icon-dark-part" x="12.4" y="1.6" width="7.2" height="7.2" rx="1.6" />
-  <rect class="icon-dark-part" x="12.4" y="23.2" width="7.2" height="7.2" rx="1.6" />
-  <rect class="icon-dark-part" x="1.6" y="12.4" width="7.2" height="7.2" rx="1.6" />
-  <rect class="icon-dark-part" x="23.2" y="12.4" width="7.2" height="7.2" rx="1.6" />
-  <circle class="icon-pink-part" cx="16" cy="16" r="4.45" />
-</svg>
+<p align="center">
+  <img src="./logo.svg" alt="ACE Pack logo" width="72" height="72" />
+</p>
 
-# ACE Pack
+<h1 align="center">ACE Pack</h1>
 
 [![npm version](https://img.shields.io/npm/v/ace-pack?color=0f766e)](https://www.npmjs.com/package/ace-pack)
 [![zero dependencies](https://img.shields.io/badge/runtime-zero_dependencies-111827)](#)
