@@ -3,12 +3,12 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-13 21:46
+- Generated: 2026-06-13 22:30
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-13 21:45
-- Source session-handoff: 2026-06-13 21:46
+- Source current-task: 2026-06-13 22:29
+- Source session-handoff: 2026-06-13 22:30
 - Verification level: test-backed
 
 ## Stack
@@ -66,6 +66,8 @@ Chosen Approach:
 - [x] Added versioning policy for publishable package changes.
 - [x] Updated npm keywords for AgentOps SEO and bumped package version to 0.1.4.
 - [x] Replaced local Node path/version hardcoding with generic active Node `>=20` guidance.
+- [x] Hardened npm release commands for Windows/Git Bash and verified dry publish flow.
+- [x] Added vibe coding positioning and bumped package version to 0.1.5.
 
 ## What Was Done
 - Ran `node ./install-ace-pack.mjs init . --apply` in this repository.
@@ -86,6 +88,12 @@ Chosen Approach:
   npm.
 - Updated npm SEO keywords to targeted AgentOps/AI engineering terms and bumped
   package version to `0.1.4`.
+- Hardened the npm release flow for Windows/Git Bash by avoiding direct
+  `execFile('npm.cmd')`, adding `publish:npm:dry`, expanding
+  `release:npm:dry`, switching local dev docs to npm, and adding VS Code tasks
+  that call `npm.cmd` directly.
+- Added `vibe-coding` npm keyword, updated GitHub/npm README positioning, and
+  bumped package version to `0.1.5`.
 - Verified the setup with `npm run ace:check`, `npm run ace:classify`, and the
   Vitest suite on an active Node version that satisfies `>=20`.
 
@@ -97,10 +105,16 @@ Chosen Approach:
   `CLAUDE.md`, and `.ai/**`.
 - Use `npm run ace:*` commands in this environment unless `pnpm` has been
   explicitly added to PATH.
-- Current metadata release target is `0.1.4`.
+- Current metadata release target is `0.1.5`.
 - No repo scripts or instructions should hardcode a local Node executable path;
   use the active nvm-selected Node and switch to any installed Node `>=20` for
   tests, payload checks, and publish flows.
+- Preferred release verification command is `npm.cmd run release:npm:dry` on
+  Windows PowerShell. It runs payload guard, `npm pack --dry-run`, and
+  `npm publish --dry-run`.
+- `pnpm run release:npm:dry` from Git Bash is verified to pass, but npm may
+  print warnings about pnpm-specific env config. Use the committed VS Code
+  tasks or `npm.cmd` commands for cleaner output.
 
 ## Next Steps
 - Commit the ACE initialization files when ready.
@@ -115,7 +129,8 @@ Chosen Approach:
 Product Alignment:
 - The repo now preserves agent workflow and release context locally, which
   addresses the need to avoid relying on chat memory. npm keywords now better
-  match AgentOps, context management, guardrails, and AI coding discovery terms.
+  match AgentOps, context management, guardrails, vibe coding, and AI coding
+  discovery terms.
 
 Architecture:
 - Used the package's own installer instead of hand-writing the scaffold, so the
@@ -145,20 +160,19 @@ appears in fresh reports.
 Markdown report generation is covered even when XML is skipped.
 
 ## Recent Decisions
-## 2026-06-13 21:42
+## 2026-06-13 22:28
 
 Decision:
-- Keep Node guidance generic and never hardcode a maintainer-local Node
-  executable path in repo scripts or instructions.
+- Publish vibe coding positioning as patch version `0.1.5`.
 
 Reason:
-- Maintainers may switch between Node versions with nvm. The package only needs
-  a semantic runtime requirement, not a path to one developer's local install.
+- `vibe-coding` is part of the shipped npm metadata and README positioning, so
+  it affects package discoverability without changing CLI behavior.
 
 Impact:
-- `package.json` keeps the public `node >=20` engine requirement.
-- Tests, payload checks, and publish flows should run under any active
-  nvm-selected Node version satisfying `>=20`.
+- `package.json` includes the `vibe-coding` keyword.
+- GitHub and npm README surfaces explain ACE as a memory and guardrail layer for
+  scaling natural-language coding beyond small scripts.
 
 ## Changed Areas
 - `AGENTS.md`
@@ -166,9 +180,9 @@ Impact:
 - `.ai/**`
 - `package.json`
 - `README.md`
+- `README.npm.md`
 - `DEVELOPING.md`
 - `tools/check-npm-payload.mjs`
-- `scripts/ai-memory-utils.mjs`
 
 ## Latest Work Log
 # Work Log
@@ -207,6 +221,26 @@ Impact:
   instructions and memory.
 - Kept the public package requirement as generic `node >=20`, so maintainers can
   switch with nvm and use any compatible Node version.
+
+## 2026-06-13 22:25
+
+- Fixed `tools/check-npm-payload.mjs` so Windows/Git Bash release checks no
+  longer fail with `spawn EINVAL` when npm dry-run inspection is executed.
+- Added `publish:npm:dry` and made `release:npm:dry` run payload guard,
+  pack dry-run, and publish dry-run.
+- Switched repo development/link commands and local helper scripts to npm/npm.cmd.
+- Added VS Code tasks that explicitly call `npm.cmd` for clean Windows task runs.
+- Verified `npm.cmd run release:npm:dry`, `npm.cmd run publish:npm:dry`,
+  `.local/publish-npm.cmd`, Git Bash `pnpm run release:npm:dry`, `npm.cmd run test`,
+  and `npm.cmd run ace:check`.
+
+## 2026-06-13 22:28
+
+- Added `vibe-coding` to npm keywords and bumped package version to `0.1.5`.
+- Added subtle vibe coding positioning to both GitHub and npm README surfaces.
+- Kept the change metadata/docs-only with no CLI, template, or runtime behavior changes.
+- Verified JSON metadata, npm payload guard, full dry npm release, staged npm
+  README content, Vitest, and ACE memory check.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.

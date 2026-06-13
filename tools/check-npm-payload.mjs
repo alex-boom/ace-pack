@@ -26,6 +26,22 @@ const requiredPaths = new Set([
   'scripts/agent-memory-templates.mjs',
 ])
 
+async function execNpm(args) {
+  const options = {
+    cwd: rootDir,
+    encoding: 'utf8',
+    maxBuffer: 10 * 1024 * 1024,
+  }
+
+  if (process.platform !== 'win32') {
+    return execFileAsync('npm', args, options)
+  }
+
+  const command = ['npm.cmd', ...args].join(' ')
+
+  return execFileAsync(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', command], options)
+}
+
 function normalizePackagePath(filePath) {
   return filePath.replace(/\\/g, '/').replace(/^package\//, '')
 }
@@ -60,12 +76,12 @@ async function collectFiles(directory, baseDirectory = directory) {
 }
 
 async function getDryRunFiles() {
-  const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm'
-  const { stdout } = await execFileAsync(npmCommand, ['pack', stagingDir, '--dry-run', '--json'], {
-    cwd: rootDir,
-    encoding: 'utf8',
-    maxBuffer: 10 * 1024 * 1024,
-  })
+  const { stdout } = await execNpm([
+    'pack',
+    path.relative(rootDir, stagingDir),
+    '--dry-run',
+    '--json',
+  ])
   const payload = JSON.parse(stdout)
   const packageInfo = Array.isArray(payload) ? payload[0] : payload
 

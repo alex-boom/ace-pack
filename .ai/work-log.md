@@ -34,3 +34,23 @@
   instructions and memory.
 - Kept the public package requirement as generic `node >=20`, so maintainers can
   switch with nvm and use any compatible Node version.
+
+## 2026-06-13 22:25
+
+- Fixed `tools/check-npm-payload.mjs` so Windows/Git Bash release checks no
+  longer fail with `spawn EINVAL` when npm dry-run inspection is executed.
+- Added `publish:npm:dry` and made `release:npm:dry` run payload guard,
+  pack dry-run, and publish dry-run.
+- Switched repo development/link commands and local helper scripts to npm/npm.cmd.
+- Added VS Code tasks that explicitly call `npm.cmd` for clean Windows task runs.
+- Verified `npm.cmd run release:npm:dry`, `npm.cmd run publish:npm:dry`,
+  `.local/publish-npm.cmd`, Git Bash `pnpm run release:npm:dry`, `npm.cmd run test`,
+  and `npm.cmd run ace:check`.
+
+## 2026-06-13 22:28
+
+- Added `vibe-coding` to npm keywords and bumped package version to `0.1.5`.
+- Added subtle vibe coding positioning to both GitHub and npm README surfaces.
+- Kept the change metadata/docs-only with no CLI, template, or runtime behavior changes.
+- Verified JSON metadata, npm payload guard, full dry npm release, staged npm
+  README content, Vitest, and ACE memory check.

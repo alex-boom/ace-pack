@@ -25,226 +25,7 @@ or other automated processes.</purpose><file_format>The content is organized as 
 .ai/reflection-log.md
 .ai/session-handoff.md
 .ai/work-log.md
-AGENTS.md</directory_structure><files>This section contains the contents of the repository&apos;s files.<file path=".ai/changed-files.md"># Changed Files
-
-[AGENTS.md]
-- Added ACE agent workflow instructions, project-specific npm/Node/publish notes, first-block meta-architecture warning, and versioning policy.
-- Replaced maintainer-local Node executable guidance with generic active Node `&gt;=20` guidance.
-
-[CLAUDE.md]
-- Added Claude-compatible agent workflow instructions with npm-based local commands, first-block meta-architecture warning, and versioning policy.
-
-[.ai/**]
-- Added ACE memory, onboarding, task, handoff, work-log, reflection, archive files, and `.ai/README.md` dogfooding marker.
-- Recorded that local Node paths must not be hardcoded; use the active nvm-selected Node and switch to any compatible `&gt;=20` version for verification.
-
-[package.json]
-- Added ACE workflow scripts and npm payload guard while preserving existing test and npm publish scripts.
-- Updated package version to `0.1.4` and replaced npm keywords with targeted AgentOps SEO terms.
-
-[README.md]
-- Linked local ACE dogfooding development guidance from the development section.
-
-[DEVELOPING.md]
-- Documented the product layer, repo-local dogfooding layer, npm payload boundary, and semver policy.
-
-[tools/check-npm-payload.mjs]
-- Added repeatable guard for excluding repo-local ACE files from the npm package.
-
-[scripts/ai-memory-utils.mjs]
-- Fixed durable decision extraction so reports use the latest decision section.
-
-[scripts/ai-report.mjs]
-- Made XML bundle generation best-effort while preserving Markdown report output.
-
-[tests/ai-report.test.ts]
-- Covered report output for latest durable decisions and skipped XML status.</file><file path=".ai/current-task.md"># Current Task
-
-## Feature Name
-Initialize ACE in this repository and mark dogfooding boundaries
-
-## Lifecycle
-Status: active
-Version: v1
-Task Tier: large
-Design Review Required: yes
-Started: 2026-06-13 20:59
-Ready For Archive: yes
-
-## Goal
-Install ACE project memory and workflow files into the ACE package repository
-itself so future agent sessions can recover project rules and release context
-from the repo. Clearly separate the ACE product layer from this repository&apos;s
-repo-local ACE dogfooding layer.
-
-## Business Value / Product Alignment
-The repository now carries its own agent instructions, memory, and handoff
-discipline instead of depending on chat history. This makes future package,
-README, and npm release work easier to resume.
-
-## Technical Approach
-Option 1:
-- Manually create `.ai/*`, `AGENTS.md`, and scripts. This risks drifting from
-  the package&apos;s own installer behavior.
-
-Option 2:
-- Run the local `install-ace-pack.mjs init . --apply` installer. This uses the
-  same path consumers use and validates the package against itself.
-
-Chosen Approach:
-- Use the local installer with `--apply`, then run ACE and test checks. This is
-  the least surprising path and keeps the repository aligned with shipped
-  scaffold behavior.
-
-## Current Status
-- [x] Ran local ACE installer in the repository root.
-- [x] Applied onboarding recommendations.
-- [x] Verified `ace:check`, `ace:classify`, and tests.
-- [x] Fixed report decision extraction so the latest durable decision appears in generated reports.
-- [x] Added project-specific command notes for npm-based ACE usage when `pnpm` is unavailable.
-- [x] Made XML report generation best-effort so Markdown reports still complete without `pnpm.cmd`.
-- [x] Added top-level meta-architecture warnings to local agent instruction files.
-- [x] Documented product-vs-dogfooding file ownership for fork maintainers.
-- [x] Added repeatable npm payload guard to prevent repo-local ACE history from shipping.
-- [x] Added versioning policy for publishable package changes.
-- [x] Updated npm keywords for AgentOps SEO and bumped package version to 0.1.4.
-- [x] Replaced local Node path/version hardcoding with generic active Node `&gt;=20` guidance.
-
-## Affected Areas
-- `package.json`
-- `AGENTS.md`
-- `CLAUDE.md`
-- `.ai/**`
-- `DEVELOPING.md`
-- `README.md`
-- `tools/check-npm-payload.mjs`
-- `scripts/ai-memory-utils.mjs`
-- `scripts/ai-report.mjs`
-- `tests/ai-report.test.ts`
-
-## Constraints
-- Preserve existing package scripts and npm publish workflow.
-- Do not overwrite source scripts or README/logo work outside ACE setup.
-- Keep generated ACE files plain Markdown/JSON for future agent sessions.
-- Prefer `npm run ace:*` commands in this repo when `pnpm` is not available on PATH.
-- XML report generation should not block Markdown report generation or task closeout.
-- Repo-local dogfooding files must stay excluded from the npm payload.
-- Changes to ACE behavior for users belong in `scripts/*`, not local `.ai/**`.
-- Bump `package.json` before publishing changes that affect shipped package
-  payload or user-visible ACE behavior.
-- Keep keyword updates metadata-only: do not change CLI behavior, templates, or README copy.
-- Do not hardcode a maintainer-local Node executable path; switch with nvm and
-  use any active Node version that satisfies the package engine for tests and
-  publish checks.
-
-## Acceptance Criteria
-- ACE memory files exist in `.ai/`.
-- Agent instruction files exist at repo root.
-- `package.json` exposes `ace:*` workflow scripts.
-- `npm run ace:check` passes.
-- Generated reports include the latest durable decision from `.ai/decisions.md`.
-- `ai-report.mjs` writes the Markdown report even when XML generation is skipped or unavailable.
-- `AGENTS.md` and `CLAUDE.md` start with the meta-architecture warning block.
-- `npm run check:npm-payload` fails if `.ai/**`, `AGENTS.md`, `CLAUDE.md`, or `DEVELOPING.md` enter the package.
-- Versioning policy distinguishes publishable product changes from repo-local
-  dogfooding changes.
-- `package.json` keywords match the approved AgentOps SEO list.
-- `package.json` version is `0.1.4`.
-- Repo-local instructions do not point to a maintainer-specific Node executable.
-
-## Completion Checklist
-- [x] Goal completed
-- [x] Acceptance criteria met
-- [x] Tests/checks passed
-- [x] `.ai/session-handoff.md` updated
-- [x] `.ai/changed-files.md` updated
-- [x] `.ai/work-log.md` updated
-- [x] `npm run ace:check` passed
-- [x] `.ai/reflection-log.md` updated if the task exposed friction or repeated mistakes
-- [x] `.ai/decisions.md` updated if needed
-- [x] `.ai/tech-docs.md` updated if architecture or technical state changed
-- [x] `.ai/product-roadmap.md` updated if business or roadmap state changed
-- [x] Final snapshot archived to `.ai/archive/tasks/` for large tasks
-- [x] Next version/task defined if work continues</file><file path=".ai/decisions.md"># Decisions
-
-## 2026-06-13 20:59
-
-Decision:
-- Initialize this repository with its own local ACE installer instead of
-  hand-writing the memory scaffold.
-
-Reason:
-- The repository should validate the same init path that package consumers use,
-  and future chats need project state stored in files rather than conversation
-  history.
-
-Impact:
-- `AGENTS.md`, `CLAUDE.md`, `.ai/*`, and additive `ace:*` package scripts are
-  now part of the project workflow.
-
-## 2026-06-13 21:19
-
-Decision:
-- Keep the ACE product layer and repo-local ACE dogfooding layer explicitly
-  labeled in committed documentation and agent instruction files.
-
-Reason:
-- This repository builds ACE while also using ACE locally, so fork maintainers
-  and AI agents need a first-context warning that global product behavior lives
-  in `scripts/*`, not local `.ai/**` state.
-
-Impact:
-- `AGENTS.md` and `CLAUDE.md` start with a meta-architecture warning.
-- `DEVELOPING.md` and `.ai/README.md` document file ownership boundaries.
-- `npm run check:npm-payload` protects the published package from local AI
-  history, reports, and archive snapshots.
-
-## 2026-06-13 21:19
-
-Decision:
-- Require a semver bump before publishing shipped package changes, but do not
-  require a bump for repo-local dogfooding-only files excluded from npm.
-
-Reason:
-- npm rejects republishing the same version, and consumers need version changes
-  to discover package updates. Pure `.ai/**`, `AGENTS.md`, `CLAUDE.md`, and
-  `DEVELOPING.md` changes do not ship in the npm payload, so bumping for those
-  alone creates noisy releases.
-
-Impact:
-- Future agents should check whether a change affects the npm payload or
-  user-visible ACE behavior before publishing.
-- Use patch for fixes/docs/packaging, minor for backward-compatible features,
-  and major for breaking CLI/template/workflow changes.
-
-## 2026-06-13 21:35
-
-Decision:
-- Publish the npm keyword SEO update as patch version `0.1.4`.
-
-Reason:
-- Keyword metadata is part of the shipped npm payload and affects package
-  discoverability, but it does not change CLI behavior or installed templates.
-
-Impact:
-- `package.json` now uses targeted AgentOps and AI engineering keywords.
-- No code behavior, README copy, or lockfile changes are required for this
-  metadata release.
-
-## 2026-06-13 21:42
-
-Decision:
-- Keep Node guidance generic and never hardcode a maintainer-local Node
-  executable path in repo scripts or instructions.
-
-Reason:
-- Maintainers may switch between Node versions with nvm. The package only needs
-  a semantic runtime requirement, not a path to one developer&apos;s local install.
-
-Impact:
-- `package.json` keeps the public `node &gt;=20` engine requirement.
-- Tests, payload checks, and publish flows should run under any active
-  nvm-selected Node version satisfying `&gt;=20`.</file><file path=".ai/memory-config.json">{
+AGENTS.md</directory_structure><files>This section contains the contents of the repository&apos;s files.<file path=".ai/memory-config.json">{
   &quot;_name&quot;: &quot;ACE (Agentic Context Engine) Configuration&quot;,
   &quot;_profile&quot;: {
     &quot;detectedEcosystems&quot;: [
@@ -466,10 +247,289 @@ Status: resolved
   a new chat.
 - Likely Cause: Release steps were previously only discussed in conversation.
 - Proposed Improvement: Keep publish commands discoverable through
-  `package.json` scripts and record npm publishing notes in `.ai/session-handoff.md`.</file><file path=".ai/session-handoff.md"># Session Handoff
+  `package.json` scripts and record npm publishing notes in `.ai/session-handoff.md`.</file><file path=".ai/changed-files.md"># Changed Files
+
+[AGENTS.md]
+- Added ACE agent workflow instructions, project-specific npm/Node/publish notes, first-block meta-architecture warning, and versioning policy.
+- Replaced maintainer-local Node executable guidance with generic active Node `&gt;=20` guidance.
+
+[CLAUDE.md]
+- Added Claude-compatible agent workflow instructions with npm-based local commands, first-block meta-architecture warning, and versioning policy.
+- Replaced repo-local PowerShell guidance with `npm.cmd run ...` commands.
+
+[.ai/**]
+- Added ACE memory, onboarding, task, handoff, work-log, reflection, archive files, and `.ai/README.md` dogfooding marker.
+- Recorded that local Node paths must not be hardcoded; use the active nvm-selected Node and switch to any compatible `&gt;=20` version for verification.
+
+[package.json]
+- Added ACE workflow scripts and npm payload guard while preserving existing test and npm publish scripts.
+- Updated package version to `0.1.4` and replaced npm keywords with targeted AgentOps SEO terms.
+- Added `publish:npm:dry`, expanded `release:npm:dry`, and changed `link:global` to `npm link`.
+- Updated package version to `0.1.5` and added `vibe-coding` to npm keywords.
+
+[README.md]
+- Linked local ACE dogfooding development guidance from the development section.
+- Updated development setup/link commands to npm.
+- Added vibe coding positioning to the GitHub README intro.
+
+[README.npm.md]
+- Updated development setup/link commands to npm for the staged npm README.
+- Added compact vibe coding positioning for the npm package page.
+
+[DEVELOPING.md]
+- Documented the product layer, repo-local dogfooding layer, npm payload boundary, and semver policy.
+
+[tools/check-npm-payload.mjs]
+- Added repeatable guard for excluding repo-local ACE files from the npm package.
+- Fixed Windows/Git Bash npm dry-run inspection by routing npm through `cmd.exe`
+  with the relative `.npm-publish` path.
+
+[.vscode/tasks.json]
+- Added explicit npm-based VS Code tasks for payload check, preview, dry release,
+  and publish release.
+
+[.local/publish-npm.cmd]
+- Switched helper calls to `npm.cmd` so PowerShell execution policy does not
+  select blocked npm shims.
+
+[scripts/ai-memory-utils.mjs]
+- Fixed durable decision extraction so reports use the latest decision section.
+
+[scripts/ai-report.mjs]
+- Made XML bundle generation best-effort while preserving Markdown report output.
+
+[tests/ai-report.test.ts]
+- Covered report output for latest durable decisions and skipped XML status.</file><file path=".ai/current-task.md"># Current Task
+
+## Feature Name
+Initialize ACE in this repository and mark dogfooding boundaries
+
+## Lifecycle
+Status: active
+Version: v1
+Task Tier: large
+Design Review Required: yes
+Started: 2026-06-13 20:59
+Ready For Archive: yes
+
+## Goal
+Install ACE project memory and workflow files into the ACE package repository
+itself so future agent sessions can recover project rules and release context
+from the repo. Clearly separate the ACE product layer from this repository&apos;s
+repo-local ACE dogfooding layer.
+
+## Business Value / Product Alignment
+The repository now carries its own agent instructions, memory, and handoff
+discipline instead of depending on chat history. This makes future package,
+README, and npm release work easier to resume.
+
+## Technical Approach
+Option 1:
+- Manually create `.ai/*`, `AGENTS.md`, and scripts. This risks drifting from
+  the package&apos;s own installer behavior.
+
+Option 2:
+- Run the local `install-ace-pack.mjs init . --apply` installer. This uses the
+  same path consumers use and validates the package against itself.
+
+Chosen Approach:
+- Use the local installer with `--apply`, then run ACE and test checks. This is
+  the least surprising path and keeps the repository aligned with shipped
+  scaffold behavior.
+
+## Current Status
+- [x] Ran local ACE installer in the repository root.
+- [x] Applied onboarding recommendations.
+- [x] Verified `ace:check`, `ace:classify`, and tests.
+- [x] Fixed report decision extraction so the latest durable decision appears in generated reports.
+- [x] Added project-specific command notes for npm-based ACE usage when `pnpm` is unavailable.
+- [x] Made XML report generation best-effort so Markdown reports still complete without `pnpm.cmd`.
+- [x] Added top-level meta-architecture warnings to local agent instruction files.
+- [x] Documented product-vs-dogfooding file ownership for fork maintainers.
+- [x] Added repeatable npm payload guard to prevent repo-local ACE history from shipping.
+- [x] Added versioning policy for publishable package changes.
+- [x] Updated npm keywords for AgentOps SEO and bumped package version to 0.1.4.
+- [x] Replaced local Node path/version hardcoding with generic active Node `&gt;=20` guidance.
+- [x] Hardened npm release commands for Windows/Git Bash and verified dry publish flow.
+- [x] Added vibe coding positioning and bumped package version to 0.1.5.
+
+## Affected Areas
+- `package.json`
+- `AGENTS.md`
+- `CLAUDE.md`
+- `.ai/**`
+- `DEVELOPING.md`
+- `README.md`
+- `README.npm.md`
+- `tools/check-npm-payload.mjs`
+- `scripts/ai-memory-utils.mjs`
+- `scripts/ai-report.mjs`
+- `tests/ai-report.test.ts`
+- `tools/build-npm-package.mjs`
+- `.vscode/tasks.json`
+
+## Constraints
+- Preserve existing package scripts and npm publish workflow.
+- Do not overwrite source scripts or README/logo work outside ACE setup.
+- Keep generated ACE files plain Markdown/JSON for future agent sessions.
+- Prefer `npm run ace:*` commands in this repo when `pnpm` is not available on PATH.
+- XML report generation should not block Markdown report generation or task closeout.
+- Repo-local dogfooding files must stay excluded from the npm payload.
+- Changes to ACE behavior for users belong in `scripts/*`, not local `.ai/**`.
+- Bump `package.json` before publishing changes that affect shipped package
+  payload or user-visible ACE behavior.
+- Keep keyword updates metadata/docs-only: do not change CLI behavior or templates.
+- Do not hardcode a maintainer-local Node executable path; switch with nvm and
+  use any active Node version that satisfies the package engine for tests and
+  publish checks.
+- Do not spawn `npm.cmd` directly with `execFile` on Windows; route npm CLI
+  subprocesses through `cmd.exe` or use package scripts/VS Code tasks that call
+  `npm.cmd` explicitly.
+
+## Acceptance Criteria
+- ACE memory files exist in `.ai/`.
+- Agent instruction files exist at repo root.
+- `package.json` exposes `ace:*` workflow scripts.
+- `npm run ace:check` passes.
+- Generated reports include the latest durable decision from `.ai/decisions.md`.
+- `ai-report.mjs` writes the Markdown report even when XML generation is skipped or unavailable.
+- `AGENTS.md` and `CLAUDE.md` start with the meta-architecture warning block.
+- `npm run check:npm-payload` fails if `.ai/**`, `AGENTS.md`, `CLAUDE.md`, or `DEVELOPING.md` enter the package.
+- Versioning policy distinguishes publishable product changes from repo-local
+  dogfooding changes.
+- `package.json` keywords match the approved AgentOps SEO list plus `vibe-coding`.
+- `package.json` version is `0.1.5`.
+- Repo-local instructions do not point to a maintainer-specific Node executable.
+- `npm run release:npm:dry` verifies payload guard, pack dry-run, and publish dry-run.
+
+## Completion Checklist
+- [x] Goal completed
+- [x] Acceptance criteria met
+- [x] Tests/checks passed
+- [x] `.ai/session-handoff.md` updated
+- [x] `.ai/changed-files.md` updated
+- [x] `.ai/work-log.md` updated
+- [x] `npm run ace:check` passed
+- [x] `.ai/reflection-log.md` updated if the task exposed friction or repeated mistakes
+- [x] `.ai/decisions.md` updated if needed
+- [x] `.ai/tech-docs.md` updated if architecture or technical state changed
+- [x] `.ai/product-roadmap.md` updated if business or roadmap state changed
+- [x] Final snapshot archived to `.ai/archive/tasks/` for large tasks
+- [x] Next version/task defined if work continues</file><file path=".ai/decisions.md"># Decisions
+
+## 2026-06-13 20:59
+
+Decision:
+- Initialize this repository with its own local ACE installer instead of
+  hand-writing the memory scaffold.
+
+Reason:
+- The repository should validate the same init path that package consumers use,
+  and future chats need project state stored in files rather than conversation
+  history.
+
+Impact:
+- `AGENTS.md`, `CLAUDE.md`, `.ai/*`, and additive `ace:*` package scripts are
+  now part of the project workflow.
+
+## 2026-06-13 21:19
+
+Decision:
+- Keep the ACE product layer and repo-local ACE dogfooding layer explicitly
+  labeled in committed documentation and agent instruction files.
+
+Reason:
+- This repository builds ACE while also using ACE locally, so fork maintainers
+  and AI agents need a first-context warning that global product behavior lives
+  in `scripts/*`, not local `.ai/**` state.
+
+Impact:
+- `AGENTS.md` and `CLAUDE.md` start with a meta-architecture warning.
+- `DEVELOPING.md` and `.ai/README.md` document file ownership boundaries.
+- `npm run check:npm-payload` protects the published package from local AI
+  history, reports, and archive snapshots.
+
+## 2026-06-13 21:19
+
+Decision:
+- Require a semver bump before publishing shipped package changes, but do not
+  require a bump for repo-local dogfooding-only files excluded from npm.
+
+Reason:
+- npm rejects republishing the same version, and consumers need version changes
+  to discover package updates. Pure `.ai/**`, `AGENTS.md`, `CLAUDE.md`, and
+  `DEVELOPING.md` changes do not ship in the npm payload, so bumping for those
+  alone creates noisy releases.
+
+Impact:
+- Future agents should check whether a change affects the npm payload or
+  user-visible ACE behavior before publishing.
+- Use patch for fixes/docs/packaging, minor for backward-compatible features,
+  and major for breaking CLI/template/workflow changes.
+
+## 2026-06-13 21:35
+
+Decision:
+- Publish the npm keyword SEO update as patch version `0.1.4`.
+
+Reason:
+- Keyword metadata is part of the shipped npm payload and affects package
+  discoverability, but it does not change CLI behavior or installed templates.
+
+Impact:
+- `package.json` now uses targeted AgentOps and AI engineering keywords.
+- No code behavior, README copy, or lockfile changes are required for this
+  metadata release.
+
+## 2026-06-13 21:42
+
+Decision:
+- Keep Node guidance generic and never hardcode a maintainer-local Node
+  executable path in repo scripts or instructions.
+
+Reason:
+- Maintainers may switch between Node versions with nvm. The package only needs
+  a semantic runtime requirement, not a path to one developer&apos;s local install.
+
+Impact:
+- `package.json` keeps the public `node &gt;=20` engine requirement.
+- Tests, payload checks, and publish flows should run under any active
+  nvm-selected Node version satisfying `&gt;=20`.
+
+## 2026-06-13 22:25
+
+Decision:
+- Make npm release verification npm-first and Windows-safe.
+
+Reason:
+- VS Code and Git Bash may invoke package scripts through `pnpm`, but the release
+  pipeline itself publishes to npm and should not rely on pnpm-specific behavior.
+  Directly spawning `npm.cmd` from Node can fail on Windows with `spawn EINVAL`.
+
+Impact:
+- `release:npm:dry` now verifies payload guard, `npm pack --dry-run`, and
+  `npm publish --dry-run`.
+- Windows npm subprocesses inside tooling route through `cmd.exe` with a
+  relative `.npm-publish` path.
+- VS Code tasks and local helpers call `npm.cmd` explicitly for predictable
+  Windows behavior.
+
+## 2026-06-13 22:28
+
+Decision:
+- Publish vibe coding positioning as patch version `0.1.5`.
+
+Reason:
+- `vibe-coding` is part of the shipped npm metadata and README positioning, so
+  it affects package discoverability without changing CLI behavior.
+
+Impact:
+- `package.json` includes the `vibe-coding` keyword.
+- GitHub and npm README surfaces explain ACE as a memory and guardrail layer for
+  scaling natural-language coding beyond small scripts.</file><file path=".ai/session-handoff.md"># Session Handoff
 
 ## Last Update
-2026-06-13 21:46
+2026-06-13 22:28
 
 ## What Was Done
 - Ran `node ./install-ace-pack.mjs init . --apply` in this repository.
@@ -490,6 +550,12 @@ Status: resolved
   npm.
 - Updated npm SEO keywords to targeted AgentOps/AI engineering terms and bumped
   package version to `0.1.4`.
+- Hardened the npm release flow for Windows/Git Bash by avoiding direct
+  `execFile(&apos;npm.cmd&apos;)`, adding `publish:npm:dry`, expanding
+  `release:npm:dry`, switching local dev docs to npm, and adding VS Code tasks
+  that call `npm.cmd` directly.
+- Added `vibe-coding` npm keyword, updated GitHub/npm README positioning, and
+  bumped package version to `0.1.5`.
 - Verified the setup with `npm run ace:check`, `npm run ace:classify`, and the
   Vitest suite on an active Node version that satisfies `&gt;=20`.
 
@@ -501,16 +567,23 @@ Status: resolved
   `CLAUDE.md`, and `.ai/**`.
 - Use `npm run ace:*` commands in this environment unless `pnpm` has been
   explicitly added to PATH.
-- Current metadata release target is `0.1.4`.
+- Current metadata release target is `0.1.5`.
 - No repo scripts or instructions should hardcode a local Node executable path;
   use the active nvm-selected Node and switch to any installed Node `&gt;=20` for
   tests, payload checks, and publish flows.
+- Preferred release verification command is `npm.cmd run release:npm:dry` on
+  Windows PowerShell. It runs payload guard, `npm pack --dry-run`, and
+  `npm publish --dry-run`.
+- `pnpm run release:npm:dry` from Git Bash is verified to pass, but npm may
+  print warnings about pnpm-specific env config. Use the committed VS Code
+  tasks or `npm.cmd` commands for cleaner output.
 
 ## Quality Review
 Product Alignment:
 - The repo now preserves agent workflow and release context locally, which
   addresses the need to avoid relying on chat memory. npm keywords now better
-  match AgentOps, context management, guardrails, and AI coding discovery terms.
+  match AgentOps, context management, guardrails, vibe coding, and AI coding
+  discovery terms.
 
 Architecture:
 - Used the package&apos;s own installer instead of hand-writing the scaffold, so the
@@ -558,16 +631,28 @@ Code Quality:
 - `npm run preview:npm` passed and produced dry-run package `ace-pack-0.1.4.tgz`.
 - Vitest passed on an active Node version that satisfies `&gt;=20`: 7 files, 38 tests.
 - `pnpm lint` was skipped because `pnpm` is not on PATH and this package has no `lint` script.
+- `npm.cmd run release:npm:dry` passed.
+- `npm.cmd run publish:npm:dry` passed.
+- `.\.local\publish-npm.cmd` preview mode passed.
+- Git Bash `pnpm run release:npm:dry` passed after the Windows npm subprocess fix.
+- `npm.cmd run test` passed: 7 files, 38 tests.
+- `npm.cmd run ace:check` passed.
+- Package metadata JSON parse passed for version `0.1.5` and `vibe-coding`.
+- `npm.cmd run check:npm-payload` passed and checked 27 packed files.
+- `npm.cmd run release:npm:dry` passed and produced dry-run package `ace-pack-0.1.5.tgz`.
+- Staged npm README uses `./logo-npm.svg` and includes the vibe coding positioning.
+- `npm.cmd run test` passed: 7 files, 38 tests.
+- `npm.cmd run ace:check` passed.
 
 ## Notes
-- For npm publishing, use `npm run preview:npm` and `npm run publish:npm` so the
+- For npm publishing, use `npm run release:npm:dry` before `npm run release:npm` so the
   package is built from `.npm-publish/` with `README.npm.md` and
   `logo-npm.svg`.
 - Use `DEVELOPING.md` as the first reference for future fork maintainers who
   need to distinguish shipped ACE behavior from this repo&apos;s local ACE memory.
 - Before publishing shipped product changes, run `npm version patch --no-git-tag-version`
   or choose the appropriate semver level, then run `npm run check:npm-payload`
-  and `npm run publish:npm`.</file><file path=".ai/work-log.md"># Work Log
+  and `npm run release:npm:dry`.</file><file path=".ai/work-log.md"># Work Log
 
 ## 2026-06-13 20:59
 
@@ -602,7 +687,27 @@ Code Quality:
 - Removed local Node executable/version hardcoding from repo-local ACE
   instructions and memory.
 - Kept the public package requirement as generic `node &gt;=20`, so maintainers can
-  switch with nvm and use any compatible Node version.</file><file path="AGENTS.md">&gt; [!WARNING]
+  switch with nvm and use any compatible Node version.
+
+## 2026-06-13 22:25
+
+- Fixed `tools/check-npm-payload.mjs` so Windows/Git Bash release checks no
+  longer fail with `spawn EINVAL` when npm dry-run inspection is executed.
+- Added `publish:npm:dry` and made `release:npm:dry` run payload guard,
+  pack dry-run, and publish dry-run.
+- Switched repo development/link commands and local helper scripts to npm/npm.cmd.
+- Added VS Code tasks that explicitly call `npm.cmd` for clean Windows task runs.
+- Verified `npm.cmd run release:npm:dry`, `npm.cmd run publish:npm:dry`,
+  `.local/publish-npm.cmd`, Git Bash `pnpm run release:npm:dry`, `npm.cmd run test`,
+  and `npm.cmd run ace:check`.
+
+## 2026-06-13 22:28
+
+- Added `vibe-coding` to npm keywords and bumped package version to `0.1.5`.
+- Added subtle vibe coding positioning to both GitHub and npm README surfaces.
+- Kept the change metadata/docs-only with no CLI, template, or runtime behavior changes.
+- Verified JSON metadata, npm payload guard, full dry npm release, staged npm
+  README content, Vitest, and ACE memory check.</file><file path="AGENTS.md">&gt; [!WARNING]
 &gt; **META-ARCHITECTURE WARNING:** This repository BUILDS the ACE product, but also USES ACE locally. If you are instructed to modify ACE behavior for users, edit the product source and templates in `scripts/`. Do not edit this local `AGENTS.md`, `CLAUDE.md`, or `.ai/**` to change global product behavior.
 
 # AGENTS.md

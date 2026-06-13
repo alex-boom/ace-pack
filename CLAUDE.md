@@ -33,9 +33,9 @@ task.
   unavailable on PATH.
 - Run `npm run ace:onboard -- --apply` after fresh installation in an unfamiliar project
   before trusting project-specific risk rules.
-- On Windows PowerShell, use `pnpm.cmd ace:classify`,
-  `pnpm.cmd ace:validate`, and similar commands if script execution policy
-  blocks the `pnpm` shim.
+- On Windows PowerShell in this repository, use `npm.cmd run ace:classify`,
+  `npm.cmd run ace:validate`, and similar commands if script execution policy
+  blocks the regular `npm` shim.
 - For large or high-risk standard tasks, complete `.ai/current-task.md`
   Business Value and Technical Approach before writing code.
 - Treat `.ai/*` as the current source of task context and handoff state.

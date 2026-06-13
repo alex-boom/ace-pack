@@ -18,6 +18,10 @@ npx ace-pack@latest init
 - **Risk rules**: mark auth, data, migrations, and other sensitive paths before edits.
 - **Repeatable workflow**: classify, review, validate, and finish AI-assisted changes.
 
+Vibe coding is fast, but it gets fragile when projects grow and AI loses
+context. ACE adds the memory and guardrails that let natural-language coding
+scale beyond single-file scripts.
+
 ACE (Agentic Context Engine) gives AI coding agents a deterministic memory
 layer, repository-aware risk rules, and repeatable quality gates using plain
 Markdown and native Node.js scripts.
@@ -273,13 +277,13 @@ preserved and updated idempotently.
 ```bash
 git clone https://github.com/alex-boom/ace-pack.git
 cd ace-pack
-pnpm install
-pnpm test
+npm install
+npm test
 ```
 
 Optional local link:
 
 ```bash
-pnpm link --global
+npm link
 ace-pack init ./target-project
 ```

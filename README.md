@@ -18,6 +18,11 @@ AI agents are brilliant, but stateless by default. ACE gives them the project
 memory, guardrails, and closeout discipline they need to behave like reliable
 engineering teammates inside real repositories.
 
+Vibe coding is fast when the idea is small, but it gets fragile when projects
+grow and the AI loses context. ACE adds the memory, risk rules, and repeatable
+checks that let natural-language coding scale from quick scripts to real
+systems safely.
+
 ## Why ACE Exists
 
 AI-assisted development has a new set of failure modes that ordinary chat does
@@ -271,13 +276,13 @@ not confuse the shipped product layer with this repo's local `.ai/**` memory.
 ```bash
 git clone https://github.com/alex-boom/ace-pack.git
 cd ace-pack
-pnpm install
-pnpm test
+npm install
+npm test
 ```
 
 Optional local link:
 
 ```bash
-pnpm link --global
+npm link
 ace-pack init ./target-project
 ```

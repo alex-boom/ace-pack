@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm: check payload",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "check:npm-payload"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "npm: preview package",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "preview:npm"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "npm: dry release",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "release:npm:dry"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "npm: publish release",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "release:npm"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

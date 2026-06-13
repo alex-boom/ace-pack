@@ -49,6 +49,8 @@ Chosen Approach:
 - [x] Added versioning policy for publishable package changes.
 - [x] Updated npm keywords for AgentOps SEO and bumped package version to 0.1.4.
 - [x] Replaced local Node path/version hardcoding with generic active Node `>=20` guidance.
+- [x] Hardened npm release commands for Windows/Git Bash and verified dry publish flow.
+- [x] Added vibe coding positioning and bumped package version to 0.1.5.
 
 ## Affected Areas
 - `package.json`
@@ -57,10 +59,13 @@ Chosen Approach:
 - `.ai/**`
 - `DEVELOPING.md`
 - `README.md`
+- `README.npm.md`
 - `tools/check-npm-payload.mjs`
 - `scripts/ai-memory-utils.mjs`
 - `scripts/ai-report.mjs`
 - `tests/ai-report.test.ts`
+- `tools/build-npm-package.mjs`
+- `.vscode/tasks.json`
 
 ## Constraints
 - Preserve existing package scripts and npm publish workflow.
@@ -72,10 +77,13 @@ Chosen Approach:
 - Changes to ACE behavior for users belong in `scripts/*`, not local `.ai/**`.
 - Bump `package.json` before publishing changes that affect shipped package
   payload or user-visible ACE behavior.
-- Keep keyword updates metadata-only: do not change CLI behavior, templates, or README copy.
+- Keep keyword updates metadata/docs-only: do not change CLI behavior or templates.
 - Do not hardcode a maintainer-local Node executable path; switch with nvm and
   use any active Node version that satisfies the package engine for tests and
   publish checks.
+- Do not spawn `npm.cmd` directly with `execFile` on Windows; route npm CLI
+  subprocesses through `cmd.exe` or use package scripts/VS Code tasks that call
+  `npm.cmd` explicitly.
 
 ## Acceptance Criteria
 - ACE memory files exist in `.ai/`.
@@ -88,9 +96,10 @@ Chosen Approach:
 - `npm run check:npm-payload` fails if `.ai/**`, `AGENTS.md`, `CLAUDE.md`, or `DEVELOPING.md` enter the package.
 - Versioning policy distinguishes publishable product changes from repo-local
   dogfooding changes.
-- `package.json` keywords match the approved AgentOps SEO list.
-- `package.json` version is `0.1.4`.
+- `package.json` keywords match the approved AgentOps SEO list plus `vibe-coding`.
+- `package.json` version is `0.1.5`.
 - Repo-local instructions do not point to a maintainer-specific Node executable.
+- `npm run release:npm:dry` verifies payload guard, pack dry-run, and publish dry-run.
 
 ## Completion Checklist
 - [x] Goal completed

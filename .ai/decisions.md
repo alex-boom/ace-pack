@@ -78,3 +78,35 @@ Impact:
 - `package.json` keeps the public `node >=20` engine requirement.
 - Tests, payload checks, and publish flows should run under any active
   nvm-selected Node version satisfying `>=20`.
+
+## 2026-06-13 22:25
+
+Decision:
+- Make npm release verification npm-first and Windows-safe.
+
+Reason:
+- VS Code and Git Bash may invoke package scripts through `pnpm`, but the release
+  pipeline itself publishes to npm and should not rely on pnpm-specific behavior.
+  Directly spawning `npm.cmd` from Node can fail on Windows with `spawn EINVAL`.
+
+Impact:
+- `release:npm:dry` now verifies payload guard, `npm pack --dry-run`, and
+  `npm publish --dry-run`.
+- Windows npm subprocesses inside tooling route through `cmd.exe` with a
+  relative `.npm-publish` path.
+- VS Code tasks and local helpers call `npm.cmd` explicitly for predictable
+  Windows behavior.
+
+## 2026-06-13 22:28
+
+Decision:
+- Publish vibe coding positioning as patch version `0.1.5`.
+
+Reason:
+- `vibe-coding` is part of the shipped npm metadata and README positioning, so
+  it affects package discoverability without changing CLI behavior.
+
+Impact:
+- `package.json` includes the `vibe-coding` keyword.
+- GitHub and npm README surfaces explain ACE as a memory and guardrail layer for
+  scaling natural-language coding beyond small scripts.

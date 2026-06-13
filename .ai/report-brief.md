@@ -3,12 +3,12 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-13 21:46
+- Generated: 2026-06-13 22:30
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-13 21:45
-- Source session-handoff: 2026-06-13 21:46
+- Source current-task: 2026-06-13 22:29
+- Source session-handoff: 2026-06-13 22:30
 - Verification level: test-backed
 
 ## Stack
@@ -49,6 +49,8 @@ README, and npm release work easier to resume.
 - [x] Added versioning policy for publishable package changes.
 - [x] Updated npm keywords for AgentOps SEO and bumped package version to 0.1.4.
 - [x] Replaced local Node path/version hardcoding with generic active Node `>=20` guidance.
+- [x] Hardened npm release commands for Windows/Git Bash and verified dry publish flow.
+- [x] Added vibe coding positioning and bumped package version to 0.1.5.
 
 ## Next Steps
 - Commit the ACE initialization files when ready.
@@ -66,20 +68,19 @@ README, and npm release work easier to resume.
 - Report parser test coverage added for durable decisions.
 
 ## Recent Decision
-## 2026-06-13 21:42
+## 2026-06-13 22:28
 
 Decision:
-- Keep Node guidance generic and never hardcode a maintainer-local Node
-  executable path in repo scripts or instructions.
+- Publish vibe coding positioning as patch version `0.1.5`.
 
 Reason:
-- Maintainers may switch between Node versions with nvm. The package only needs
-  a semantic runtime requirement, not a path to one developer's local install.
+- `vibe-coding` is part of the shipped npm metadata and README positioning, so
+  it affects package discoverability without changing CLI behavior.
 
 Impact:
-- `package.json` keeps the public `node >=20` engine requirement.
-- Tests, payload checks, and publish flows should run under any active
-  nvm-selected Node version satisfying `>=20`.
+- `package.json` includes the `vibe-coding` keyword.
+- GitHub and npm README surfaces explain ACE as a memory and guardrail layer for
+  scaling natural-language coding beyond small scripts.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.
@@ -90,7 +91,7 @@ Impact:
 - `.ai/**`
 - `package.json`
 - `README.md`
-- `DEVELOPING.md`
+- `README.npm.md`
 
 ## Overall Progress
 - Completion checklist: 13/13

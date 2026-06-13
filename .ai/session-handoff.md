@@ -1,7 +1,7 @@
 # Session Handoff
 
 ## Last Update
-2026-06-13 21:46
+2026-06-13 22:28
 
 ## What Was Done
 - Ran `node ./install-ace-pack.mjs init . --apply` in this repository.
@@ -22,6 +22,12 @@
   npm.
 - Updated npm SEO keywords to targeted AgentOps/AI engineering terms and bumped
   package version to `0.1.4`.
+- Hardened the npm release flow for Windows/Git Bash by avoiding direct
+  `execFile('npm.cmd')`, adding `publish:npm:dry`, expanding
+  `release:npm:dry`, switching local dev docs to npm, and adding VS Code tasks
+  that call `npm.cmd` directly.
+- Added `vibe-coding` npm keyword, updated GitHub/npm README positioning, and
+  bumped package version to `0.1.5`.
 - Verified the setup with `npm run ace:check`, `npm run ace:classify`, and the
   Vitest suite on an active Node version that satisfies `>=20`.
 
@@ -33,16 +39,23 @@
   `CLAUDE.md`, and `.ai/**`.
 - Use `npm run ace:*` commands in this environment unless `pnpm` has been
   explicitly added to PATH.
-- Current metadata release target is `0.1.4`.
+- Current metadata release target is `0.1.5`.
 - No repo scripts or instructions should hardcode a local Node executable path;
   use the active nvm-selected Node and switch to any installed Node `>=20` for
   tests, payload checks, and publish flows.
+- Preferred release verification command is `npm.cmd run release:npm:dry` on
+  Windows PowerShell. It runs payload guard, `npm pack --dry-run`, and
+  `npm publish --dry-run`.
+- `pnpm run release:npm:dry` from Git Bash is verified to pass, but npm may
+  print warnings about pnpm-specific env config. Use the committed VS Code
+  tasks or `npm.cmd` commands for cleaner output.
 
 ## Quality Review
 Product Alignment:
 - The repo now preserves agent workflow and release context locally, which
   addresses the need to avoid relying on chat memory. npm keywords now better
-  match AgentOps, context management, guardrails, and AI coding discovery terms.
+  match AgentOps, context management, guardrails, vibe coding, and AI coding
+  discovery terms.
 
 Architecture:
 - Used the package's own installer instead of hand-writing the scaffold, so the
@@ -90,13 +103,25 @@ Code Quality:
 - `npm run preview:npm` passed and produced dry-run package `ace-pack-0.1.4.tgz`.
 - Vitest passed on an active Node version that satisfies `>=20`: 7 files, 38 tests.
 - `pnpm lint` was skipped because `pnpm` is not on PATH and this package has no `lint` script.
+- `npm.cmd run release:npm:dry` passed.
+- `npm.cmd run publish:npm:dry` passed.
+- `.\.local\publish-npm.cmd` preview mode passed.
+- Git Bash `pnpm run release:npm:dry` passed after the Windows npm subprocess fix.
+- `npm.cmd run test` passed: 7 files, 38 tests.
+- `npm.cmd run ace:check` passed.
+- Package metadata JSON parse passed for version `0.1.5` and `vibe-coding`.
+- `npm.cmd run check:npm-payload` passed and checked 27 packed files.
+- `npm.cmd run release:npm:dry` passed and produced dry-run package `ace-pack-0.1.5.tgz`.
+- Staged npm README uses `./logo-npm.svg` and includes the vibe coding positioning.
+- `npm.cmd run test` passed: 7 files, 38 tests.
+- `npm.cmd run ace:check` passed.
 
 ## Notes
-- For npm publishing, use `npm run preview:npm` and `npm run publish:npm` so the
+- For npm publishing, use `npm run release:npm:dry` before `npm run release:npm` so the
   package is built from `.npm-publish/` with `README.npm.md` and
   `logo-npm.svg`.
 - Use `DEVELOPING.md` as the first reference for future fork maintainers who
   need to distinguish shipped ACE behavior from this repo's local ACE memory.
 - Before publishing shipped product changes, run `npm version patch --no-git-tag-version`
   or choose the appropriate semver level, then run `npm run check:npm-payload`
-  and `npm run publish:npm`.
+  and `npm run release:npm:dry`.
