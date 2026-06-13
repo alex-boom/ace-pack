@@ -156,8 +156,8 @@ describe('package metadata', () => {
       scripts?: Record<string, string>
     }
 
-    expect(packageJson.bin?.['ace-pack']).toBe('./install-ace-pack.mjs')
-    expect(packageJson.bin?.['agent-memory-pack']).toBe('./install-agent-memory-pack.mjs')
+    expect(packageJson.bin?.['ace-pack']).toBe('install-ace-pack.mjs')
+    expect(packageJson.bin?.['agent-memory-pack']).toBe('install-agent-memory-pack.mjs')
     expect(packageJson.scripts?.['install:pack']).toBe('node ./install-ace-pack.mjs')
     expect(packageJson.scripts?.test).toBe('vitest run')
   })

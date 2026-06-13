@@ -1,11 +1,38 @@
 {
   "name": "ace-pack",
   "version": "0.1.0",
-  "private": true,
+  "description": "Zero-dependency cognitive architecture framework for AI-driven development.",
   "type": "module",
+  "license": "MIT",
+  "author": "Alexandr Dudka <dudka.alexandr83@gmail.com>",
+  "homepage": "https://github.com/alex-boom/ace-pack#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alex-boom/ace-pack.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alex-boom/ace-pack/issues"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "memory",
+    "llm",
+    "codex",
+    "agentic",
+    "workflow",
+    "development"
+  ],
+  "files": [
+    "README.md",
+    "logo.svg",
+    "*.cmd",
+    "*.mjs",
+    "scripts/*.mjs"
+  ],
   "bin": {
-    "ace-pack": "./install-ace-pack.mjs",
-    "agent-memory-pack": "./install-agent-memory-pack.mjs"
+    "ace-pack": "install-ace-pack.mjs",
+    "agent-memory-pack": "install-agent-memory-pack.mjs"
   },
   "scripts": {
     "install:pack": "node ./install-ace-pack.mjs",
