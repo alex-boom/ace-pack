@@ -25,6 +25,9 @@ handoff and browser-context workflows.
   boundary.
 - **Vibe coding positioning.** README and npm metadata now position ACE as the
   memory and guardrail layer for natural-language coding in real repositories.
+- **New-chat start snapshot.** Brief/full reports now expose branch, worktree
+  state, task lifecycle, next command, and publish decision; AI Coder hub
+  context starts with the brief report.
 
 ## Planned Features
 

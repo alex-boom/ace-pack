@@ -2,17 +2,19 @@ import { spawn } from 'node:child_process'
 import path from 'node:path'
 
 import {
+  buildStartSnapshot,
   countCheckboxes,
   extractChangedFileTitles,
   extractLabeledValue,
   extractMarkdownSection,
   extractTopDecision,
   extractUnresolvedReflections,
+  formatStartSnapshot,
   formatTimestamp,
   getFreshnessStatus,
-  normalizeStackText,
   readFileTimestamp,
   readTextIfExists,
+  resolveStackSummary,
   summarizeVerification,
   writeTextFile,
 } from './ai-memory-utils.mjs'
@@ -34,6 +36,7 @@ const [
   changedFilesContent,
   workLogContent,
   reflectionLogContent,
+  projectProfileContent,
   currentTaskTimestamp,
   handoffTimestamp,
 ] = await Promise.all([
@@ -45,6 +48,7 @@ const [
   readTextIfExists(path.join(aiDir, 'changed-files.md')),
   readTextIfExists(path.join(aiDir, 'work-log.md')),
   readTextIfExists(path.join(aiDir, 'reflection-log.md')),
+  readTextIfExists(path.join(aiDir, 'project-profile.md')),
   readFileTimestamp(currentTaskPath),
   readFileTimestamp(handoffPath),
 ])
@@ -76,6 +80,12 @@ const freshness = getFreshnessStatus(generatedAt, currentTaskTimestamp, handoffT
 const currentTaskVersion = extractLabeledValue(lifecycle, 'Version') || 'unknown'
 const currentTaskTier = extractLabeledValue(lifecycle, 'Task Tier') || 'unknown'
 const unresolvedReflections = extractUnresolvedReflections(reflectionLogContent ?? '', 5)
+const stack = resolveStackSummary(agentsContent, projectProfileContent ?? '')
+const startSnapshot = await buildStartSnapshot({
+  currentTaskContent,
+  handoffContent,
+  rootDir,
+})
 let xmlReportStatus = '- XML bundle skipped because `AI_REPORT_SKIP_XML=1`.'
 
 if (!shouldSkipXml) {
@@ -101,8 +111,11 @@ Project: \`${packageJson.name}\`
 - Source session-handoff: ${handoffTimestamp ? formatTimestamp(handoffTimestamp) : 'Unknown'}
 - Verification level: ${verification.level}
 
+## Start Snapshot
+${formatStartSnapshot(startSnapshot)}
+
 ## Stack
-${normalizeStackText(extractMarkdownSection(agentsContent, 'Stack (non-negotiable)'))}
+${stack}
 
 ## Architecture Rules
 ${extractMarkdownSection(agentsContent, 'Architecture rules').trim()}

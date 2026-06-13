@@ -77,3 +77,14 @@
   keywords while keeping product behavior unchanged.
 - Verified `ace:check`, npm payload guard, npm pack preview, and npm publish
   dry-run.
+
+## 2026-06-14 01:15
+
+- Bumped package version to `0.1.7` for shipped report and hub improvements.
+- Added `## Start Snapshot` to brief/full reports with local git state, task
+  lifecycle, first-backtick next command, release decision, and stack fallback.
+- Updated `ace:hub` option 1 so new AI coder context starts with
+  `.ai/report-brief.md` when available and still works before first report
+  generation.
+- Verified Vitest, ACE memory check, npm payload guard, and full npm release
+  dry-run for `ace-pack@0.1.7`.

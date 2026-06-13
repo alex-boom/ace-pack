@@ -17,6 +17,7 @@ Select the context payload you want to generate:
 
 const CONTEXT_PAYLOADS = {
   1: [
+    optionalFile('.ai/report-brief.md'),
     requiredFile('.ai/current-task.md'),
     requiredFile('.ai/session-handoff.md'),
     requiredFile('.ai/changed-files.md'),

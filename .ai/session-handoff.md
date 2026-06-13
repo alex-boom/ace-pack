@@ -1,60 +1,57 @@
 # Session Handoff
 
 ## Last Update
-2026-06-14 00:29
+2026-06-14 01:15
 
 ## What Was Done
-- Updated `package.json` to version `0.1.6` with balanced local AgentOps
-  package description.
-- Added focused npm discovery keywords for Cursor, Claude Code, Aider, GitHub
-  Copilot, and ChatGPT.
-- Updated `README.md` and `README.npm.md` hero and intro copy to describe ACE
-  as zero-dependency local AgentOps for AI coding agents.
-- Replaced the remaining README "cognitive architecture" positioning sentence
-  with "local AgentOps control layer" wording.
-- Verified the npm staged payload and dry publish path.
+- Bumped `ace-pack` to version `0.1.7`.
+- Added `## Start Snapshot` to brief and full report generation.
+- Added deterministic local helpers for git branch, `git status --porcelain`
+  changed-file count, last commit, lifecycle status, next command, release
+  decision, and stack fallback.
+- Updated `ace:hub` AI Coder Context so `.ai/report-brief.md` is included first
+  when available, without breaking fresh repos before the first report.
+- Added tests for snapshot output, first-backtick command parsing, missing
+  `Next Steps`, flexible `NPM publish:` parsing, stack fallback, and hub order.
 
 ## Current State
-- Product behavior is unchanged: no CLI, template, script, runtime API, or
-  installer behavior changed.
-- The staged npm payload now carries `ace-pack@0.1.6` metadata and the refreshed
-  npm README text.
-- `README.npm.md` remains the source for the npm package README.
-- This change is ready for npm publication after maintainer review.
+- Product behavior changed only in shipped local scripts and generated reports.
+- No CLI command names, config files, schemas, network calls, or AI calls were
+  added.
+- The staged npm payload now carries `ace-pack@0.1.7`.
+- The live brief report shows Start Snapshot data for this dirty worktree and
+  extracts `npm.cmd run release:npm` as the next command.
 
 ## Quality Review
 Product Alignment:
-- The package listing now states a concrete developer value proposition:
-  local AgentOps, durable memory, guardrails, and quality gates for AI coding
-  workflows.
+- New chats can recover operational state faster, directly supporting ACE's
+  local AgentOps promise for AI coding agents.
 
 Architecture:
-- The change stays in published metadata/docs surfaces only and does not alter
-  ACE's local-first, zero-dependency architecture.
+- The implementation keeps Markdown as the source of truth and centralizes
+  deterministic parsing in `scripts/ai-memory-utils.mjs`.
 
 Security:
-- No auth, credential, token, data, network, or publish-secret handling changed.
-  Payload checks still exclude repo-local ACE memory.
+- No hidden AI calls, registry lookups, network calls, credentials, auth, or
+  publish-secret handling changed. Git failures degrade to `unknown`.
 
 Code Quality:
-- The wording is shared across GitHub and npm README surfaces, and the package
-  version bump matches the documented shipped-payload semver rule.
+- The parser intentionally uses the first backticked command from `Next Steps`
+  only, and tests cover the main fallbacks and formatting edge cases.
 
 ## Next Steps
 - Publish with `npm.cmd run release:npm` when ready.
 
 ## Known Issues
-- None for this metadata/docs change.
+- None for this report and hub improvement.
 
 ## Verification
-- `npm.cmd run ace:classify` passed before implementation and reported tier
-  `small`.
+- `npm.cmd run ace:classify -- --tier large --reason "v0.1.7 changes shipped report and hub scripts"` passed before implementation.
+- `npm.cmd test` passed: 7 files, 47 tests.
 - `npm.cmd run ace:check` passed.
 - `npm.cmd run check:npm-payload` passed and checked 27 packed files.
-- `npm.cmd run preview:npm` passed and produced dry-run package
-  `ace-pack-0.1.6.tgz`.
-- `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.1.6`.
+- `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.1.7`.
 
 ## Notes
-- NPM publish: required, because `package.json` and `README.npm.md` are part of
-  the staged npm payload.
+- NPM publish: required, because `package.json` and shipped `scripts/*.mjs`
+  changed the installed ACE report and hub behavior.

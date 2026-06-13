@@ -1,5 +1,7 @@
+import { execFile } from 'node:child_process'
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+import { promisify } from 'node:util'
 
 export const ACE_BANNER = '[ACE] Agentic Context Engine initialized...'
 
@@ -11,6 +13,7 @@ const timestampFormatter = new Intl.DateTimeFormat('sv-SE', {
   month: '2-digit',
   year: 'numeric',
 })
+const execFileAsync = promisify(execFile)
 
 export function normalizeTrailingNewline(content) {
   return content.endsWith('\n') ? content : `${content}\n`
@@ -286,6 +289,137 @@ export function normalizeStackText(content) {
     .replace(/\s*\|\s*/g, ' | ')
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+export function resolveStackSummary(agentsContent, projectProfileContent = '') {
+  const agentsStack = normalizeStackText(extractMarkdownSection(agentsContent, 'Stack (non-negotiable)'))
+
+  if (agentsStack) {
+    return agentsStack
+  }
+
+  const ecosystems = extractMarkdownSection(projectProfileContent, 'Detected Ecosystems')
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^- /, '').trim())
+    .filter(Boolean)
+    .join(', ')
+  const packageManager = extractLabeledValue(
+    extractMarkdownSection(projectProfileContent, 'Repository Shape'),
+    '- Package manager',
+  )
+  const fallbackParts = []
+
+  if (ecosystems) {
+    fallbackParts.push(`Detected ecosystems: ${ecosystems}`)
+  }
+
+  if (packageManager) {
+    fallbackParts.push(`Package manager: ${packageManager}`)
+  }
+
+  return fallbackParts.length > 0 ? fallbackParts.join(' | ') : 'Not recorded'
+}
+
+export function extractNextCommand(nextStepsContent) {
+  for (const line of nextStepsContent.split(/\r?\n/)) {
+    const match = line.match(/`([^`]+)`/)
+
+    if (match?.[1]?.trim()) {
+      return match[1].trim()
+    }
+  }
+
+  return ''
+}
+
+export function extractReleaseDecision(handoffContent) {
+  const match = handoffContent.match(/npm\s+publish\s*:\s*(not\s+required|required)/i)
+
+  if (!match?.[1]) {
+    return ''
+  }
+
+  const decision = match[1].replace(/\s+/g, ' ').trim().toLowerCase()
+
+  return `NPM publish: ${decision}`
+}
+
+export async function buildStartSnapshot({
+  currentTaskContent,
+  handoffContent,
+  rootDir,
+}) {
+  const lifecycle = extractMarkdownSection(currentTaskContent, 'Lifecycle')
+  const gitSnapshot = await readGitSnapshot(rootDir)
+  const nextCommand = extractNextCommand(extractMarkdownSection(handoffContent, 'Next Steps'))
+  const releaseDecision = extractReleaseDecision(handoffContent)
+
+  return {
+    branch: gitSnapshot.branch,
+    changedFileCountDisplay: formatChangedFileCount(gitSnapshot.changedFileCount),
+    lastCommit: gitSnapshot.lastCommit,
+    nextCommand: nextCommand || 'No command detected',
+    readyForArchive: extractLabeledValue(lifecycle, 'Ready For Archive') || 'unknown',
+    releaseDecision: releaseDecision || 'Not recorded',
+    taskStatus: extractLabeledValue(lifecycle, 'Status') || 'unknown',
+    taskTier: extractLabeledValue(lifecycle, 'Task Tier') || 'unknown',
+    taskVersion: extractLabeledValue(lifecycle, 'Version') || 'unknown',
+    worktreeState: gitSnapshot.worktreeState,
+  }
+}
+
+export function formatStartSnapshot(snapshot) {
+  return [
+    `- Branch: ${snapshot.branch}`,
+    `- Worktree: ${snapshot.worktreeState} (${snapshot.changedFileCountDisplay} changed files)`,
+    `- Last commit: ${snapshot.lastCommit}`,
+    `- Task: ${snapshot.taskStatus} (tier: ${snapshot.taskTier}, version: ${snapshot.taskVersion}, ready for archive: ${snapshot.readyForArchive})`,
+    `- Next command: ${formatOptionalCommand(snapshot.nextCommand)}`,
+    `- Release decision: ${snapshot.releaseDecision}`,
+  ].join('\n')
+}
+
+async function readGitSnapshot(rootDir) {
+  const [branch, statusOutput, lastCommit] = await Promise.all([
+    gitOutput(rootDir, ['branch', '--show-current']),
+    gitOutput(rootDir, ['status', '--porcelain']),
+    gitOutput(rootDir, ['log', '-1', '--pretty=format:%h %s']),
+  ])
+  const changedFileCount = statusOutput === null ? null : statusOutput.split('\n').filter(Boolean).length
+
+  return {
+    branch: branch?.trim() || 'unknown',
+    changedFileCount,
+    lastCommit: lastCommit?.trim() || 'unknown',
+    worktreeState:
+      changedFileCount === null ? 'unknown' : changedFileCount > 0 ? 'dirty' : 'clean',
+  }
+}
+
+async function gitOutput(rootDir, args) {
+  try {
+    const result = await execFileAsync('git', args, {
+      cwd: rootDir,
+      encoding: 'utf8',
+      maxBuffer: 1024 * 1024,
+    })
+
+    return result.stdout
+  } catch {
+    return null
+  }
+}
+
+function formatChangedFileCount(count) {
+  if (count === null) {
+    return 'unknown'
+  }
+
+  return count > 100 ? '99+' : String(count)
+}
+
+function formatOptionalCommand(command) {
+  return command === 'No command detected' ? command : `\`${command}\``
 }
 
 export function summarizeVerification(content, limit = 4) {

@@ -3,61 +3,65 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 00:30
+- Generated: 2026-06-14 01:17
 - Freshness: Fresh
 - Current task version: v1
-- Current task tier: small
-- Source current-task: 2026-06-14 00:30
-- Source session-handoff: 2026-06-14 00:30
+- Current task tier: large
+- Source current-task: 2026-06-14 01:14
+- Source session-handoff: 2026-06-14 01:16
 - Verification level: test-backed
 
-## Stack
+## Start Snapshot
+- Branch: main
+- Worktree: dirty (18 changed files)
+- Last commit: a7aaed8 Update package version to 0.1.6, revise description to emphasize local AgentOps for AI coding agents, and enhance discoverability with new keywords for Cursor, Claude Code, Aider, GitHub Copilot, and ChatGPT. Align README.md and README.npm.md content to reflect these changes while maintaining existing product behavior.
+- Task: complete (tier: large, version: v1, ready for archive: yes)
+- Next command: `npm.cmd run release:npm`
+- Release decision: NPM publish: required
 
+## Stack
+Detected ecosystems: Generic repository | Package manager: pnpm
 
 ## Current Task
-Balanced ACE NPM positioning refresh
+ACE 0.1.7 New-Chat Start Snapshot
 
 ## Lifecycle
 Status: complete
 Version: v1
-Task Tier: small
-Design Review Required: no
-Started: 2026-06-14 00:29
+Task Tier: large
+Design Review Required: yes
+Started: 2026-06-14 01:07
 Ready For Archive: yes
 
 ## Goal
-Refresh ACE package metadata and GitHub/npm README positioning so the product
-is described as local AgentOps for AI coding agents, with durable memory,
-guardrails, quality gates, and practical vibe coding value.
+Ship a patch release that makes `.ai/report-brief.md` the primary startup
+artifact for a brand-new AI chat by showing repo state, task state, next
+terminal command, and release decision through deterministic local parsing.
 
 ## Business Value
-The npm listing now communicates ACE's value in a concrete developer-facing way
-without drifting into fear-based copy or implying direct vendor integrations.
-The change preserves the roadmap promise: local-first, zero-dependency AgentOps
-for AI-assisted development in real repositories.
+New AI sessions should recover project state quickly without relying on chat
+history. The change strengthens ACE's local-first AgentOps promise while
+preserving the zero-network, zero-hidden-AI constraints.
 
 ## Current Status
-- [x] Replaced the academic package description with balanced AgentOps wording.
-- [x] Added focused discovery keywords for Cursor, Claude Code, Aider, GitHub
-  Copilot, and ChatGPT.
-- [x] Updated GitHub and npm README hero/intro positioning.
-- [x] Replaced the remaining "cognitive architecture" README positioning with
-  "local AgentOps control layer" wording.
-- [x] Verified the staged npm payload and dry publish flow.
+- [x] Plan approved for v0.1.7.
+- [x] Task classified as large because shipped scripts are changing.
+- [x] Implement report snapshot helpers.
+- [x] Update brief/full report output.
+- [x] Update `ace:hub` coder payload.
+- [x] Add tests and verify release dry run.
 
 ## Next Steps
 - Publish with `npm.cmd run release:npm` when ready.
 
 ## Risks / Blockers
-- None for this metadata/docs change.
+- None for this report and hub improvement.
 
 ## Verification
-- `npm.cmd run ace:classify` passed before implementation and reported tier
-`small`.
+- `npm.cmd run ace:classify -- --tier large --reason "v0.1.7 changes shipped report and hub scripts"` passed before implementation.
+- `npm.cmd test` passed: 7 files, 47 tests.
 - `npm.cmd run ace:check` passed.
 - `npm.cmd run check:npm-payload` passed and checked 27 packed files.
-- `npm.cmd run preview:npm` passed and produced dry-run package
-`ace-pack-0.1.6.tgz`.
 
 ## Recent Decision
 ## 2026-06-13 23:12
@@ -81,10 +85,12 @@ Impact:
 
 ## Changed Areas
 - `package.json`
-- `README.md`
-- `README.npm.md`
-- `.ai/**`
+- `scripts/ai-memory-utils.mjs`
+- `scripts/ai-report-brief.mjs`
+- `scripts/ai-report.mjs`
+- `scripts/ace-hub.mjs`
+- `tests/ai-report.test.ts`
 
 ## Overall Progress
-- Completion checklist: 8/8
+- Completion checklist: 13/13
 - Source of truth: `.ai/*` files remain authoritative.
