@@ -146,3 +146,19 @@ Impact:
   privacy decision.
 - Missing, invalid, unavailable, or timed-out providers must fail open into the
   existing manual or active-agent-assisted Markdown closeout workflow.
+
+## 2026-06-13 23:12
+
+Decision:
+- Require every future task handoff to state whether npm publish is required.
+
+Reason:
+- GitHub-only docs and repo-local ACE memory changes can look important but do
+  not ship to npm. The maintainer needs a clear yes/no signal after each task to
+  avoid republishing existing versions or skipping real payload updates.
+
+Impact:
+- Future final responses should include `NPM publish: required` or
+  `NPM publish: not required`, plus the reason.
+- The decision boundary is the staged npm payload and user-visible installed ACE
+  behavior, not the full git diff.

@@ -102,6 +102,35 @@ user-visible ACE behavior changed.
 - If a change includes both repo-local memory and shipped product files, bump
   based on the shipped product impact.
 
+## NPM Publish Decision Rule
+
+Every task handoff must explicitly state one of:
+
+- `NPM publish: required`
+- `NPM publish: not required`
+
+Use the staged npm payload as the decision boundary. Publishing is required only
+when a change affects files that consumers receive from `.npm-publish/` or
+changes installed ACE behavior:
+
+- `package.json` package metadata, `bin`, `files`, `engines`, or published
+  scripts.
+- `README.npm.md`, because it becomes the npm package `README.md`.
+- `logo.svg`, `logo-npm.svg`, `LICENSE`, root CLI shims, root `.mjs`
+  entrypoints, or `scripts/*.mjs`.
+- Any packaging change that changes the tarball contents or install behavior.
+
+Publishing is not required for GitHub-only or repo-local changes by themselves:
+
+- `README.md` when `README.npm.md` is unchanged.
+- `ROADMAP.md`, `DEVELOPING.md`, `AGENTS.md`, `CLAUDE.md`, `.ai/**`,
+  `.vscode/**`, `.local/**`, `tools/**`, reports, and archive snapshots.
+
+Before telling the maintainer to publish, run `npm.cmd run release:npm:dry`.
+If npm says the current version already exists, bump semver first. Use
+`npm.cmd view ace-pack version` when confirming whether the current
+`package.json` version is already published.
+
 Release flow:
 
 ```bash
@@ -116,4 +145,5 @@ npm run publish:npm
 - Change `.ai/**`, `AGENTS.md`, or `CLAUDE.md` to change only this repo's AI
   development workflow.
 - Bump `package.json` before publishing shipped package changes.
+- Always tell the maintainer whether npm publish is required.
 - Run `npm run check:npm-payload` before publishing.

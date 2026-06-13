@@ -31,6 +31,8 @@
 - Added GitHub-only `ROADMAP.md` as the ACE strategic compass and recorded
   anti-goals, minimalism constraints, v2.0+ research seeds, and explicit AI
   opt-in policy.
+- Added a mandatory npm publish decision rule so future agents explicitly tell
+  the maintainer whether npm publish is required after each task.
 - Verified the setup with `npm run ace:check`, `npm run ace:classify`, and the
   Vitest suite on an active Node version that satisfies `>=20`.
 
@@ -58,6 +60,9 @@
 - Future AI-assisted documentation generation must default to provider `off`.
   ACE must not make hidden local or cloud AI calls; unavailable providers fail
   open into manual or active-agent-assisted Markdown closeout.
+- Future task handoffs must include `NPM publish: required` or
+  `NPM publish: not required`. The decision is based on staged npm payload or
+  user-visible installed ACE behavior, not on GitHub-only docs or local memory.
 
 ## Quality Review
 Product Alignment:
@@ -128,6 +133,7 @@ Code Quality:
 - `ROADMAP.md` Markdown links inspected for local references.
 - `npm.cmd run check:npm-payload` passed and confirmed `ROADMAP.md` stays out of npm payload.
 - `npm.cmd run ace:check` passed.
+- NPM publish decision rule documented in `AGENTS.md` and `DEVELOPING.md`.
 
 ## Notes
 - For npm publishing, use `npm run release:npm:dry` before `npm run release:npm` so the

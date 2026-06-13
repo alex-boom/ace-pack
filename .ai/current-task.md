@@ -52,6 +52,7 @@ Chosen Approach:
 - [x] Hardened npm release commands for Windows/Git Bash and verified dry publish flow.
 - [x] Added vibe coding positioning and bumped package version to 0.1.5.
 - [x] Formalized ACE roadmap, anti-goals, minimalism constraints, and explicit AI opt-in policy.
+- [x] Added a mandatory npm publish decision rule for future task handoffs.
 
 ## Affected Areas
 - `package.json`
@@ -89,6 +90,8 @@ Chosen Approach:
 - Treat `ROADMAP.md` as GitHub-only strategy. Do not add it to npm payload.
 - Future AI-assisted documentation generation must be explicit opt-in; default
   provider is `off`, and ACE must never make hidden local or cloud AI calls.
+- Every future task handoff must state whether npm publish is required and why.
+  Use staged npm payload impact as the decision boundary.
 
 ## Acceptance Criteria
 - ACE memory files exist in `.ai/`.
@@ -107,6 +110,7 @@ Chosen Approach:
 - `npm run release:npm:dry` verifies payload guard, pack dry-run, and publish dry-run.
 - `ROADMAP.md` exists and records vision, anti-goals, roadmap, v2.0+ research seeds,
   and explicit AI opt-in policy.
+- Agent instructions define when npm publish is required vs not required.
 
 ## Completion Checklist
 - [x] Goal completed

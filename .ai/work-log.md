@@ -63,3 +63,6 @@
   to align future product work with zero-bloat and privacy-safe defaults.
 - Added `ROADMAP.md` to the npm payload guard's forbidden paths so strategy docs
   stay out of the package tarball.
+- Added a required task handoff rule: future agents must explicitly report
+  whether npm publish is required, using staged npm payload impact as the
+  decision boundary.

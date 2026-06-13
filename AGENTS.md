@@ -27,6 +27,12 @@ Repository rules for AI coding agents working in this project.
   new backward-compatible behavior, and `major` for breaking CLI/template
   changes. Do not bump solely for repo-local dogfooding files excluded from npm
   such as `.ai/**`, `AGENTS.md`, `CLAUDE.md`, `DEVELOPING.md`, or `ROADMAP.md`.
+- NPM publish decision: after every task, explicitly tell the maintainer
+  `NPM publish: required` or `NPM publish: not required`, with the reason.
+  Publish is required only when the staged npm payload or user-visible installed
+  ACE behavior changes. GitHub-only docs, local `.ai/**` memory, `AGENTS.md`,
+  `CLAUDE.md`, `DEVELOPING.md`, `ROADMAP.md`, `.vscode/**`, `.local/**`, and
+  `tools/**` changes do not require npm publish by themselves.
 
 <!-- agent-memory-workflow:start -->
 ## ACE (Agentic Context Engine) Workflow

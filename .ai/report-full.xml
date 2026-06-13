@@ -276,6 +276,12 @@ Repository rules for AI coding agents working in this project.
   new backward-compatible behavior, and `major` for breaking CLI/template
   changes. Do not bump solely for repo-local dogfooding files excluded from npm
   such as `.ai/**`, `AGENTS.md`, `CLAUDE.md`, `DEVELOPING.md`, or `ROADMAP.md`.
+- NPM publish decision: after every task, explicitly tell the maintainer
+  `NPM publish: required` or `NPM publish: not required`, with the reason.
+  Publish is required only when the staged npm payload or user-visible installed
+  ACE behavior changes. GitHub-only docs, local `.ai/**` memory, `AGENTS.md`,
+  `CLAUDE.md`, `DEVELOPING.md`, `ROADMAP.md`, `.vscode/**`, `.local/**`, and
+  `tools/**` changes do not require npm publish by themselves.
 
 &lt;!-- agent-memory-workflow:start --&gt;
 ## ACE (Agentic Context Engine) Workflow
@@ -353,6 +359,7 @@ After completing a task:
 - Added ACE agent workflow instructions, project-specific npm/Node/publish notes, first-block meta-architecture warning, and versioning policy.
 - Replaced maintainer-local Node executable guidance with generic active Node `&gt;=20` guidance.
 - Added roadmap-first guidance for product and architecture changes.
+- Added mandatory npm publish decision reporting for future task handoffs.
 
 [CLAUDE.md]
 - Added Claude-compatible agent workflow instructions with npm-based local commands, first-block meta-architecture warning, and versioning policy.
@@ -383,6 +390,7 @@ After completing a task:
 - Documented the product layer, repo-local dogfooding layer, npm payload boundary, and semver policy.
 - Added product philosophy, zero-bloat constraints, native Node/Git preference,
   and explicit AI provider opt-in policy.
+- Added npm publish decision rule based on staged payload impact.
 
 [ROADMAP.md]
 - Added GitHub-only product compass with ACE vision, anti-goals, release roadmap,
@@ -463,6 +471,7 @@ Chosen Approach:
 - [x] Hardened npm release commands for Windows/Git Bash and verified dry publish flow.
 - [x] Added vibe coding positioning and bumped package version to 0.1.5.
 - [x] Formalized ACE roadmap, anti-goals, minimalism constraints, and explicit AI opt-in policy.
+- [x] Added a mandatory npm publish decision rule for future task handoffs.
 
 ## Affected Areas
 - `package.json`
@@ -500,6 +509,8 @@ Chosen Approach:
 - Treat `ROADMAP.md` as GitHub-only strategy. Do not add it to npm payload.
 - Future AI-assisted documentation generation must be explicit opt-in; default
   provider is `off`, and ACE must never make hidden local or cloud AI calls.
+- Every future task handoff must state whether npm publish is required and why.
+  Use staged npm payload impact as the decision boundary.
 
 ## Acceptance Criteria
 - ACE memory files exist in `.ai/`.
@@ -518,6 +529,7 @@ Chosen Approach:
 - `npm run release:npm:dry` verifies payload guard, pack dry-run, and publish dry-run.
 - `ROADMAP.md` exists and records vision, anti-goals, roadmap, v2.0+ research seeds,
   and explicit AI opt-in policy.
+- Agent instructions define when npm publish is required vs not required.
 
 ## Completion Checklist
 - [x] Goal completed
@@ -679,7 +691,23 @@ Impact:
 - Optional cloud providers require explicit repo-owned config, API keys, and a
   privacy decision.
 - Missing, invalid, unavailable, or timed-out providers must fail open into the
-  existing manual or active-agent-assisted Markdown closeout workflow.</file><file path=".ai/session-handoff.md"># Session Handoff
+  existing manual or active-agent-assisted Markdown closeout workflow.
+
+## 2026-06-13 23:12
+
+Decision:
+- Require every future task handoff to state whether npm publish is required.
+
+Reason:
+- GitHub-only docs and repo-local ACE memory changes can look important but do
+  not ship to npm. The maintainer needs a clear yes/no signal after each task to
+  avoid republishing existing versions or skipping real payload updates.
+
+Impact:
+- Future final responses should include `NPM publish: required` or
+  `NPM publish: not required`, plus the reason.
+- The decision boundary is the staged npm payload and user-visible installed ACE
+  behavior, not the full git diff.</file><file path=".ai/session-handoff.md"># Session Handoff
 
 ## Last Update
 2026-06-13 23:05
@@ -712,6 +740,8 @@ Impact:
 - Added GitHub-only `ROADMAP.md` as the ACE strategic compass and recorded
   anti-goals, minimalism constraints, v2.0+ research seeds, and explicit AI
   opt-in policy.
+- Added a mandatory npm publish decision rule so future agents explicitly tell
+  the maintainer whether npm publish is required after each task.
 - Verified the setup with `npm run ace:check`, `npm run ace:classify`, and the
   Vitest suite on an active Node version that satisfies `&gt;=20`.
 
@@ -739,6 +769,9 @@ Impact:
 - Future AI-assisted documentation generation must default to provider `off`.
   ACE must not make hidden local or cloud AI calls; unavailable providers fail
   open into manual or active-agent-assisted Markdown closeout.
+- Future task handoffs must include `NPM publish: required` or
+  `NPM publish: not required`. The decision is based on staged npm payload or
+  user-visible installed ACE behavior, not on GitHub-only docs or local memory.
 
 ## Quality Review
 Product Alignment:
@@ -809,6 +842,7 @@ Code Quality:
 - `ROADMAP.md` Markdown links inspected for local references.
 - `npm.cmd run check:npm-payload` passed and confirmed `ROADMAP.md` stays out of npm payload.
 - `npm.cmd run ace:check` passed.
+- NPM publish decision rule documented in `AGENTS.md` and `DEVELOPING.md`.
 
 ## Notes
 - For npm publishing, use `npm run release:npm:dry` before `npm run release:npm` so the
@@ -883,4 +917,7 @@ Code Quality:
 - Updated `DEVELOPING.md`, `AGENTS.md`, README, and `.ai/product-roadmap.md`
   to align future product work with zero-bloat and privacy-safe defaults.
 - Added `ROADMAP.md` to the npm payload guard&apos;s forbidden paths so strategy docs
-  stay out of the package tarball.</file></files></repomix>
+  stay out of the package tarball.
+- Added a required task handoff rule: future agents must explicitly report
+  whether npm publish is required, using staged npm payload impact as the
+  decision boundary.</file></files></repomix>

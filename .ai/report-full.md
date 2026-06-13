@@ -3,12 +3,12 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-13 23:09
+- Generated: 2026-06-13 23:14
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-13 23:08
-- Source session-handoff: 2026-06-13 23:08
+- Source current-task: 2026-06-13 23:14
+- Source session-handoff: 2026-06-13 23:14
 - Verification level: test-backed
 
 ## Stack
@@ -69,6 +69,7 @@ Chosen Approach:
 - [x] Hardened npm release commands for Windows/Git Bash and verified dry publish flow.
 - [x] Added vibe coding positioning and bumped package version to 0.1.5.
 - [x] Formalized ACE roadmap, anti-goals, minimalism constraints, and explicit AI opt-in policy.
+- [x] Added a mandatory npm publish decision rule for future task handoffs.
 
 ## What Was Done
 - Ran `node ./install-ace-pack.mjs init . --apply` in this repository.
@@ -98,6 +99,8 @@ Chosen Approach:
 - Added GitHub-only `ROADMAP.md` as the ACE strategic compass and recorded
   anti-goals, minimalism constraints, v2.0+ research seeds, and explicit AI
   opt-in policy.
+- Added a mandatory npm publish decision rule so future agents explicitly tell
+  the maintainer whether npm publish is required after each task.
 - Verified the setup with `npm run ace:check`, `npm run ace:classify`, and the
   Vitest suite on an active Node version that satisfies `>=20`.
 
@@ -125,6 +128,9 @@ Chosen Approach:
 - Future AI-assisted documentation generation must default to provider `off`.
   ACE must not make hidden local or cloud AI calls; unavailable providers fail
   open into manual or active-agent-assisted Markdown closeout.
+- Future task handoffs must include `NPM publish: required` or
+  `NPM publish: not required`. The decision is based on staged npm payload or
+  user-visible installed ACE behavior, not on GitHub-only docs or local memory.
 
 ## Next Steps
 - Commit the ACE initialization files when ready.
@@ -171,24 +177,21 @@ appears in fresh reports.
 Markdown report generation is covered even when XML is skipped.
 
 ## Recent Decisions
-## 2026-06-13 23:05
+## 2026-06-13 23:12
 
 Decision:
-- Future AI-assisted documentation generation must be explicit opt-in.
+- Require every future task handoff to state whether npm publish is required.
 
 Reason:
-- Hidden local or cloud AI calls can leak code, violate corporate privacy
-  policy, consume unexpected tokens, drain batteries, or block the developer
-  workflow.
+- GitHub-only docs and repo-local ACE memory changes can look important but do
+  not ship to npm. The maintainer needs a clear yes/no signal after each task to
+  avoid republishing existing versions or skipping real payload updates.
 
 Impact:
-- The default provider is `off`.
-- Optional local providers such as Ollama or llama.cpp are privacy/cost
-  optimizations, not baseline dependencies.
-- Optional cloud providers require explicit repo-owned config, API keys, and a
-  privacy decision.
-- Missing, invalid, unavailable, or timed-out providers must fail open into the
-  existing manual or active-agent-assisted Markdown closeout workflow.
+- Future final responses should include `NPM publish: required` or
+  `NPM publish: not required`, plus the reason.
+- The decision boundary is the staged npm payload and user-visible installed ACE
+  behavior, not the full git diff.
 
 ## Changed Areas
 - `AGENTS.md`
@@ -266,6 +269,9 @@ Impact:
   to align future product work with zero-bloat and privacy-safe defaults.
 - Added `ROADMAP.md` to the npm payload guard's forbidden paths so strategy docs
   stay out of the package tarball.
+- Added a required task handoff rule: future agents must explicitly report
+  whether npm publish is required, using staged npm payload impact as the
+  decision boundary.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.

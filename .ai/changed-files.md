@@ -4,6 +4,7 @@
 - Added ACE agent workflow instructions, project-specific npm/Node/publish notes, first-block meta-architecture warning, and versioning policy.
 - Replaced maintainer-local Node executable guidance with generic active Node `>=20` guidance.
 - Added roadmap-first guidance for product and architecture changes.
+- Added mandatory npm publish decision reporting for future task handoffs.
 
 [CLAUDE.md]
 - Added Claude-compatible agent workflow instructions with npm-based local commands, first-block meta-architecture warning, and versioning policy.
@@ -34,6 +35,7 @@
 - Documented the product layer, repo-local dogfooding layer, npm payload boundary, and semver policy.
 - Added product philosophy, zero-bloat constraints, native Node/Git preference,
   and explicit AI provider opt-in policy.
+- Added npm publish decision rule based on staged payload impact.
 
 [ROADMAP.md]
 - Added GitHub-only product compass with ACE vision, anti-goals, release roadmap,
