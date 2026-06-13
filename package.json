@@ -26,6 +26,7 @@
   "files": [
     "README.md",
     "logo.svg",
+    "logo-npm.svg",
     "*.cmd",
     "*.mjs",
     "scripts/*.mjs"
@@ -38,6 +39,9 @@
     "install:pack": "node ./install-ace-pack.mjs",
     "install:legacy": "node ./install-agent-memory-pack.mjs",
     "link:global": "pnpm link --global",
+    "build:npm-package": "node ./tools/build-npm-package.mjs",
+    "preview:npm": "npm run build:npm-package && npm pack ./.npm-publish --dry-run",
+    "publish:npm": "npm run build:npm-package && npm publish ./.npm-publish",
     "ace:validate": "node ./scripts/check-agent-memory.mjs",
     "test": "vitest run"
   },
