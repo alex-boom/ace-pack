@@ -1,0 +1,22 @@
+{
+  "name": "ace-pack",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "ace-pack": "./install-ace-pack.mjs",
+    "agent-memory-pack": "./install-agent-memory-pack.mjs"
+  },
+  "scripts": {
+    "install:pack": "node ./install-ace-pack.mjs",
+    "install:legacy": "node ./install-agent-memory-pack.mjs",
+    "link:global": "pnpm link --global",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
