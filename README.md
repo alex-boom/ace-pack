@@ -100,33 +100,62 @@ applied.
 
 ## Quick Start
 
-Install ACE into the current repository:
+Install ACE into the current repository. Use `init`; do not use
+`npm install ace-pack` for project setup.
+
+```bash
+npx ace-pack@latest init
+```
+
+Then profile the project:
+
+```bash
+npm run ace:onboard -- --apply
+npm run ace:check
+```
+
+Prefer pnpm? Use the same flow through `pnpm dlx`:
 
 ```bash
 pnpm dlx ace-pack init
-```
-
-Or with npm:
-
-```bash
-npx ace-pack init
+pnpm ace:onboard -- --apply
+pnpm ace:check
 ```
 
 Install into another repository:
 
 ```bash
-pnpm dlx ace-pack init ./my-project
+npx ace-pack@latest init ./my-project
 ```
 
-Profile the project:
+Install and apply onboarding in one command:
 
 ```bash
-pnpm ace:onboard
-pnpm ace:onboard -- --apply
+npx ace-pack@latest init --apply
 ```
 
+Need help?
+
+```bash
+npx ace-pack@latest --help
+npx ace-pack@latest init --help
+```
+
+## What Init Does
+
+`ace-pack init` adds or updates local project files:
+
+- `AGENTS.md` and `CLAUDE.md`
+- `.ai/*` memory, task, handoff, decisions, and profile files
+- `scripts/*` ACE automation copied into the project
+- `package.json` commands such as `ace:onboard`, `ace:classify`,
+  `ace:validate`, `ace:finish`, and `ace:hub`
+
+ACE does not need to remain installed as a runtime dependency. The npm package
+acts as a scaffold CLI, then the project owns the copied scripts.
+
 For Python, Go, Rust, .NET, or any repo without `package.json`, ACE creates a
-lightweight private runner package:
+lightweight private runner package so the same commands are available:
 
 ```json
 {
@@ -134,16 +163,13 @@ lightweight private runner package:
 }
 ```
 
-No dependency install is required for ACE itself. The runner only exposes
-commands such as `ace:onboard`, `ace:hub`, `ace:classify`, and `ace:finish`.
-
 On Windows PowerShell, use `pnpm.cmd` if script execution policy blocks the
 regular `pnpm` shim:
 
 ```bash
+pnpm.cmd dlx ace-pack init
 pnpm.cmd ace:onboard -- --apply
-pnpm.cmd ace:classify
-pnpm.cmd ace:validate
+pnpm.cmd ace:check
 ```
 
 Known SaaS monorepo? Apply the built-in preset:

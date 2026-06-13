@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
+import { access, copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { onboardRepository } from './scripts/ace-onboard.mjs'
 import { ensureAgentMemory } from './scripts/agent-memory-lib.mjs'
 
 const REQUIRED_PACKAGE_SCRIPTS = {
@@ -65,6 +66,7 @@ const currentFilePath = fileURLToPath(import.meta.url)
 const currentScriptDir = path.join(path.dirname(currentFilePath), 'scripts')
 const RUNNER_PACKAGE_DESCRIPTION =
   'Auto-generated lightweight runner for ACE (Agentic Context Engine) scripts. No node_modules required.'
+const KNOWN_PACKAGE_MANAGERS = new Set(['npm', 'pnpm', 'yarn', 'bun'])
 
 function normalizeTrailingNewline(content) {
   return content.endsWith('\n') ? content : `${content}\n`
@@ -76,6 +78,19 @@ async function readTextIfExists(filePath) {
   } catch (error) {
     if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
       return null
+    }
+
+    throw error
+  }
+}
+
+async function fileExists(filePath) {
+  try {
+    await access(filePath)
+    return true
+  } catch (error) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
+      return false
     }
 
     throw error
@@ -231,24 +246,202 @@ export async function installAcePack(targetDir) {
   createdFiles.push(...memoryResult.createdFiles)
   updatedFiles.push(...memoryResult.updatedFiles)
 
+  const createdFileSet = new Set(createdFiles)
+
   return {
     createdFiles,
     targetDir: normalizedTargetDir,
-    updatedFiles,
+    updatedFiles: updatedFiles.filter((filePath) => !createdFileSet.has(filePath)),
   }
 }
 
 export function resolveTargetDir(args, cwd = process.cwd()) {
-  const [commandOrTarget, maybeTarget] = args
-
-  if (commandOrTarget === 'init') {
-    return maybeTarget ? path.resolve(cwd, maybeTarget) : cwd
-  }
-
-  return commandOrTarget ? path.resolve(cwd, commandOrTarget) : cwd
+  return parseInstallArgs(args, cwd).targetDir
 }
 
-export function printInstallResult(result) {
+export function parseInstallArgs(args, cwd = process.cwd()) {
+  if (args.includes('--help') || args.includes('-h') || args[0] === 'help') {
+    return {
+      apply: false,
+      help: true,
+      preset: null,
+      targetDir: cwd,
+    }
+  }
+
+  const remainingArgs = [...args]
+
+  if (remainingArgs[0] === 'init') {
+    remainingArgs.shift()
+  }
+
+  let apply = false
+  let preset = null
+  let target = null
+
+  for (let index = 0; index < remainingArgs.length; index += 1) {
+    const arg = remainingArgs[index]
+
+    if (arg === '--') {
+      continue
+    }
+
+    if (arg === '--apply') {
+      apply = true
+      continue
+    }
+
+    if (arg === '--no-apply') {
+      apply = false
+      continue
+    }
+
+    if (arg === '--preset') {
+      const nextArg = remainingArgs[index + 1]
+
+      if (!nextArg || nextArg.startsWith('-')) {
+        throw new Error('Missing value for --preset.')
+      }
+
+      preset = nextArg
+      index += 1
+      continue
+    }
+
+    if (arg.startsWith('--preset=')) {
+      preset = arg.slice('--preset='.length)
+
+      if (!preset) {
+        throw new Error('Missing value for --preset.')
+      }
+
+      continue
+    }
+
+    if (arg.startsWith('-')) {
+      throw new Error(`Unknown option: ${arg}`)
+    }
+
+    if (target !== null) {
+      throw new Error(`Unexpected extra argument: ${arg}`)
+    }
+
+    target = arg
+  }
+
+  if (preset && !apply) {
+    throw new Error('Use --preset together with --apply.')
+  }
+
+  return {
+    apply,
+    help: false,
+    preset,
+    targetDir: path.resolve(cwd, target ?? '.'),
+  }
+}
+
+export function getHelpText(commandName = 'ace-pack') {
+  return `ACE Pack - install AI project memory into a repository.
+
+Usage:
+  ${commandName} init [target] [--apply] [--preset <name>]
+  ${commandName} [target]
+
+Recommended:
+  npx ace-pack@latest init
+  pnpm dlx ace-pack init
+
+Options:
+  --apply            Run ace:onboard -- --apply after installation.
+  --preset <name>    Apply a built-in project preset during onboarding.
+  -h, --help         Show this help.
+
+Examples:
+  npx ace-pack@latest init
+  npx ace-pack@latest init D:\\All\\alex-work\\my-project --apply
+  pnpm dlx ace-pack init . --apply
+
+Do not use npm install ace-pack for setup. ACE is a scaffold CLI: run init so it
+can add AGENTS.md, .ai/*, scripts/*, and package.json commands to the project.
+`
+}
+
+function getPackageManagerFromPackageJson(packageJson) {
+  if (typeof packageJson.packageManager !== 'string') {
+    return null
+  }
+
+  const packageManagerName = packageJson.packageManager.split('@')[0]
+
+  return KNOWN_PACKAGE_MANAGERS.has(packageManagerName) ? packageManagerName : null
+}
+
+function getPackageManagerFromUserAgent(userAgent = process.env.npm_config_user_agent) {
+  if (!userAgent) {
+    return null
+  }
+
+  const packageManagerName = userAgent.split('/')[0]
+
+  return KNOWN_PACKAGE_MANAGERS.has(packageManagerName) ? packageManagerName : null
+}
+
+export async function detectPackageManager(rootDir) {
+  const packageJsonContent = await readTextIfExists(path.join(rootDir, 'package.json'))
+
+  if (packageJsonContent !== null) {
+    const packageJson = JSON.parse(stripByteOrderMark(packageJsonContent))
+    const packageManager = getPackageManagerFromPackageJson(packageJson)
+
+    if (packageManager) {
+      return packageManager
+    }
+  }
+
+  const lockFileChecks = [
+    ['pnpm-lock.yaml', 'pnpm'],
+    ['package-lock.json', 'npm'],
+    ['npm-shrinkwrap.json', 'npm'],
+    ['yarn.lock', 'yarn'],
+    ['bun.lock', 'bun'],
+    ['bun.lockb', 'bun'],
+  ]
+
+  for (const [filename, packageManager] of lockFileChecks) {
+    if (await fileExists(path.join(rootDir, filename))) {
+      return packageManager
+    }
+  }
+
+  return getPackageManagerFromUserAgent() ?? 'npm'
+}
+
+export function formatScriptCommand(packageManager, scriptName, args = []) {
+  const extraArgs = args.length > 0 ? args.join(' ') : ''
+
+  if (packageManager === 'npm') {
+    return `npm run ${scriptName}${extraArgs ? ` -- ${extraArgs}` : ''}`
+  }
+
+  if (packageManager === 'yarn') {
+    return `yarn ${scriptName}${extraArgs ? ` ${extraArgs}` : ''}`
+  }
+
+  if (packageManager === 'bun') {
+    return `bun run ${scriptName}${extraArgs ? ` ${extraArgs}` : ''}`
+  }
+
+  return `pnpm ${scriptName}${extraArgs ? ` -- ${extraArgs}` : ''}`
+}
+
+function formatPowerShellPnpmCommand(command) {
+  return command.replace(/^pnpm /u, 'pnpm.cmd ')
+}
+
+export async function printInstallResult(result, options = {}) {
+  const packageManager = options.packageManager ?? (await detectPackageManager(result.targetDir))
+
   if (result.updatedFiles.length === 0 && result.createdFiles.length === 0) {
     process.stderr.write(`ACE pack is already up to date in ${result.targetDir}\n`)
   }
@@ -261,14 +454,62 @@ export function printInstallResult(result) {
     process.stderr.write(`Created: ${result.createdFiles.join(', ')}\n`)
   }
 
-  process.stderr.write('Next: run pnpm.cmd ace:onboard\n')
+  if (result.onboarding?.applied) {
+    process.stderr.write(`Onboarded: ${result.onboarding.writtenFiles.join(', ')}\n`)
+  }
+
+  const nextCommands = []
+
+  if (!result.onboarding?.applied) {
+    nextCommands.push(formatScriptCommand(packageManager, 'ace:onboard', ['--apply']))
+  }
+
+  nextCommands.push(formatScriptCommand(packageManager, 'ace:check'))
+  nextCommands.push(formatScriptCommand(packageManager, 'ace:hub'))
+
+  process.stderr.write('\nNext:\n')
+
+  for (const command of nextCommands) {
+    process.stderr.write(`  ${command}\n`)
+  }
+
+  if (packageManager === 'pnpm' && process.platform === 'win32') {
+    process.stderr.write(
+      `\nWindows PowerShell note: if pnpm is blocked, use ${formatPowerShellPnpmCommand(
+        nextCommands[0],
+      )}\n`,
+    )
+  }
+}
+
+export async function runInstallCli(args, options = {}) {
+  const commandName = options.commandName ?? 'ace-pack'
+  const parsedArgs = parseInstallArgs(args)
+
+  if (parsedArgs.help) {
+    process.stdout.write(getHelpText(commandName))
+    return
+  }
+
+  const result = await installAcePack(parsedArgs.targetDir)
+
+  if (parsedArgs.apply) {
+    result.onboarding = await onboardRepository(parsedArgs.targetDir, {
+      apply: true,
+      preset: parsedArgs.preset ?? undefined,
+    })
+  }
+
+  await printInstallResult(result)
 }
 
 const isMainModule =
   process.argv[1] !== undefined && path.resolve(process.argv[1]) === currentFilePath
 
 if (isMainModule) {
-  const targetDir = resolveTargetDir(process.argv.slice(2))
-  const result = await installAcePack(targetDir)
-  printInstallResult(result)
+  await runInstallCli(process.argv.slice(2)).catch((error) => {
+    const message = error instanceof Error ? error.message : String(error)
+    process.stderr.write(`${message}\n\nRun ace-pack --help for usage.\n`)
+    process.exit(1)
+  })
 }

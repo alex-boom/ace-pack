@@ -7,7 +7,12 @@ import { promisify } from 'node:util'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { validateAgentMemory } from '../scripts/agent-memory-lib.mjs'
-import { installAcePack } from '../install-ace-pack.mjs'
+import {
+  detectPackageManager,
+  formatScriptCommand,
+  installAcePack,
+  parseInstallArgs,
+} from '../install-ace-pack.mjs'
 import { installAgentMemoryPack } from '../install-agent-memory-pack.mjs'
 
 const tempDirs: string[] = []
@@ -152,6 +157,37 @@ describe('installAcePack', () => {
     expect(packageJson.scripts['ace:onboard']).toBe('node ./scripts/ace-onboard.mjs')
   })
 
+  it('supports help output without installing files', async () => {
+    const { stdout } = await execFileAsync(process.execPath, [
+      path.resolve('install-ace-pack.mjs'),
+      '--help',
+    ])
+
+    expect(stdout).toContain('Usage:')
+    expect(stdout).toContain('npx ace-pack@latest init')
+    expect(stdout).toContain('Do not use npm install ace-pack for setup.')
+  })
+
+  it('supports init --apply to install and profile in one command', async () => {
+    const rootDir = await createTargetRepoWithoutPackageJson()
+
+    const { stderr } = await execFileAsync(process.execPath, [
+      path.resolve('install-ace-pack.mjs'),
+      'init',
+      rootDir,
+      '--apply',
+    ])
+    const memoryConfig = JSON.parse(
+      await readFile(path.join(rootDir, '.ai', 'memory-config.json'), 'utf8'),
+    )
+    const projectProfile = await readFile(path.join(rootDir, '.ai', 'project-profile.md'), 'utf8')
+
+    expect(memoryConfig._profile.status).toBe('profiled')
+    expect(projectProfile).toContain('# ACE Project Profile')
+    expect(stderr).toContain('Onboarded:')
+    expect(stderr).toContain('ace:check')
+  })
+
   it('accepts existing package.json files with a UTF-8 byte order mark', async () => {
     const rootDir = await createTargetRepoWithoutPackageJson()
 
@@ -166,5 +202,52 @@ describe('installAcePack', () => {
     const packageJson = JSON.parse(await readFile(path.join(rootDir, 'package.json'), 'utf8'))
 
     expect(packageJson.scripts['ace:onboard']).toBe('node ./scripts/ace-onboard.mjs')
+  })
+})
+
+describe('install CLI helpers', () => {
+  it('parses init arguments and legacy target syntax', () => {
+    const cwd = path.resolve('tmp-root')
+
+    expect(parseInstallArgs(['init', './app', '--apply'], cwd)).toMatchObject({
+      apply: true,
+      help: false,
+      targetDir: path.resolve(cwd, './app'),
+    })
+    expect(parseInstallArgs(['./legacy-app'], cwd).targetDir).toBe(
+      path.resolve(cwd, './legacy-app'),
+    )
+    expect(parseInstallArgs(['init', '--apply', '--preset=next-trpc-drizzle-saas'], cwd)).toMatchObject(
+      {
+        apply: true,
+        preset: 'next-trpc-drizzle-saas',
+        targetDir: cwd,
+      },
+    )
+  })
+
+  it('formats package-manager-specific script commands', () => {
+    expect(formatScriptCommand('npm', 'ace:onboard', ['--apply'])).toBe(
+      'npm run ace:onboard -- --apply',
+    )
+    expect(formatScriptCommand('pnpm', 'ace:onboard', ['--apply'])).toBe(
+      'pnpm ace:onboard -- --apply',
+    )
+    expect(formatScriptCommand('yarn', 'ace:onboard', ['--apply'])).toBe(
+      'yarn ace:onboard --apply',
+    )
+    expect(formatScriptCommand('bun', 'ace:onboard', ['--apply'])).toBe(
+      'bun run ace:onboard --apply',
+    )
+  })
+
+  it('detects the project package manager for next-step output', async () => {
+    const rootDir = await createTargetRepo()
+    const packageJsonPath = path.join(rootDir, 'package.json')
+    const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'))
+    packageJson.packageManager = 'pnpm@10.0.0'
+    await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`, 'utf8')
+
+    await expect(detectPackageManager(rootDir)).resolves.toBe('pnpm')
   })
 })

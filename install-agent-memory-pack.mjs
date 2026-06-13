@@ -2,7 +2,7 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { installAcePack, printInstallResult, resolveTargetDir } from './install-ace-pack.mjs'
+import { installAcePack, runInstallCli } from './install-ace-pack.mjs'
 
 export const installAgentMemoryPack = installAcePack
 
@@ -11,7 +11,11 @@ const isMainModule =
   process.argv[1] !== undefined && path.resolve(process.argv[1]) === currentFilePath
 
 if (isMainModule) {
-  const targetDir = resolveTargetDir(process.argv.slice(2))
-  const result = await installAcePack(targetDir)
-  printInstallResult(result)
+  await runInstallCli(process.argv.slice(2), { commandName: 'agent-memory-pack' }).catch(
+    (error) => {
+      const message = error instanceof Error ? error.message : String(error)
+      process.stderr.write(`${message}\n\nRun agent-memory-pack --help for usage.\n`)
+      process.exit(1)
+    },
+  )
 }
