@@ -1,6 +1,6 @@
 {
   "name": "ace-pack",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "Zero-dependency cognitive architecture framework for AI-driven development.",
   "type": "module",
   "license": "MIT",
@@ -15,13 +15,17 @@
   },
   "keywords": [
     "ai",
-    "agent",
-    "memory",
     "llm",
-    "codex",
+    "agentops",
     "agentic",
-    "workflow",
-    "development"
+    "agent-memory",
+    "context-management",
+    "cognitive-architecture",
+    "ai-coding",
+    "developer-tools",
+    "guardrails",
+    "cursor-rules",
+    "cli"
   ],
   "files": [
     "README.md",
@@ -43,6 +47,8 @@
     "check:npm-payload": "npm run build:npm-package && node ./tools/check-npm-payload.mjs",
     "preview:npm": "npm run build:npm-package && npm pack ./.npm-publish --dry-run",
     "publish:npm": "npm run build:npm-package && npm publish ./.npm-publish",
+    "release:npm:dry": "npm run check:npm-payload && npm run preview:npm",
+    "release:npm": "npm run check:npm-payload && npm run preview:npm && npm run publish:npm",
     "ace:validate": "node ./scripts/check-agent-memory.mjs",
     "test": "vitest run",
     "ace:init": "node ./scripts/bootstrap-agent-memory.mjs",

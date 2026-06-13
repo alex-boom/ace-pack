@@ -1,7 +1,7 @@
 # Session Handoff
 
 ## Last Update
-2026-06-13 21:19
+2026-06-13 21:46
 
 ## What Was Done
 - Ran `node ./install-ace-pack.mjs init . --apply` in this repository.
@@ -20,8 +20,10 @@
 - Added versioning policy: bump `package.json` before publishing shipped
   package changes, but not for repo-local dogfooding-only changes excluded from
   npm.
+- Updated npm SEO keywords to targeted AgentOps/AI engineering terms and bumped
+  package version to `0.1.4`.
 - Verified the setup with `npm run ace:check`, `npm run ace:classify`, and the
-  Vitest suite on Node 24.14.0.
+  Vitest suite on an active Node version that satisfies `>=20`.
 
 ## Current State
 - ACE is installed in the repo and onboarding has been applied.
@@ -31,11 +33,16 @@
   `CLAUDE.md`, and `.ai/**`.
 - Use `npm run ace:*` commands in this environment unless `pnpm` has been
   explicitly added to PATH.
+- Current metadata release target is `0.1.4`.
+- No repo scripts or instructions should hardcode a local Node executable path;
+  use the active nvm-selected Node and switch to any installed Node `>=20` for
+  tests, payload checks, and publish flows.
 
 ## Quality Review
 Product Alignment:
 - The repo now preserves agent workflow and release context locally, which
-  addresses the need to avoid relying on chat memory.
+  addresses the need to avoid relying on chat memory. npm keywords now better
+  match AgentOps, context management, guardrails, and AI coding discovery terms.
 
 Architecture:
 - Used the package's own installer instead of hand-writing the scaffold, so the
@@ -52,7 +59,7 @@ Code Quality:
   ACE workflow commands. Report decision extraction and XML-skip reporting now
   have test coverage. npm payload exclusion is now repeatable via
   `npm run check:npm-payload`. Release versioning rules are documented in
-  `DEVELOPING.md` and local agent instructions.
+  `DEVELOPING.md` and local agent instructions. Keyword update is metadata-only.
 
 ## Next Steps
 - Commit the ACE initialization files when ready.
@@ -60,24 +67,29 @@ Code Quality:
   large tasks after updating `.ai/*` notes.
 
 ## Known Issues
-- Plain `npm test` uses the active Node 16.18.0 and fails before tests because
-  Vitest/Rolldown expects a newer `node:util.styleText` API.
+- Plain `npm test` fails if the active Node version is below the package engine
+  requirement because Vitest/Rolldown expects newer Node APIs.
 
 ## Verification
 - `npm run ace:check` passed.
 - `npm run ace:classify` passed and reported tier `large`.
-- `C:\Users\redmi\AppData\Local\nvm\v24.14.0\node.exe .\node_modules\vitest\vitest.mjs run` passed: 7 files, 38 tests.
+- Vitest passed on an active Node version that satisfies `>=20`: 7 files, 38 tests.
 - Report parser test coverage added for durable decisions.
 - Report parser now selects the latest decision section, so versioning policy
   appears in fresh reports.
-- Full XML report generated with Node 24.14.0 PATH so `pnpm.cmd dlx repomix`
-  was available.
+- Full XML report generation works when the active PATH exposes `pnpm.cmd`;
+  Markdown report generation is covered even when XML is skipped.
 - Markdown report generation also has coverage for `AI_REPORT_SKIP_XML=1`.
 - `npm run check:npm-payload` passed and checked 27 packed files.
 - `npm run preview:npm` passed; tarball contents exclude repo-local ACE files.
 - First-block warning check passed for `AGENTS.md` and `CLAUDE.md`.
 - `npm run ace:check` passed.
-- `C:\Users\redmi\AppData\Local\nvm\v24.14.0\node.exe .\node_modules\vitest\vitest.mjs run` passed: 7 files, 38 tests.
+- Vitest passed on an active Node version that satisfies `>=20`: 7 files, 38 tests.
+- Package metadata JSON parse passed for version `0.1.4` and approved keywords.
+- `npm run check:npm-payload` passed and checked 27 packed files.
+- `npm run preview:npm` passed and produced dry-run package `ace-pack-0.1.4.tgz`.
+- Vitest passed on an active Node version that satisfies `>=20`: 7 files, 38 tests.
+- `pnpm lint` was skipped because `pnpm` is not on PATH and this package has no `lint` script.
 
 ## Notes
 - For npm publishing, use `npm run preview:npm` and `npm run publish:npm` so the

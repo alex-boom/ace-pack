@@ -3,12 +3,12 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-13 21:26
+- Generated: 2026-06-13 21:46
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-13 21:25
-- Source session-handoff: 2026-06-13 21:26
+- Source current-task: 2026-06-13 21:45
+- Source session-handoff: 2026-06-13 21:46
 - Verification level: test-backed
 
 ## Stack
@@ -64,6 +64,8 @@ Chosen Approach:
 - [x] Documented product-vs-dogfooding file ownership for fork maintainers.
 - [x] Added repeatable npm payload guard to prevent repo-local ACE history from shipping.
 - [x] Added versioning policy for publishable package changes.
+- [x] Updated npm keywords for AgentOps SEO and bumped package version to 0.1.4.
+- [x] Replaced local Node path/version hardcoding with generic active Node `>=20` guidance.
 
 ## What Was Done
 - Ran `node ./install-ace-pack.mjs init . --apply` in this repository.
@@ -82,8 +84,10 @@ Chosen Approach:
 - Added versioning policy: bump `package.json` before publishing shipped
   package changes, but not for repo-local dogfooding-only changes excluded from
   npm.
+- Updated npm SEO keywords to targeted AgentOps/AI engineering terms and bumped
+  package version to `0.1.4`.
 - Verified the setup with `npm run ace:check`, `npm run ace:classify`, and the
-  Vitest suite on Node 24.14.0.
+  Vitest suite on an active Node version that satisfies `>=20`.
 
 ## Current State
 - ACE is installed in the repo and onboarding has been applied.
@@ -93,6 +97,10 @@ Chosen Approach:
   `CLAUDE.md`, and `.ai/**`.
 - Use `npm run ace:*` commands in this environment unless `pnpm` has been
   explicitly added to PATH.
+- Current metadata release target is `0.1.4`.
+- No repo scripts or instructions should hardcode a local Node executable path;
+  use the active nvm-selected Node and switch to any installed Node `>=20` for
+  tests, payload checks, and publish flows.
 
 ## Next Steps
 - Commit the ACE initialization files when ready.
@@ -100,13 +108,14 @@ Chosen Approach:
   large tasks after updating `.ai/*` notes.
 
 ## Known Issues
-- Plain `npm test` uses the active Node 16.18.0 and fails before tests because
-  Vitest/Rolldown expects a newer `node:util.styleText` API.
+- Plain `npm test` fails if the active Node version is below the package engine
+  requirement because Vitest/Rolldown expects newer Node APIs.
 
 ## Quality Review
 Product Alignment:
 - The repo now preserves agent workflow and release context locally, which
-  addresses the need to avoid relying on chat memory.
+  addresses the need to avoid relying on chat memory. npm keywords now better
+  match AgentOps, context management, guardrails, and AI coding discovery terms.
 
 Architecture:
 - Used the package's own installer instead of hand-writing the scaffold, so the
@@ -123,36 +132,33 @@ Code Quality:
   ACE workflow commands. Report decision extraction and XML-skip reporting now
   have test coverage. npm payload exclusion is now repeatable via
   `npm run check:npm-payload`. Release versioning rules are documented in
-  `DEVELOPING.md` and local agent instructions.
+  `DEVELOPING.md` and local agent instructions. Keyword update is metadata-only.
 
 ## Verification
 - `npm run ace:check` passed.
 - `npm run ace:classify` passed and reported tier `large`.
-- `C:\Users\redmi\AppData\Local\nvm\v24.14.0\node.exe .\node_modules\vitest\vitest.mjs run` passed: 7 files, 38 tests.
+- Vitest passed on an active Node version that satisfies `>=20`: 7 files, 38 tests.
 - Report parser test coverage added for durable decisions.
 - Report parser now selects the latest decision section, so versioning policy
 appears in fresh reports.
-- Full XML report generated with Node 24.14.0 PATH so `pnpm.cmd dlx repomix`
-was available.
+- Full XML report generation works when the active PATH exposes `pnpm.cmd`;
+Markdown report generation is covered even when XML is skipped.
 
 ## Recent Decisions
-## 2026-06-13 21:19
+## 2026-06-13 21:42
 
 Decision:
-- Require a semver bump before publishing shipped package changes, but do not
-  require a bump for repo-local dogfooding-only files excluded from npm.
+- Keep Node guidance generic and never hardcode a maintainer-local Node
+  executable path in repo scripts or instructions.
 
 Reason:
-- npm rejects republishing the same version, and consumers need version changes
-  to discover package updates. Pure `.ai/**`, `AGENTS.md`, `CLAUDE.md`, and
-  `DEVELOPING.md` changes do not ship in the npm payload, so bumping for those
-  alone creates noisy releases.
+- Maintainers may switch between Node versions with nvm. The package only needs
+  a semantic runtime requirement, not a path to one developer's local install.
 
 Impact:
-- Future agents should check whether a change affects the npm payload or
-  user-visible ACE behavior before publishing.
-- Use patch for fixes/docs/packaging, minor for backward-compatible features,
-  and major for breaking CLI/template/workflow changes.
+- `package.json` keeps the public `node >=20` engine requirement.
+- Tests, payload checks, and publish flows should run under any active
+  nvm-selected Node version satisfying `>=20`.
 
 ## Changed Areas
 - `AGENTS.md`
@@ -171,7 +177,8 @@ Impact:
 
 - Initialized ACE in the repository using the local installer with `--apply`.
 - Confirmed generated memory files and root agent instruction files were created.
-- Verified `npm run ace:check`, `npm run ace:classify`, and Vitest on Node 24.14.0.
+- Verified `npm run ace:check`, `npm run ace:classify`, and Vitest on an active
+  Node version that satisfies `>=20`.
 - Fixed and covered report decision extraction after ACE setup exposed the issue.
 - Added project-specific command notes so future agents use `npm run ace:*`
   when `pnpm` is unavailable.
@@ -187,10 +194,24 @@ Impact:
 - Corrected report decision extraction so brief/full reports surface the newest
   durable decision, including the versioning policy.
 
+## 2026-06-13 21:35
+
+- Replaced generic npm keywords with targeted AgentOps, context-management,
+  guardrails, cursor-rules, and AI-coding terms.
+- Bumped package metadata version from `0.1.3` to `0.1.4` for this publishable
+  metadata release.
+
+## 2026-06-13 21:42
+
+- Removed local Node executable/version hardcoding from repo-local ACE
+  instructions and memory.
+- Kept the public package requirement as generic `node >=20`, so maintainers can
+  switch with nvm and use any compatible Node version.
+
 ## Unresolved Reflections
 - No unresolved reflections recorded.
 
 ## Overall Progress
 - Completion checklist: 13/13
 - Canonical context lives in `.ai/*`.
-- XML bundle skipped because `AI_REPORT_SKIP_XML=1`.
+- XML bundle generated at `.ai/report-full.xml` for parsable handoff.

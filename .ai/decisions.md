@@ -49,3 +49,32 @@ Impact:
   user-visible ACE behavior before publishing.
 - Use patch for fixes/docs/packaging, minor for backward-compatible features,
   and major for breaking CLI/template/workflow changes.
+
+## 2026-06-13 21:35
+
+Decision:
+- Publish the npm keyword SEO update as patch version `0.1.4`.
+
+Reason:
+- Keyword metadata is part of the shipped npm payload and affects package
+  discoverability, but it does not change CLI behavior or installed templates.
+
+Impact:
+- `package.json` now uses targeted AgentOps and AI engineering keywords.
+- No code behavior, README copy, or lockfile changes are required for this
+  metadata release.
+
+## 2026-06-13 21:42
+
+Decision:
+- Keep Node guidance generic and never hardcode a maintainer-local Node
+  executable path in repo scripts or instructions.
+
+Reason:
+- Maintainers may switch between Node versions with nvm. The package only needs
+  a semantic runtime requirement, not a path to one developer's local install.
+
+Impact:
+- `package.json` keeps the public `node >=20` engine requirement.
+- Tests, payload checks, and publish flows should run under any active
+  nvm-selected Node version satisfying `>=20`.

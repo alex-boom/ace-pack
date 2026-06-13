@@ -47,6 +47,8 @@ Chosen Approach:
 - [x] Documented product-vs-dogfooding file ownership for fork maintainers.
 - [x] Added repeatable npm payload guard to prevent repo-local ACE history from shipping.
 - [x] Added versioning policy for publishable package changes.
+- [x] Updated npm keywords for AgentOps SEO and bumped package version to 0.1.4.
+- [x] Replaced local Node path/version hardcoding with generic active Node `>=20` guidance.
 
 ## Affected Areas
 - `package.json`
@@ -70,6 +72,10 @@ Chosen Approach:
 - Changes to ACE behavior for users belong in `scripts/*`, not local `.ai/**`.
 - Bump `package.json` before publishing changes that affect shipped package
   payload or user-visible ACE behavior.
+- Keep keyword updates metadata-only: do not change CLI behavior, templates, or README copy.
+- Do not hardcode a maintainer-local Node executable path; switch with nvm and
+  use any active Node version that satisfies the package engine for tests and
+  publish checks.
 
 ## Acceptance Criteria
 - ACE memory files exist in `.ai/`.
@@ -82,6 +88,9 @@ Chosen Approach:
 - `npm run check:npm-payload` fails if `.ai/**`, `AGENTS.md`, `CLAUDE.md`, or `DEVELOPING.md` enter the package.
 - Versioning policy distinguishes publishable product changes from repo-local
   dogfooding changes.
+- `package.json` keywords match the approved AgentOps SEO list.
+- `package.json` version is `0.1.4`.
+- Repo-local instructions do not point to a maintainer-specific Node executable.
 
 ## Completion Checklist
 - [x] Goal completed

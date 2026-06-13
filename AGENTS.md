@@ -13,8 +13,10 @@ Repository rules for AI coding agents working in this project.
   PATH, use `npm run ace:check`, `npm run ace:classify`, `npm run ace:finish`,
   and related `npm run ace:*` scripts.
 - The active default Node on this machine may be older than the package engine.
-  Run Vitest with Node 20+; Node 24.14.0 is available at
-  `C:\Users\redmi\AppData\Local\nvm\v24.14.0\node.exe`.
+  Use the currently selected Node version for simple repo inspection, but
+  switch through nvm to any installed Node `>=20` before running Vitest,
+  payload checks, or npm publish flows. Do not hardcode a local Node executable
+  path in repo scripts or instructions.
 - For npm publishing, use `npm run preview:npm` and `npm run publish:npm` so
   the staged package uses `README.npm.md` and `logo-npm.svg`.
 - Versioning policy: before publishing any change that affects the shipped

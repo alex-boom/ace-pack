@@ -3,12 +3,12 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-13 21:26
+- Generated: 2026-06-13 21:46
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-13 21:25
-- Source session-handoff: 2026-06-13 21:26
+- Source current-task: 2026-06-13 21:45
+- Source session-handoff: 2026-06-13 21:46
 - Verification level: test-backed
 
 ## Stack
@@ -47,6 +47,8 @@ README, and npm release work easier to resume.
 - [x] Documented product-vs-dogfooding file ownership for fork maintainers.
 - [x] Added repeatable npm payload guard to prevent repo-local ACE history from shipping.
 - [x] Added versioning policy for publishable package changes.
+- [x] Updated npm keywords for AgentOps SEO and bumped package version to 0.1.4.
+- [x] Replaced local Node path/version hardcoding with generic active Node `>=20` guidance.
 
 ## Next Steps
 - Commit the ACE initialization files when ready.
@@ -54,33 +56,30 @@ README, and npm release work easier to resume.
   large tasks after updating `.ai/*` notes.
 
 ## Risks / Blockers
-- Plain `npm test` uses the active Node 16.18.0 and fails before tests because
-  Vitest/Rolldown expects a newer `node:util.styleText` API.
+- Plain `npm test` fails if the active Node version is below the package engine
+  requirement because Vitest/Rolldown expects newer Node APIs.
 
 ## Verification
 - `npm run ace:check` passed.
 - `npm run ace:classify` passed and reported tier `large`.
-- `C:\Users\redmi\AppData\Local\nvm\v24.14.0\node.exe .\node_modules\vitest\vitest.mjs run` passed: 7 files, 38 tests.
+- Vitest passed on an active Node version that satisfies `>=20`: 7 files, 38 tests.
 - Report parser test coverage added for durable decisions.
 
 ## Recent Decision
-## 2026-06-13 21:19
+## 2026-06-13 21:42
 
 Decision:
-- Require a semver bump before publishing shipped package changes, but do not
-  require a bump for repo-local dogfooding-only files excluded from npm.
+- Keep Node guidance generic and never hardcode a maintainer-local Node
+  executable path in repo scripts or instructions.
 
 Reason:
-- npm rejects republishing the same version, and consumers need version changes
-  to discover package updates. Pure `.ai/**`, `AGENTS.md`, `CLAUDE.md`, and
-  `DEVELOPING.md` changes do not ship in the npm payload, so bumping for those
-  alone creates noisy releases.
+- Maintainers may switch between Node versions with nvm. The package only needs
+  a semantic runtime requirement, not a path to one developer's local install.
 
 Impact:
-- Future agents should check whether a change affects the npm payload or
-  user-visible ACE behavior before publishing.
-- Use patch for fixes/docs/packaging, minor for backward-compatible features,
-  and major for breaking CLI/template/workflow changes.
+- `package.json` keeps the public `node >=20` engine requirement.
+- Tests, payload checks, and publish flows should run under any active
+  nvm-selected Node version satisfying `>=20`.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.
