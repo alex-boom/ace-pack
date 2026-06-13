@@ -3,12 +3,12 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-13 22:30
+- Generated: 2026-06-13 23:09
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-13 22:29
-- Source session-handoff: 2026-06-13 22:30
+- Source current-task: 2026-06-13 23:08
+- Source session-handoff: 2026-06-13 23:08
 - Verification level: test-backed
 
 ## Stack
@@ -51,6 +51,7 @@ README, and npm release work easier to resume.
 - [x] Replaced local Node path/version hardcoding with generic active Node `>=20` guidance.
 - [x] Hardened npm release commands for Windows/Git Bash and verified dry publish flow.
 - [x] Added vibe coding positioning and bumped package version to 0.1.5.
+- [x] Formalized ACE roadmap, anti-goals, minimalism constraints, and explicit AI opt-in policy.
 
 ## Next Steps
 - Commit the ACE initialization files when ready.
@@ -68,19 +69,24 @@ README, and npm release work easier to resume.
 - Report parser test coverage added for durable decisions.
 
 ## Recent Decision
-## 2026-06-13 22:28
+## 2026-06-13 23:05
 
 Decision:
-- Publish vibe coding positioning as patch version `0.1.5`.
+- Future AI-assisted documentation generation must be explicit opt-in.
 
 Reason:
-- `vibe-coding` is part of the shipped npm metadata and README positioning, so
-  it affects package discoverability without changing CLI behavior.
+- Hidden local or cloud AI calls can leak code, violate corporate privacy
+  policy, consume unexpected tokens, drain batteries, or block the developer
+  workflow.
 
 Impact:
-- `package.json` includes the `vibe-coding` keyword.
-- GitHub and npm README surfaces explain ACE as a memory and guardrail layer for
-  scaling natural-language coding beyond small scripts.
+- The default provider is `off`.
+- Optional local providers such as Ollama or llama.cpp are privacy/cost
+  optimizations, not baseline dependencies.
+- Optional cloud providers require explicit repo-owned config, API keys, and a
+  privacy decision.
+- Missing, invalid, unavailable, or timed-out providers must fail open into the
+  existing manual or active-agent-assisted Markdown closeout workflow.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.

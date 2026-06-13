@@ -3,12 +3,12 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-13 22:30
+- Generated: 2026-06-13 23:09
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-13 22:29
-- Source session-handoff: 2026-06-13 22:30
+- Source current-task: 2026-06-13 23:08
+- Source session-handoff: 2026-06-13 23:08
 - Verification level: test-backed
 
 ## Stack
@@ -68,6 +68,7 @@ Chosen Approach:
 - [x] Replaced local Node path/version hardcoding with generic active Node `>=20` guidance.
 - [x] Hardened npm release commands for Windows/Git Bash and verified dry publish flow.
 - [x] Added vibe coding positioning and bumped package version to 0.1.5.
+- [x] Formalized ACE roadmap, anti-goals, minimalism constraints, and explicit AI opt-in policy.
 
 ## What Was Done
 - Ran `node ./install-ace-pack.mjs init . --apply` in this repository.
@@ -94,6 +95,9 @@ Chosen Approach:
   that call `npm.cmd` directly.
 - Added `vibe-coding` npm keyword, updated GitHub/npm README positioning, and
   bumped package version to `0.1.5`.
+- Added GitHub-only `ROADMAP.md` as the ACE strategic compass and recorded
+  anti-goals, minimalism constraints, v2.0+ research seeds, and explicit AI
+  opt-in policy.
 - Verified the setup with `npm run ace:check`, `npm run ace:classify`, and the
   Vitest suite on an active Node version that satisfies `>=20`.
 
@@ -115,6 +119,12 @@ Chosen Approach:
 - `pnpm run release:npm:dry` from Git Bash is verified to pass, but npm may
   print warnings about pnpm-specific env config. Use the committed VS Code
   tasks or `npm.cmd` commands for cleaner output.
+- `ROADMAP.md` is GitHub-only and must stay out of npm payload. It is the first
+  reference for product vision, anti-goals, minimalism constraints, and future
+  AI provider policy.
+- Future AI-assisted documentation generation must default to provider `off`.
+  ACE must not make hidden local or cloud AI calls; unavailable providers fail
+  open into manual or active-agent-assisted Markdown closeout.
 
 ## Next Steps
 - Commit the ACE initialization files when ready.
@@ -130,7 +140,8 @@ Product Alignment:
 - The repo now preserves agent workflow and release context locally, which
   addresses the need to avoid relying on chat memory. npm keywords now better
   match AgentOps, context management, guardrails, vibe coding, and AI coding
-  discovery terms.
+  discovery terms. `ROADMAP.md` now records the product promise and anti-goals
+  that future features must preserve.
 
 Architecture:
 - Used the package's own installer instead of hand-writing the scaffold, so the
@@ -160,19 +171,24 @@ appears in fresh reports.
 Markdown report generation is covered even when XML is skipped.
 
 ## Recent Decisions
-## 2026-06-13 22:28
+## 2026-06-13 23:05
 
 Decision:
-- Publish vibe coding positioning as patch version `0.1.5`.
+- Future AI-assisted documentation generation must be explicit opt-in.
 
 Reason:
-- `vibe-coding` is part of the shipped npm metadata and README positioning, so
-  it affects package discoverability without changing CLI behavior.
+- Hidden local or cloud AI calls can leak code, violate corporate privacy
+  policy, consume unexpected tokens, drain batteries, or block the developer
+  workflow.
 
 Impact:
-- `package.json` includes the `vibe-coding` keyword.
-- GitHub and npm README surfaces explain ACE as a memory and guardrail layer for
-  scaling natural-language coding beyond small scripts.
+- The default provider is `off`.
+- Optional local providers such as Ollama or llama.cpp are privacy/cost
+  optimizations, not baseline dependencies.
+- Optional cloud providers require explicit repo-owned config, API keys, and a
+  privacy decision.
+- Missing, invalid, unavailable, or timed-out providers must fail open into the
+  existing manual or active-agent-assisted Markdown closeout workflow.
 
 ## Changed Areas
 - `AGENTS.md`
@@ -182,7 +198,7 @@ Impact:
 - `README.md`
 - `README.npm.md`
 - `DEVELOPING.md`
-- `tools/check-npm-payload.mjs`
+- `ROADMAP.md`
 
 ## Latest Work Log
 # Work Log
@@ -241,6 +257,15 @@ Impact:
 - Kept the change metadata/docs-only with no CLI, template, or runtime behavior changes.
 - Verified JSON metadata, npm payload guard, full dry npm release, staged npm
   README content, Vitest, and ACE memory check.
+
+## 2026-06-13 23:05
+
+- Added GitHub-only `ROADMAP.md` with ACE vision, product promise, anti-goals,
+  release roadmap, v2.0+ research seeds, and explicit AI opt-in policy.
+- Updated `DEVELOPING.md`, `AGENTS.md`, README, and `.ai/product-roadmap.md`
+  to align future product work with zero-bloat and privacy-safe defaults.
+- Added `ROADMAP.md` to the npm payload guard's forbidden paths so strategy docs
+  stay out of the package tarball.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.

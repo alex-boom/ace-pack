@@ -54,3 +54,12 @@
 - Kept the change metadata/docs-only with no CLI, template, or runtime behavior changes.
 - Verified JSON metadata, npm payload guard, full dry npm release, staged npm
   README content, Vitest, and ACE memory check.
+
+## 2026-06-13 23:05
+
+- Added GitHub-only `ROADMAP.md` with ACE vision, product promise, anti-goals,
+  release roadmap, v2.0+ research seeds, and explicit AI opt-in policy.
+- Updated `DEVELOPING.md`, `AGENTS.md`, README, and `.ai/product-roadmap.md`
+  to align future product work with zero-bloat and privacy-safe defaults.
+- Added `ROADMAP.md` to the npm payload guard's forbidden paths so strategy docs
+  stay out of the package tarball.

@@ -272,6 +272,8 @@ preserved and updated idempotently.
 This repository dogfoods ACE while building ACE. Read
 [`DEVELOPING.md`](./DEVELOPING.md) before changing package behavior so you do
 not confuse the shipped product layer with this repo's local `.ai/**` memory.
+Read [`ROADMAP.md`](./ROADMAP.md) for the product vision, anti-goals,
+minimalism constraints, and long-term research direction.
 
 ```bash
 git clone https://github.com/alex-boom/ace-pack.git

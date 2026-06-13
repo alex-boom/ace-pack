@@ -11,6 +11,7 @@ const forbiddenExactPaths = new Set([
   'AGENTS.md',
   'CLAUDE.md',
   'DEVELOPING.md',
+  'ROADMAP.md',
   'README.npm.md',
   '.ai',
 ])

@@ -9,6 +9,8 @@ Repository rules for AI coding agents working in this project.
 
 - Read `DEVELOPING.md` before changing package behavior. It defines the
   boundary between shipped ACE product files and repo-local dogfooding memory.
+- Read `ROADMAP.md` before product or architecture changes. Preserve the
+  anti-goals, zero-bloat constraints, and explicit AI opt-in policy.
 - This package supports npm-based local workflow commands. If `pnpm` is not on
   PATH, use `npm run ace:check`, `npm run ace:classify`, `npm run ace:finish`,
   and related `npm run ace:*` scripts.
@@ -24,7 +26,7 @@ Repository rules for AI coding agents working in this project.
   with semver. Use `patch` for fixes/docs in the published payload, `minor` for
   new backward-compatible behavior, and `major` for breaking CLI/template
   changes. Do not bump solely for repo-local dogfooding files excluded from npm
-  such as `.ai/**`, `AGENTS.md`, `CLAUDE.md`, or `DEVELOPING.md`.
+  such as `.ai/**`, `AGENTS.md`, `CLAUDE.md`, `DEVELOPING.md`, or `ROADMAP.md`.
 
 <!-- agent-memory-workflow:start -->
 ## ACE (Agentic Context Engine) Workflow

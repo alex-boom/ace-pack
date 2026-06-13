@@ -110,3 +110,39 @@ Impact:
 - `package.json` includes the `vibe-coding` keyword.
 - GitHub and npm README surfaces explain ACE as a memory and guardrail layer for
   scaling natural-language coding beyond small scripts.
+
+## 2026-06-13 23:05
+
+Decision:
+- Treat `ROADMAP.md` as the GitHub-only strategic compass for ACE.
+
+Reason:
+- Future human and AI contributors need a durable source of product direction,
+  anti-goals, minimalism constraints, and long-term research seeds without
+  relying on chat history.
+
+Impact:
+- Product and architecture changes should preserve the roadmap anti-goals:
+  local-first, zero-lock-in, zero-bloat, no hidden AI calls, no SaaS
+  requirement, no prompt-library positioning, and no IDE/model lock-in.
+- `ROADMAP.md` stays excluded from npm payload unless a future release
+  intentionally changes that boundary.
+
+## 2026-06-13 23:05
+
+Decision:
+- Future AI-assisted documentation generation must be explicit opt-in.
+
+Reason:
+- Hidden local or cloud AI calls can leak code, violate corporate privacy
+  policy, consume unexpected tokens, drain batteries, or block the developer
+  workflow.
+
+Impact:
+- The default provider is `off`.
+- Optional local providers such as Ollama or llama.cpp are privacy/cost
+  optimizations, not baseline dependencies.
+- Optional cloud providers require explicit repo-owned config, API keys, and a
+  privacy decision.
+- Missing, invalid, unavailable, or timed-out providers must fail open into the
+  existing manual or active-agent-assisted Markdown closeout workflow.

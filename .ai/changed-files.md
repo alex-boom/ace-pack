@@ -3,6 +3,7 @@
 [AGENTS.md]
 - Added ACE agent workflow instructions, project-specific npm/Node/publish notes, first-block meta-architecture warning, and versioning policy.
 - Replaced maintainer-local Node executable guidance with generic active Node `>=20` guidance.
+- Added roadmap-first guidance for product and architecture changes.
 
 [CLAUDE.md]
 - Added Claude-compatible agent workflow instructions with npm-based local commands, first-block meta-architecture warning, and versioning policy.
@@ -11,6 +12,7 @@
 [.ai/**]
 - Added ACE memory, onboarding, task, handoff, work-log, reflection, archive files, and `.ai/README.md` dogfooding marker.
 - Recorded that local Node paths must not be hardcoded; use the active nvm-selected Node and switch to any compatible `>=20` version for verification.
+- Recorded ACE roadmap, anti-goals, v2.0+ research seeds, and explicit AI opt-in policy.
 
 [package.json]
 - Added ACE workflow scripts and npm payload guard while preserving existing test and npm publish scripts.
@@ -22,6 +24,7 @@
 - Linked local ACE dogfooding development guidance from the development section.
 - Updated development setup/link commands to npm.
 - Added vibe coding positioning to the GitHub README intro.
+- Linked the GitHub README development section to `ROADMAP.md`.
 
 [README.npm.md]
 - Updated development setup/link commands to npm for the staged npm README.
@@ -29,11 +32,18 @@
 
 [DEVELOPING.md]
 - Documented the product layer, repo-local dogfooding layer, npm payload boundary, and semver policy.
+- Added product philosophy, zero-bloat constraints, native Node/Git preference,
+  and explicit AI provider opt-in policy.
+
+[ROADMAP.md]
+- Added GitHub-only product compass with ACE vision, anti-goals, release roadmap,
+  v2.0+ research seeds, and explicit AI opt-in policy.
 
 [tools/check-npm-payload.mjs]
 - Added repeatable guard for excluding repo-local ACE files from the npm package.
 - Fixed Windows/Git Bash npm dry-run inspection by routing npm through `cmd.exe`
   with the relative `.npm-publish` path.
+- Added `ROADMAP.md` to forbidden npm payload paths.
 
 [.vscode/tasks.json]
 - Added explicit npm-based VS Code tasks for payload check, preview, dry release,

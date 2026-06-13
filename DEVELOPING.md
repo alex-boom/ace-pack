@@ -27,6 +27,34 @@ and related `scripts/*` source files. Edit those files when changing the
 instructions, memory templates, reports, onboarding, classification, or finish
 workflow installed into other repositories.
 
+## Product Philosophy
+
+Read `ROADMAP.md` before product or architecture changes. It is the strategic
+compass for ACE's vision, anti-goals, roadmap, minimalism constraints, and
+future AI provider policy.
+
+ACE is the local AgentOps control layer for vibe coding. It must remain useful
+without local LLMs, cloud API keys, GPUs, SaaS accounts, or hidden network
+calls. The durable source of truth is plain Markdown in the repository.
+
+Minimalism constraints:
+
+- Prefer native Node.js built-in modules and Git primitives over heavy
+  dependencies.
+- Keep installed consumer repositories self-owned and lightweight.
+- Do not add Cloud or SaaS requirements to the core workflow.
+- Do not lock ACE to one IDE, editor, LLM, or agent vendor.
+- Do not turn ACE into an AI agent that writes code or a prompt library.
+- Prefer native Git hooks and CI templates over Husky-style dependency stacks.
+- For ACE's own future test infrastructure, prefer Node's native `node:test`
+  where practical. Migrating existing tests is a separate task.
+
+Future AI-assisted documentation generation must be explicit opt-in. The default
+provider is always `off`; ACE must never call local or cloud AI providers without
+repo-owned configuration. If an optional provider such as `ollama`, `openai`, or
+`anthropic` is unavailable, invalid, or times out, ACE must fail open into the
+manual or active-agent-assisted Markdown closeout workflow.
+
 ## Repo-Local Dogfooding Layer
 
 These files are ACE running inside this repository:
@@ -54,8 +82,8 @@ npm run check:npm-payload
 
 The npm tarball should contain only the package README, logos, CLI entrypoints,
 root `.mjs` files, root `.cmd` shims, and `scripts/*.mjs`. It must exclude
-`.ai/**`, `AGENTS.md`, `CLAUDE.md`, `DEVELOPING.md`, reports, and archive
-snapshots.
+`.ai/**`, `AGENTS.md`, `CLAUDE.md`, `DEVELOPING.md`, `ROADMAP.md`, reports, and
+archive snapshots.
 
 ## Versioning Policy
 

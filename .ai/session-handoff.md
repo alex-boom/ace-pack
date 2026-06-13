@@ -1,7 +1,7 @@
 # Session Handoff
 
 ## Last Update
-2026-06-13 22:28
+2026-06-13 23:05
 
 ## What Was Done
 - Ran `node ./install-ace-pack.mjs init . --apply` in this repository.
@@ -28,6 +28,9 @@
   that call `npm.cmd` directly.
 - Added `vibe-coding` npm keyword, updated GitHub/npm README positioning, and
   bumped package version to `0.1.5`.
+- Added GitHub-only `ROADMAP.md` as the ACE strategic compass and recorded
+  anti-goals, minimalism constraints, v2.0+ research seeds, and explicit AI
+  opt-in policy.
 - Verified the setup with `npm run ace:check`, `npm run ace:classify`, and the
   Vitest suite on an active Node version that satisfies `>=20`.
 
@@ -49,13 +52,20 @@
 - `pnpm run release:npm:dry` from Git Bash is verified to pass, but npm may
   print warnings about pnpm-specific env config. Use the committed VS Code
   tasks or `npm.cmd` commands for cleaner output.
+- `ROADMAP.md` is GitHub-only and must stay out of npm payload. It is the first
+  reference for product vision, anti-goals, minimalism constraints, and future
+  AI provider policy.
+- Future AI-assisted documentation generation must default to provider `off`.
+  ACE must not make hidden local or cloud AI calls; unavailable providers fail
+  open into manual or active-agent-assisted Markdown closeout.
 
 ## Quality Review
 Product Alignment:
 - The repo now preserves agent workflow and release context locally, which
   addresses the need to avoid relying on chat memory. npm keywords now better
   match AgentOps, context management, guardrails, vibe coding, and AI coding
-  discovery terms.
+  discovery terms. `ROADMAP.md` now records the product promise and anti-goals
+  that future features must preserve.
 
 Architecture:
 - Used the package's own installer instead of hand-writing the scaffold, so the
@@ -115,6 +125,9 @@ Code Quality:
 - Staged npm README uses `./logo-npm.svg` and includes the vibe coding positioning.
 - `npm.cmd run test` passed: 7 files, 38 tests.
 - `npm.cmd run ace:check` passed.
+- `ROADMAP.md` Markdown links inspected for local references.
+- `npm.cmd run check:npm-payload` passed and confirmed `ROADMAP.md` stays out of npm payload.
+- `npm.cmd run ace:check` passed.
 
 ## Notes
 - For npm publishing, use `npm run release:npm:dry` before `npm run release:npm` so the
@@ -122,6 +135,7 @@ Code Quality:
   `logo-npm.svg`.
 - Use `DEVELOPING.md` as the first reference for future fork maintainers who
   need to distinguish shipped ACE behavior from this repo's local ACE memory.
+- Use `ROADMAP.md` as the first reference for product direction and anti-goals.
 - Before publishing shipped product changes, run `npm version patch --no-git-tag-version`
   or choose the appropriate semver level, then run `npm run check:npm-payload`
   and `npm run release:npm:dry`.

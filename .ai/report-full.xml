@@ -247,11 +247,112 @@ Status: resolved
   a new chat.
 - Likely Cause: Release steps were previously only discussed in conversation.
 - Proposed Improvement: Keep publish commands discoverable through
-  `package.json` scripts and record npm publishing notes in `.ai/session-handoff.md`.</file><file path=".ai/changed-files.md"># Changed Files
+  `package.json` scripts and record npm publishing notes in `.ai/session-handoff.md`.</file><file path="AGENTS.md">&gt; [!WARNING]
+&gt; **META-ARCHITECTURE WARNING:** This repository BUILDS the ACE product, but also USES ACE locally. If you are instructed to modify ACE behavior for users, edit the product source and templates in `scripts/`. Do not edit this local `AGENTS.md`, `CLAUDE.md`, or `.ai/**` to change global product behavior.
+
+# AGENTS.md
+
+Repository rules for AI coding agents working in this project.
+
+## Project Rules
+
+- Read `DEVELOPING.md` before changing package behavior. It defines the
+  boundary between shipped ACE product files and repo-local dogfooding memory.
+- Read `ROADMAP.md` before product or architecture changes. Preserve the
+  anti-goals, zero-bloat constraints, and explicit AI opt-in policy.
+- This package supports npm-based local workflow commands. If `pnpm` is not on
+  PATH, use `npm run ace:check`, `npm run ace:classify`, `npm run ace:finish`,
+  and related `npm run ace:*` scripts.
+- The active default Node on this machine may be older than the package engine.
+  Use the currently selected Node version for simple repo inspection, but
+  switch through nvm to any installed Node `&gt;=20` before running Vitest,
+  payload checks, or npm publish flows. Do not hardcode a local Node executable
+  path in repo scripts or instructions.
+- For npm publishing, use `npm run preview:npm` and `npm run publish:npm` so
+  the staged package uses `README.npm.md` and `logo-npm.svg`.
+- Versioning policy: before publishing any change that affects the shipped
+  package payload or user-visible ACE behavior, bump `package.json` version
+  with semver. Use `patch` for fixes/docs in the published payload, `minor` for
+  new backward-compatible behavior, and `major` for breaking CLI/template
+  changes. Do not bump solely for repo-local dogfooding files excluded from npm
+  such as `.ai/**`, `AGENTS.md`, `CLAUDE.md`, `DEVELOPING.md`, or `ROADMAP.md`.
+
+&lt;!-- agent-memory-workflow:start --&gt;
+## ACE (Agentic Context Engine) Workflow
+
+ACE is the local automation framework for managing AI context, code quality,
+and decision history. Use this workflow on top of the repo rules above;
+`AGENTS.md` remains the authoritative source for stack, architecture, and
+quality constraints.
+
+Before starting work:
+
+1. Read `AGENTS.md` first.
+2. If available, read `.ai/report-brief.md` first for a compact summary,
+   including recent unresolved reflections.
+3. Treat `.ai/*` as authoritative and read `.ai/current-task.md`,
+   `.ai/session-handoff.md`, `.ai/decisions.md`, and
+   `.ai/changed-files.md` when you need detail or verification.
+4. Run `pnpm ace:classify` before implementation to identify whether the
+   task is small, standard, or large.
+5. If this is a newly installed or unknown project and `.ai/memory-config.json`
+   is still marked `unprofiled`, run `pnpm ace:onboard` and apply an
+   approved profile before implementation.
+6. For large tasks, and standard tasks with high-risk signals, complete the
+   `.ai/current-task.md` Business Value and Technical Approach sections before
+   writing code. Compare at least two viable patterns and choose explicitly.
+7. Read `.ai/work-log.md` only when you need extra historical context.
+8. If the memory files are missing, run `pnpm ace:init`.
+
+Command note: examples use `pnpm`. On Windows PowerShell, use
+`pnpm.cmd ace:classify`, `pnpm.cmd ace:validate`, and similar commands if
+the `pnpm` shim is blocked by execution policy.
+
+Legacy commands such as `pnpm ai:task:classify`, `pnpm ai:task:finish`,
+and `pnpm agent-memory:init` remain supported for compatibility.
+
+While working:
+
+- Prefer minimal, safe diffs that preserve existing UI and API contracts.
+- Do not rewrite large components or architecture unless the task requires it.
+- Keep `.ai/current-task.md` aligned with the active task when scope changes.
+- Keep project-specific tier and risk rules in `.ai/memory-config.json`, the
+  canonical ACE config, not inside the scripts, so the toolset remains
+  portable.
+- Use `pnpm ace:onboard` to generate `.ai/project-profile.md` and
+  recommended project-specific risk rules when ACE is installed into an
+  unfamiliar repo.
+- When updating `.ai/session-handoff.md`, `.ai/work-log.md`,
+  `.ai/reflection-log.md`, or `.ai/decisions.md`, use timestamps in
+  `YYYY-MM-DD HH:mm` format.
+- Keep `.ai/current-task.md`, `.ai/session-handoff.md`,
+  `.ai/reflection-log.md`, and `.ai/changed-files.md` compact.
+- Archive only `.ai/work-log.md`, `.ai/reflection-log.md`, and
+  `.ai/decisions.md` into `.ai/archive/` when they grow past the documented
+  thresholds.
+- Use `.ai/current-task.md` lifecycle fields for task/version transitions.
+  When a large task version is complete, mark its completion checklist and let
+  `pnpm ace:finish` archive a final snapshot.
+
+After completing a task:
+
+1. Update the authoritative `.ai/*` files directly or through
+   `ai:update:*` helpers.
+2. Run `pnpm ace:validate` and fix any mechanical quality gate failures.
+3. Run `pnpm ace:finish` to validate the adaptive closeout and generate
+   reports.
+4. Small tasks need compact handoff, changed-files, work-log, and brief report.
+5. Standard tasks also need product, architecture, security, and code-quality
+   review notes.
+6. Large tasks also need design review, reflection entry when useful, archive
+   snapshot, full report, and a review of `.ai/tech-docs.md` or
+   `.ai/product-roadmap.md` when technical or business state changed.
+&lt;!-- agent-memory-workflow:end --&gt;</file><file path=".ai/changed-files.md"># Changed Files
 
 [AGENTS.md]
 - Added ACE agent workflow instructions, project-specific npm/Node/publish notes, first-block meta-architecture warning, and versioning policy.
 - Replaced maintainer-local Node executable guidance with generic active Node `&gt;=20` guidance.
+- Added roadmap-first guidance for product and architecture changes.
 
 [CLAUDE.md]
 - Added Claude-compatible agent workflow instructions with npm-based local commands, first-block meta-architecture warning, and versioning policy.
@@ -260,6 +361,7 @@ Status: resolved
 [.ai/**]
 - Added ACE memory, onboarding, task, handoff, work-log, reflection, archive files, and `.ai/README.md` dogfooding marker.
 - Recorded that local Node paths must not be hardcoded; use the active nvm-selected Node and switch to any compatible `&gt;=20` version for verification.
+- Recorded ACE roadmap, anti-goals, v2.0+ research seeds, and explicit AI opt-in policy.
 
 [package.json]
 - Added ACE workflow scripts and npm payload guard while preserving existing test and npm publish scripts.
@@ -271,6 +373,7 @@ Status: resolved
 - Linked local ACE dogfooding development guidance from the development section.
 - Updated development setup/link commands to npm.
 - Added vibe coding positioning to the GitHub README intro.
+- Linked the GitHub README development section to `ROADMAP.md`.
 
 [README.npm.md]
 - Updated development setup/link commands to npm for the staged npm README.
@@ -278,11 +381,18 @@ Status: resolved
 
 [DEVELOPING.md]
 - Documented the product layer, repo-local dogfooding layer, npm payload boundary, and semver policy.
+- Added product philosophy, zero-bloat constraints, native Node/Git preference,
+  and explicit AI provider opt-in policy.
+
+[ROADMAP.md]
+- Added GitHub-only product compass with ACE vision, anti-goals, release roadmap,
+  v2.0+ research seeds, and explicit AI opt-in policy.
 
 [tools/check-npm-payload.mjs]
 - Added repeatable guard for excluding repo-local ACE files from the npm package.
 - Fixed Windows/Git Bash npm dry-run inspection by routing npm through `cmd.exe`
   with the relative `.npm-publish` path.
+- Added `ROADMAP.md` to forbidden npm payload paths.
 
 [.vscode/tasks.json]
 - Added explicit npm-based VS Code tasks for payload check, preview, dry release,
@@ -352,6 +462,7 @@ Chosen Approach:
 - [x] Replaced local Node path/version hardcoding with generic active Node `&gt;=20` guidance.
 - [x] Hardened npm release commands for Windows/Git Bash and verified dry publish flow.
 - [x] Added vibe coding positioning and bumped package version to 0.1.5.
+- [x] Formalized ACE roadmap, anti-goals, minimalism constraints, and explicit AI opt-in policy.
 
 ## Affected Areas
 - `package.json`
@@ -361,6 +472,7 @@ Chosen Approach:
 - `DEVELOPING.md`
 - `README.md`
 - `README.npm.md`
+- `ROADMAP.md`
 - `tools/check-npm-payload.mjs`
 - `scripts/ai-memory-utils.mjs`
 - `scripts/ai-report.mjs`
@@ -385,6 +497,9 @@ Chosen Approach:
 - Do not spawn `npm.cmd` directly with `execFile` on Windows; route npm CLI
   subprocesses through `cmd.exe` or use package scripts/VS Code tasks that call
   `npm.cmd` explicitly.
+- Treat `ROADMAP.md` as GitHub-only strategy. Do not add it to npm payload.
+- Future AI-assisted documentation generation must be explicit opt-in; default
+  provider is `off`, and ACE must never make hidden local or cloud AI calls.
 
 ## Acceptance Criteria
 - ACE memory files exist in `.ai/`.
@@ -401,6 +516,8 @@ Chosen Approach:
 - `package.json` version is `0.1.5`.
 - Repo-local instructions do not point to a maintainer-specific Node executable.
 - `npm run release:npm:dry` verifies payload guard, pack dry-run, and publish dry-run.
+- `ROADMAP.md` exists and records vision, anti-goals, roadmap, v2.0+ research seeds,
+  and explicit AI opt-in policy.
 
 ## Completion Checklist
 - [x] Goal completed
@@ -526,10 +643,46 @@ Reason:
 Impact:
 - `package.json` includes the `vibe-coding` keyword.
 - GitHub and npm README surfaces explain ACE as a memory and guardrail layer for
-  scaling natural-language coding beyond small scripts.</file><file path=".ai/session-handoff.md"># Session Handoff
+  scaling natural-language coding beyond small scripts.
+
+## 2026-06-13 23:05
+
+Decision:
+- Treat `ROADMAP.md` as the GitHub-only strategic compass for ACE.
+
+Reason:
+- Future human and AI contributors need a durable source of product direction,
+  anti-goals, minimalism constraints, and long-term research seeds without
+  relying on chat history.
+
+Impact:
+- Product and architecture changes should preserve the roadmap anti-goals:
+  local-first, zero-lock-in, zero-bloat, no hidden AI calls, no SaaS
+  requirement, no prompt-library positioning, and no IDE/model lock-in.
+- `ROADMAP.md` stays excluded from npm payload unless a future release
+  intentionally changes that boundary.
+
+## 2026-06-13 23:05
+
+Decision:
+- Future AI-assisted documentation generation must be explicit opt-in.
+
+Reason:
+- Hidden local or cloud AI calls can leak code, violate corporate privacy
+  policy, consume unexpected tokens, drain batteries, or block the developer
+  workflow.
+
+Impact:
+- The default provider is `off`.
+- Optional local providers such as Ollama or llama.cpp are privacy/cost
+  optimizations, not baseline dependencies.
+- Optional cloud providers require explicit repo-owned config, API keys, and a
+  privacy decision.
+- Missing, invalid, unavailable, or timed-out providers must fail open into the
+  existing manual or active-agent-assisted Markdown closeout workflow.</file><file path=".ai/session-handoff.md"># Session Handoff
 
 ## Last Update
-2026-06-13 22:28
+2026-06-13 23:05
 
 ## What Was Done
 - Ran `node ./install-ace-pack.mjs init . --apply` in this repository.
@@ -556,6 +709,9 @@ Impact:
   that call `npm.cmd` directly.
 - Added `vibe-coding` npm keyword, updated GitHub/npm README positioning, and
   bumped package version to `0.1.5`.
+- Added GitHub-only `ROADMAP.md` as the ACE strategic compass and recorded
+  anti-goals, minimalism constraints, v2.0+ research seeds, and explicit AI
+  opt-in policy.
 - Verified the setup with `npm run ace:check`, `npm run ace:classify`, and the
   Vitest suite on an active Node version that satisfies `&gt;=20`.
 
@@ -577,13 +733,20 @@ Impact:
 - `pnpm run release:npm:dry` from Git Bash is verified to pass, but npm may
   print warnings about pnpm-specific env config. Use the committed VS Code
   tasks or `npm.cmd` commands for cleaner output.
+- `ROADMAP.md` is GitHub-only and must stay out of npm payload. It is the first
+  reference for product vision, anti-goals, minimalism constraints, and future
+  AI provider policy.
+- Future AI-assisted documentation generation must default to provider `off`.
+  ACE must not make hidden local or cloud AI calls; unavailable providers fail
+  open into manual or active-agent-assisted Markdown closeout.
 
 ## Quality Review
 Product Alignment:
 - The repo now preserves agent workflow and release context locally, which
   addresses the need to avoid relying on chat memory. npm keywords now better
   match AgentOps, context management, guardrails, vibe coding, and AI coding
-  discovery terms.
+  discovery terms. `ROADMAP.md` now records the product promise and anti-goals
+  that future features must preserve.
 
 Architecture:
 - Used the package&apos;s own installer instead of hand-writing the scaffold, so the
@@ -643,6 +806,9 @@ Code Quality:
 - Staged npm README uses `./logo-npm.svg` and includes the vibe coding positioning.
 - `npm.cmd run test` passed: 7 files, 38 tests.
 - `npm.cmd run ace:check` passed.
+- `ROADMAP.md` Markdown links inspected for local references.
+- `npm.cmd run check:npm-payload` passed and confirmed `ROADMAP.md` stays out of npm payload.
+- `npm.cmd run ace:check` passed.
 
 ## Notes
 - For npm publishing, use `npm run release:npm:dry` before `npm run release:npm` so the
@@ -650,6 +816,7 @@ Code Quality:
   `logo-npm.svg`.
 - Use `DEVELOPING.md` as the first reference for future fork maintainers who
   need to distinguish shipped ACE behavior from this repo&apos;s local ACE memory.
+- Use `ROADMAP.md` as the first reference for product direction and anti-goals.
 - Before publishing shipped product changes, run `npm version patch --no-git-tag-version`
   or choose the appropriate semver level, then run `npm run check:npm-payload`
   and `npm run release:npm:dry`.</file><file path=".ai/work-log.md"># Work Log
@@ -707,102 +874,13 @@ Code Quality:
 - Added subtle vibe coding positioning to both GitHub and npm README surfaces.
 - Kept the change metadata/docs-only with no CLI, template, or runtime behavior changes.
 - Verified JSON metadata, npm payload guard, full dry npm release, staged npm
-  README content, Vitest, and ACE memory check.</file><file path="AGENTS.md">&gt; [!WARNING]
-&gt; **META-ARCHITECTURE WARNING:** This repository BUILDS the ACE product, but also USES ACE locally. If you are instructed to modify ACE behavior for users, edit the product source and templates in `scripts/`. Do not edit this local `AGENTS.md`, `CLAUDE.md`, or `.ai/**` to change global product behavior.
+  README content, Vitest, and ACE memory check.
 
-# AGENTS.md
+## 2026-06-13 23:05
 
-Repository rules for AI coding agents working in this project.
-
-## Project Rules
-
-- Read `DEVELOPING.md` before changing package behavior. It defines the
-  boundary between shipped ACE product files and repo-local dogfooding memory.
-- This package supports npm-based local workflow commands. If `pnpm` is not on
-  PATH, use `npm run ace:check`, `npm run ace:classify`, `npm run ace:finish`,
-  and related `npm run ace:*` scripts.
-- The active default Node on this machine may be older than the package engine.
-  Use the currently selected Node version for simple repo inspection, but
-  switch through nvm to any installed Node `&gt;=20` before running Vitest,
-  payload checks, or npm publish flows. Do not hardcode a local Node executable
-  path in repo scripts or instructions.
-- For npm publishing, use `npm run preview:npm` and `npm run publish:npm` so
-  the staged package uses `README.npm.md` and `logo-npm.svg`.
-- Versioning policy: before publishing any change that affects the shipped
-  package payload or user-visible ACE behavior, bump `package.json` version
-  with semver. Use `patch` for fixes/docs in the published payload, `minor` for
-  new backward-compatible behavior, and `major` for breaking CLI/template
-  changes. Do not bump solely for repo-local dogfooding files excluded from npm
-  such as `.ai/**`, `AGENTS.md`, `CLAUDE.md`, or `DEVELOPING.md`.
-
-&lt;!-- agent-memory-workflow:start --&gt;
-## ACE (Agentic Context Engine) Workflow
-
-ACE is the local automation framework for managing AI context, code quality,
-and decision history. Use this workflow on top of the repo rules above;
-`AGENTS.md` remains the authoritative source for stack, architecture, and
-quality constraints.
-
-Before starting work:
-
-1. Read `AGENTS.md` first.
-2. If available, read `.ai/report-brief.md` first for a compact summary,
-   including recent unresolved reflections.
-3. Treat `.ai/*` as authoritative and read `.ai/current-task.md`,
-   `.ai/session-handoff.md`, `.ai/decisions.md`, and
-   `.ai/changed-files.md` when you need detail or verification.
-4. Run `pnpm ace:classify` before implementation to identify whether the
-   task is small, standard, or large.
-5. If this is a newly installed or unknown project and `.ai/memory-config.json`
-   is still marked `unprofiled`, run `pnpm ace:onboard` and apply an
-   approved profile before implementation.
-6. For large tasks, and standard tasks with high-risk signals, complete the
-   `.ai/current-task.md` Business Value and Technical Approach sections before
-   writing code. Compare at least two viable patterns and choose explicitly.
-7. Read `.ai/work-log.md` only when you need extra historical context.
-8. If the memory files are missing, run `pnpm ace:init`.
-
-Command note: examples use `pnpm`. On Windows PowerShell, use
-`pnpm.cmd ace:classify`, `pnpm.cmd ace:validate`, and similar commands if
-the `pnpm` shim is blocked by execution policy.
-
-Legacy commands such as `pnpm ai:task:classify`, `pnpm ai:task:finish`,
-and `pnpm agent-memory:init` remain supported for compatibility.
-
-While working:
-
-- Prefer minimal, safe diffs that preserve existing UI and API contracts.
-- Do not rewrite large components or architecture unless the task requires it.
-- Keep `.ai/current-task.md` aligned with the active task when scope changes.
-- Keep project-specific tier and risk rules in `.ai/memory-config.json`, the
-  canonical ACE config, not inside the scripts, so the toolset remains
-  portable.
-- Use `pnpm ace:onboard` to generate `.ai/project-profile.md` and
-  recommended project-specific risk rules when ACE is installed into an
-  unfamiliar repo.
-- When updating `.ai/session-handoff.md`, `.ai/work-log.md`,
-  `.ai/reflection-log.md`, or `.ai/decisions.md`, use timestamps in
-  `YYYY-MM-DD HH:mm` format.
-- Keep `.ai/current-task.md`, `.ai/session-handoff.md`,
-  `.ai/reflection-log.md`, and `.ai/changed-files.md` compact.
-- Archive only `.ai/work-log.md`, `.ai/reflection-log.md`, and
-  `.ai/decisions.md` into `.ai/archive/` when they grow past the documented
-  thresholds.
-- Use `.ai/current-task.md` lifecycle fields for task/version transitions.
-  When a large task version is complete, mark its completion checklist and let
-  `pnpm ace:finish` archive a final snapshot.
-
-After completing a task:
-
-1. Update the authoritative `.ai/*` files directly or through
-   `ai:update:*` helpers.
-2. Run `pnpm ace:validate` and fix any mechanical quality gate failures.
-3. Run `pnpm ace:finish` to validate the adaptive closeout and generate
-   reports.
-4. Small tasks need compact handoff, changed-files, work-log, and brief report.
-5. Standard tasks also need product, architecture, security, and code-quality
-   review notes.
-6. Large tasks also need design review, reflection entry when useful, archive
-   snapshot, full report, and a review of `.ai/tech-docs.md` or
-   `.ai/product-roadmap.md` when technical or business state changed.
-&lt;!-- agent-memory-workflow:end --&gt;</file></files></repomix>
+- Added GitHub-only `ROADMAP.md` with ACE vision, product promise, anti-goals,
+  release roadmap, v2.0+ research seeds, and explicit AI opt-in policy.
+- Updated `DEVELOPING.md`, `AGENTS.md`, README, and `.ai/product-roadmap.md`
+  to align future product work with zero-bloat and privacy-safe defaults.
+- Added `ROADMAP.md` to the npm payload guard&apos;s forbidden paths so strategy docs
+  stay out of the package tarball.</file></files></repomix>
