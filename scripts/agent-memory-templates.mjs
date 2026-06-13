@@ -177,6 +177,9 @@ task.
 - Use \`pnpm ace:classify\` to select the adaptive task tier.
 - Run \`pnpm ace:onboard\` after fresh installation in an unfamiliar project
   before trusting project-specific risk rules.
+- On Windows PowerShell, use \`pnpm.cmd ace:classify\`,
+  \`pnpm.cmd ace:validate\`, and similar commands if script execution policy
+  blocks the \`pnpm\` shim.
 - For large or high-risk standard tasks, complete \`.ai/current-task.md\`
   Business Value and Technical Approach before writing code.
 - Treat \`.ai/*\` as the current source of task context and handoff state.
@@ -217,6 +220,10 @@ Before starting work:
    writing code. Compare at least two viable patterns and choose explicitly.
 7. Read \`.ai/work-log.md\` only when you need extra historical context.
 8. If the memory files are missing, run \`pnpm ace:init\`.
+
+Command note: examples use \`pnpm\`. On Windows PowerShell, use
+\`pnpm.cmd ace:classify\`, \`pnpm.cmd ace:validate\`, and similar commands if
+the \`pnpm\` shim is blocked by execution policy.
 
 Legacy commands such as \`pnpm ai:task:classify\`, \`pnpm ai:task:finish\`,
 and \`pnpm agent-memory:init\` remain supported for compatibility.

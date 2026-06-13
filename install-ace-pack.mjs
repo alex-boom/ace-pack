@@ -29,6 +29,10 @@ const REQUIRED_PACKAGE_SCRIPTS = {
   'ai:update:changed': 'node ./scripts/ai-update.mjs changed',
 }
 
+const DEFAULT_PACKAGE_SCRIPTS = {
+  'ace:validate': 'node ./scripts/check-agent-memory.mjs',
+}
+
 const MANAGED_SCRIPT_FILES = [
   'ace-hub.mjs',
   'ace-onboard.mjs',
@@ -128,6 +132,15 @@ async function ensurePackageScripts(rootDir) {
 
   for (const [scriptName, scriptValue] of Object.entries(REQUIRED_PACKAGE_SCRIPTS)) {
     if (nextScripts[scriptName] === scriptValue) {
+      continue
+    }
+
+    nextScripts[scriptName] = scriptValue
+    changed = true
+  }
+
+  for (const [scriptName, scriptValue] of Object.entries(DEFAULT_PACKAGE_SCRIPTS)) {
+    if (scriptName in nextScripts) {
       continue
     }
 

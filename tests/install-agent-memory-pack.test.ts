@@ -79,6 +79,7 @@ describe('installAcePack', () => {
     expect(packageJson.scripts['ace:onboard']).toBe('node ./scripts/ace-onboard.mjs')
     expect(packageJson.scripts['ace:report']).toBe('node ./scripts/ai-report.mjs')
     expect(packageJson.scripts['ace:report:brief']).toBe('node ./scripts/ai-report-brief.mjs')
+    expect(packageJson.scripts['ace:validate']).toBe('node ./scripts/check-agent-memory.mjs')
     expect(packageJson.scripts['agent-memory:init']).toBe(
       'node ./scripts/bootstrap-agent-memory.mjs',
     )
@@ -89,8 +90,23 @@ describe('installAcePack', () => {
     expect(packageJson.scripts['ai:task:classify']).toBe('node ./scripts/ai-task-classify.mjs')
     expect(packageJson.scripts['ai:task:finish']).toBe('node ./scripts/ai-task-finish.mjs')
     expect(packageJson.scripts['ai:update:task']).toBe('node ./scripts/ai-update.mjs task')
-    expect(packageJson.scripts['ace:validate']).toBeUndefined()
     await expect(validateAgentMemory(rootDir)).resolves.toEqual([])
+  })
+
+  it('does not overwrite a project-owned ace:validate script', async () => {
+    const rootDir = await createTargetRepo()
+
+    const packageJsonPath = path.join(rootDir, 'package.json')
+    const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'))
+    packageJson.scripts['ace:validate'] = 'npm run lint && npm test'
+    await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`, 'utf8')
+
+    await installAcePack(rootDir)
+
+    const updatedPackageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'))
+
+    expect(updatedPackageJson.scripts['ace:validate']).toBe('npm run lint && npm test')
+    expect(updatedPackageJson.scripts['ace:check']).toBe('node ./scripts/check-agent-memory.mjs')
   })
 
   it('is idempotent when installed again into the same repository', async () => {
@@ -121,6 +137,7 @@ describe('installAcePack', () => {
       private: true,
     })
     expect(packageJson.scripts['ace:onboard']).toBe('node ./scripts/ace-onboard.mjs')
+    expect(packageJson.scripts['ace:validate']).toBe('node ./scripts/check-agent-memory.mjs')
   })
 
   it('supports npm-ready ace-pack init target syntax', async () => {

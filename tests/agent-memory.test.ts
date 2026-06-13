@@ -56,6 +56,7 @@ describe('ensureAgentMemory', () => {
     expect(agentsContent).toContain('## ACE (Agentic Context Engine) Workflow')
     expect(agentsContent).toContain('ACE is the local automation framework')
     expect(agentsContent).toContain('pnpm ace:classify')
+    expect(agentsContent).toContain('pnpm.cmd ace:validate')
     expect(agentsContent).toContain('pnpm ai:task:classify')
     expect(memoryConfigContent).toContain('"ACE (Agentic Context Engine) Configuration"')
     const memoryConfig = JSON.parse(memoryConfigContent) as {
@@ -77,6 +78,7 @@ describe('ensureAgentMemory', () => {
       'packages/api/src/routers/**',
     )
     expect(claudeContent).toContain('.ai/report-brief.md')
+    expect(claudeContent).toContain('pnpm.cmd ace:validate')
   })
 
   it('does not overwrite existing memory files', async () => {

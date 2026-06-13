@@ -40,8 +40,8 @@ ACE turns those soft expectations into local project structure:
 - `AGENTS.md` keeps stack, architecture, and workflow rules close to the code.
 - `.ai/memory-config.json` marks high-risk paths and keywords for the current
   repository.
-- `ace:validate` stays project-owned so every repo can define its real
-  mechanical quality gate.
+- `ace:validate` starts as an ACE memory check and can be replaced by each
+  repo with its real mechanical quality gate.
 
 ## ACE vs. Just Chatting With AI
 
@@ -137,6 +137,15 @@ lightweight private runner package:
 No dependency install is required for ACE itself. The runner only exposes
 commands such as `ace:onboard`, `ace:hub`, `ace:classify`, and `ace:finish`.
 
+On Windows PowerShell, use `pnpm.cmd` if script execution policy blocks the
+regular `pnpm` shim:
+
+```bash
+pnpm.cmd ace:onboard -- --apply
+pnpm.cmd ace:classify
+pnpm.cmd ace:validate
+```
+
 Known SaaS monorepo? Apply the built-in preset:
 
 ```bash
@@ -199,7 +208,7 @@ pnpm ace:classify
 | `ace:onboard -- --preset next-trpc-drizzle-saas --apply` | Applies the built-in Next.js + tRPC + Drizzle SaaS profile. |
 | `ace:onboard -- --check` | Fails if the repository is still unprofiled. |
 | `ace:classify` | Git diff risk analysis for small, standard, and large tasks. |
-| `ace:validate` | Project-owned mechanical quality gate. ACE never overwrites this script. |
+| `ace:validate` | Default mechanical quality gate alias for `ace:check`. Projects may replace it with a stricter local gate. |
 | `ace:finish` | Adaptive closeout, memory documentation, reports, and reflection. |
 | `ace:hub` | Interactive context generator for copying focused project context into AI tools. |
 

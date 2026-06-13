@@ -1,6 +1,6 @@
 {
   "name": "ace-pack",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Zero-dependency cognitive architecture framework for AI-driven development.",
   "type": "module",
   "license": "MIT",
@@ -38,6 +38,7 @@
     "install:pack": "node ./install-ace-pack.mjs",
     "install:legacy": "node ./install-agent-memory-pack.mjs",
     "link:global": "pnpm link --global",
+    "ace:validate": "node ./scripts/check-agent-memory.mjs",
     "test": "vitest run"
   },
   "devDependencies": {
