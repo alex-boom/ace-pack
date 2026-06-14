@@ -32,6 +32,9 @@ without reading large implementation files.
 - `ace-mcp-server.mjs` is the optional read-only MCP stdio adapter. It exposes
   selected ACE Markdown files through `resources/list` and `resources/read`,
   with no tools, writes, SDK dependency, network listener, or npm-script wrapper.
+- Product growth materials live outside runtime code. `docs/demo-script.md`,
+  `docs/launch-copy.md`, and `examples/context-loss-demo/**` support demos and
+  launch work, while README/README.npm provide only the concise entry point.
 - Release-readiness tooling lives in `tools/`. `smoke:fake-project` builds the
   local staged package and validates ACE inside disposable JS and non-JS
   projects. `dogfood:self-check` explicitly reapplies the local candidate to
@@ -56,6 +59,9 @@ without reading large implementation files.
   or memory schema fields were added for `0.4.0` or `0.4.1`.
 - MCP output is ephemeral JSON-RPC over stdio. No new persistent config,
   schema fields, or generated memory files were added for `0.5.0`.
+- v0.6 growth-kit output is static documentation and demo fixtures only. No
+  persistent ACE schema, config fields, generated files, or installed workflow
+  files were added.
 - Smoke and dogfood readiness output is ephemeral. The tools do not add config
   files or schema fields.
 
@@ -70,6 +76,8 @@ without reading large implementation files.
   output; it does not hide failures or create persistent policy state.
 - `0.5.0` MCP support is read-only resources only. The adapter omits missing
   files from resource discovery and performs no repository writes.
+- `0.6.0` marketing/demo materials are excluded from the npm payload through the
+  package file list and payload guard; they do not run automatically.
 - Dogfood self-check refuses dirty git worktrees by default and stops when
   unexpected files change after candidate self-apply.
 - Publish-secret handling is outside ACE scripts; release commands delegate to

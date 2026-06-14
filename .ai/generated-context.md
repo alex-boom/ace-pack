@@ -1,6 +1,6 @@
 # ACE Hub Context
 - Mode: start (Start / AI Coder Context)
-- Generated: 2026-06-14T09:54:16.614Z
+- Generated: 2026-06-14T10:21:00.826Z
 - Included files: .ai/report-brief.md, .ai/current-task.md, .ai/session-handoff.md, .ai/changed-files.md, .ai/reflection-log.md
 - Missing optional files: none
 
@@ -11,18 +11,18 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 12:54
+- Generated: 2026-06-14 13:21
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 12:51
-- Source session-handoff: 2026-06-14 12:52
-- Verification level: smoke-tested
+- Source current-task: 2026-06-14 13:19
+- Source session-handoff: 2026-06-14 13:20
+- Verification level: test-backed
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (21 changed files)
-- Last commit: dc42c81 Bump package version to 0.4.1 and enhance `ace:gate` with explicit `--human-override <reason>` support for low-risk changes. Relax quality-review enforcement for standard tasks while maintaining strict checks for large or high-risk changes. Update documentation to reflect new override functionality and improve clarity on CLI usage.
+- Worktree: dirty (22 changed files)
+- Last commit: b6c1835 Implement v0.5.0 with a read-only MCP adapter that exposes ACE Markdown memory as a zero-dependency stdio JSON-RPC resource server. Update package version to 0.5.0, add `ace-mcp-server.mjs` to managed scripts, and enhance documentation with configuration guidance for MCP clients. Include tests for resource handling and JSON-RPC protocol compliance.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
 - Next command: `npm.cmd run release:npm`
 - Release decision: NPM publish: required before final release; deferred by maintainer.
@@ -31,83 +31,78 @@ Project: `ace-pack`
 Detected ecosystems: Generic repository | Package manager: pnpm
 
 ## Current Task
-v0.5.0 Read-Only MCP Adapter
+v0.6.0 Product Growth Kit
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 12:30
+Started: 2026-06-14 13:07
 Ready For Archive: yes
 
 ## Goal
-Expose ACE memory to MCP-capable tools through a read-only stdio adapter while
-keeping the core ACE package zero-dependency and Markdown-first.
+Make ACE understandable in 60 seconds through concise demo materials, launch
+copy, and a small repository scenario while keeping marketing artifacts out of
+runtime behavior.
 
 ## Business Value
-v0.5 lets tools such as Claude Desktop, Cursor, and other MCP clients inspect
-ACE project memory without manual file copying. This improves context loading
-while preserving ACE's local-first and no-hidden-AI-calls promise.
+v0.6 should help new users quickly understand why ACE exists, what problem it
+solves for AI coding agents, and how to try the workflow without reading the
+full technical documentation first.
 
 ## Current Status
-- [x] Confirmed `ace-pack@0.4.1` is published on npm.
-- [x] Confirmed working tree only had repo-local generated context drift before
-  v0.5 work.
-- [x] Checked current MCP 2025-06-18 spec for resources, lifecycle, and stdio
-  transport behavior.
-- [x] Bumped package version to `0.5.0`.
-- [x] Added read-only stdio MCP resource server.
-- [x] Added the MCP script to installed managed scripts.
-- [x] Updated README/README.npm docs and tests.
+- [x] Confirmed `ace-pack@0.5.0` is published on npm.
+- [x] Confirmed working tree was clean before v0.6 work.
+- [x] Bumped package version to `0.6.0`.
+- [x] Added README/npm README demo entry point.
+- [x] Added demo script, launch copy, and demo fixture.
+- [x] Added tests that protect the growth kit and payload boundary.
 - [x] Ran release-readiness checks and explicit dogfood self-check.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when the maintainer wants v0.5.0 live.
-- After publish, run `npm.cmd view ace-pack version`.
-- Apply published ACE to this repo only as an explicit dogfood sync.
-- Next planning target after v0.5.0: v0.6 Product Growth Kit.
+- Publish with `npm.cmd run release:npm` when the maintainer wants v0.6.0 live.
+- After publish, run `npm.cmd view ace-pack version` and update repo-local ACE
+  memory so future agents see npm latest as `0.6.0`.
 
 ## Risks / Blockers
-- None known for v0.5.0.
+- None known for v0.6.0.
 
 ## Verification
-- `npm.cmd test` passed: 10 files, 83 tests.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
-- `npm.cmd run ace:gate` passed and classified the current work as large.
+- `npm.cmd run ace:classify` passed and classified v0.6 as large.
+- `npm.cmd test` passed: 11 files, 86 tests.
 - `npm.cmd run check:npm-payload` passed and checked 29 packed files.
+- `npm.cmd run release:ready` passed for `ace-pack@0.6.0`.
 
 ## Recent Decision
-## 2026-06-14 12:56
+## 2026-06-14 13:17
 
 Decision:
-- Implement v0.5 MCP support as a read-only stdio resource adapter using Node
-  built-ins, without adding an MCP SDK, tools, writes, network listeners, or an
-  npm wrapper script.
+- Implement v0.6 Product Growth Kit as static README, docs, and example
+  materials, while explicitly excluding `docs/**` and `examples/**` from the
+  npm runtime payload.
 
 Reason:
-- MCP is useful for letting tools inspect ACE memory, but the core product
-  promise is still zero-dependency, local-first, Markdown-first behavior.
-  Running through `npm run` can also print lifecycle text to stdout and break
-  stdio JSON-RPC framing.
+- ACE needs a clearer first impression and launch material, but product growth
+  assets should not add dependencies, commands, installer behavior, or package
+  bloat for repositories that only need the scaffold.
 
 Impact:
-- Consumers can configure MCP clients to run
-  `node ./scripts/ace-mcp-server.mjs` directly in their repository.
-- The adapter exposes selected `.ai/*` Markdown files as resources only.
-- Future MCP expansion should preserve the resource-only boundary unless a
-  separate optional package is deliberately introduced.
+- README and npm README now point users to a 60-second before/after demo.
+- GitHub-only docs contain the demo script and launch copy.
+- A tiny context-loss fixture demonstrates auth/session risk for demos.
+- Payload guard now rejects accidental `docs/**` or `examples/**` inclusion.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.
 
 ## Changed Areas
 - `package.json`
-- `scripts/ace-mcp-server.mjs`
-- `install-ace-pack.mjs`
-- `tests/ace-mcp-server.test.ts`
-- `tests/install-agent-memory-pack.test.ts`
 - `README.md`
+- `README.npm.md`
+- `docs/demo-script.md`
+- `docs/launch-copy.md`
+- `examples/context-loss-demo/**`
 
 ## Overall Progress
 - Completion checklist: 8/8
@@ -118,76 +113,75 @@ Impact:
 # Current Task
 
 ## Feature Name
-v0.5.0 Read-Only MCP Adapter
+v0.6.0 Product Growth Kit
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 12:30
+Started: 2026-06-14 13:07
 Ready For Archive: yes
 
 ## Goal
-Expose ACE memory to MCP-capable tools through a read-only stdio adapter while
-keeping the core ACE package zero-dependency and Markdown-first.
+Make ACE understandable in 60 seconds through concise demo materials, launch
+copy, and a small repository scenario while keeping marketing artifacts out of
+runtime behavior.
 
 ## Business Value / Product Alignment
-v0.5 lets tools such as Claude Desktop, Cursor, and other MCP clients inspect
-ACE project memory without manual file copying. This improves context loading
-while preserving ACE's local-first and no-hidden-AI-calls promise.
+v0.6 should help new users quickly understand why ACE exists, what problem it
+solves for AI coding agents, and how to try the workflow without reading the
+full technical documentation first.
 
 ## Technical Approach
 Option 1:
-- Use an official MCP SDK. This reduces protocol code, but adds dependencies
-  and risks pulling SDK bloat into the core ACE package.
+- Add marketing content directly into the installer or runtime workflow. This
+  makes it visible, but pollutes ACE behavior and risks adding ceremony for
+  existing users.
 
 Option 2:
-- Implement a small stdio JSON-RPC resource server with Node built-ins only.
-  It supports MCP initialization plus read-only `resources/list` and
-  `resources/read` for selected ACE Markdown files.
+- Keep the growth kit as docs and demo fixtures: a README demo section, a
+  short scriptable demo, reusable launch copy, and a tiny fixture repository
+  that illustrates context loss vs ACE guardrails.
 
 Chosen Approach:
-- Use Option 2. The adapter remains inspectable, local, and zero-dependency.
-  It exposes resources only, no tools, no writes, no network service, and no AI
-  provider calls.
+- Use Option 2. The release improves first impression and launch readiness
+  without adding dependencies, CLI commands, config files, hooks, network calls,
+  or runtime behavior.
 
 ## Current Status
-- [x] Confirmed `ace-pack@0.4.1` is published on npm.
-- [x] Confirmed working tree only had repo-local generated context drift before
-  v0.5 work.
-- [x] Checked current MCP 2025-06-18 spec for resources, lifecycle, and stdio
-  transport behavior.
-- [x] Bumped package version to `0.5.0`.
-- [x] Added read-only stdio MCP resource server.
-- [x] Added the MCP script to installed managed scripts.
-- [x] Updated README/README.npm docs and tests.
+- [x] Confirmed `ace-pack@0.5.0` is published on npm.
+- [x] Confirmed working tree was clean before v0.6 work.
+- [x] Bumped package version to `0.6.0`.
+- [x] Added README/npm README demo entry point.
+- [x] Added demo script, launch copy, and demo fixture.
+- [x] Added tests that protect the growth kit and payload boundary.
 - [x] Ran release-readiness checks and explicit dogfood self-check.
 
 ## Affected Areas
 - `package.json`
-- `install-ace-pack.mjs`
-- `scripts/ace-mcp-server.mjs`
 - `README.md`
 - `README.npm.md`
+- `docs/**`
+- `examples/**`
 - `tests/**`
 - `.ai/**` closeout notes
 
 ## Constraints
-- No new dependencies, schemas, config files, AI calls, network calls, or hidden
-  hook installation.
-- MCP adapter must be read-only resources only; no tools and no writes.
-- MCP clients should run the script directly with `node`, not through `npm run`,
-  because stdio transport requires stdout to contain only JSON-RPC messages.
-- Core ACE must remain Markdown-first and zero-runtime-dependency.
+- No new runtime dependencies, CLI commands, config files, AI calls, network
+  calls, hook installs, or MCP changes.
+- Marketing/demo assets must stay out of runtime behavior and out of the npm
+  payload unless deliberately shipped through README.npm.
+- Keep the main README concise; move detailed scripts and launch copy into docs.
 
 ## Acceptance Criteria
-- The MCP server responds to `initialize` with resource capabilities.
-- `resources/list` exposes the selected ACE memory resources that exist.
-- `resources/read` returns Markdown text for known ACE resource URIs.
-- Unknown resource URIs and unknown methods return JSON-RPC errors.
-- The server writes no non-JSON text to stdout in stdio mode.
-- Installed repositories receive the MCP script without adding dependencies.
+- README surfaces a 60-second ACE demo path.
+- A scriptable demo document explains the before/after scenario.
+- Launch copy exists for GitHub/npm/social/community posts.
+- A tiny fixture repo demonstrates sensitive code paths and expected ACE
+  guardrail behavior.
+- Tests verify the growth kit references exist and docs/examples are not added
+  to the npm package payload.
 
 ## Completion Checklist
 - [x] Goal completed
@@ -204,66 +198,58 @@ Chosen Approach:
 # Session Handoff
 
 ## Last Update
-2026-06-14 12:56
+2026-06-14 13:17
 
 ## What Was Done
-- Confirmed `ace-pack@0.4.1` is published on npm and started the next planned
-  release: v0.5 Read-Only MCP Adapter.
-- Bumped local package version to `0.5.0`.
-- Added `scripts/ace-mcp-server.mjs`, a zero-dependency stdio JSON-RPC MCP
-  resource server.
-- Exposed existing ACE Markdown memory as read-only MCP resources:
-  `.ai/report-brief.md`, `.ai/current-task.md`, `.ai/session-handoff.md`,
-  `.ai/decisions.md`, `.ai/product-roadmap.md`, `.ai/tech-docs.md`, and
-  `.ai/generated-context.md`.
-- Added the MCP script to the installer-managed script list so fresh ACE
-  installs receive it.
-- Updated README/README.npm with MCP client configuration guidance and the
-  direct `node ./scripts/ace-mcp-server.mjs` stdio rule.
-- Added MCP tests for resource listing/reading, initialize capabilities,
-  JSON-RPC stdio framing, errors, and install coverage.
+- Confirmed `ace-pack@0.5.0` is published on npm and local `package.json`
+  started from `0.5.0`.
+- Started v0.6 Product Growth Kit and bumped local package version to `0.6.0`.
+- Added a 60-second demo entry point to README and README.npm.
+- Added GitHub-only demo materials:
+  - `docs/demo-script.md`
+  - `docs/launch-copy.md`
+  - `examples/context-loss-demo/**`
+- Strengthened npm payload guard so `docs/**` and `examples/**` cannot enter
+  the runtime package by accident.
+- Added tests that verify README demo links, demo fixture focus, and payload
+  boundary expectations.
 
 ## Current State
-- npm latest is `ace-pack@0.4.1`.
-- Local candidate is `ace-pack@0.5.0`.
-- v0.5.0 is implemented locally and passed release-readiness verification.
-- MCP is intentionally not exposed through an npm script because stdio MCP
-  stdout must contain only JSON-RPC messages.
+- npm latest is `ace-pack@0.5.0`.
+- Local candidate is `ace-pack@0.6.0`.
+- v0.6.0 is implemented locally and passed release-readiness verification.
 
 ## Quality Review
 Product Alignment:
-- v0.5 improves context loading for MCP-capable tools without turning ACE into
-  an AI agent, SaaS service, or editor-specific integration.
+- v0.6 improves the first impression and launch readiness without changing ACE's
+  core workflow or asking users to learn a new command.
 
 Architecture:
-- The adapter is an isolated script using Node built-ins and existing Markdown
-  files. It exposes MCP resources only, with no tools, writes, background
-  service, network listener, schema change, or dependency on an MCP SDK.
+- Growth material is static documentation and a tiny fixture. It stays outside
+  runtime scripts, schemas, installers, and MCP/CI behavior.
 
 Security:
-- The server is read-only and local. It performs no AI calls, no hidden network
-  calls, and no repository writes. Missing files are simply omitted from
-  `resources/list` and unavailable resources return JSON-RPC errors.
+- No AI calls, network calls, hooks, credentials, or executable package runtime
+  behavior were added. The demo fixture is deliberately local and disposable.
 
 Code Quality:
-- Tests cover the protocol surface added in v0.5 and verify installed repos
-  receive `scripts/ace-mcp-server.mjs`.
+- Tests cover the README entry points, docs/example presence, fixture focus, and
+  package payload boundary. The payload guard also rejects accidental docs or
+  examples inclusion.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when the maintainer wants v0.5.0 live.
-- After publish, run `npm.cmd view ace-pack version`.
-- Apply published ACE to this repo only as an explicit dogfood sync.
-- Next planning target after v0.5.0: v0.6 Product Growth Kit.
+- Publish with `npm.cmd run release:npm` when the maintainer wants v0.6.0 live.
+- After publish, run `npm.cmd view ace-pack version` and update repo-local ACE
+  memory so future agents see npm latest as `0.6.0`.
 
 ## Known Issues
-- None known for v0.5.0.
+- None known for v0.6.0.
 
 ## Verification
-- `npm.cmd test` passed: 10 files, 83 tests.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
-- `npm.cmd run ace:gate` passed and classified the current work as large.
+- `npm.cmd run ace:classify` passed and classified v0.6 as large.
+- `npm.cmd test` passed: 11 files, 86 tests.
 - `npm.cmd run check:npm-payload` passed and checked 29 packed files.
-- `npm.cmd run release:ready` passed for `ace-pack@0.5.0`.
+- `npm.cmd run release:ready` passed for `ace-pack@0.6.0`.
 - `npm.cmd run dogfood:self-check -- --allow-dirty` passed and reported no
   created or updated installed files.
 
@@ -275,36 +261,43 @@ Code Quality:
 # Changed Files
 
 [package.json]
-- Bumped package version to `0.5.0`.
-
-[scripts/ace-mcp-server.mjs]
-- Added a zero-dependency stdio JSON-RPC MCP server.
-- Exposes existing ACE Markdown memory as read-only MCP resources.
-- Supports `initialize`, `ping`, `resources/list`, and `resources/read`.
-- Returns JSON-RPC errors for unknown methods, unknown resources, missing
-  resources, invalid requests, and parse errors.
-
-[install-ace-pack.mjs]
-- Added `ace-mcp-server.mjs` to the managed script files copied into installed
-  ACE repositories.
-
-[tests/ace-mcp-server.test.ts]
-- Added coverage for resource listing, Markdown resource reads, initialize
-  capabilities, JSON-RPC stdio framing, and error responses.
-
-[tests/install-agent-memory-pack.test.ts]
-- Added install-flow coverage for `scripts/ace-mcp-server.mjs`.
+- Bumped package version to `0.6.0`.
 
 [README.md]
-- Documented the read-only MCP adapter, exposed resources, and direct `node`
-  stdio configuration guidance.
+- Added a 60-second demo section with links to the demo script, launch copy, and
+  context-loss fixture.
 
 [README.npm.md]
-- Mirrored npm-facing MCP adapter documentation.
+- Added npm-facing 60-second demo copy with GitHub links to the full demo kit.
+
+[docs/demo-script.md]
+- Added a scriptable before/after demo walkthrough for ACE presentations,
+  recordings, and launch material.
+
+[docs/launch-copy.md]
+- Added reusable positioning, release copy, npm copy, blog opening, Reddit post,
+  Twitter/X thread, and demo CTA.
+
+[examples/context-loss-demo/**]
+- Added a tiny auth/session fixture that demonstrates why context loss is risky
+  for AI coding agents.
+
+[tools/check-npm-payload.mjs]
+- Added `docs/**` and `examples/**` to forbidden npm payload paths.
+
+[tests/product-growth-kit.test.ts]
+- Added coverage for README demo links, demo docs, fixture focus, and package
+  payload boundary expectations.
+
+[DEVELOPING.md]
+- Documented that `docs/**` and `examples/**` stay out of the npm payload.
+
+[ROADMAP.md]
+- Marked v0.6 Product Growth Kit as shipped locally.
 
 [.ai/**]
 - Updated current task, handoff, changed-files, work-log, decisions, roadmap,
-  technical docs, reflections, and generated reports for v0.5 closeout.
+  technical docs, and reports for v0.6 closeout.
 
 # --- FILE: .ai/reflection-log.md ---
 
@@ -323,6 +316,15 @@ Status: unresolved
 - Proposed Improvement: [Concrete change to try next time]
 
 ## Resolved
+
+### 2026-06-14 13:17 Growth assets must not become runtime bloat
+Status: resolved
+- Stuck Point: Product launch material can accidentally creep into package
+  payload or runtime behavior.
+- Likely Cause: Demo scripts and fixtures are useful for adoption but not needed
+  by installed consumer repositories.
+- Proposed Improvement: Keep growth assets GitHub-only, link to them from the
+  npm README, and enforce the payload boundary in tests and payload guard.
 
 ### 2026-06-14 12:56 MCP stdio must stay dependency-light
 Status: resolved

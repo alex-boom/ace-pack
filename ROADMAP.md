@@ -113,11 +113,12 @@ The shipped adapter is a zero-dependency stdio resource server that exposes
 selected `.ai/*` files read-only and does not add tools, writes, network
 listeners, or SDK dependencies.
 
-### v0.6: Product Growth Kit
+### v0.6: Product Growth Kit (shipped)
 
 Make ACE understandable in 60 seconds. Add concise demo assets, launch copy, and
 a small scripted demo scenario while keeping marketing artifacts out of runtime
-behavior.
+behavior. Growth assets live in GitHub-only `docs/**` and `examples/**`, while
+the npm payload keeps only the concise README entry point.
 
 ### v1.0: Stable Schema and Compatibility
 

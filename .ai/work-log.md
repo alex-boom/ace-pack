@@ -181,3 +181,14 @@
   initialize capabilities, stdio framing, errors, and install coverage.
 - Verified `npm.cmd run release:ready` and explicit
   `npm.cmd run dogfood:self-check -- --allow-dirty` for the v0.5.0 candidate.
+
+## 2026-06-14 13:17
+
+- Confirmed `ace-pack@0.5.0` is published on npm before starting v0.6 work.
+- Bumped package version to `0.6.0`.
+- Added README and npm README 60-second demo entry points.
+- Added GitHub-only demo script, launch copy, and context-loss fixture.
+- Strengthened npm payload guard to reject accidental `docs/**` and
+  `examples/**` inclusion.
+- Added growth-kit tests and verified `npm.cmd run release:ready` plus explicit
+  `npm.cmd run dogfood:self-check -- --allow-dirty` for the v0.6.0 candidate.

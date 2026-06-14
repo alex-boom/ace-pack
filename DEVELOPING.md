@@ -82,8 +82,8 @@ npm run check:npm-payload
 
 The npm tarball should contain only the package README, logos, CLI entrypoints,
 root `.mjs` files, root `.cmd` shims, and `scripts/*.mjs`. It must exclude
-`.ai/**`, `AGENTS.md`, `CLAUDE.md`, `DEVELOPING.md`, `ROADMAP.md`, reports, and
-archive snapshots.
+`.ai/**`, `AGENTS.md`, `CLAUDE.md`, `DEVELOPING.md`, `ROADMAP.md`, `docs/**`,
+`examples/**`, reports, and archive snapshots.
 
 ## Versioning Policy
 

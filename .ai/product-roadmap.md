@@ -47,11 +47,13 @@ handoff and browser-context workflows.
   MCP-capable tools through a zero-dependency stdio resource server. The adapter
   is read-only, exposes no tools, performs no writes, and keeps core ACE
   Markdown-first.
+- **v0.6 Product Growth Kit.** README surfaces a 60-second demo path, while
+  GitHub-only docs and examples provide a scriptable demo, launch copy, and a
+  tiny context-loss fixture without adding runtime behavior or npm payload
+  bloat.
 
 ## Planned Features
 
-- **v0.6: Product Growth Kit.** Make ACE understandable in 60 seconds through
-  concise demo assets, launch copy, and a small scripted demo scenario.
 - **v1.0: Stable Schema and Compatibility.** Document stable file formats,
   migration rules, and backward compatibility guarantees.
 

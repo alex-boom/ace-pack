@@ -32,6 +32,23 @@ AI coding assistants are powerful, but stateless by default. ACE gives them the
 project memory, guardrails, and closeout discipline they need to behave like
 reliable engineering teammates inside real repositories.
 
+## 60-Second Demo
+
+ACE is easiest to understand as a before/after:
+
+1. Without ACE, an AI chat edits `src/auth/session.ts` without loading project
+   memory, risk rules, or prior decisions.
+2. With ACE, onboarding marks auth as high-risk, `ace:classify` forces the
+   right task tier, and the agent records approach, verification, and handoff.
+3. The next chat starts from `ace:hub start` instead of asking the human to
+   rebuild context manually.
+
+GitHub includes the full demo kit:
+
+- [Scriptable demo walkthrough](https://github.com/alex-boom/ace-pack/blob/main/docs/demo-script.md)
+- [Launch copy](https://github.com/alex-boom/ace-pack/blob/main/docs/launch-copy.md)
+- [Tiny context-loss demo fixture](https://github.com/alex-boom/ace-pack/blob/main/examples/context-loss-demo/README.md)
+
 ## Quick Start
 
 Install ACE into the current repository. Use `init`; do not use

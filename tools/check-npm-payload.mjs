@@ -13,9 +13,18 @@ const forbiddenExactPaths = new Set([
   'DEVELOPING.md',
   'ROADMAP.md',
   'README.npm.md',
+  'docs',
+  'examples',
   '.ai',
 ])
-const forbiddenPathPrefixes = ['.ai/', 'package/.ai/']
+const forbiddenPathPrefixes = [
+  '.ai/',
+  'package/.ai/',
+  'docs/',
+  'package/docs/',
+  'examples/',
+  'package/examples/',
+]
 const requiredPaths = new Set([
   'README.md',
   'LICENSE',

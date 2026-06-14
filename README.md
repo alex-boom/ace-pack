@@ -106,6 +106,25 @@ profiles the repo and recommends project-specific risk rules before they are
 applied. The scanner recognizes common JS/TS, Python, Go, Rust, .NET, and
 monorepo signals without installing dependencies or calling external services.
 
+## 60-Second Demo
+
+Use the demo script when explaining ACE to a teammate, a team lead, or an AI
+tooling community:
+
+1. Start with a normal AI chat that edits `src/auth/session.ts` without loading
+   project memory.
+2. Show the same change after ACE onboarding: auth paths are high-risk, the
+   agent must classify the task, capture the technical approach, and finish
+   with verification and handoff notes.
+3. End with `ace:hub start`, which gives the next chat a compact startup
+   snapshot instead of forcing humans to retell the whole story.
+
+Demo materials:
+
+- [Scriptable demo walkthrough](./docs/demo-script.md)
+- [Launch copy for GitHub, npm, Habr, Reddit, and Twitter](./docs/launch-copy.md)
+- [Tiny context-loss demo fixture](./examples/context-loss-demo/README.md)
+
 ## Quick Start
 
 Install ACE into the current repository. Use `init`; do not use

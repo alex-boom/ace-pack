@@ -289,3 +289,21 @@ Impact:
 - The adapter exposes selected `.ai/*` Markdown files as resources only.
 - Future MCP expansion should preserve the resource-only boundary unless a
   separate optional package is deliberately introduced.
+
+## 2026-06-14 13:17
+
+Decision:
+- Implement v0.6 Product Growth Kit as static README, docs, and example
+  materials, while explicitly excluding `docs/**` and `examples/**` from the
+  npm runtime payload.
+
+Reason:
+- ACE needs a clearer first impression and launch material, but product growth
+  assets should not add dependencies, commands, installer behavior, or package
+  bloat for repositories that only need the scaffold.
+
+Impact:
+- README and npm README now point users to a 60-second before/after demo.
+- GitHub-only docs contain the demo script and launch copy.
+- A tiny context-loss fixture demonstrates auth/session risk for demos.
+- Payload guard now rejects accidental `docs/**` or `examples/**` inclusion.

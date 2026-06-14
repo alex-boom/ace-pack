@@ -1,0 +1,10 @@
+{
+  "name": "ace-context-loss-demo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Tiny ACE demo fixture showing context loss around auth/session code.",
+  "scripts": {
+    "test": "node --check src/auth/session.js && node --check src/auth/tokens.js"
+  }
+}

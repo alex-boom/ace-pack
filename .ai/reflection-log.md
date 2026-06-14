@@ -14,6 +14,15 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-14 13:17 Growth assets must not become runtime bloat
+Status: resolved
+- Stuck Point: Product launch material can accidentally creep into package
+  payload or runtime behavior.
+- Likely Cause: Demo scripts and fixtures are useful for adoption but not needed
+  by installed consumer repositories.
+- Proposed Improvement: Keep growth assets GitHub-only, link to them from the
+  npm README, and enforce the payload boundary in tests and payload guard.
+
 ### 2026-06-14 12:56 MCP stdio must stay dependency-light
 Status: resolved
 - Stuck Point: Adding MCP support can easily pull SDK dependencies or wrapper
