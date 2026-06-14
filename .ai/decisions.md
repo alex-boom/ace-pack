@@ -269,3 +269,23 @@ Impact:
 - `ace:gate -- --human-override <reason>` records intentional bypasses in CLI
   and JSON output.
 - `ace:finish` closeout requirements remain unchanged.
+
+## 2026-06-14 12:56
+
+Decision:
+- Implement v0.5 MCP support as a read-only stdio resource adapter using Node
+  built-ins, without adding an MCP SDK, tools, writes, network listeners, or an
+  npm wrapper script.
+
+Reason:
+- MCP is useful for letting tools inspect ACE memory, but the core product
+  promise is still zero-dependency, local-first, Markdown-first behavior.
+  Running through `npm run` can also print lifecycle text to stdout and break
+  stdio JSON-RPC framing.
+
+Impact:
+- Consumers can configure MCP clients to run
+  `node ./scripts/ace-mcp-server.mjs` directly in their repository.
+- The adapter exposes selected `.ai/*` Markdown files as resources only.
+- Future MCP expansion should preserve the resource-only boundary unless a
+  separate optional package is deliberately introduced.

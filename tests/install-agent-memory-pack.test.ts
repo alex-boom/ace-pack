@@ -68,6 +68,7 @@ describe('installAcePack', () => {
     expect(result.createdFiles).toContain('AGENTS.md')
     expect(result.createdFiles).toContain('CLAUDE.md')
     expect(result.createdFiles).toContain('scripts/ace-hub.mjs')
+    expect(result.createdFiles).toContain('scripts/ace-mcp-server.mjs')
     expect(result.createdFiles).toContain('scripts/ace-onboard.mjs')
     expect(result.createdFiles).toContain('scripts/ace-project-presets.mjs')
     expect(result.createdFiles).toContain('scripts/ace-quality-gate.mjs')

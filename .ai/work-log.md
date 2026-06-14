@@ -168,3 +168,16 @@
 - Relaxed `ace:gate` Quality Review enforcement for standard low-risk changes
   while preserving strict checks for large or high-risk changes.
 - Updated README surfaces and gate tests for the new DevEx behavior.
+
+## 2026-06-14 12:56
+
+- Confirmed `ace-pack@0.4.1` is published on npm before starting v0.5 work.
+- Bumped package version to `0.5.0`.
+- Added `scripts/ace-mcp-server.mjs` as a zero-dependency, read-only stdio MCP
+  resource server for ACE Markdown memory.
+- Added the MCP server to installed managed scripts without adding an npm script,
+  preserving clean JSON-RPC stdout for MCP clients.
+- Updated README surfaces and tests for MCP resource listing, resource reads,
+  initialize capabilities, stdio framing, errors, and install coverage.
+- Verified `npm.cmd run release:ready` and explicit
+  `npm.cmd run dogfood:self-check -- --allow-dirty` for the v0.5.0 candidate.

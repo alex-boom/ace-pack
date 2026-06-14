@@ -1,24 +1,33 @@
 # Changed Files
 
 [package.json]
-- Bumped package version to `0.4.1`.
+- Bumped package version to `0.5.0`.
 
-[scripts/ace-quality-gate.mjs]
-- Added explicit `--human-override <reason>` support that passes the gate while
-  preserving original issues and override metadata.
-- Relaxed Quality Review enforcement for standard low-risk changes, while
-  keeping strict enforcement for large tasks and high-risk matches.
+[scripts/ace-mcp-server.mjs]
+- Added a zero-dependency stdio JSON-RPC MCP server.
+- Exposes existing ACE Markdown memory as read-only MCP resources.
+- Supports `initialize`, `ping`, `resources/list`, and `resources/read`.
+- Returns JSON-RPC errors for unknown methods, unknown resources, missing
+  resources, invalid requests, and parse errors.
 
-[tests/ace-quality-gate.test.ts]
-- Added coverage for standard low-risk pass behavior, large quality-review
-  enforcement, human override metadata, missing override reason, and JSON output.
+[install-ace-pack.mjs]
+- Added `ace-mcp-server.mjs` to the managed script files copied into installed
+  ACE repositories.
+
+[tests/ace-mcp-server.test.ts]
+- Added coverage for resource listing, Markdown resource reads, initialize
+  capabilities, JSON-RPC stdio framing, and error responses.
+
+[tests/install-agent-memory-pack.test.ts]
+- Added install-flow coverage for `scripts/ace-mcp-server.mjs`.
 
 [README.md]
-- Documented explicit human override usage and updated the CLI reference.
+- Documented the read-only MCP adapter, exposed resources, and direct `node`
+  stdio configuration guidance.
 
 [README.npm.md]
-- Mirrored npm-facing human override documentation.
+- Mirrored npm-facing MCP adapter documentation.
 
 [.ai/**]
-- Updated current task, handoff, changed-files, work-log, decisions, reports,
-  and generated context for the v0.4.1 closeout.
+- Updated current task, handoff, changed-files, work-log, decisions, roadmap,
+  technical docs, reflections, and generated reports for v0.5 closeout.

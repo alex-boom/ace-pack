@@ -321,6 +321,33 @@ pnpm ace:gate -- --install-pre-push
 ACE never installs hooks automatically. If a non-ACE pre-push hook already
 exists, ACE writes `.git/hooks/pre-push.ace.sample` instead of overwriting it.
 
+## Read-Only MCP Adapter
+
+ACE includes a zero-dependency, read-only MCP stdio adapter for tools that can
+consume Model Context Protocol resources. It exposes selected `.ai/*` Markdown
+memory as resources and performs no writes, no AI calls, and no network calls.
+
+For MCP client configuration, run the script directly with `node` so stdout
+contains only JSON-RPC messages:
+
+```json
+{
+  "mcpServers": {
+    "ace": {
+      "command": "node",
+      "args": ["./scripts/ace-mcp-server.mjs"],
+      "cwd": "/absolute/path/to/your/repo"
+    }
+  }
+}
+```
+
+Do not configure MCP clients through `npm run`; npm may print lifecycle output
+to stdout, which breaks stdio MCP framing.
+
+Exposed resources include the brief report, current task, handoff, decisions,
+roadmap, technical docs, and generated hub context when those files exist.
+
 ## Release Readiness for ACE Maintainers
 
 ACE maintainers can batch shipped changes and publish only a final release. For

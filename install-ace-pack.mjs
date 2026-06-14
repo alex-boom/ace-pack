@@ -37,6 +37,7 @@ const DEFAULT_PACKAGE_SCRIPTS = {
 
 const MANAGED_SCRIPT_FILES = [
   'ace-hub.mjs',
+  'ace-mcp-server.mjs',
   'ace-onboard.mjs',
   'ace-project-presets.mjs',
   'ace-quality-gate.mjs',

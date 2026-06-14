@@ -14,6 +14,16 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-14 12:56 MCP stdio must stay dependency-light
+Status: resolved
+- Stuck Point: Adding MCP support can easily pull SDK dependencies or wrapper
+  command output into the core package.
+- Likely Cause: MCP examples often use SDKs, while stdio JSON-RPC requires
+  stdout framing that npm lifecycle output can corrupt.
+- Proposed Improvement: Keep ACE MCP as a direct `node` stdio resource adapter
+  with Node built-ins only, and consider a separate optional package only if
+  future MCP features truly require dependencies.
+
 ### 2026-06-14 12:22 Strict gates can hurt adoption
 Status: resolved
 - Stuck Point: A quality gate that blocks small human edits may train users to

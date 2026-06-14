@@ -3,18 +3,18 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 12:24
+- Generated: 2026-06-14 12:54
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 12:24
-- Source session-handoff: 2026-06-14 12:24
-- Verification level: test-backed
+- Source current-task: 2026-06-14 12:51
+- Source session-handoff: 2026-06-14 12:52
+- Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (18 changed files)
-- Last commit: ecd6cef Enhance release readiness for ACE by introducing `smoke:fake-project` and `dogfood:self-check` scripts for local validation before final publish. Update documentation in `DEVELOPING.md`, `README.md`, and `ROADMAP.md` to reflect new processes, including deferred publish wording. Add automated tests for smoke and self-check routines, ensuring a robust release workflow.
+- Worktree: dirty (21 changed files)
+- Last commit: dc42c81 Bump package version to 0.4.1 and enhance `ace:gate` with explicit `--human-override <reason>` support for low-risk changes. Relax quality-review enforcement for standard tasks while maintaining strict checks for large or high-risk changes. Update documentation to reflect new override functionality and improve clarity on CLI usage.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
 - Next command: `npm.cmd run release:npm`
 - Release decision: NPM publish: required before final release; deferred by maintainer.
@@ -26,128 +26,140 @@ Detected ecosystems: Generic repository | Package manager: pnpm
 
 
 ## Current Task
-v0.4.1 Gate DevEx Polish
+v0.5.0 Read-Only MCP Adapter
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 12:19
+Started: 2026-06-14 12:30
 Ready For Archive: yes
 
 ## Goal
-Reduce friction in `ace:gate` for low-risk human edits while keeping strict
-quality protection for large and high-risk AI-assisted changes.
+Expose ACE memory to MCP-capable tools through a read-only stdio adapter while
+keeping the core ACE package zero-dependency and Markdown-first.
 
 ## Business Value
-v0.4.1 protects adoption after the v0.4 release. Developers should not disable
-ACE because small safe changes are blocked by review ceremony, but teams still
-need explicit guardrails for risky work.
+v0.5 lets tools such as Claude Desktop, Cursor, and other MCP clients inspect
+ACE project memory without manual file copying. This improves context loading
+while preserving ACE's local-first and no-hidden-AI-calls promise.
 
 ## Technical Approach
 Option 1:
-- Keep `ace:gate` strict for standard and large tasks, and rely on users to
-  improve memory before pushing. This preserves maximum discipline but risks
-  frustrating humans on small low-risk changes.
+- Use an official MCP SDK. This reduces protocol code, but adds dependencies
+  and risks pulling SDK bloat into the core ACE package.
 
 Option 2:
-- Make `ace:gate` enforce quality review only for large or high-risk changes,
-  keep design review tied to existing design-review-required classification,
-  and add explicit `--human-override <reason>` for intentional bypasses.
+- Implement a small stdio JSON-RPC resource server with Node built-ins only.
+  It supports MCP initialization plus read-only `resources/list` and
+  `resources/read` for selected ACE Markdown files.
 
 Chosen Approach:
-- Use Option 2. It preserves the existing ACE classification engine, avoids new
-  config or dependencies, and gives humans a transparent escape hatch without
-  silently weakening CI behavior.
+- Use Option 2. The adapter remains inspectable, local, and zero-dependency.
+  It exposes resources only, no tools, no writes, no network service, and no AI
+  provider calls.
 
 ## Current Status
-- [x] Confirmed `ace-pack@0.4.0` is published on npm.
-- [x] Applied published ACE to this repo; installer reported already up to date.
-- [x] Ran published dogfood checks: `ace:check`, `ace:gate`, and `ace:hub start`.
-- [x] Bump package version to `0.4.1`.
-- [x] Add `ace:gate -- --human-override <reason>`.
-- [x] Relax standard low-risk quality-review enforcement.
-- [x] Update docs, tests, and ACE memory.
-- [x] Run release-readiness checks.
+- [x] Confirmed `ace-pack@0.4.1` is published on npm.
+- [x] Confirmed working tree only had repo-local generated context drift before
+  v0.5 work.
+- [x] Checked current MCP 2025-06-18 spec for resources, lifecycle, and stdio
+  transport behavior.
+- [x] Bumped package version to `0.5.0`.
+- [x] Added read-only stdio MCP resource server.
+- [x] Added the MCP script to installed managed scripts.
+- [x] Updated README/README.npm docs and tests.
+- [x] Ran release-readiness checks and explicit dogfood self-check.
 
 ## What Was Done
-- Confirmed `ace-pack@0.4.0` is published on npm.
-- Applied published ACE to this repository with
-  `npm.cmd exec --yes --package ace-pack@latest -- ace-pack init .`; installer
-  reported the repo was already up to date.
-- Ran post-publish dogfood checks: `ace:check`, `ace:gate`, and `ace:hub start`.
-- Bumped local package version to `0.4.1`.
-- Added `ace:gate -- --human-override <reason>` for explicit human-reviewed
-  bypasses with CLI and JSON metadata.
-- Relaxed `ace:gate` quality-review enforcement for standard low-risk changes
-  while keeping strict checks for large or high-risk changes.
-- Updated README/README.npm docs and gate tests.
-- Ran full `release:ready` and explicit dogfood self-check for the `0.4.1`
-  candidate.
+- Confirmed `ace-pack@0.4.1` is published on npm and started the next planned
+  release: v0.5 Read-Only MCP Adapter.
+- Bumped local package version to `0.5.0`.
+- Added `scripts/ace-mcp-server.mjs`, a zero-dependency stdio JSON-RPC MCP
+  resource server.
+- Exposed existing ACE Markdown memory as read-only MCP resources:
+  `.ai/report-brief.md`, `.ai/current-task.md`, `.ai/session-handoff.md`,
+  `.ai/decisions.md`, `.ai/product-roadmap.md`, `.ai/tech-docs.md`, and
+  `.ai/generated-context.md`.
+- Added the MCP script to the installer-managed script list so fresh ACE
+  installs receive it.
+- Updated README/README.npm with MCP client configuration guidance and the
+  direct `node ./scripts/ace-mcp-server.mjs` stdio rule.
+- Added MCP tests for resource listing/reading, initialize capabilities,
+  JSON-RPC stdio framing, errors, and install coverage.
 
 ## Current State
-- npm latest is `ace-pack@0.4.0`.
-- Local candidate is `ace-pack@0.4.1`.
-- v0.4.1 is implemented locally and passed release-readiness verification.
-- `.ai/generated-context.md` may be dirty because `ace:hub start` refreshes it.
+- npm latest is `ace-pack@0.4.1`.
+- Local candidate is `ace-pack@0.5.0`.
+- v0.5.0 is implemented locally and passed release-readiness verification.
+- MCP is intentionally not exposed through an npm script because stdio MCP
+  stdout must contain only JSON-RPC messages.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when the maintainer wants v0.4.1 live.
-- Next product planning target after v0.4.1: v0.5 Read-Only MCP Adapter with
-  strict zero-dependency core isolation.
+- Publish with `npm.cmd run release:npm` when the maintainer wants v0.5.0 live.
+- After publish, run `npm.cmd view ace-pack version`.
+- Apply published ACE to this repo only as an explicit dogfood sync.
+- Next planning target after v0.5.0: v0.6 Product Growth Kit.
 
 ## Known Issues
-- None known for v0.4.1.
+- None known for v0.5.0.
 
 ## Quality Review
 Product Alignment:
-- v0.4.1 improves adoption after the v0.4 quality-gate release by reducing
-  friction for small human-reviewed changes.
+- v0.5 improves context loading for MCP-capable tools without turning ACE into
+  an AI agent, SaaS service, or editor-specific integration.
 
 Architecture:
-- The change keeps `ace:finish` strict and adjusts only the `ace:gate`
-  orchestration layer. Classification remains the single source of risk and
-  tier decisions.
+- The adapter is an isolated script using Node built-ins and existing Markdown
+  files. It exposes MCP resources only, with no tools, writes, background
+  service, network listener, schema change, or dependency on an MCP SDK.
 
 Security:
-- Human override requires an explicit reason and is surfaced in CLI/JSON output.
-  It is not hidden, not automatic, and does not install hooks or call external
-  services.
+- The server is read-only and local. It performs no AI calls, no hidden network
+  calls, and no repository writes. Missing files are simply omitted from
+  `resources/list` and unavailable resources return JSON-RPC errors.
 
 Code Quality:
-- Tests cover standard low-risk pass behavior, large-task quality-review
-  enforcement, override success, missing override reason, and JSON metadata.
+- Tests cover the protocol surface added in v0.5 and verify installed repos
+  receive `scripts/ace-mcp-server.mjs`.
 
 ## Verification
-- `npm.cmd test` passed: 9 files, 77 tests.
+- `npm.cmd test` passed: 10 files, 83 tests.
+- `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
 - `npm.cmd run ace:gate` passed and classified the current work as large.
-- `npm.cmd run release:ready` passed for `ace-pack@0.4.1`.
+- `npm.cmd run check:npm-payload` passed and checked 29 packed files.
+- `npm.cmd run release:ready` passed for `ace-pack@0.5.0`.
 - `npm.cmd run dogfood:self-check -- --allow-dirty` passed and reported no
 created or updated installed files.
 
 ## Recent Decisions
-## 2026-06-14 12:22
+## 2026-06-14 12:56
 
 Decision:
-- Tune `ace:gate` for DevEx by allowing standard low-risk changes without
-  Quality Review and adding explicit human override with a required reason.
+- Implement v0.5 MCP support as a read-only stdio resource adapter using Node
+  built-ins, without adding an MCP SDK, tools, writes, network listeners, or an
+  npm wrapper script.
 
 Reason:
-- PR/CI gates should prevent risky AI-assisted merges, not punish humans for
-  small safe edits. A visible override keeps accountability without encouraging
-  users to delete hooks or disable ACE.
+- MCP is useful for letting tools inspect ACE memory, but the core product
+  promise is still zero-dependency, local-first, Markdown-first behavior.
+  Running through `npm run` can also print lifecycle text to stdout and break
+  stdio JSON-RPC framing.
 
 Impact:
-- Strict gate review remains for large tasks and high-risk matches.
-- `ace:gate -- --human-override <reason>` records intentional bypasses in CLI
-  and JSON output.
-- `ace:finish` closeout requirements remain unchanged.
+- Consumers can configure MCP clients to run
+  `node ./scripts/ace-mcp-server.mjs` directly in their repository.
+- The adapter exposes selected `.ai/*` Markdown files as resources only.
+- Future MCP expansion should preserve the resource-only boundary unless a
+  separate optional package is deliberately introduced.
 
 ## Changed Areas
 - `package.json`
-- `scripts/ace-quality-gate.mjs`
-- `tests/ace-quality-gate.test.ts`
+- `scripts/ace-mcp-server.mjs`
+- `install-ace-pack.mjs`
+- `tests/ace-mcp-server.test.ts`
+- `tests/install-agent-memory-pack.test.ts`
 - `README.md`
 - `README.npm.md`
 - `.ai/**`
@@ -323,6 +335,19 @@ Impact:
 - Relaxed `ace:gate` Quality Review enforcement for standard low-risk changes
   while preserving strict checks for large or high-risk changes.
 - Updated README surfaces and gate tests for the new DevEx behavior.
+
+## 2026-06-14 12:56
+
+- Confirmed `ace-pack@0.4.1` is published on npm before starting v0.5 work.
+- Bumped package version to `0.5.0`.
+- Added `scripts/ace-mcp-server.mjs` as a zero-dependency, read-only stdio MCP
+  resource server for ACE Markdown memory.
+- Added the MCP server to installed managed scripts without adding an npm script,
+  preserving clean JSON-RPC stdout for MCP clients.
+- Updated README surfaces and tests for MCP resource listing, resource reads,
+  initialize capabilities, stdio framing, errors, and install coverage.
+- Verified `npm.cmd run release:ready` and explicit
+  `npm.cmd run dogfood:self-check -- --allow-dirty` for the v0.5.0 candidate.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.

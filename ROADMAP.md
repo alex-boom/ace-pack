@@ -105,10 +105,19 @@ and CI templates over Husky-style dependency stacks. Release readiness includes
 local fake-project smoke testing and explicit dogfood self-checks before final
 publish.
 
-### v0.5: Read-Only MCP Adapter
+### v0.5: Read-Only MCP Adapter (shipped)
 
 Expose ACE memory to tools through a read-only Model Context Protocol adapter.
 The MCP layer is an adapter only; the core remains Markdown and local scripts.
+The shipped adapter is a zero-dependency stdio resource server that exposes
+selected `.ai/*` files read-only and does not add tools, writes, network
+listeners, or SDK dependencies.
+
+### v0.6: Product Growth Kit
+
+Make ACE understandable in 60 seconds. Add concise demo assets, launch copy, and
+a small scripted demo scenario while keeping marketing artifacts out of runtime
+behavior.
 
 ### v1.0: Stable Schema and Compatibility
 

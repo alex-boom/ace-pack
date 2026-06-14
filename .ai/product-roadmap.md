@@ -43,11 +43,15 @@ handoff and browser-context workflows.
   Release readiness now includes local fake-project smoke and explicit dogfood
   self-checks before final npm publish. v0.4.1 adds explicit human override and
   reduces gate friction for standard low-risk changes.
+- **v0.5 Read-Only MCP Adapter.** ACE now exposes selected Markdown memory to
+  MCP-capable tools through a zero-dependency stdio resource server. The adapter
+  is read-only, exposes no tools, performs no writes, and keeps core ACE
+  Markdown-first.
 
 ## Planned Features
 
-- **v0.5: Read-Only MCP Adapter.** Expose ACE memory to tools without moving
-  the core away from Markdown and local scripts.
+- **v0.6: Product Growth Kit.** Make ACE understandable in 60 seconds through
+  concise demo assets, launch copy, and a small scripted demo scenario.
 - **v1.0: Stable Schema and Compatibility.** Document stable file formats,
   migration rules, and backward compatibility guarantees.
 

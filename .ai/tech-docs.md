@@ -29,6 +29,9 @@ without reading large implementation files.
   helpers instead of maintaining a second policy engine. v0.4.1 keeps strict
   Quality Review enforcement for large or high-risk changes, but lets standard
   low-risk changes pass without review ceremony.
+- `ace-mcp-server.mjs` is the optional read-only MCP stdio adapter. It exposes
+  selected ACE Markdown files through `resources/list` and `resources/read`,
+  with no tools, writes, SDK dependency, network listener, or npm-script wrapper.
 - Release-readiness tooling lives in `tools/`. `smoke:fake-project` builds the
   local staged package and validates ACE inside disposable JS and non-JS
   projects. `dogfood:self-check` explicitly reapplies the local candidate to
@@ -51,6 +54,8 @@ without reading large implementation files.
   diff stat, degrading to `unknown` when git is unavailable.
 - Gate output is ephemeral CLI output or optional JSON. No new persistent config
   or memory schema fields were added for `0.4.0` or `0.4.1`.
+- MCP output is ephemeral JSON-RPC over stdio. No new persistent config,
+  schema fields, or generated memory files were added for `0.5.0`.
 - Smoke and dogfood readiness output is ephemeral. The tools do not add config
   files or schema fields.
 
@@ -63,6 +68,8 @@ without reading large implementation files.
   pre-push hook files are generated only when explicitly requested.
 - `0.4.1` human override requires a reason and surfaces that reason in CLI/JSON
   output; it does not hide failures or create persistent policy state.
+- `0.5.0` MCP support is read-only resources only. The adapter omits missing
+  files from resource discovery and performs no repository writes.
 - Dogfood self-check refuses dirty git worktrees by default and stops when
   unexpected files change after candidate self-apply.
 - Publish-secret handling is outside ACE scripts; release commands delegate to
@@ -70,6 +77,9 @@ without reading large implementation files.
 
 ## External APIs and Integrations
 - Core ACE scripts use Node.js built-ins and local git commands.
+- MCP clients should run `node ./scripts/ace-mcp-server.mjs` directly from the
+  target repository. Do not wrap the stdio adapter with `npm run`, because npm
+  lifecycle output can corrupt JSON-RPC stdout framing.
 - npm is used only by maintainer-invoked package scripts such as
   `release:npm`, `release:npm:dry`, `check:npm-payload`, and `preview:npm`.
 - Future AI-assisted documentation generation remains explicit opt-in per
