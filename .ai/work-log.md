@@ -88,3 +88,13 @@
   generation.
 - Verified Vitest, ACE memory check, npm payload guard, and full npm release
   dry-run for `ace-pack@0.1.7`.
+
+## 2026-06-14 01:26
+
+- Added template-only closeout priority ladder guidance to installed AGENTS,
+  CLAUDE, current-task, and handoff templates.
+- Kept `ace:finish` logic unchanged so the improvement remains guidance, not a
+  new validation burden.
+- Confirmed npm latest is still `0.1.6`, so the change remains part of the
+  pending `0.1.7` release.
+- Verified Vitest after the template test updates.

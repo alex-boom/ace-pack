@@ -241,6 +241,15 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-14 01:26 Flat closeout checklists invite overwork
+Status: resolved
+- Stuck Point: Agents can treat every ACE closeout instruction as equally
+  mandatory and spend effort on docs or ceremony that does not reduce risk.
+- Likely Cause: The default completion checklist and end-of-task instructions
+  were presented as a flat list instead of a priority ladder.
+- Proposed Improvement: Keep closeout guidance template-only and instruct
+  agents to do the smallest closeout that preserves future context and safety.
+
 ### 2026-06-14 01:15 New chats need an operational start snapshot
 Status: resolved
 - Stuck Point: A new AI chat had to read several `.ai/*` files and run git
@@ -525,182 +534,167 @@ Impact:
 - Future final responses should include `NPM publish: required` or
   `NPM publish: not required`, plus the reason.
 - The decision boundary is the staged npm payload and user-visible installed ACE
-  behavior, not the full git diff.</file><file path=".ai/changed-files.md"># Changed Files
+  behavior, not the full git diff.
 
-[package.json]
-- Bumped package version from `0.1.6` to `0.1.7`.
+## 2026-06-14 01:26
 
-[scripts/ai-memory-utils.mjs]
-- Added Start Snapshot helpers for local git state, task lifecycle, next
-  command parsing, release decision extraction, and stack fallback.
+Decision:
+- Improve ACE closeout prioritization through shipped templates only, not new
+  `ace:finish` enforcement logic.
 
-[scripts/ai-report-brief.mjs]
-- Added `## Start Snapshot` and project-profile stack fallback to the generated
-  brief report.
+Reason:
+- Different AI agents over-close tasks in different ways when presented with a
+  flat wall of rules. A priority ladder gives universal guidance while avoiding
+  new blockers, schemas, parsers, or code written for ceremony.
 
-[scripts/ai-report.mjs]
-- Added matching `## Start Snapshot` and stack fallback behavior to the full
-  report.
+Impact:
+- Installed AGENTS, CLAUDE, current-task, and handoff templates now emphasize
+  the smallest closeout that preserves future agent context and project safety.
+- Future changes should add stricter closeout gates only when there is a real
+  safety or handoff failure that template guidance cannot solve.</file><file path=".ai/changed-files.md"># Changed Files
 
-[scripts/ace-hub.mjs]
-- Included `.ai/report-brief.md` first in AI Coder Context payloads when it is
-  available, while preserving fresh-init behavior when it is not generated yet.
+[scripts/agent-memory-templates.mjs]
+- Replaced the flat default completion checklist with priority-based closeout
+  guidance.
+- Updated installed AGENTS and CLAUDE workflow text to tell agents to do the
+  smallest closeout that preserves future context and project safety.
+- Clarified handoff notes for publish/deploy decisions when relevant.
 
-[tests/ai-report.test.ts]
-- Covered snapshot output, first-backtick command extraction, missing Next
-  Steps, flexible `NPM publish:` parsing, git fallback, capped dirty counts, and
-  stack fallback.
-
-[tests/ace-hub.test.ts]
-- Covered AI Coder Context ordering with `.ai/report-brief.md` first and the
-  missing-brief fallback path.
+[tests/agent-memory.test.ts]
+- Added assertions that generated AGENTS, CLAUDE, and current-task templates
+  include the closeout priority ladder language.
 
 [.ai/**]
-- Updated task, handoff, changed-files, work-log, tech-docs, reflection, and
-  generated report closeout state for the `0.1.7` release.</file><file path=".ai/current-task.md"># Current Task
+- Updated current task, session handoff, changed-files, work-log, decisions,
+  product roadmap, and reflection notes for the closeout priority ladder task.</file><file path=".ai/current-task.md"># Current Task
 
 ## Feature Name
-ACE 0.1.7 New-Chat Start Snapshot
+ACE Closeout Priority Ladder
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 01:07
+Started: 2026-06-14 01:25
 Ready For Archive: yes
 
 ## Goal
-Ship a patch release that makes `.ai/report-brief.md` the primary startup
-artifact for a brand-new AI chat by showing repo state, task state, next
-terminal command, and release decision through deterministic local parsing.
+Make ACE task closeout instructions easier for different AI agents to follow by
+turning the flat completion checklist into a priority ladder.
 
 ## Business Value / Product Alignment
-New AI sessions should recover project state quickly without relying on chat
-history. The change strengthens ACE&apos;s local-first AgentOps promise while
-preserving the zero-network, zero-hidden-AI constraints.
+Agents should preserve future context and project safety without doing ceremony
+or writing documentation that does not reduce real risk. This keeps ACE fast,
+local-first, and useful for practical AI coding workflows.
 
 ## Technical Approach
 Option 1:
-- Add the snapshot only to `.ai/report-brief.md`. This is the smallest change,
-  but it leaves full reports and `ace:hub` less useful for new-agent handoff.
+- Change only the product templates. This keeps the improvement lightweight and
+  avoids adding validation code or new schema.
 
 Option 2:
-- Add a shared local snapshot helper used by brief and full reports, improve
-  stack fallback, and include the brief first in `ace:hub` coder context.
+- Add new `ace:finish` logic that prints or enforces a tiered closeout recipe.
+  This could help agents but risks new blockers and extra code for a guidance
+  problem.
 
 Chosen Approach:
-- Use Option 2. It keeps parsing deterministic, avoids network or AI calls, and
-  improves every startup path without changing CLI names or adding config.
+- Use Option 1. The approved scope is templates only; clear instructions solve
+  the agent-behavior issue without overengineering ACE.
 
 ## Current Status
-- [x] Plan approved for v0.1.7.
-- [x] Task classified as large because shipped scripts are changing.
-- [x] Implement report snapshot helpers.
-- [x] Update brief/full report output.
-- [x] Update `ace:hub` coder payload.
-- [x] Add tests and verify release dry run.
+- [x] Plan approved for template-only closeout priority ladder.
+- [x] Confirmed latest npm registry version is `0.1.6`, so this stays in
+  pending `0.1.7`.
+- [x] Update shipped ACE workflow and task templates.
+- [x] Update template tests.
+- [x] Run verification and closeout.
 
 ## Affected Areas
-- `package.json`
-- `scripts/ai-memory-utils.mjs`
-- `scripts/ai-report-brief.mjs`
-- `scripts/ai-report.mjs`
-- `scripts/ace-hub.mjs`
-- `tests/**`
+- `scripts/agent-memory-templates.mjs`
+- `tests/agent-memory.test.ts`
 - `.ai/**` closeout notes
 
 ## Constraints
-- Do not add network calls, AI calls, new config files, or required schema
-  fields.
-- Parse next command only from the first backtick-delimited value in the
-  `## Next Steps` section.
-- Use `git status --porcelain` for changed-file counting.
-- Make git failures degrade to `unknown` values instead of failing reports.
-- Keep `NPM publish:` extraction case-insensitive and tolerant of spacing.
+- Do not change CLI command names.
+- Do not add new parser, schema, config, or validation gates.
+- Keep `ace:finish` logic unchanged.
+- Keep the guidance short and priority-based.
+- Do not bump beyond `0.1.7` unless npm already has `0.1.7` published.
 
 ## Acceptance Criteria
-- `package.json` version is `0.1.7`.
-- Brief and full reports include `## Start Snapshot`.
-- Snapshot includes branch, worktree state, capped changed count, last commit,
-  lifecycle state, next command, and release decision.
-- Missing `## Next Steps` or missing backticked command prints
-  `No command detected`.
-- `ace:hub` option 1 includes `.ai/report-brief.md` first.
-- Tests cover the parser, snapshot, stack fallback, and hub payload behavior.
-- `npm.cmd test`, `npm.cmd run ace:check`, `npm.cmd run check:npm-payload`,
-  and `npm.cmd run release:npm:dry` pass.
+- Installed AGENTS workflow says to do the smallest closeout that preserves
+  future agent context and project safety.
+- Default completion checklist reads as conditional priorities, not a flat wall
+  of mandatory chores.
+- CLAUDE end-of-task guidance describes the same closeout priority ladder.
+- Template tests assert the new priority language.
+- `npm.cmd test`, `npm.cmd run ace:check`, `npm.cmd run check:npm-payload`, and
+  `npm.cmd run release:npm:dry` pass.
 
 ## Completion Checklist
 - [x] Goal completed
-- [x] Acceptance criteria met
-- [x] Tests/checks passed
-- [x] `.ai/session-handoff.md` updated
-- [x] `.ai/changed-files.md` updated
-- [x] `.ai/work-log.md` updated
-- [x] `npm.cmd run ace:check` passed
-- [x] `.ai/reflection-log.md` updated if the task exposed friction or repeated mistakes
-- [x] `.ai/decisions.md` updated if needed
-- [x] `.ai/tech-docs.md` updated if architecture or technical state changed
-- [x] `.ai/product-roadmap.md` updated if business or roadmap state changed
-- [x] Final snapshot archived to `.ai/archive/tasks/` for large tasks
-- [x] NPM publish decision recorded in handoff/final response</file><file path=".ai/session-handoff.md"># Session Handoff
+- [x] Future agent context preserved
+- [x] Verification recorded
+- [x] Publish/deploy decision recorded when relevant
+- [x] Extra docs updated only where changed
+- [x] `ace:validate` and `ace:finish` passed</file><file path=".ai/session-handoff.md"># Session Handoff
 
 ## Last Update
-2026-06-14 01:15
+2026-06-14 01:26
 
 ## What Was Done
-- Bumped `ace-pack` to version `0.1.7`.
-- Added `## Start Snapshot` to brief and full report generation.
-- Added deterministic local helpers for git branch, `git status --porcelain`
-  changed-file count, last commit, lifecycle status, next command, release
-  decision, and stack fallback.
-- Updated `ace:hub` AI Coder Context so `.ai/report-brief.md` is included first
-  when available, without breaking fresh repos before the first report.
-- Added tests for snapshot output, first-backtick command parsing, missing
-  `Next Steps`, flexible `NPM publish:` parsing, stack fallback, and hub order.
+- Added template-only closeout priority guidance to shipped ACE workflow
+  templates.
+- Shortened the default completion checklist into conditional priority levels:
+  always, standard/large, large/high-risk, and only-if-changed.
+- Updated CLAUDE end-of-task guidance to match the same priority ladder.
+- Clarified handoff notes so publish/deploy decisions are captured when
+  relevant.
+- Added template tests that assert the priority language is installed.
 
 ## Current State
-- Product behavior changed only in shipped local scripts and generated reports.
-- No CLI command names, config files, schemas, network calls, or AI calls were
-  added.
-- The staged npm payload now carries `ace-pack@0.1.7`.
-- The live brief report shows Start Snapshot data for this dirty worktree and
-  extracts `npm.cmd run release:npm` as the next command.
+- `ace:finish` logic, CLI names, schemas, config, report generation, and
+  validation gates are unchanged.
+- The change stays in the pending `ace-pack@0.1.7` release because npm registry
+  latest is still `0.1.6`.
+- Product behavior changed only in shipped templates that future repositories
+  receive on init.
 
 ## Quality Review
 Product Alignment:
-- New chats can recover operational state faster, directly supporting ACE&apos;s
-  local AgentOps promise for AI coding agents.
+- The new wording keeps ACE focused on future context and project safety while
+  reducing ceremony for agents that otherwise over-close small tasks.
 
 Architecture:
-- The implementation keeps Markdown as the source of truth and centralizes
-  deterministic parsing in `scripts/ai-memory-utils.mjs`.
+- The change is template-only and avoids adding enforcement logic for a guidance
+  problem, preserving ACE&apos;s low-bloat local architecture.
 
 Security:
-- No hidden AI calls, registry lookups, network calls, credentials, auth, or
-  publish-secret handling changed. Git failures degrade to `unknown`.
+- No auth, credentials, network behavior, hidden AI calls, or publish-secret
+  handling changed.
 
 Code Quality:
-- The parser intentionally uses the first backticked command from `Next Steps`
-  only, and tests cover the main fallbacks and formatting edge cases.
+- Existing template tests now cover the new closeout priority language without
+  adding brittle parser behavior.
 
 ## Next Steps
 - Publish with `npm.cmd run release:npm` when ready.
 
 ## Known Issues
-- None for this report and hub improvement.
+- None for this template-only closeout guidance change.
 
 ## Verification
-- `npm.cmd run ace:classify -- --tier large --reason &quot;v0.1.7 changes shipped report and hub scripts&quot;` passed before implementation.
+- `npm.cmd view ace-pack version` returned `0.1.6`, so no `0.1.8` bump was needed.
+- `npm.cmd run ace:classify -- --tier large --reason &quot;template closeout priority ladder changes shipped ACE workflow behavior&quot;` passed before implementation.
 - `npm.cmd test` passed: 7 files, 47 tests.
 - `npm.cmd run ace:check` passed.
 - `npm.cmd run check:npm-payload` passed and checked 27 packed files.
 - `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.1.7`.
 
 ## Notes
-- NPM publish: required, because `package.json` and shipped `scripts/*.mjs`
-  changed the installed ACE report and hub behavior.</file><file path=".ai/work-log.md"># Work Log
+- NPM publish: required, because shipped ACE templates in `scripts/*.mjs` changed
+  installed workflow behavior.</file><file path=".ai/work-log.md"># Work Log
 
 ## 2026-06-13 20:59
 
@@ -789,4 +783,14 @@ Code Quality:
   `.ai/report-brief.md` when available and still works before first report
   generation.
 - Verified Vitest, ACE memory check, npm payload guard, and full npm release
-  dry-run for `ace-pack@0.1.7`.</file></files></repomix>
+  dry-run for `ace-pack@0.1.7`.
+
+## 2026-06-14 01:26
+
+- Added template-only closeout priority ladder guidance to installed AGENTS,
+  CLAUDE, current-task, and handoff templates.
+- Kept `ace:finish` logic unchanged so the improvement remains guidance, not a
+  new validation burden.
+- Confirmed npm latest is still `0.1.6`, so the change remains part of the
+  pending `0.1.7` release.
+- Verified Vitest after the template test updates.</file></files></repomix>

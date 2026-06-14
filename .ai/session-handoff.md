@@ -1,57 +1,57 @@
 # Session Handoff
 
 ## Last Update
-2026-06-14 01:15
+2026-06-14 01:26
 
 ## What Was Done
-- Bumped `ace-pack` to version `0.1.7`.
-- Added `## Start Snapshot` to brief and full report generation.
-- Added deterministic local helpers for git branch, `git status --porcelain`
-  changed-file count, last commit, lifecycle status, next command, release
-  decision, and stack fallback.
-- Updated `ace:hub` AI Coder Context so `.ai/report-brief.md` is included first
-  when available, without breaking fresh repos before the first report.
-- Added tests for snapshot output, first-backtick command parsing, missing
-  `Next Steps`, flexible `NPM publish:` parsing, stack fallback, and hub order.
+- Added template-only closeout priority guidance to shipped ACE workflow
+  templates.
+- Shortened the default completion checklist into conditional priority levels:
+  always, standard/large, large/high-risk, and only-if-changed.
+- Updated CLAUDE end-of-task guidance to match the same priority ladder.
+- Clarified handoff notes so publish/deploy decisions are captured when
+  relevant.
+- Added template tests that assert the priority language is installed.
 
 ## Current State
-- Product behavior changed only in shipped local scripts and generated reports.
-- No CLI command names, config files, schemas, network calls, or AI calls were
-  added.
-- The staged npm payload now carries `ace-pack@0.1.7`.
-- The live brief report shows Start Snapshot data for this dirty worktree and
-  extracts `npm.cmd run release:npm` as the next command.
+- `ace:finish` logic, CLI names, schemas, config, report generation, and
+  validation gates are unchanged.
+- The change stays in the pending `ace-pack@0.1.7` release because npm registry
+  latest is still `0.1.6`.
+- Product behavior changed only in shipped templates that future repositories
+  receive on init.
 
 ## Quality Review
 Product Alignment:
-- New chats can recover operational state faster, directly supporting ACE's
-  local AgentOps promise for AI coding agents.
+- The new wording keeps ACE focused on future context and project safety while
+  reducing ceremony for agents that otherwise over-close small tasks.
 
 Architecture:
-- The implementation keeps Markdown as the source of truth and centralizes
-  deterministic parsing in `scripts/ai-memory-utils.mjs`.
+- The change is template-only and avoids adding enforcement logic for a guidance
+  problem, preserving ACE's low-bloat local architecture.
 
 Security:
-- No hidden AI calls, registry lookups, network calls, credentials, auth, or
-  publish-secret handling changed. Git failures degrade to `unknown`.
+- No auth, credentials, network behavior, hidden AI calls, or publish-secret
+  handling changed.
 
 Code Quality:
-- The parser intentionally uses the first backticked command from `Next Steps`
-  only, and tests cover the main fallbacks and formatting edge cases.
+- Existing template tests now cover the new closeout priority language without
+  adding brittle parser behavior.
 
 ## Next Steps
 - Publish with `npm.cmd run release:npm` when ready.
 
 ## Known Issues
-- None for this report and hub improvement.
+- None for this template-only closeout guidance change.
 
 ## Verification
-- `npm.cmd run ace:classify -- --tier large --reason "v0.1.7 changes shipped report and hub scripts"` passed before implementation.
+- `npm.cmd view ace-pack version` returned `0.1.6`, so no `0.1.8` bump was needed.
+- `npm.cmd run ace:classify -- --tier large --reason "template closeout priority ladder changes shipped ACE workflow behavior"` passed before implementation.
 - `npm.cmd test` passed: 7 files, 47 tests.
 - `npm.cmd run ace:check` passed.
 - `npm.cmd run check:npm-payload` passed and checked 27 packed files.
 - `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.1.7`.
 
 ## Notes
-- NPM publish: required, because `package.json` and shipped `scripts/*.mjs`
-  changed the installed ACE report and hub behavior.
+- NPM publish: required, because shipped ACE templates in `scripts/*.mjs` changed
+  installed workflow behavior.

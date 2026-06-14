@@ -28,6 +28,9 @@ handoff and browser-context workflows.
 - **New-chat start snapshot.** Brief/full reports now expose branch, worktree
   state, task lifecycle, next command, and publish decision; AI Coder hub
   context starts with the brief report.
+- **Closeout priority ladder.** Installed workflow templates now tell agents to
+  close tasks by priority, preserving future context and safety without
+  ceremony.
 
 ## Planned Features
 

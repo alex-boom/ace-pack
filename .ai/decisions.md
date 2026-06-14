@@ -162,3 +162,20 @@ Impact:
   `NPM publish: not required`, plus the reason.
 - The decision boundary is the staged npm payload and user-visible installed ACE
   behavior, not the full git diff.
+
+## 2026-06-14 01:26
+
+Decision:
+- Improve ACE closeout prioritization through shipped templates only, not new
+  `ace:finish` enforcement logic.
+
+Reason:
+- Different AI agents over-close tasks in different ways when presented with a
+  flat wall of rules. A priority ladder gives universal guidance while avoiding
+  new blockers, schemas, parsers, or code written for ceremony.
+
+Impact:
+- Installed AGENTS, CLAUDE, current-task, and handoff templates now emphasize
+  the smallest closeout that preserves future agent context and project safety.
+- Future changes should add stricter closeout gates only when there is a real
+  safety or handoff failure that template guidance cannot solve.

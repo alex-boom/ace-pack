@@ -53,18 +53,13 @@ Chosen Approach:
 
 ## Completion Checklist
 - [ ] Goal completed
-- [ ] Acceptance criteria met
-- [ ] Tests/checks passed
-- [ ] \`.ai/session-handoff.md\` updated
-- [ ] \`.ai/changed-files.md\` updated
-- [ ] \`.ai/work-log.md\` updated
-- [ ] \`pnpm ace:validate\` passed
-- [ ] \`.ai/reflection-log.md\` updated if the task exposed friction or repeated mistakes
-- [ ] \`.ai/decisions.md\` updated if needed
-- [ ] \`.ai/tech-docs.md\` updated if architecture or technical state changed
-- [ ] \`.ai/product-roadmap.md\` updated if business or roadmap state changed
-- [ ] Final snapshot archived to \`.ai/archive/tasks/\` for large tasks
-- [ ] Next version/task defined if work continues
+- [ ] Always: summarize what changed in \`.ai/session-handoff.md\`
+- [ ] Always: update \`.ai/changed-files.md\`, record verification, and run \`ace:validate\`
+- [ ] Always: state publish/deploy decision when relevant
+- [ ] If standard/large: add product, architecture, security, and code-quality review notes
+- [ ] If large/high-risk: confirm design approach, add useful reflection, and let \`ace:finish\` archive the snapshot
+- [ ] Only if changed: update tech docs, product roadmap, durable decisions, or release notes
+- [ ] \`ace:finish\` passed and generated reports
 `
 
 export const handoffTemplate = `# Session Handoff
@@ -101,7 +96,7 @@ Code Quality:
 - [List checks that passed or could not be run]
 
 ## Notes
-- [Add any extra context another agent will need]
+- [Add publish/deploy decision when relevant and any extra context another agent will need]
 `
 
 export const decisionsTemplate = `# Decisions
@@ -188,10 +183,17 @@ task.
 
 ## End-of-Task Routine
 
-Run \`pnpm ace:validate\`, fix failures, then run \`pnpm ace:finish\` after
-updating the relevant \`.ai/*\` files. The finish script validates the
-required closeout depth for the detected task tier and generates the
-appropriate reports.
+Do the smallest closeout that preserves future agent context and project
+safety:
+
+1. Always summarize what changed, update changed files, record verification,
+   run \`pnpm ace:validate\`, and state publish/deploy decision when relevant.
+2. For standard or large tasks, add product, architecture, security, and
+   code-quality review notes.
+3. For large or high-risk tasks, confirm the design approach, add reflection
+   only when useful, and let \`pnpm ace:finish\` archive the snapshot.
+4. Update tech docs, product roadmap, durable decisions, or release notes only
+   when those facts actually changed.
 `
 
 export const agentsWorkflowSection = `<!-- agent-memory-workflow:start -->
@@ -253,17 +255,17 @@ While working:
 
 After completing a task:
 
-1. Update the authoritative \`.ai/*\` files directly or through
-   \`ai:update:*\` helpers.
-2. Run \`pnpm ace:validate\` and fix any mechanical quality gate failures.
-3. Run \`pnpm ace:finish\` to validate the adaptive closeout and generate
-   reports.
-4. Small tasks need compact handoff, changed-files, work-log, and brief report.
-5. Standard tasks also need product, architecture, security, and code-quality
-   review notes.
-6. Large tasks also need design review, reflection entry when useful, archive
-   snapshot, full report, and a review of \`.ai/tech-docs.md\` or
-   \`.ai/product-roadmap.md\` when technical or business state changed.
+Do the smallest closeout that preserves future agent context and project
+safety:
+
+1. Always summarize what changed, update changed files, record verification,
+   run \`pnpm ace:validate\`, and state publish/deploy decision when relevant.
+2. For standard or large tasks, add product, architecture, security, and
+   code-quality review notes.
+3. For large or high-risk tasks, confirm the design approach, add reflection
+   only when useful, and let \`pnpm ace:finish\` archive the snapshot.
+4. Update \`.ai/tech-docs.md\`, \`.ai/product-roadmap.md\`, durable decisions,
+   or release notes only when those facts actually changed.
 <!-- agent-memory-workflow:end -->
 `
 

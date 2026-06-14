@@ -37,6 +37,7 @@ describe('ensureAgentMemory', () => {
     const secondRun = await ensureAgentMemory(rootDir)
     const agentsContent = await readFile(path.join(rootDir, 'AGENTS.md'), 'utf8')
     const claudeContent = await readFile(path.join(rootDir, 'CLAUDE.md'), 'utf8')
+    const currentTaskContent = await readFile(path.join(rootDir, '.ai', 'current-task.md'), 'utf8')
     const memoryConfigContent = await readFile(
       path.join(rootDir, '.ai', 'memory-config.json'),
       'utf8',
@@ -58,6 +59,10 @@ describe('ensureAgentMemory', () => {
     expect(agentsContent).toContain('pnpm ace:classify')
     expect(agentsContent).toContain('pnpm.cmd ace:validate')
     expect(agentsContent).toContain('pnpm ai:task:classify')
+    expect(agentsContent).toContain(
+      'Do the smallest closeout that preserves future agent context and project',
+    )
+    expect(agentsContent).toContain('state publish/deploy decision when relevant')
     expect(memoryConfigContent).toContain('"ACE (Agentic Context Engine) Configuration"')
     const memoryConfig = JSON.parse(memoryConfigContent) as {
       _profile?: { status?: string }
@@ -79,6 +84,15 @@ describe('ensureAgentMemory', () => {
     )
     expect(claudeContent).toContain('.ai/report-brief.md')
     expect(claudeContent).toContain('pnpm.cmd ace:validate')
+    expect(claudeContent).toContain(
+      'Do the smallest closeout that preserves future agent context and project',
+    )
+    expect(currentTaskContent).toContain(
+      'Always: update `.ai/changed-files.md`, record verification, and run `ace:validate`',
+    )
+    expect(currentTaskContent).toContain(
+      'Only if changed: update tech docs, product roadmap, durable decisions, or release notes',
+    )
   })
 
   it('does not overwrite existing memory files', async () => {

@@ -14,6 +14,15 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-14 01:26 Flat closeout checklists invite overwork
+Status: resolved
+- Stuck Point: Agents can treat every ACE closeout instruction as equally
+  mandatory and spend effort on docs or ceremony that does not reduce risk.
+- Likely Cause: The default completion checklist and end-of-task instructions
+  were presented as a flat list instead of a priority ladder.
+- Proposed Improvement: Keep closeout guidance template-only and instruct
+  agents to do the smallest closeout that preserves future context and safety.
+
 ### 2026-06-14 01:15 New chats need an operational start snapshot
 Status: resolved
 - Stuck Point: A new AI chat had to read several `.ai/*` files and run git
