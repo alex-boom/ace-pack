@@ -372,10 +372,10 @@ function formatHelp() {
   return `ACE Hub
 
 Usage:
-  ace:hub
-  ace:hub <mode>
-  ace:hub --mode <mode>
-  ace:hub --list
+  ace hub
+  ace hub <mode>
+  ace hub --mode <mode>
+  ace hub --list
 
 Options:
   --mode <mode>    Generate a named or numeric mode.

@@ -12,8 +12,8 @@ Repository rules for AI coding agents working in this project.
 - Read `ROADMAP.md` before product or architecture changes. Preserve the
   anti-goals, zero-bloat constraints, and explicit AI opt-in policy.
 - This package supports npm-based local workflow commands. If `pnpm` is not on
-  PATH, use `npm run ace:check`, `npm run ace:classify`, `npm run ace:finish`,
-  and related `npm run ace:*` scripts.
+  PATH, use `npm run ace -- check`, `npm run ace -- classify`,
+  `npm run ace -- finish`, and related `npm run ace -- <command>` router calls.
 - The active default Node on this machine may be older than the package engine.
   Use the currently selected Node version for simple repo inspection, but
   switch through nvm to any installed Node `>=20` before running Vitest,
@@ -54,11 +54,11 @@ Before starting work:
 3. Treat `.ai/*` as authoritative and read `.ai/state/current-task.md`,
    `.ai/state/session-handoff.md`, `.ai/knowledge/decisions.md`, and
    `.ai/state/changed-files.md` when you need detail or verification.
-4. Run `pnpm ace classify` or `pnpm ace:classify` before implementation to
+4. Run `pnpm ace classify` before implementation to
    identify whether the task is small, standard, or large.
 5. If this is a newly installed or unknown project and
    `.ai/config/memory-config.json` is still marked `unprofiled`, run
-   `pnpm ace onboard` or `pnpm ace:onboard` and apply an approved profile
+   `pnpm ace onboard` and apply an approved profile
    before implementation.
 6. For large tasks, and standard tasks with high-risk signals, complete the
    `.ai/state/current-task.md` Business Value and Technical Approach sections
@@ -66,17 +66,19 @@ Before starting work:
    explicitly.
 7. Read `.ai/knowledge/work-log.md` only when you need extra historical
    context.
-8. If the memory files are missing, run `pnpm ace init` or `pnpm ace:init`.
+8. If the memory files are missing, run `pnpm ace init`.
 
-Command note: examples use `pnpm`. On Windows PowerShell, use
-`pnpm.cmd ace:classify`, `pnpm.cmd ace:validate`, and similar commands if
-the `pnpm` shim is blocked by execution policy.
+Command note: all ACE commands are routed through the single `ace` command.
+Examples use `pnpm`: `pnpm ace finish`, `pnpm ace hub`, and
+`pnpm ace check`. npm users must pass router arguments after `--`, such as
+`npm run ace -- finish`. On Windows PowerShell, use `pnpm.cmd ace classify`
+or `pnpm.cmd ace check` if the `pnpm` shim is blocked by execution policy.
+`ace:validate` is the project-owned mechanical gate script for lint,
+typecheck, tests, or equivalent project checks.
 
-Router command note: npm users can run `npm run ace -- <command>`; pnpm users
-can run `pnpm ace <command>`. Existing `ace:*` scripts remain supported.
-
-Legacy commands such as `pnpm ai:task:classify`, `pnpm ai:task:finish`,
-and `pnpm agent-memory:init` remain supported for compatibility.
+Legacy command names are supported only as router arguments, such as
+`pnpm ace ai:task:classify`, `pnpm ace ai:task:finish`, and
+`pnpm ace agent-memory:init`.
 
 IDE rule files such as `.cursorrules`, `.windsurfrules`, and
 `.github/copilot-instructions.md` are thin bridges into this workflow.
@@ -91,7 +93,7 @@ While working:
 - Keep project-specific tier and risk rules in
   `.ai/config/memory-config.json`, the canonical ACE config, not inside the
   scripts, so the toolset remains portable.
-- Use `pnpm ace onboard` or `pnpm ace:onboard` to generate
+- Use `pnpm ace onboard` to generate
   `.ai/config/project-profile.md` and recommended project-specific risk rules
   when ACE is installed into an unfamiliar repo.
 - When updating `.ai/session-handoff.md`, `.ai/work-log.md`,
@@ -106,7 +108,7 @@ While working:
 - Use `.ai/state/current-task.md` lifecycle fields for task/version
   transitions.
   When a large task version is complete, mark its completion checklist and let
-  `pnpm ace:finish` archive a final snapshot.
+  `pnpm ace finish` archive a final snapshot.
 
 After completing a task:
 
@@ -114,18 +116,17 @@ Do the smallest closeout that preserves future agent context and project
 safety:
 
 1. Always summarize what changed, update changed files, record verification,
-   run `pnpm ace:validate`, and state publish/deploy decision when relevant.
+   run project-owned `pnpm ace:validate`, and state publish/deploy decision when relevant.
    If release is deferred, say so explicitly.
-2. For small low-risk tasks, `pnpm ace:finish` may auto-close compact
+2. For small low-risk tasks, `pnpm ace finish` may auto-close compact
    handoff, changed-files, work-log, and brief report notes without changing
    current-task lifecycle.
 3. For standard or large tasks, add product, architecture, security, and
    code-quality review notes.
 4. For large or high-risk tasks, confirm the design approach, add reflection
-   only when useful, and let `pnpm ace:finish` archive the snapshot.
+   only when useful, and let `pnpm ace finish` archive the snapshot.
 5. Update `.ai/tech-docs.md`, `.ai/product-roadmap.md`, durable decisions,
    or release notes only when those facts actually changed.
 6. For release-bound shipped changes, run the project's local smoke and
    dogfood/self-check routines before final publish or deploy when available.
 <!-- agent-memory-workflow:end -->
-

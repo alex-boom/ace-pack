@@ -370,3 +370,22 @@ Impact:
   readable during migration without cluttering fresh v2 installs.
 - Future schema work must use deterministic migration and old-repo fixture tests
   before changing memory contracts again.
+
+## 2026-06-14 16:26
+
+Decision:
+- Tighten the ACE command surface to a single installed `ace` router plus a
+  project-owned `ace:validate` mechanical gate.
+
+Reason:
+- Injecting many `ace:*`, `ai:*`, and `agent-memory:*` scripts into consumer
+  repositories makes ACE look intrusive. `ace:validate` must remain a project
+  code-quality gate rather than an alias for ACE memory validation.
+
+Impact:
+- Fresh installs expose only `ace` and `ace:validate` in package scripts.
+- `ace check` runs ACE memory validation.
+- Legacy command names remain available only as router arguments such as
+  `pnpm ace ai:task:finish`.
+- Installer upgrades prune only old ACE-managed default aliases and preserve
+  custom user scripts.

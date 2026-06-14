@@ -90,7 +90,7 @@ export function getRequiredWorkflow(tier, designReviewRequired) {
     'Update .ai/session-handoff.md with latest state.',
     'Update .ai/changed-files.md for touched areas.',
     'Append a compact .ai/work-log.md entry.',
-    'Generate pnpm ace:report:brief.',
+    'Generate pnpm ace report brief.',
   ]
 
   if (tier === 'standard' || tier === 'large') {
@@ -107,7 +107,7 @@ export function getRequiredWorkflow(tier, designReviewRequired) {
       'Review .ai/tech-docs.md or .ai/product-roadmap.md when technical or business state changed.',
     )
     workflow.push('Add a reflection entry when the task exposes friction or repeated mistakes.')
-    workflow.push('Generate pnpm ace:report.')
+    workflow.push('Generate pnpm ace report.')
   }
 
   return workflow

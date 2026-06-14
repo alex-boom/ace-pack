@@ -20,10 +20,10 @@ npm run ace -- finish
 pnpm ace finish
 ```
 
-The router supports:
+The router supports modern commands:
 
 - `init`
-- `check` / `validate`
+- `check`
 - `classify`
 - `finish`
 - `gate`
@@ -34,11 +34,20 @@ The router supports:
 - `report brief`
 - `current-task-code`
 
-Existing command names remain supported for compatibility:
+Installed repositories expose only:
+
+- `ace`
+- `ace:validate`
+
+`ace check` validates ACE memory. `ace:validate` is a project-owned mechanical
+gate for lint, typecheck, tests, or equivalent project checks. Fresh installs
+add a placeholder `ace:validate` only when the script is absent, and the
+installer must not overwrite a project-owned `ace:validate` script.
+
+Previous ACE package script names remain supported only as router arguments:
 
 - `ace:init`
 - `ace:check`
-- `ace:validate`
 - `ace:onboard`
 - `ace:classify`
 - `ace:finish`
@@ -58,10 +67,10 @@ Legacy aliases remain supported:
 - `ai:task:finish`
 - `ai:update:*`
 
-Projects may replace `ace:validate` with their own stricter local validation
-command. The installer must not overwrite a project-owned `ace:validate` script.
 The generic `ace` router script is added only when the project does not already
-own an `ace` script.
+own an `ace` script. During upgrades, the installer removes old ACE-managed
+script aliases only when their values exactly match known ACE defaults; custom
+project scripts are preserved.
 
 ## Canonical v2 Memory Layout
 
@@ -148,9 +157,9 @@ default.
 ACE may also create optional IDE bridge files such as `.cursorrules`,
 `.windsurfrules`, and `.github/copilot-instructions.md` when they are missing.
 These are thin adapters back to `AGENTS.md` and local ACE commands. They are not
-required by `ace:check`, and existing project-owned IDE rule files must not be
+required by `ace check`, and existing project-owned IDE rule files must not be
 overwritten.
-IDE bridge files are optional and not required by `ace:check`.
+IDE bridge files are optional and not required by `ace check`.
 
 `AGENTS.md` is updated only inside this marked section:
 
@@ -232,13 +241,13 @@ Compatibility rules:
 
 ACE scripts may normalize config in memory, but they should not rewrite
 project-owned config unless the user explicitly runs a command that applies
-changes, such as `ace:onboard -- --apply`.
+changes, such as `ace onboard --apply`.
 
 ## Migration Policy
 
 The v2 migration is deterministic and local:
 
-- `ace-pack init`, `ace:init`, and `npm run ace -- migrate` create canonical v2
+- `ace-pack init`, `ace init`, and `npm run ace -- migrate` create canonical v2
   files from existing v1 legacy files when canonical files are missing.
 - Generated reports and hub context write canonical `.ai/generated/**` files.
 - Readers accept both canonical and legacy paths.

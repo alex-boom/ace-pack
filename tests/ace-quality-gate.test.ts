@@ -186,7 +186,7 @@ describe('ace quality gate', () => {
     expect(result.passed).toBe(false)
     expect(result.issues[0]).toMatchObject({
       code: 'memory-invalid',
-      fix: expect.stringContaining('ace:init'),
+      fix: expect.stringContaining('ace init'),
     })
   })
 
@@ -458,7 +458,7 @@ describe('ace quality gate', () => {
     expect(firstRun.action).toBe('created')
     expect(secondRun.action).toBe('unchanged')
     expect(hookContent).toContain('ACE QUALITY GATE HOOK')
-    expect(hookContent).toContain('npm run ace:gate')
+    expect(hookContent).toContain('npm run ace -- gate')
   })
 
   it('does not overwrite existing non-ACE pre-push hooks', async () => {
@@ -472,7 +472,7 @@ describe('ace quality gate', () => {
 
     expect(result.action).toBe('sample-written')
     expect(existingHook).toBe('#!/bin/sh\necho custom\n')
-    expect(sampleHook).toContain('npm run ace:gate')
+    expect(sampleHook).toContain('npm run ace -- gate')
   })
 
   it('writes a GitHub Actions workflow', async () => {
@@ -486,6 +486,6 @@ describe('ace quality gate', () => {
       path: '.github/workflows/ace-quality-gate.yml',
     })
     expect(workflow).toContain('node-version: 20')
-    expect(workflow).toContain('npm run ace:gate -- --base origin/${{ github.base_ref }} --head HEAD')
+    expect(workflow).toContain('npm run ace -- gate --base origin/${{ github.base_ref }} --head HEAD')
   })
 })

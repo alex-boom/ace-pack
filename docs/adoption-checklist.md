@@ -24,32 +24,32 @@ Avoid starting with:
 
 ```bash
 npx ace-pack@latest init
-npm run ace:onboard -- --apply
-npm run ace:check
+npm run ace -- onboard --apply
+npm run ace -- check
 ```
 
 For pnpm:
 
 ```bash
 pnpm dlx ace-pack init
-pnpm ace:onboard -- --apply
-pnpm ace:check
+pnpm ace onboard --apply
+pnpm ace check
 ```
 
 Review:
 
-- `.ai/project-profile.md`
-- `.ai/memory-config.json`
+- `.ai/config/project-profile.md`
+- `.ai/config/memory-config.json`
 - `AGENTS.md`
-- `.ai/current-task.md`
+- `.ai/state/current-task.md`
 
 The goal is not to make every file high-risk. The goal is to make sensitive
 paths visible before an AI agent edits them.
 
 ## 3. Connect The Real Validation Command
 
-By default, `ace:validate` checks ACE memory. In product repositories, replace
-it with the real project gate when useful:
+`ace:validate` is project-owned. ACE installs a placeholder when it is
+missing; replace it with the real project gate when useful:
 
 ```json
 {
@@ -66,21 +66,21 @@ ACE will not overwrite a project-owned `ace:validate` script on reinstall.
 Before work:
 
 ```bash
-npm run ace:hub -- start
-npm run ace:classify
+npm run ace -- hub start
+npm run ace -- classify
 ```
 
 After work:
 
 ```bash
 npm run ace:validate
-npm run ace:finish
+npm run ace -- finish
 ```
 
-For a new AI chat, start from `.ai/report-brief.md` or use:
+For a new AI chat, start from `.ai/generated/report-brief.md` or use:
 
 ```bash
-npm run ace:hub -- start
+npm run ace -- hub start
 ```
 
 ## 5. Add PR/CI Gate Only After The Team Accepts The Workflow
@@ -88,20 +88,20 @@ npm run ace:hub -- start
 Run the gate locally first:
 
 ```bash
-npm run ace:gate
+npm run ace -- gate
 ```
 
 Then generate an optional GitHub Actions workflow:
 
 ```bash
-npm run ace:gate -- --write-github-action
+npm run ace -- gate --write-github-action
 ```
 
 Use strict gates for large or high-risk work. For intentional human-reviewed
 small changes, record the override reason:
 
 ```bash
-npm run ace:gate -- --human-override "Human reviewed typo-only docs change."
+npm run ace -- gate --human-override "Human reviewed typo-only docs change."
 ```
 
 ## 6. Optional MCP Context
@@ -127,10 +127,10 @@ stdio MCP requires stdout to contain only JSON-RPC messages.
 
 Before expanding, check:
 
-- Did agents actually use `.ai/report-brief.md` or `ace:hub start`?
+- Did agents actually use `.ai/generated/report-brief.md` or `ace hub start`?
 - Did high-risk paths catch real review needs?
-- Did `ace:finish` improve handoff quality?
-- Did `ace:gate` block only changes worth blocking?
+- Did `ace finish` improve handoff quality?
+- Did `ace gate` block only changes worth blocking?
 - Did the team replace `ace:validate` with real project checks?
 
 If the answer is no, tune the current repo before copying ACE everywhere.
@@ -141,7 +141,7 @@ To upgrade ACE in an installed repo:
 
 ```bash
 npx ace-pack@latest init
-npm run ace:check
+npm run ace -- check
 ```
 
 Expected behavior:

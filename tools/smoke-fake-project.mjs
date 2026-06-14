@@ -31,13 +31,13 @@ async function runSmokeCase(caseName, options) {
     await installFromStagedPackage(rootDir)
     await writeCompleteTaskState(rootDir)
 
-    await runNodeScript(rootDir, 'ace-onboard.mjs', ['--root', rootDir, '--apply'])
+    await runNodeScript(rootDir, 'ace-cli.mjs', ['onboard', '--apply'])
     await initGitRepo(rootDir)
     await writeProjectFile(rootDir, 'README.md', `# ${caseName} smoke change\n`)
-    await runNodeScript(rootDir, 'ai-task-finish.mjs', ['--root', rootDir])
-    await runNodeScript(rootDir, 'check-agent-memory.mjs', [rootDir])
-    await runNodeScript(rootDir, 'ace-hub.mjs', ['--mode', 'start'])
-    await runNodeScript(rootDir, 'ace-quality-gate.mjs', ['--root', rootDir])
+    await runNodeScript(rootDir, 'ace-cli.mjs', ['finish'])
+    await runNodeScript(rootDir, 'ace-cli.mjs', ['check'])
+    await runNodeScript(rootDir, 'ace-cli.mjs', ['hub', '--mode', 'start'])
+    await runNodeScript(rootDir, 'ace-cli.mjs', ['gate'])
 
     const verification = await verifySmokeProject(rootDir)
 
@@ -170,7 +170,7 @@ Chosen Approach:
 - [x] Verification recorded
 - [x] Publish/deploy decision recorded when relevant
 - [x] Extra docs updated only where changed
-- [x] \`ace:validate\` and \`ace:finish\` passed
+- [x] \`ace:validate\` and \`ace finish\` passed
 `,
   )
   await writeProjectFile(
@@ -207,10 +207,10 @@ Code Quality:
 - None.
 
 ## Verification
-- \`ace:onboard -- --apply\` passed.
-- \`ace:check\` passed.
-- \`ace:hub start\` passed.
-- \`ace:gate\` passed.
+- \`ace onboard --apply\` passed.
+- \`ace check\` passed.
+- \`ace hub start\` passed.
+- \`ace gate\` passed.
 
 ## Notes
 - NPM publish: required before final release; deferred by maintainer.
@@ -259,8 +259,10 @@ async function verifySmokeProject(rootDir) {
   )
   const qualityGateScript = await readFile(path.join(rootDir, 'scripts/ace-quality-gate.mjs'), 'utf8')
 
-  assert(packageJson.scripts?.['ace:onboard'], 'package.json missing ace:onboard script')
-  assert(packageJson.scripts?.['ace:gate'], 'package.json missing ace:gate script')
+  assert(packageJson.scripts?.ace === 'node ./scripts/ace-cli.mjs', 'package.json missing ace router script')
+  assert(packageJson.scripts?.['ace:validate'], 'package.json missing ace:validate gate script')
+  assert(!packageJson.scripts?.['ace:onboard'], 'package.json should not expose ace:onboard script')
+  assert(!packageJson.scripts?.['ace:gate'], 'package.json should not expose ace:gate script')
   assert(
     agentsContent.includes('## ACE (Agentic Context Engine) Workflow'),
     'AGENTS.md missing ACE workflow',

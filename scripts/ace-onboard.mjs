@@ -287,12 +287,12 @@ async function checkOnboarding(rootDir) {
     const config = JSON.parse(configContent)
 
     if (config?._profile?.status !== 'profiled') {
-      issues.push('ACE project profile is not applied. Run pnpm ace:onboard -- --apply.')
+      issues.push('ACE project profile is not applied. Run pnpm ace onboard --apply.')
     }
   }
 
   if (profileContent === null) {
-    issues.push(`Missing ${PROJECT_PROFILE_PATH}. Run pnpm ace:onboard.`)
+    issues.push(`Missing ${PROJECT_PROFILE_PATH}. Run pnpm ace onboard.`)
   }
 
   if (issues.length > 0) {
@@ -386,8 +386,8 @@ ${keywordLines}
 
 ## Next Step
 - Review \`.ai/memory-config.recommended.json\`.
-- Run \`pnpm ace:onboard -- --apply\` to apply the recommended profile.
-- For known Next/tRPC/Drizzle SaaS repos, run \`pnpm ace:onboard -- --preset next-trpc-drizzle-saas --apply\`.
+- Run \`pnpm ace onboard --apply\` to apply the recommended profile.
+- For known Next/tRPC/Drizzle SaaS repos, run \`pnpm ace onboard --preset next-trpc-drizzle-saas --apply\`.
 `
 }
 
@@ -615,7 +615,7 @@ async function main() {
   process.stdout.write(
     result.applied
       ? `${formatOnboardingCliSummary(result)}\nACE project profile applied. Updated: ${result.writtenFiles.join(', ')}\n`
-      : `${formatOnboardingCliSummary(result)}\nACE project profile generated. Review ${RECOMMENDED_CONFIG_PATH}, then run pnpm ace:onboard -- --apply.\n`,
+      : `${formatOnboardingCliSummary(result)}\nACE project profile generated. Review ${RECOMMENDED_CONFIG_PATH}, then run pnpm ace onboard --apply.\n`,
   )
 }
 

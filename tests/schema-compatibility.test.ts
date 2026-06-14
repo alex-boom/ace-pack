@@ -15,6 +15,7 @@ import { migrateMemorySchemaV2 } from '../scripts/ai-memory-utils.mjs'
 import { installAcePack } from '../install-ace-pack.mjs'
 
 const tempDirs: string[] = []
+const aceValidatePlaceholder = 'echo "Add project mechanical checks here: lint, typecheck, test"'
 
 afterEach(async () => {
   await Promise.all(
@@ -205,7 +206,7 @@ Keep this too.
     })
   })
 
-  it('keeps stable commands and legacy aliases in installed package scripts', async () => {
+  it('keeps installed package scripts minimal while routing legacy aliases', async () => {
     const rootDir = await createRepo()
 
     await installAcePack(rootDir)
@@ -214,24 +215,9 @@ Keep this too.
       scripts: Record<string, string>
     }
 
-    expect(packageJson.scripts['ace:init']).toBe('node ./scripts/bootstrap-agent-memory.mjs')
     expect(packageJson.scripts.ace).toBe('node ./scripts/ace-cli.mjs')
-    expect(packageJson.scripts['ace:check']).toBe('node ./scripts/check-agent-memory.mjs')
-    expect(packageJson.scripts['ace:validate']).toBe('node ./scripts/check-agent-memory.mjs')
-    expect(packageJson.scripts['ace:onboard']).toBe('node ./scripts/ace-onboard.mjs')
-    expect(packageJson.scripts['ace:classify']).toBe('node ./scripts/ai-task-classify.mjs')
-    expect(packageJson.scripts['ace:finish']).toBe('node ./scripts/ai-task-finish.mjs')
-    expect(packageJson.scripts['ace:gate']).toBe('node ./scripts/ace-quality-gate.mjs')
-    expect(packageJson.scripts['ace:hub']).toBe('node ./scripts/ace-hub.mjs')
-    expect(packageJson.scripts['ace:report']).toBe('node ./scripts/ai-report.mjs')
-    expect(packageJson.scripts['ace:report:brief']).toBe(
-      'node ./scripts/ai-report-brief.mjs',
-    )
-    expect(packageJson.scripts['agent-memory:init']).toBe(
-      'node ./scripts/bootstrap-agent-memory.mjs',
-    )
-    expect(packageJson.scripts['ai:task:classify']).toBe('node ./scripts/ai-task-classify.mjs')
-    expect(packageJson.scripts['ai:task:finish']).toBe('node ./scripts/ai-task-finish.mjs')
+    expect(packageJson.scripts['ace:validate']).toBe(aceValidatePlaceholder)
+    expect(Object.keys(packageJson.scripts).sort()).toEqual(['ace', 'ace:validate'])
   })
 
   it('documents the v2 contract and keeps docs out of the npm package file list', async () => {
@@ -243,11 +229,14 @@ Keep this too.
     }
 
     expect(schemaDocs).toContain('ACE v2.0 Schema and Compatibility')
+    expect(schemaDocs).toContain('Installed repositories expose only:')
+    expect(schemaDocs).toContain('project-owned mechanical')
+    expect(schemaDocs).toContain('supported only as router arguments')
     expect(schemaDocs).toContain('Canonical v2 Memory Layout')
     expect(schemaDocs).toContain('`.ai/config/memory-config.json` Schema Version 1')
     expect(schemaDocs).toContain('legacy root `.ai/*` paths')
     expect(schemaDocs).toContain('optional IDE bridge files')
-    expect(schemaDocs).toContain('not required by `ace:check`')
+    expect(schemaDocs).toContain('not required by `ace check`')
     expect(schemaDocs).toContain('Migration Policy')
     expect(readme).toContain('./docs/schema-compatibility.md')
     expect(npmReadme).toContain(

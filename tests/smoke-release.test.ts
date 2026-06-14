@@ -108,7 +108,7 @@ Chosen Approach:
 - [x] Verification recorded
 - [x] Publish/deploy decision recorded when relevant
 - [x] Extra docs updated only where changed
-- [x] \`ace:validate\` and \`ace:finish\` passed
+- [x] \`ace:validate\` and \`ace finish\` passed
 `,
   )
   await writeRepoFile(
@@ -145,7 +145,7 @@ Code Quality:
 - None.
 
 ## Verification
-- \`ace:check\` passed.
+- \`ace check\` passed.
 
 ## Notes
 - NPM publish: required before final release; deferred by maintainer.

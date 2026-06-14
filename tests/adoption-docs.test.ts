@@ -38,7 +38,7 @@ describe('adoption documentation', () => {
     expect(faq).toContain('Is ACE another AI coding agent?')
     expect(faq).toContain('Does ACE call OpenAI, Anthropic, Ollama, or any model provider?')
     expect(faq).toContain('Does ACE add runtime dependencies to my app?')
-    expect(faq).toContain('What if `ace:gate` is too strict?')
+    expect(faq).toContain('What if `ace gate` is too strict?')
     expect(faq).toContain('When should I not use ACE?')
   })
 

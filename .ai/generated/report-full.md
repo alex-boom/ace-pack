@@ -3,18 +3,18 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 16:14
+- Generated: 2026-06-14 16:42
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 16:09
-- Source session-handoff: 2026-06-14 16:13
+- Source current-task: 2026-06-14 16:42
+- Source session-handoff: 2026-06-14 16:42
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (48 changed files)
-- Last commit: 6a1022a Upgrade to version 2.0.0, introducing a unified command router (`npm run ace -- <command>` / `pnpm ace <command>`) and a new memory schema with categorized paths under `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated`. Legacy paths are preserved for compatibility. Updated documentation and tests to reflect these changes, ensuring a smooth transition for existing repositories.
+- Worktree: dirty (37 changed files)
+- Last commit: ed45f5b Update documentation to reflect changes in ACE memory paths and command usage. Replace references to legacy `.ai/report-brief.md` with the new `.ai/generated/report-brief.md` format across various files, ensuring consistency in the workflow instructions. Adjust command formats in the IDE bridge scripts to align with the new command structure. Remove outdated `.ai/changed-files.md`, `.ai/current-task.md`, `.ai/decisions.md`, and memory configuration files as part of the transition to the new memory schema.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
 - Next command: `npm.cmd run release:npm`
 - Release decision: NPM publish: required before final release; deferred by maintainer.
@@ -26,142 +26,138 @@ Detected ecosystems: Generic repository | Package manager: pnpm
 
 
 ## Current Task
-v2.0.0 Command Router and Memory Schema v2
+v2.0.1 Single ACE Router Cleanup
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 15:24
+Started: 2026-06-14 16:26
 Ready For Archive: yes
 
 ## Goal
-Implement the planned command-surface cleanup, generated artifact hygiene, and
-memory schema v2 migration while preserving old ACE commands and old `.ai/*`
-paths as compatibility aliases.
+Clean the shipped ACE command surface so installed repositories expose only the
+single `ace` router plus a project-owned `ace:validate` mechanical gate.
 
 ## Business Value
-This keeps ACE easier to use daily while reducing long-term memory clutter. A
-single `ace` router lowers `package.json` script noise, generated reports move
-out of the main memory surface, and schema v2 gives future agents clearer
-categories without abandoning existing installed repositories.
+This protects consumer repositories from script bloat and keeps ACE aligned
+with its zero-bloat DevEx promise. The `ace:validate` correction preserves the
+project-owned quality-gate concept instead of replacing real code checks with
+ACE Markdown validation.
 
 ## Technical Approach
 Option 1:
-- Physically move all `.ai` files immediately and remove old `ace:*` scripts.
-  This makes the repository tidy, but it breaks the v1 compatibility promise and
-  existing user habits.
+- Keep old `ace:*`, `ai:*`, and `agent-memory:*` package scripts for maximum
+  invocation compatibility. This preserves old habits but keeps the intrusive
+  package.json surface that prompted the task.
 
 Option 2:
-- Add a router and schema v2 layout as compatibility-first behavior. Keep all
-  existing `ace:*`, `ai:*`, and `agent-memory:*` scripts, write generated
-  artifacts to new canonical paths, keep legacy paths readable as migration
-  aliases, and migrate memory files deterministically only when safe.
+- Move old names behind `scripts/ace-cli.mjs`, install only `ace` plus a
+  project-owned `ace:validate`, and prune only known ACE-managed old aliases
+  when their values exactly match defaults.
 
 Chosen Approach:
-- Use Option 2. The final package version becomes `2.0.0` because schema v2 is
-  a new memory layout, but old commands and old paths remain readable/writable
-  during the transition.
+- Use Option 2. It gives fresh installs a clean package.json, preserves legacy
+  behavior through router arguments, and avoids deleting user-owned custom
+  scripts during upgrades.
 
 ## Current Status
-- Bumped package version to `2.0.0`.
-- Added `npm run ace -- <command>` / `pnpm ace <command>` router while preserving existing scripts.
-- Added canonical `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` memory layout with legacy read aliases.
-- Changed v2 writes to canonical-only defaults so fresh installs keep `.ai/` folder-structured.
-- Added `ace migrate -- --prune-legacy` and pruned this repository
+- Implemented the single-router cleanup for `ace-pack@2.0.1`.
+- Consumer installs now expose only `ace` plus a project-owned `ace:validate`
+  placeholder when missing.
+- Legacy command names route through `ace` arguments instead of package scripts.
+- Verification passed for tests, router check, fake-project smoke, payload
+  guard, dogfood self-check, and the project-owned mechanical gate.
 
 ## What Was Done
-- Bumped package version to `2.0.0` for the schema v2 candidate.
-- Added the `ace` command router and kept existing `ace:*`, `ai:*`, and
-  `agent-memory:*` scripts.
-- Added canonical v2 memory categories under `.ai/config`, `.ai/state`,
-  `.ai/knowledge`, and `.ai/generated`.
-- Changed v2 writes to canonical-only defaults so fresh installs keep `.ai/`
-  folder-structured.
-- Kept legacy root `.ai/*` paths readable as migration aliases.
-- Added `ace migrate -- --prune-legacy` and `--mirror-legacy` behavior.
-- Pruned this repository's root `.ai/*` legacy files and moved `.ai/README.md`
-  to `.ai/knowledge/README.md`.
-- Updated docs, templates, tests, smoke tooling, and local ACE memory for
-  canonical-only v2.
+- Implemented the single-router cleanup for `ace-pack@2.0.1`.
+- Removed exposed granular `ace:*`, `ai:*`, and `agent-memory:*` package
+  scripts from this repo.
+- Updated the installer so consumer repositories get only `ace` and a missing
+  project-owned `ace:validate` placeholder.
+- Added safe upgrade pruning for old ACE-managed default aliases while
+  preserving custom user scripts.
+- Expanded `ace-cli.mjs` to route legacy command names as router arguments,
+  including `ai:update:*` / `update:*` aliases with internal subcommands.
+- Updated generated hooks/workflows, README surfaces, docs, templates, local
+  AGENTS/CLAUDE instructions, smoke tools, and tests for router syntax.
 
 ## Current State
-- Local candidate is `ace-pack@2.0.0`.
-- The `.ai` root now contains only folders: `archive`, `config`, `generated`,
-  `knowledge`, and `state`.
-- npm latest remains `ace-pack@1.1.0` until the maintainer publishes.
-- v2 implementation is complete and release-readiness checks passed after the
-  canonical-only refinement.
+- Local candidate is `ace-pack@2.0.1`.
+- Root `package.json` exposes `ace`, `ace:validate`, `test`, and internal
+  development/release scripts; old daily ACE aliases are removed.
+- `ace check` is the ACE memory validation path.
+- `ace:validate` is now the project-owned mechanical gate; in this repo it runs
+  `npm run test`.
 
 ## Next Steps
 - Publish when ready with `npm.cmd run release:npm`.
-- After publish, verify `npm.cmd view ace-pack version` and update repo-local ACE memory to mark npm latest as `2.0.0`.
+- After publish, verify `npm.cmd view ace-pack version` and update repo-local
+  ACE memory to mark npm latest as `2.0.1`.
 
 ## Known Issues
-- None known for the v2.0.0 candidate.
+- None known for the v2.0.1 candidate.
 
 ## Quality Review
 Product Alignment:
-- The work targets daily UX and long-term maintainability after v1.1 while
-  preserving the ACE promise of local, inspectable, zero-bloat workflows.
+- The cleanup directly supports ACE's zero-bloat DevEx promise by keeping
+  consumer package scripts clean and predictable.
 
 Architecture:
-- Major-version schema work stayed compatibility-first: new categorized memory
-  paths and generated artifact paths have deterministic migration and legacy
-  read fallbacks.
+- Command compatibility moved into the router instead of package.json aliases.
+  Installer pruning uses exact known-default values so user-owned scripts are
+  preserved.
 
 Security:
-- No network calls, AI calls, SaaS behavior, credential handling, or automatic
-  hook installation were added.
+- No network calls, AI calls, credential handling, SaaS behavior, or automatic
+  hooks were added. The mechanical gate distinction reduces the chance that
+  agents skip real project validation.
 
 Code Quality:
-- Shared path helpers resolve canonical v2 paths and legacy aliases, avoiding a
-  second path-policy engine across scripts.
+- Focused tests cover router alias resolution, fresh install script minimalism,
+  safe pruning, docs wording, generated gate commands, and smoke installation.
 
 ## Verification
-- `npm.cmd run ace:classify` passed before implementation, but detected `small`
-only because the working tree was clean. The requested product scope is being
-treated as large.
-- `npm.cmd test` passed: 14 files, 108 tests.
+- `pnpm.cmd ace classify` passed before implementation; it detected `small`
+because the working tree was clean, but the product scope was treated as
+large.
+- `npm.cmd test` passed: 14 files, 110 tests.
+- `pnpm.cmd ace check` passed.
 - `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
-- `npm.cmd run ace:gate` passed and classified the work as large.
 - `npm.cmd run check:npm-payload` passed and checked 31 packed files.
-- `npm.cmd run release:npm:dry` passed for `ace-pack@2.0.0`.
+- `npm.cmd run ace:validate` passed, invoking the project-owned mechanical
+test gate.
 
 ## Recent Decisions
-## 2026-06-14 15:46
+## 2026-06-14 16:26
 
 Decision:
-- Implement v2.0 as a compatibility-first command router and memory layout
-  release: add `npm run ace -- <command>` / `pnpm ace <command>`, canonical
-  `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` paths, and
-  deterministic v1 legacy migration aliases.
+- Tighten the ACE command surface to a single installed `ace` router plus a
+  project-owned `ace:validate` mechanical gate.
 
 Reason:
-- The repo had accumulated many package scripts and high-churn root `.ai/*`
-  files. A single router and categorized memory layout improve daily UX and
-  reduce future context clutter, but existing installed repositories and agent
-  habits must keep working.
+- Injecting many `ace:*`, `ai:*`, and `agent-memory:*` scripts into consumer
+  repositories makes ACE look intrusive. `ace:validate` must remain a project
+  code-quality gate rather than an alias for ACE memory validation.
 
 Impact:
-- The package version moves to `2.0.0` because the canonical memory layout
-  changes.
-- Existing `ace:*`, `ai:*`, and `agent-memory:*` scripts remain valid.
-- Legacy `.ai/*.md`, `.ai/report-*`, and `.ai/generated-context.md` paths remain
-  readable during migration without cluttering fresh v2 installs.
-- Future schema work must use deterministic migration and old-repo fixture tests
-  before changing memory contracts again.
+- Fresh installs expose only `ace` and `ace:validate` in package scripts.
+- `ace check` runs ACE memory validation.
+- Legacy command names remain available only as router arguments such as
+  `pnpm ace ai:task:finish`.
+- Installer upgrades prune only old ACE-managed default aliases and preserve
+  custom user scripts.
 
 ## Changed Areas
 - `package.json`
 - `install-ace-pack.mjs`
 - `scripts/ace-cli.mjs`
-- `scripts/ace-migrate.mjs`
-- `scripts/ai-memory-utils.mjs`
-- `scripts/agent-memory-lib.mjs`
-- `scripts/ai-report-brief.mjs`
-- `scripts/ai-report.mjs`
+- `scripts/*`
+- `README.md, README.npm.md, docs/**`
+- `AGENTS.md, CLAUDE.md, scripts/agent-memory-templates.mjs`
+- `tests/**, tools/**`
+- `.ai/**`
 
 ## Latest Work Log
 # Work Log
@@ -430,6 +426,6 @@ Impact:
 - No unresolved reflections recorded.
 
 ## Overall Progress
-- Completion checklist: 0/7
+- Completion checklist: 9/9
 - Canonical context lives in `.ai/*`.
 - XML bundle generated at `.ai/generated/report-full.xml` for parsable handoff.

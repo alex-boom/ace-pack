@@ -34,9 +34,9 @@ export async function runDogfoodSelfCheck(options = {}) {
   await buildStagedPackage()
   const installResult = await installFromStagedPackage(rootDir)
 
-  await runNodeScript(rootDir, 'check-agent-memory.mjs', [rootDir])
-  await runNodeScript(rootDir, 'ace-quality-gate.mjs', ['--root', rootDir])
-  await runNodeScript(rootDir, 'ace-hub.mjs', ['--mode', 'start'])
+  await runNodeScript(rootDir, 'ace-cli.mjs', ['check'])
+  await runNodeScript(rootDir, 'ace-cli.mjs', ['gate'])
+  await runNodeScript(rootDir, 'ace-cli.mjs', ['hub', '--mode', 'start'])
 
   const afterStatus = await readGitStatus(rootDir)
   const preExistingPaths = new Set(beforeStatus.map((entry) => entry.path))

@@ -17,6 +17,34 @@ const COMMANDS = new Map([
   ['report:brief', ['ai-report-brief.mjs']],
   ['brief', ['ai-report-brief.mjs']],
   ['current-task-code', ['ai-report-current-task-code.mjs']],
+  ['ace:init', ['bootstrap-agent-memory.mjs']],
+  ['ace:check', ['check-agent-memory.mjs']],
+  ['ace:classify', ['ai-task-classify.mjs']],
+  ['ace:finish', ['ai-task-finish.mjs']],
+  ['ace:gate', ['ace-quality-gate.mjs']],
+  ['ace:hub', ['ace-hub.mjs']],
+  ['ace:migrate', ['ace-migrate.mjs']],
+  ['ace:onboard', ['ace-onboard.mjs']],
+  ['ace:report', ['ai-report.mjs']],
+  ['ace:report:brief', ['ai-report-brief.mjs']],
+  ['agent-memory:init', ['bootstrap-agent-memory.mjs']],
+  ['agent-memory:check', ['check-agent-memory.mjs']],
+  ['ai:project:onboard', ['ace-onboard.mjs']],
+  ['ai:report', ['ai-report.mjs']],
+  ['ai:report:brief', ['ai-report-brief.mjs']],
+  ['ai:report:currentTaskCode', ['ai-report-current-task-code.mjs']],
+  ['ai:task:classify', ['ai-task-classify.mjs']],
+  ['ai:task:finish', ['ai-task-finish.mjs']],
+  ['ai:update:task', ['ai-update.mjs', 'task']],
+  ['ai:update:handoff', ['ai-update.mjs', 'handoff']],
+  ['ai:update:log', ['ai-update.mjs', 'log']],
+  ['ai:update:decision', ['ai-update.mjs', 'decision']],
+  ['ai:update:changed', ['ai-update.mjs', 'changed']],
+  ['update:task', ['ai-update.mjs', 'task']],
+  ['update:handoff', ['ai-update.mjs', 'handoff']],
+  ['update:log', ['ai-update.mjs', 'log']],
+  ['update:decision', ['ai-update.mjs', 'decision']],
+  ['update:changed', ['ai-update.mjs', 'changed']],
 ])
 
 const currentFilePath = fileURLToPath(import.meta.url)
@@ -41,16 +69,16 @@ export function resolveAceCommand(argv) {
     }
   }
 
-  const commandSpec = COMMANDS.get(command)
+  const [scriptName, ...scriptArgs] = COMMANDS.get(command) ?? []
 
-  if (!commandSpec) {
+  if (!scriptName) {
     throw new Error(`Unknown ACE command: ${command}`)
   }
 
   return {
     help: false,
-    rest,
-    scriptName: commandSpec[0],
+    rest: [...scriptArgs, ...rest],
+    scriptName,
   }
 }
 
@@ -63,7 +91,7 @@ Usage:
 
 Commands:
   init                 Initialize ACE memory files.
-  check, validate      Validate ACE memory.
+  check                Validate ACE memory.
   classify             Classify current repository changes.
   finish               Run adaptive task finish.
   gate                 Run PR/CI quality gate.
@@ -74,8 +102,8 @@ Commands:
   report brief         Generate brief report.
   current-task-code    Generate current-task code report.
 
-Existing scripts such as ace:finish, ace:gate, and ai:task:finish remain
-supported for compatibility.
+Legacy names such as ace:finish, ai:task:finish, and agent-memory:init are
+supported only as router arguments, for example: pnpm ace ai:task:finish.
 `
 }
 

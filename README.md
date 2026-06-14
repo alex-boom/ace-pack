@@ -48,8 +48,8 @@ ACE turns those soft expectations into local project structure:
 - `.ai/config/memory-config.json` marks high-risk paths and keywords for the
   current repository; legacy `.ai/memory-config.json` is still readable during
   migration.
-- `ace:validate` starts as an ACE memory check and can be replaced by each
-  repo with its real mechanical quality gate.
+- `ace check` validates ACE memory. `ace:validate` is a project-owned
+  mechanical gate placeholder for lint, typecheck, tests, or equivalent checks.
 
 ## ACE vs. Just Chatting With AI
 
@@ -62,10 +62,10 @@ write handoff notes.
 
 With ACE, the repository carries the discipline:
 
-- `ace:classify` detects whether the change is small, standard, or large.
+- `ace classify` detects whether the change is small, standard, or large.
 - Large and high-risk work starts with a shift-left design review before code.
-- `ace:hub` generates focused context instead of manual copy/paste bundles.
-- `ace:finish` commits decisions, changed files, validation notes, and
+- `ace hub` generates focused context instead of manual copy/paste bundles.
+- `ace finish` commits decisions, changed files, validation notes, and
   reflection back into project memory; small low-risk changes can auto-close
   with compact notes.
 
@@ -106,15 +106,15 @@ npm run ace -- classify
 npm run ace -- finish
 ```
 
-The older `ace:*` scripts remain supported, so `pnpm ace:finish` and
-`npm run ace:finish` continue to work.
+Legacy command names remain supported only as router arguments, such as
+`pnpm ace ai:task:finish` or `npm run ace -- ai:task:finish`.
 
 The key behavior is **Shift-Left Design Review**. For large or high-risk tasks,
 the agent must stop before implementation, fill `.ai/state/current-task.md` with the
 business value and technical approach, compare viable patterns, and choose one
 explicitly. The code comes after the architectural decision, not before it.
 
-Unknown repositories start with a neutral memory config. Then `ace:onboard`
+Unknown repositories start with a neutral memory config. Then `ace onboard`
 profiles the repo and recommends project-specific risk rules before they are
 applied. The scanner recognizes common JS/TS, Python, Go, Rust, .NET, and
 monorepo signals without installing dependencies or calling external services.
@@ -129,7 +129,7 @@ tooling community:
 2. Show the same change after ACE onboarding: auth paths are high-risk, the
    agent must classify the task, capture the technical approach, and finish
    with verification and handoff notes.
-3. End with `ace:hub start`, which gives the next chat a compact startup
+3. End with `ace hub start`, which gives the next chat a compact startup
    snapshot instead of forcing humans to retell the whole story.
 
 Demo materials:
@@ -150,16 +150,16 @@ npx ace-pack@latest init
 Then profile the project:
 
 ```bash
-npm run ace:onboard -- --apply
-npm run ace:check
+npm run ace -- onboard --apply
+npm run ace -- check
 ```
 
 Prefer pnpm? Use the same flow through `pnpm dlx`:
 
 ```bash
 pnpm dlx ace-pack init
-pnpm ace:onboard -- --apply
-pnpm ace:check
+pnpm ace onboard --apply
+pnpm ace check
 ```
 
 Install into another repository:
@@ -187,10 +187,10 @@ npx ace-pack@latest init --help
 
 - `AGENTS.md` and `CLAUDE.md`
 - `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` memory files
-  plus legacy `.ai/*` mirrors for older agents
+  with legacy `.ai/*` paths readable during migration
 - `scripts/*` ACE automation copied into the project
-- `package.json` commands such as `ace:onboard`, `ace:classify`,
-  `ace:validate`, `ace:finish`, `ace:hub`, and the `ace` router
+- `package.json` scripts for the `ace` router and project-owned
+  `ace:validate` mechanical gate
 
 ACE does not need to remain installed as a runtime dependency. The npm package
 acts as a scaffold CLI, then the project owns the copied scripts.
@@ -209,14 +209,14 @@ regular `pnpm` shim:
 
 ```bash
 pnpm.cmd dlx ace-pack init
-pnpm.cmd ace:onboard -- --apply
-pnpm.cmd ace:check
+pnpm.cmd ace onboard --apply
+pnpm.cmd ace check
 ```
 
 Known SaaS monorepo? Apply the built-in preset:
 
 ```bash
-pnpm ace:onboard -- --preset next-trpc-drizzle-saas --apply
+pnpm ace onboard --preset next-trpc-drizzle-saas --apply
 ```
 
 Legacy entry points remain available:
@@ -235,10 +235,10 @@ ACE detects signals such as `next.config.ts`, `@trpc/server`, `drizzle-orm`,
 routers, and migrations get stricter review before code changes.
 
 ```bash
-pnpm ace:onboard -- --preset next-trpc-drizzle-saas --apply
-pnpm ace:classify
+pnpm ace onboard --preset next-trpc-drizzle-saas --apply
+pnpm ace classify
 pnpm ace:validate
-pnpm ace:finish
+pnpm ace finish
 ```
 
 ### Python FastAPI
@@ -250,8 +250,8 @@ tooling; ACE only provides the agent memory and workflow layer.
 
 ```bash
 pnpm dlx ace-pack init
-pnpm ace:onboard -- --apply
-pnpm ace:hub
+pnpm ace onboard --apply
+pnpm ace hub
 ```
 
 ### Go Microservice
@@ -262,8 +262,8 @@ and risk workflow without changing the Go build pipeline.
 
 ```bash
 pnpm dlx ace-pack init
-pnpm ace:onboard -- --apply
-pnpm ace:classify
+pnpm ace onboard --apply
+pnpm ace classify
 ```
 
 ### Rust Service
@@ -274,8 +274,8 @@ handlers, routes, schema, and migrations.
 
 ```bash
 pnpm dlx ace-pack init
-pnpm ace:onboard -- --apply
-pnpm ace:hub
+pnpm ace onboard --apply
+pnpm ace hub
 ```
 
 ### Generic Monorepo
@@ -287,20 +287,20 @@ workspace auth, database, middleware, and API paths without treating every
 
 ```bash
 pnpm dlx ace-pack init
-pnpm ace:onboard -- --apply
-pnpm ace:classify
+pnpm ace onboard --apply
+pnpm ace classify
 ```
 
 ## ACE Hub
 
-`ace:hub` is the daily context launcher. Use the interactive menu, or generate a
+`ace hub` is the daily context launcher. Use the interactive menu, or generate a
 specific payload directly:
 
 ```bash
-pnpm ace:hub
-pnpm ace:hub start
-pnpm ace:hub -- --mode pr
-pnpm ace:hub -- --list
+pnpm ace hub
+pnpm ace hub start
+pnpm ace hub --mode pr
+pnpm ace hub --list
 ```
 
 Available modes:
@@ -319,46 +319,46 @@ By default ACE writes `.ai/generated/context.md`. Legacy
 `.ai/generated-context.md` remains readable during migration. For automation:
 
 ```bash
-pnpm ace:hub -- --mode start --stdout
-pnpm ace:hub -- --mode architect-lite --stdout
-pnpm ace:hub -- --mode architect --output .ai/architect-context.md
-pnpm ace:hub -- --mode pr --json
+pnpm ace hub --mode start --stdout
+pnpm ace hub --mode architect-lite --stdout
+pnpm ace hub --mode architect --output .ai/architect-context.md
+pnpm ace hub --mode pr --json
 ```
 
 ## PR and CI Quality Gates
 
-`ace:gate` is an optional pre-merge check for teams using AI-generated changes.
+`ace gate` is an optional pre-merge check for teams using AI-generated changes.
 It reuses ACE memory validation, task classification, and closeout rules, then
 prints actionable failures for CI logs.
 
-Small low-risk changes stay low-ceremony: `ace:finish` can write compact
-closeout notes, and `ace:gate` does not demand design or quality-review
+Small low-risk changes stay low-ceremony: `ace finish` can write compact
+closeout notes, and `ace gate` does not demand design or quality-review
 sections for those changes. Standard, large, high-risk, and
 design-review-required work keeps stricter review expectations.
 
 ```bash
-pnpm ace:gate
-pnpm ace:gate -- --base origin/main --head HEAD
-pnpm ace:gate -- --json
+pnpm ace gate
+pnpm ace gate --base origin/main --head HEAD
+pnpm ace gate --json
 ```
 
 For small human-reviewed changes where the team intentionally accepts a gate
 bypass, record the reason explicitly:
 
 ```bash
-pnpm ace:gate -- --human-override "Human reviewed typo-only docs change."
+pnpm ace gate --human-override "Human reviewed typo-only docs change."
 ```
 
 Generate an opt-in GitHub Actions workflow:
 
 ```bash
-pnpm ace:gate -- --write-github-action
+pnpm ace gate --write-github-action
 ```
 
 Install a native pre-push hook when you want local protection before pushing:
 
 ```bash
-pnpm ace:gate -- --install-pre-push
+pnpm ace gate --install-pre-push
 ```
 
 ACE never installs hooks automatically. If a non-ACE pre-push hook already
@@ -423,7 +423,7 @@ npm run smoke:fake-project
 
 The smoke creates temporary JS and non-JS projects, installs ACE from the local
 candidate package, runs onboarding, validates memory, generates start context,
-and runs `ace:gate`. It does not use `npm latest`.
+and runs `ace gate`. It does not use `npm latest`.
 
 Before a final release, run the release-readiness sequence:
 
@@ -438,7 +438,7 @@ npm run dogfood:self-check
 ```
 
 The dogfood self-check requires a clean git worktree by default, applies the
-local staged ACE package, runs `ace:check`, `ace:gate`, and `ace:hub start`, and
+local staged ACE package, runs `ace check`, `ace gate`, and `ace hub start`, and
 then stops if unexpected files changed.
 
 ## CLI Reference
@@ -446,15 +446,15 @@ then stops if unexpected files changed.
 | Command | Purpose |
 | --- | --- |
 | `ace <command>` | Unified router for daily commands, used as `npm run ace -- <command>` or `pnpm ace <command>`. |
-| `ace:onboard` | Smart repository profiling with terminal summary. Writes `.ai/config/project-profile.md` and `.ai/config/memory-config.recommended.json` without changing active config. |
-| `ace:onboard -- --apply` | Merges recommendations into `.ai/config/memory-config.json` and marks the repo as profiled. |
-| `ace:onboard -- --preset next-trpc-drizzle-saas --apply` | Applies the built-in Next.js + tRPC + Drizzle SaaS profile. |
-| `ace:onboard -- --check` | Fails if the repository is still unprofiled. |
-| `ace:classify` | Git diff risk analysis for small, standard, and large tasks. |
-| `ace:validate` | Default mechanical quality gate alias for `ace:check`. Projects may replace it with a stricter local gate. |
-| `ace:finish` | Adaptive closeout, small low-risk auto-closeout, memory documentation, reports, and reflection. |
-| `ace:gate` | Optional PR/CI quality gate with actionable failures, PR refs, JSON output, explicit human override, and opt-in hook/workflow generation. |
-| `ace:hub` | Interactive and named-mode context generator for start, architect-lite, architect, handoff, PR, business, and docs payloads. |
+| `ace onboard` | Smart repository profiling with terminal summary. Writes `.ai/config/project-profile.md` and `.ai/config/memory-config.recommended.json` without changing active config. |
+| `ace onboard --apply` | Merges recommendations into `.ai/config/memory-config.json` and marks the repo as profiled. |
+| `ace onboard --preset next-trpc-drizzle-saas --apply` | Applies the built-in Next.js + tRPC + Drizzle SaaS profile. |
+| `ace onboard --check` | Fails if the repository is still unprofiled. |
+| `ace classify` | Git diff risk analysis for small, standard, and large tasks. |
+| `ace:validate` | Project-owned mechanical quality gate for lint, typecheck, tests, or equivalent checks. ACE installs a placeholder only when absent. |
+| `ace finish` | Adaptive closeout, small low-risk auto-closeout, memory documentation, reports, and reflection. |
+| `ace gate` | Optional PR/CI quality gate with actionable failures, PR refs, JSON output, explicit human override, and opt-in hook/workflow generation. |
+| `ace hub` | Interactive and named-mode context generator for start, architect-lite, architect, handoff, PR, business, and docs payloads. |
 
 ## Installed Project Files
 
@@ -476,7 +476,7 @@ ACE installs or updates:
 Existing memory files are not overwritten. Existing `package.json` files are
 preserved and updated idempotently. Existing IDE rule files are not overwritten;
 ACE-created bridge files only point native IDE agents back to `AGENTS.md` and
-the local `ace:*` scripts.
+the local `ace` router and `ace:validate` gate.
 
 ## Development
 

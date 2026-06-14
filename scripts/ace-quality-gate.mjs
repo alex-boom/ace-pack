@@ -39,7 +39,7 @@ export async function runQualityGate(rootDir, options = {}) {
   if (classification.gitError) {
     issues.push({
       code: 'git-diff-unavailable',
-      fix: 'Fetch the PR base ref, verify --base/--head values, or run ace:gate without PR refs for a working-tree check.',
+      fix: 'Fetch the PR base ref, verify --base/--head values, or run ace gate without PR refs for a working-tree check.',
       message: `Unable to inspect git diff for --base ${classification.baseRef} --head ${classification.headRef}.`,
     })
   }
@@ -99,7 +99,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm run ace:gate -- --base origin/\${{ github.base_ref }} --head HEAD
+      - run: npm run ace -- gate --base origin/\${{ github.base_ref }} --head HEAD
 `
 
   await mkdir(path.dirname(workflowPath), { recursive: true })
@@ -118,7 +118,7 @@ export async function installPrePushHook(rootDir) {
   const samplePath = path.join(hooksDir, 'pre-push.ace.sample')
   const hookContent = `#!/bin/sh
 ${ACE_HOOK_MARKER}
-npm run ace:gate
+npm run ace -- gate
 `
 
   try {
@@ -162,7 +162,7 @@ npm run ace:gate
 function createMemoryIssue(memoryIssue) {
   return {
     code: 'memory-invalid',
-    fix: 'Run ace:init if files are missing, or restore the required ACE sections before merging.',
+    fix: 'Run ace init if files are missing, or restore the required ACE sections before merging.',
     message: memoryIssue,
   }
 }
@@ -179,7 +179,7 @@ function createFinishIssue(missingRequirement, classification) {
   if (missingRequirement.includes('Technical Approach')) {
     return {
       code: 'technical-approach-missing',
-      fix: 'Add Option 1, Option 2, and Chosen Approach to .ai/current-task.md, then rerun ace:gate.',
+      fix: 'Add Option 1, Option 2, and Chosen Approach to .ai/current-task.md, then rerun ace gate.',
       message: `${describeRisk(classification)}, but .ai/current-task.md Technical Approach is incomplete.`,
     }
   }
@@ -195,14 +195,14 @@ function createFinishIssue(missingRequirement, classification) {
   if (missingRequirement.includes('reflection-log')) {
     return {
       code: 'reflection-missing',
-      fix: 'Add a compact .ai/reflection-log.md entry when this large task exposed useful process friction, then rerun ace:gate.',
+      fix: 'Add a compact .ai/reflection-log.md entry when this large task exposed useful process friction, then rerun ace gate.',
       message: 'Large task detected, but no useful reflection entry is recorded.',
     }
   }
 
   return {
     code: 'finish-requirement-missing',
-    fix: 'Complete the missing closeout note described by ACE, then rerun ace:gate.',
+    fix: 'Complete the missing closeout note described by ACE, then rerun ace gate.',
     message: missingRequirement,
   }
 }

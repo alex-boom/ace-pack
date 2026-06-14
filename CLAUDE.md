@@ -29,13 +29,14 @@ current task.
 - Prefer minimal diffs over rewrites.
 - Preserve existing TypeScript, UI, and API contracts unless the task says
   otherwise.
-- Use `npm run ace -- classify` to select the adaptive task tier when `pnpm` is
-  unavailable on PATH.
-- Run `npm run ace -- onboard --apply` after fresh installation in an unfamiliar
-  project before trusting project-specific risk rules.
-- On Windows PowerShell in this repository, use `npm.cmd run ace:classify`,
-  `npm.cmd run ace:validate`, and similar commands if script execution policy
-  blocks the regular `npm` shim.
+- Use `pnpm ace classify` to select the adaptive task tier. With npm, pass
+  router arguments after `--`, such as `npm run ace -- classify`.
+- Run `pnpm ace onboard --apply` after fresh installation in an unfamiliar
+  project before trusting project-specific risk rules. With npm, use
+  `npm run ace -- onboard --apply`.
+- On Windows PowerShell in this repository, use `pnpm.cmd ace classify`,
+  `pnpm.cmd ace check`, or project-owned `pnpm.cmd ace:validate` if script
+  execution policy blocks the regular `pnpm` shim.
 - For large or high-risk standard tasks, complete `.ai/state/current-task.md`
   Business Value and Technical Approach before writing code.
 - Treat `.ai/*` as the current source of task context and handoff state.
@@ -47,7 +48,8 @@ current task.
 
 ## End-of-Task Routine
 
-Run `npm run ace -- validate`, fix failures, then run `npm run ace -- finish` after
-updating the relevant `.ai/*` files. The finish script validates the
-required closeout depth for the detected task tier and generates the
-appropriate reports.
+Run `npm run ace -- check` for ACE memory validation and project-owned
+`npm run ace:validate` for mechanical checks, then run
+`npm run ace -- finish` after updating the relevant `.ai/*` files. The finish
+script validates the required closeout depth for the detected task tier and
+generates the appropriate reports.

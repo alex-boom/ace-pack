@@ -13,7 +13,7 @@ be explicit opt-in and fail open into the manual Markdown workflow.
 ## Does ACE require SaaS, a cloud account, or a database?
 
 No. Durable state is Markdown under `.ai/**` plus JSON configuration in
-`.ai/memory-config.json`.
+`.ai/config/memory-config.json`.
 
 ## Does ACE add runtime dependencies to my app?
 
@@ -42,26 +42,26 @@ ACE writes inside a marked workflow section:
 
 Project-specific content outside those markers is preserved.
 
-## What if `ace:gate` is too strict?
+## What if `ace gate` is too strict?
 
-Keep `ace:gate` strict for large or high-risk changes. For intentional
+Keep `ace gate` strict for large or high-risk changes. For intentional
 human-reviewed small changes, use:
 
 ```bash
-npm run ace:gate -- --human-override "Human reviewed typo-only docs change."
+npm run ace -- gate --human-override "Human reviewed typo-only docs change."
 ```
 
 The override is explicit and visible in CLI/JSON output.
 
 ## Should every repository install the pre-push hook?
 
-No. Hooks are opt-in. Start with local `ace:gate`, then add GitHub Actions or a
+No. Hooks are opt-in. Start with local `ace gate`, then add GitHub Actions or a
 pre-push hook only after the team accepts the workflow.
 
 ## How should teams use `ace:validate`?
 
-By default, it checks ACE memory. Teams can replace it with their real project
-gate, for example:
+It is project-owned. ACE installs a placeholder when it is missing; teams
+should replace it with their real project gate, for example:
 
 ```json
 {
@@ -104,8 +104,8 @@ Run:
 
 ```bash
 npx ace-pack@latest init
-npm run ace:check
+npm run ace -- check
 ```
 
-The v1 compatibility contract is documented in
+The v2 compatibility contract is documented in
 [`docs/schema-compatibility.md`](./schema-compatibility.md).

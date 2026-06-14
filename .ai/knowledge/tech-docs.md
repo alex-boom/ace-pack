@@ -11,51 +11,53 @@ without reading large implementation files.
   `install-agent-memory-pack.mjs`, root command shims, and `scripts/*.mjs`.
 - Repo-local dogfooding state lives in `AGENTS.md`, `CLAUDE.md`, and `.ai/**`;
   those files are excluded from the npm payload.
-- `ace-cli.mjs` provides the v2 command router for `npm run ace -- <command>`
-  and `pnpm ace <command>`, while all existing `ace:*` and legacy aliases
-  remain installed for compatibility.
+- `ace-cli.mjs` provides the command router for `npm run ace -- <command>`
+  and `pnpm ace <command>`. Fresh installs expose only the `ace` router plus
+  project-owned `ace:validate`; old `ace:*`, `ai:*`, and `agent-memory:*`
+  names are supported only as router arguments.
 - Report generation is deterministic and local. `ai-report-brief.mjs` and
   `ai-report.mjs` read Markdown memory, use helpers from
   `ai-memory-utils.mjs`, and write `.ai/generated/report-brief.md` /
   `.ai/generated/report-full.md`.
-- `ace:hub` builds focused context payloads in `.ai/generated/context.md`.
+- `ace hub` builds focused context payloads in `.ai/generated/context.md`.
   Numeric options remain compatible, and named modes now cover start/coder,
   architect-lite/plan, architect, handoff, PR, business, and docs contexts.
   AI Coder Context starts with `.ai/generated/report-brief.md` when available
   so new chats see the Start Snapshot first, but fresh repos still work before
   the first report is generated.
-- `ace:onboard` performs a bounded local file scan and package/content signal
+- `ace onboard` performs a bounded local file scan and package/content signal
   scan to recommend conservative repository-specific risk rules. It writes
   `.ai/config/project-profile.md` and
   `.ai/config/memory-config.recommended.json`, and applies those rules to
   `.ai/config/memory-config.json` only when invoked with `--apply`. Legacy root
   `.ai/*` files remain readable as migration aliases for older repositories.
-- `ace:gate` is the optional PR/CI quality gate. It reuses ACE memory
+- `ace gate` is the optional PR/CI quality gate. It reuses ACE memory
   validation, task classification, finish requirements, and shared Markdown
   helpers instead of maintaining a second policy engine. v0.4.1 keeps strict
   Quality Review enforcement for large or high-risk changes, but lets standard
-  low-risk changes pass without review ceremony. v1.1 keeps `ace:gate`
-  consistent with `ace:finish` so small low-risk changes do not require
+  low-risk changes pass without review ceremony. v1.1 keeps `ace gate`
+  consistent with `ace finish` so small low-risk changes do not require
   Business Value, Quality Review, or Verification ceremony.
-- `ace:finish` can auto-close small low-risk changes by writing compact
+- `ace finish` can auto-close small low-risk changes by writing compact
   handoff, changed-files, work-log, and brief report updates from deterministic
   local git/classification data. It does not change `.ai/current-task.md`
   lifecycle and still keeps stricter closeout for standard, large, high-risk,
   and design-review-required work.
 - `ace-pack init` creates optional IDE rule bridges for `.cursorrules`,
   `.windsurfrules`, and `.github/copilot-instructions.md` when missing. These
-  files are package-manager-aware pointers back to `AGENTS.md` and local
-  `ace:*` scripts; existing project-owned IDE rule files are not overwritten.
+  files are package-manager-aware pointers back to `AGENTS.md` and the local
+  `ace` router; existing project-owned IDE rule files are not overwritten.
 - `ace-mcp-server.mjs` is the optional read-only MCP stdio adapter. It exposes
   selected ACE Markdown files through `resources/list` and `resources/read`,
   with no tools, writes, SDK dependency, network listener, or npm-script wrapper.
 - Product growth materials live outside runtime code. `docs/demo-script.md`,
   `docs/launch-copy.md`, and `examples/context-loss-demo/**` support demos and
   launch work, while README/README.npm provide only the concise entry point.
-- v2.0 schema documentation lives in `docs/schema-compatibility.md`. It defines
-  the command router, canonical categorized `.ai/**` paths, legacy read aliases,
-  Markdown section expectations, `.ai/config/memory-config.json` schema version
-  `1`, and deterministic migration policy.
+- v2 schema documentation lives in `docs/schema-compatibility.md`. It defines
+  the single-router command surface, project-owned `ace:validate` gate,
+  canonical categorized `.ai/**` paths, legacy read aliases, Markdown section
+  expectations, `.ai/config/memory-config.json` schema version `1`, and
+  deterministic migration policy.
 - v1.0.1 adoption documentation lives in `docs/adoption-checklist.md` and
   `docs/faq.md`. These are GitHub-only rollout aids linked from README surfaces,
   not installed workflow or runtime behavior.
@@ -134,12 +136,12 @@ without reading large implementation files.
 
 ## DevOps and Quality Gates
 - Use `npm.cmd test` for Vitest on Windows.
-- Use `npm.cmd run ace:check` for ACE memory validation.
-- Use `npm.cmd run ace:gate` for optional PR/CI quality gate validation.
+- Use `npm.cmd run ace -- check` for ACE memory validation.
+- Use `npm.cmd run ace -- gate` for optional PR/CI quality gate validation.
 - Use `npm.cmd run smoke:fake-project` to validate the local staged package in
   disposable projects before final release.
 - Use `npm.cmd run release:ready` for the full pre-final-release sequence:
-  tests, fake-project smoke, `ace:gate`, payload guard, and npm dry-run.
+  tests, fake-project smoke, `ace gate`, payload guard, and npm dry-run.
 - Use `npm.cmd run dogfood:self-check` only during an explicit reviewed
   release-readiness pass on a clean or intentionally accepted worktree.
 - Use `npm.cmd run check:npm-payload` to verify the staged npm tarball excludes

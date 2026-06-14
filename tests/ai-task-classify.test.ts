@@ -62,7 +62,7 @@ describe('classifyTask', () => {
 
     expect(classification.tier).toBe('small')
     expect(classification.designReviewRequired).toBe(false)
-    expect(classification.requiredWorkflow).toContain('Generate pnpm ace:report:brief.')
+    expect(classification.requiredWorkflow).toContain('Generate pnpm ace report brief.')
   })
 
   it('classifies large changes by configured thresholds', () => {

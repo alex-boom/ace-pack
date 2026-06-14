@@ -62,9 +62,10 @@ describe('ensureAgentMemory', () => {
     expect(agentsContent.match(/agent-memory-workflow:start/gm)).toHaveLength(1)
     expect(agentsContent).toContain('## ACE (Agentic Context Engine) Workflow')
     expect(agentsContent).toContain('ACE is the local automation framework')
-    expect(agentsContent).toContain('pnpm ace:classify')
-    expect(agentsContent).toContain('pnpm.cmd ace:validate')
-    expect(agentsContent).toContain('pnpm ai:task:classify')
+    expect(agentsContent).toContain('pnpm ace classify')
+    expect(agentsContent).toContain('npm run ace -- finish')
+    expect(agentsContent).toContain('pnpm.cmd ace check')
+    expect(agentsContent).toContain('pnpm ace ai:task:classify')
     expect(agentsContent).toContain(
       'Do the smallest closeout that preserves future agent context and project',
     )
@@ -100,7 +101,7 @@ describe('ensureAgentMemory', () => {
     )
     expect(claudeContent).toContain('If release is deferred, say so explicitly.')
     expect(currentTaskContent).toContain(
-      'Always: update `.ai/changed-files.md`, record verification, and run `ace:validate`',
+      'Always: update `.ai/changed-files.md`, record verification, and run project-owned `ace:validate`',
     )
     expect(currentTaskContent).toContain(
       'Only if changed: update tech docs, product roadmap, durable decisions, or release notes',

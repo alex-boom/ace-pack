@@ -6,7 +6,11 @@ import { fileURLToPath } from 'node:url'
 import { onboardRepository } from './scripts/ace-onboard.mjs'
 import { ensureAgentMemory } from './scripts/agent-memory-lib.mjs'
 
-const REQUIRED_PACKAGE_SCRIPTS = {
+const ACE_ROUTER_SCRIPT = 'node ./scripts/ace-cli.mjs'
+const ACE_VALIDATE_PLACEHOLDER_SCRIPT =
+  'echo "Add project mechanical checks here: lint, typecheck, test"'
+
+const OLD_ACE_PACKAGE_SCRIPTS = {
   'ace:init': 'node ./scripts/bootstrap-agent-memory.mjs',
   'ace:check': 'node ./scripts/check-agent-memory.mjs',
   'ace:classify': 'node ./scripts/ai-task-classify.mjs',
@@ -29,11 +33,12 @@ const REQUIRED_PACKAGE_SCRIPTS = {
   'ai:update:log': 'node ./scripts/ai-update.mjs log',
   'ai:update:decision': 'node ./scripts/ai-update.mjs decision',
   'ai:update:changed': 'node ./scripts/ai-update.mjs changed',
+  'ace:validate': 'node ./scripts/check-agent-memory.mjs',
 }
 
 const DEFAULT_PACKAGE_SCRIPTS = {
-  ace: 'node ./scripts/ace-cli.mjs',
-  'ace:validate': 'node ./scripts/check-agent-memory.mjs',
+  ace: ACE_ROUTER_SCRIPT,
+  'ace:validate': ACE_VALIDATE_PLACEHOLDER_SCRIPT,
 }
 
 const MANAGED_SCRIPT_FILES = [
@@ -156,16 +161,26 @@ async function ensurePackageScripts(rootDir) {
   }
   let changed = false
 
-  for (const [scriptName, scriptValue] of Object.entries(REQUIRED_PACKAGE_SCRIPTS)) {
-    if (nextScripts[scriptName] === scriptValue) {
+  for (const [scriptName, scriptValue] of Object.entries(OLD_ACE_PACKAGE_SCRIPTS)) {
+    if (scriptName === 'ace:validate' || nextScripts[scriptName] !== scriptValue) {
       continue
     }
 
-    nextScripts[scriptName] = scriptValue
+    delete nextScripts[scriptName]
     changed = true
   }
 
   for (const [scriptName, scriptValue] of Object.entries(DEFAULT_PACKAGE_SCRIPTS)) {
+    const isOldAceValidateDefault =
+      scriptName === 'ace:validate' &&
+      nextScripts[scriptName] === OLD_ACE_PACKAGE_SCRIPTS[scriptName]
+
+    if (isOldAceValidateDefault) {
+      nextScripts[scriptName] = scriptValue
+      changed = true
+      continue
+    }
+
     if (scriptName in nextScripts) {
       continue
     }
@@ -431,7 +446,7 @@ Recommended:
   pnpm dlx ace-pack init
 
 Options:
-  --apply            Run ace:onboard -- --apply after installation.
+  --apply            Run ace onboard --apply after installation.
   --preset <name>    Apply a built-in project preset during onboarding.
   -h, --help         Show this help.
 
@@ -498,6 +513,22 @@ export async function detectPackageManager(rootDir) {
 export function formatScriptCommand(packageManager, scriptName, args = []) {
   const extraArgs = args.length > 0 ? args.join(' ') : ''
 
+  if (scriptName === 'ace') {
+    if (packageManager === 'npm') {
+      return `npm run ace${extraArgs ? ` -- ${extraArgs}` : ''}`
+    }
+
+    if (packageManager === 'yarn') {
+      return `yarn ace${extraArgs ? ` ${extraArgs}` : ''}`
+    }
+
+    if (packageManager === 'bun') {
+      return `bun run ace${extraArgs ? ` -- ${extraArgs}` : ''}`
+    }
+
+    return `pnpm ace${extraArgs ? ` ${extraArgs}` : ''}`
+  }
+
   if (packageManager === 'npm') {
     return `npm run ${scriptName}${extraArgs ? ` -- ${extraArgs}` : ''}`
   }
@@ -539,11 +570,11 @@ export async function printInstallResult(result, options = {}) {
   const nextCommands = []
 
   if (!result.onboarding?.applied) {
-    nextCommands.push(formatScriptCommand(packageManager, 'ace:onboard', ['--apply']))
+    nextCommands.push(formatScriptCommand(packageManager, 'ace', ['onboard', '--apply']))
   }
 
-  nextCommands.push(formatScriptCommand(packageManager, 'ace:check'))
-  nextCommands.push(formatScriptCommand(packageManager, 'ace:hub'))
+  nextCommands.push(formatScriptCommand(packageManager, 'ace', ['check']))
+  nextCommands.push(formatScriptCommand(packageManager, 'ace', ['hub']))
 
   process.stderr.write('\nNext:\n')
 

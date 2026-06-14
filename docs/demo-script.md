@@ -11,7 +11,7 @@ Use the fixture in `examples/context-loss-demo`.
 ```bash
 cd examples/context-loss-demo
 npx ace-pack@latest init
-npm run ace:onboard -- --apply
+npm run ace -- onboard --apply
 ```
 
 For local release candidates, run the installer from the repository root instead
@@ -19,7 +19,7 @@ of npm latest:
 
 ```bash
 node ../../install-ace-pack.mjs .
-npm run ace:onboard -- --apply
+npm run ace -- onboard --apply
 ```
 
 ## Scene 1: Ordinary AI Chat
@@ -49,15 +49,15 @@ auth. Without project memory, the AI treats it like normal code.
 Run:
 
 ```bash
-npm run ace:onboard -- --apply
-npm run ace:classify
+npm run ace -- onboard --apply
+npm run ace -- classify
 ```
 
 Show:
 
-- `.ai/project-profile.md` explains why the repo was detected.
-- `.ai/memory-config.json` contains high-risk auth/session/token paths.
-- `ace:classify` gives the agent the right task tier and workflow.
+- `.ai/config/project-profile.md` explains why the repo was detected.
+- `.ai/config/memory-config.json` contains high-risk auth/session/token paths.
+- `ace classify` gives the agent the right task tier and workflow.
 
 Narration:
 
@@ -68,7 +68,7 @@ as risky before the model writes code.
 
 ## Scene 3: Guarded AI Work
 
-Open `.ai/current-task.md` and show the design fields:
+Open `.ai/state/current-task.md` and show the design fields:
 
 - Business Value / Product Alignment
 - Technical Approach
@@ -88,15 +88,15 @@ That shifts architecture and security review left, where it belongs.
 Run:
 
 ```bash
-npm run ace:finish
-npm run ace:hub start
+npm run ace -- finish
+npm run ace -- hub start
 ```
 
 Show:
 
-- `.ai/report-brief.md` Start Snapshot
-- `.ai/session-handoff.md` verification and next steps
-- `.ai/generated-context.md` with the brief report first
+- `.ai/generated/report-brief.md` Start Snapshot
+- `.ai/state/session-handoff.md` verification and next steps
+- `.ai/generated/context.md` with the brief report first
 
 Narration:
 

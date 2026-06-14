@@ -19,6 +19,7 @@ const tempDirs: string[] = []
 const execFileAsync = promisify(execFile)
 const runnerPackageDescription =
   'Auto-generated lightweight runner for ACE (Agentic Context Engine) scripts. No node_modules required.'
+const aceValidatePlaceholder = 'echo "Add project mechanical checks here: lint, typecheck, test"'
 
 async function createTargetRepo() {
   const rootDir = await mkdtemp(path.join(os.tmpdir(), 'agent-memory-toolkit-install-'))
@@ -83,27 +84,29 @@ describe('installAcePack', () => {
     expect(result.createdFiles).toContain('.windsurfrules')
     expect(result.createdFiles).toContain('.github/copilot-instructions.md')
     expect(result.updatedFiles).toContain('package.json')
-    expect(packageJson.scripts['ace:init']).toBe('node ./scripts/bootstrap-agent-memory.mjs')
-    expect(packageJson.scripts['ace:check']).toBe('node ./scripts/check-agent-memory.mjs')
-    expect(packageJson.scripts['ace:classify']).toBe('node ./scripts/ai-task-classify.mjs')
-    expect(packageJson.scripts['ace:finish']).toBe('node ./scripts/ai-task-finish.mjs')
-    expect(packageJson.scripts['ace:gate']).toBe('node ./scripts/ace-quality-gate.mjs')
-    expect(packageJson.scripts['ace:hub']).toBe('node ./scripts/ace-hub.mjs')
-    expect(packageJson.scripts['ace:onboard']).toBe('node ./scripts/ace-onboard.mjs')
-    expect(packageJson.scripts['ace:report']).toBe('node ./scripts/ai-report.mjs')
-    expect(packageJson.scripts['ace:report:brief']).toBe('node ./scripts/ai-report-brief.mjs')
-    expect(packageJson.scripts['ace:validate']).toBe('node ./scripts/check-agent-memory.mjs')
     expect(packageJson.scripts.ace).toBe('node ./scripts/ace-cli.mjs')
-    expect(packageJson.scripts['agent-memory:init']).toBe(
-      'node ./scripts/bootstrap-agent-memory.mjs',
-    )
-    expect(packageJson.scripts['agent-memory:check']).toBe('node ./scripts/check-agent-memory.mjs')
-    expect(packageJson.scripts['ai:project:onboard']).toBe('node ./scripts/ace-onboard.mjs')
-    expect(packageJson.scripts['ai:report']).toBe('node ./scripts/ai-report.mjs')
-    expect(packageJson.scripts['ai:report:brief']).toBe('node ./scripts/ai-report-brief.mjs')
-    expect(packageJson.scripts['ai:task:classify']).toBe('node ./scripts/ai-task-classify.mjs')
-    expect(packageJson.scripts['ai:task:finish']).toBe('node ./scripts/ai-task-finish.mjs')
-    expect(packageJson.scripts['ai:update:task']).toBe('node ./scripts/ai-update.mjs task')
+    expect(packageJson.scripts['ace:validate']).toBe(aceValidatePlaceholder)
+    for (const removedScript of [
+      'ace:init',
+      'ace:check',
+      'ace:classify',
+      'ace:finish',
+      'ace:gate',
+      'ace:hub',
+      'ace:onboard',
+      'ace:report',
+      'ace:report:brief',
+      'agent-memory:init',
+      'agent-memory:check',
+      'ai:project:onboard',
+      'ai:report',
+      'ai:report:brief',
+      'ai:task:classify',
+      'ai:task:finish',
+      'ai:update:task',
+    ]) {
+      expect(packageJson.scripts).not.toHaveProperty(removedScript)
+    }
     await expect(readFile(path.join(rootDir, '.ai/state/current-task.md'), 'utf8')).resolves.toContain(
       '# Current Task',
     )
@@ -183,7 +186,7 @@ describe('installAcePack', () => {
 
     expect(updatedPackageJson.scripts['ace:validate']).toBe('npm run lint && npm test')
     expect(updatedPackageJson.scripts.ace).toBe('node ./scripts/ace-cli.mjs')
-    expect(updatedPackageJson.scripts['ace:check']).toBe('node ./scripts/check-agent-memory.mjs')
+    expect(updatedPackageJson.scripts).not.toHaveProperty('ace:check')
   })
 
   it('does not overwrite a project-owned ace router script', async () => {
@@ -199,7 +202,30 @@ describe('installAcePack', () => {
     const updatedPackageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'))
 
     expect(updatedPackageJson.scripts.ace).toBe('node ./custom-ace.js')
-    expect(updatedPackageJson.scripts['ace:finish']).toBe('node ./scripts/ai-task-finish.mjs')
+    expect(updatedPackageJson.scripts['ace:validate']).toBe(aceValidatePlaceholder)
+    expect(updatedPackageJson.scripts).not.toHaveProperty('ace:finish')
+  })
+
+  it('prunes old ACE-owned default aliases without deleting custom scripts', async () => {
+    const rootDir = await createTargetRepo()
+
+    const packageJsonPath = path.join(rootDir, 'package.json')
+    const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'))
+    packageJson.scripts['ace:check'] = 'node ./scripts/check-agent-memory.mjs'
+    packageJson.scripts['ai:task:finish'] = 'node ./scripts/ai-task-finish.mjs'
+    packageJson.scripts['ace:finish'] = 'echo custom finish'
+    packageJson.scripts['ace:validate'] = 'node ./scripts/check-agent-memory.mjs'
+    await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`, 'utf8')
+
+    await installAcePack(rootDir)
+
+    const updatedPackageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'))
+
+    expect(updatedPackageJson.scripts.ace).toBe('node ./scripts/ace-cli.mjs')
+    expect(updatedPackageJson.scripts['ace:validate']).toBe(aceValidatePlaceholder)
+    expect(updatedPackageJson.scripts).not.toHaveProperty('ace:check')
+    expect(updatedPackageJson.scripts).not.toHaveProperty('ai:task:finish')
+    expect(updatedPackageJson.scripts['ace:finish']).toBe('echo custom finish')
   })
 
   it('is idempotent when installed again into the same repository', async () => {
@@ -229,9 +255,10 @@ describe('installAcePack', () => {
       description: runnerPackageDescription,
       private: true,
     })
-    expect(packageJson.scripts['ace:onboard']).toBe('node ./scripts/ace-onboard.mjs')
-    expect(packageJson.scripts['ace:gate']).toBe('node ./scripts/ace-quality-gate.mjs')
-    expect(packageJson.scripts['ace:validate']).toBe('node ./scripts/check-agent-memory.mjs')
+    expect(packageJson.scripts.ace).toBe('node ./scripts/ace-cli.mjs')
+    expect(packageJson.scripts['ace:validate']).toBe(aceValidatePlaceholder)
+    expect(packageJson.scripts).not.toHaveProperty('ace:onboard')
+    expect(packageJson.scripts).not.toHaveProperty('ace:gate')
   })
 
   it('supports npm-ready ace-pack init target syntax', async () => {
@@ -242,8 +269,10 @@ describe('installAcePack', () => {
     const packageJson = JSON.parse(await readFile(path.join(rootDir, 'package.json'), 'utf8'))
 
     expect(packageJson.description).toBe(runnerPackageDescription)
-    expect(packageJson.scripts['ace:init']).toBe('node ./scripts/bootstrap-agent-memory.mjs')
-    expect(packageJson.scripts['ace:onboard']).toBe('node ./scripts/ace-onboard.mjs')
+    expect(packageJson.scripts.ace).toBe('node ./scripts/ace-cli.mjs')
+    expect(packageJson.scripts['ace:validate']).toBe(aceValidatePlaceholder)
+    expect(packageJson.scripts).not.toHaveProperty('ace:init')
+    expect(packageJson.scripts).not.toHaveProperty('ace:onboard')
   })
 
   it('supports help output without installing files', async () => {
@@ -277,7 +306,7 @@ describe('installAcePack', () => {
     expect(memoryConfig._profile.status).toBe('profiled')
     expect(projectProfile).toContain('# ACE Project Profile')
     expect(stderr).toContain('Onboarded:')
-    expect(stderr).toContain('ace:check')
+    expect(stderr).toContain('npm run ace -- check')
   })
 
   it('accepts existing package.json files with a UTF-8 byte order mark', async () => {
@@ -293,7 +322,9 @@ describe('installAcePack', () => {
 
     const packageJson = JSON.parse(await readFile(path.join(rootDir, 'package.json'), 'utf8'))
 
-    expect(packageJson.scripts['ace:onboard']).toBe('node ./scripts/ace-onboard.mjs')
+    expect(packageJson.scripts.ace).toBe('node ./scripts/ace-cli.mjs')
+    expect(packageJson.scripts['ace:validate']).toBe(aceValidatePlaceholder)
+    expect(packageJson.scripts).not.toHaveProperty('ace:onboard')
   })
 })
 
@@ -319,17 +350,17 @@ describe('install CLI helpers', () => {
   })
 
   it('formats package-manager-specific script commands', () => {
-    expect(formatScriptCommand('npm', 'ace:onboard', ['--apply'])).toBe(
-      'npm run ace:onboard -- --apply',
+    expect(formatScriptCommand('npm', 'ace', ['onboard', '--apply'])).toBe(
+      'npm run ace -- onboard --apply',
     )
-    expect(formatScriptCommand('pnpm', 'ace:onboard', ['--apply'])).toBe(
-      'pnpm ace:onboard -- --apply',
+    expect(formatScriptCommand('pnpm', 'ace', ['onboard', '--apply'])).toBe(
+      'pnpm ace onboard --apply',
     )
-    expect(formatScriptCommand('yarn', 'ace:onboard', ['--apply'])).toBe(
-      'yarn ace:onboard --apply',
+    expect(formatScriptCommand('yarn', 'ace', ['onboard', '--apply'])).toBe(
+      'yarn ace onboard --apply',
     )
-    expect(formatScriptCommand('bun', 'ace:onboard', ['--apply'])).toBe(
-      'bun run ace:onboard --apply',
+    expect(formatScriptCommand('bun', 'ace', ['onboard', '--apply'])).toBe(
+      'bun run ace -- onboard --apply',
     )
   })
 

@@ -83,7 +83,7 @@ export const NEUTRAL_MEMORY_CONFIG = buildMemoryConfig({
   highRiskKeywords: UNIVERSAL_HIGH_RISK_KEYWORDS,
   highRiskPaths: UNIVERSAL_HIGH_RISK_PATHS,
   profile: {
-    note: 'Run pnpm ace:onboard to profile this repository and apply project-specific risk rules.',
+    note: 'Run pnpm ace onboard to profile this repository and apply project-specific risk rules.',
     status: 'unprofiled',
   },
 })
