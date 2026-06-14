@@ -22,6 +22,15 @@
 - Added coverage for README links, adoption checklist focus, FAQ coverage, and
   npm payload boundary expectations.
 
+[ROADMAP.md]
+- Added future DevEx tracks for IDE rule bridging and zero-ceremony small-task
+  closeout, plus memory consolidation / schema v2 research.
+
+[.ai/product-roadmap.md]
+- Mirrored the future DevEx roadmap tracks in the compact AI handoff roadmap.
+
 [.ai/**]
 - Updated current task, handoff, changed-files, work-log, roadmap, technical
   docs, and reports for v1.0.1 closeout.
+- Recorded that `ace-pack@1.0.1` is published and no active implementation task
+  remains open.

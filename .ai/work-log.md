@@ -215,3 +215,12 @@
 - Added tests for adoption doc discoverability, FAQ/checklist coverage, and npm
   payload boundary.
 - Verified Vitest and npm payload guard for the v1.0.1 candidate.
+
+## 2026-06-14 14:09
+
+- Confirmed `ace-pack@1.0.1` is published on npm and matches local
+  `package.json`.
+- Confirmed this repository's ACE dogfood install is up to date.
+- Added future DevEx roadmap tracks for IDE rule bridging, zero-ceremony small
+  tasks, and memory consolidation / schema v2 research.
+- Closed the current product milestone. No active implementation task remains.

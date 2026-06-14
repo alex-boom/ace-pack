@@ -1,53 +1,50 @@
 # Session Handoff
 
 ## Last Update
-2026-06-14 13:47
+2026-06-14 14:09
 
 ## What Was Done
-- Confirmed `ace-pack@1.0.0` is published on npm and the working tree was clean
-  before v1.0.1 work.
-- Started the next final-release batch as `ace-pack@1.0.1`; npm publish is
-  intentionally deferred until the maintainer decides the final batch is ready.
-- Added `docs/adoption-checklist.md` with a gradual rollout path from first
-  repository to optional PR/CI gates.
-- Added `docs/faq.md` covering common adoption objections around AI calls,
-  dependencies, non-JS repositories, strict gates, MCP, upgrades, and when not
-  to use ACE.
-- Added README and npm README links to the adoption docs.
-- Added tests for adoption doc links, content focus, and npm payload boundary.
+- Confirmed `ace-pack@1.0.1` is published on npm and matches local
+  `package.json`.
+- Confirmed release-readiness passed for `1.0.1` before publication.
+- Confirmed this repository's ACE dogfood install is already up to date.
+- Added future DevEx feedback to the roadmap: IDE rule bridging, zero-ceremony
+  small tasks, and memory consolidation / schema v2 research.
+- Closed the current product batch. ACE is complete for the current milestone;
+  future work should start as a new planned task.
 
 ## Current State
-- npm latest is `ace-pack@1.0.0`.
-- Local candidate is `ace-pack@1.0.1`.
-- v1.0.1 is implemented locally and passed release-readiness verification.
-- No intermediate npm publish should happen until the maintainer explicitly
-  decides this final batch is ready.
+- npm latest is `ace-pack@1.0.1`.
+- Local package version is `ace-pack@1.0.1`.
+- Current product milestone is complete.
+- No active implementation task is open.
 
 ## Quality Review
 Product Alignment:
-- v1.0.1 improves team adoption after the stable v1.0 contract without adding
-  new runtime concepts or commands.
+- v1.0.1 is the final current adoption-hardening release. Roadmap updates keep
+  future DevEx ideas visible without starting new implementation work.
 
 Architecture:
-- The change is documentation hardening only. Adoption docs are GitHub-only,
-  while README.npm links to them without adding docs to the npm payload.
+- The final closeout changed only repo-local ACE memory and roadmap strategy.
+  No package scripts, installer behavior, runtime code, or package version were
+  changed.
 
 Security:
 - No AI calls, network calls, hooks, credentials, migrations, or automatic
-  runtime behavior were added.
+  runtime behavior were added during closeout.
 
 Code Quality:
-- Tests verify adoption docs are linked from both README surfaces, answer common
-  objections, and remain outside the package file list.
+- Release-readiness and ACE validation were used for the shipped `1.0.1`
+  candidate. This closeout only synchronizes project memory after publish.
 
 ## Next Steps
 - No terminal command is required right now.
-- Do not publish until the maintainer says the final batch is ready.
-- When the maintainer chooses to publish the final batch, run
-  npm.cmd run release:npm.
+- Start a new task only when the maintainer chooses the next product direction.
+- Candidate future tracks are documented in ROADMAP.md and
+  .ai/product-roadmap.md.
 
 ## Known Issues
-- None known for v1.0.1.
+- None known for `ace-pack@1.0.1`.
 
 ## Verification
 - `npm.cmd run ace:classify` passed and classified v1.0.1 as large.
@@ -56,6 +53,7 @@ Code Quality:
 - `npm.cmd run release:ready` passed for `ace-pack@1.0.1`.
 - `npm.cmd run dogfood:self-check -- --allow-dirty` passed and reported no
   created or updated installed files.
+- `npm.cmd view ace-pack version` returned `1.0.1` after publish.
 
 ## Notes
-- NPM publish: required before final release; deferred by maintainer.
+- NPM publish: not required. ace-pack@1.0.1 is already published; this closeout changes only repo-local ACE memory and roadmap state.

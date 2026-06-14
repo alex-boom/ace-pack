@@ -3,21 +3,21 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 13:49
+- Generated: 2026-06-14 14:11
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 13:48
-- Source session-handoff: 2026-06-14 13:49
+- Source current-task: 2026-06-14 14:10
+- Source session-handoff: 2026-06-14 14:11
 - Verification level: test-backed
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (17 changed files)
-- Last commit: 24a3f8d Promote ACE to v1.0 by documenting the stability contract, including command names, installed file expectations, and migration policy. Bump package version to 1.0.0 and add regression tests for backward compatibility. Update README and npm README with links to the v1.0 stability documentation.
+- Worktree: dirty (8 changed files)
+- Last commit: ae61d73 Enhance ROADMAP.md with planned features for v1.1, including IDE Rule Bridging and Zero-Ceremony Small Tasks. Introduce Memory Consolidation and Schema v2 research for improved efficiency. Update generated context in .ai/generated-context.md to reflect new architecture and project rules. Revise product-roadmap.md to align with the latest feature plans and maintain compatibility with v1.0.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
 - Next command: No command detected
-- Release decision: NPM publish: required before final release; deferred by maintainer.
+- Release decision: NPM publish: not required. ace-pack@1.0.1 is already published; this closeout changes only repo-local ACE memory and roadmap state.
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
@@ -49,15 +49,17 @@ features. This reduces adoption friction without changing ACE's zero-bloat core.
 - [x] Linked adoption docs from README and README.npm.
 - [x] Added tests for adoption docs and payload boundary.
 - [x] Ran release-readiness checks and explicit dogfood self-check.
+- [x] Published `ace-pack@1.0.1` to npm and confirmed npm latest.
+- [x] Recorded future DevEx roadmap tracks without starting new product work.
 
 ## Next Steps
 - No terminal command is required right now.
-- Do not publish until the maintainer says the final batch is ready.
-- When the maintainer chooses to publish the final batch, run
-  npm.cmd run release:npm.
+- Start a new task only when the maintainer chooses the next product direction.
+- Candidate future tracks are documented in ROADMAP.md and
+  .ai/product-roadmap.md.
 
 ## Risks / Blockers
-- None known for v1.0.1.
+- None known for `ace-pack@1.0.1`.
 
 ## Verification
 - `npm.cmd run ace:classify` passed and classified v1.0.1 as large.
