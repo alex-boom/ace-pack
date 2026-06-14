@@ -14,6 +14,15 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-14 10:59 First-run onboarding needs terminal feedback
+Status: resolved
+- Stuck Point: A useful `.ai/project-profile.md` can still hide the onboarding
+  “aha” moment if the terminal only says to open another file.
+- Likely Cause: Early onboarding output focused on generated artifacts rather
+  than the detected project shape.
+- Proposed Improvement: Keep the scanner deterministic, but print a concise CLI
+  summary of detected ecosystems and project-specific risk rules.
+
 ### 2026-06-14 01:26 Flat closeout checklists invite overwork
 Status: resolved
 - Stuck Point: Agents can treat every ACE closeout instruction as equally

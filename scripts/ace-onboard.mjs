@@ -59,6 +59,19 @@ const DETECTION_RULES = [
     signals: ['@trpc/server'],
   },
   {
+    ecosystem: 'Node.js API / backend',
+    paths: [
+      { label: 'API routes', pattern: 'src/routes/**', tier: 'standard' },
+      { label: 'API controllers', pattern: 'src/controllers/**', tier: 'standard' },
+      { label: 'request middleware', pattern: 'src/middleware/**', tier: 'large' },
+      { label: 'database schema', pattern: 'prisma/schema.prisma', tier: 'large' },
+      { label: 'database migration', pattern: 'prisma/migrations/**', tier: 'large' },
+      { label: 'ORM entity', pattern: 'src/entities/**', tier: 'large' },
+      { label: 'ORM entity', pattern: 'src/entity/**', tier: 'large' },
+    ],
+    signals: ['express', 'fastify', '@nestjs/core', '@prisma/client', 'prisma', 'typeorm'],
+  },
+  {
     ecosystem: 'Drizzle / database',
     paths: [
       { label: 'database schema', pattern: 'packages/db/src/schema/**', tier: 'large' },
@@ -76,17 +89,60 @@ const DETECTION_RULES = [
       { label: 'FastAPI routers', pattern: 'app/api/**', tier: 'standard' },
       { label: 'Python database migration', pattern: 'alembic/**', tier: 'large' },
     ],
-    signals: ['requirements.txt', 'pyproject.toml', 'fastapi'],
+    signals: ['fastapi'],
+  },
+  {
+    ecosystem: 'Python / Django',
+    paths: [
+      { label: 'Django settings', pattern: '**/settings.py', tier: 'large' },
+      { label: 'Django URL routing', pattern: '**/urls.py', tier: 'standard' },
+      { label: 'Python database migration', pattern: '**/migrations/**', tier: 'large' },
+      { label: 'Python auth module', pattern: '**/auth*.py', tier: 'large' },
+    ],
+    signals: ['django'],
+  },
+  {
+    ecosystem: 'Python / Flask',
+    paths: [
+      { label: 'Flask routes', pattern: 'app/routes/**', tier: 'standard' },
+      { label: 'Flask auth module', pattern: 'app/**/auth*.py', tier: 'large' },
+      { label: 'Python database migration', pattern: 'migrations/**', tier: 'large' },
+    ],
+    signals: ['flask'],
+  },
+  {
+    ecosystem: 'Python / database',
+    paths: [
+      { label: 'Python database migration', pattern: 'alembic/**', tier: 'large' },
+      { label: 'Python database model', pattern: '**/models.py', tier: 'standard' },
+      { label: 'Python database module', pattern: 'app/db/**', tier: 'large' },
+    ],
+    signals: ['alembic', 'sqlalchemy'],
   },
   {
     ecosystem: 'Go service',
     paths: [
       { label: 'Go auth package', pattern: 'internal/auth/**', tier: 'large' },
       { label: 'Go middleware', pattern: 'internal/middleware/**', tier: 'large' },
+      { label: 'Go security package', pattern: 'internal/security/**', tier: 'large' },
       { label: 'Go API handlers', pattern: 'internal/handlers/**', tier: 'standard' },
+      { label: 'Go API router', pattern: 'internal/router/**', tier: 'standard' },
+      { label: 'Go HTTP transport', pattern: 'internal/transport/http/**', tier: 'standard' },
       { label: 'Go database migration', pattern: 'migrations/**', tier: 'large' },
     ],
     signals: ['go.mod'],
+  },
+  {
+    ecosystem: 'Rust service',
+    paths: [
+      { label: 'Rust auth module', pattern: 'src/auth/**', tier: 'large' },
+      { label: 'Rust middleware', pattern: 'src/middleware/**', tier: 'large' },
+      { label: 'Rust handler', pattern: 'src/handlers/**', tier: 'standard' },
+      { label: 'Rust route', pattern: 'src/routes/**', tier: 'standard' },
+      { label: 'Rust database schema', pattern: 'src/schema.rs', tier: 'large' },
+      { label: 'Rust database migration', pattern: 'migrations/**', tier: 'large' },
+    ],
+    signals: ['Cargo.toml', 'axum', 'actix-web', 'rocket', 'sqlx', 'diesel'],
   },
   {
     ecosystem: '.NET service',
@@ -96,6 +152,23 @@ const DETECTION_RULES = [
       { label: '.NET migration', pattern: '**/Migrations/**', tier: 'large' },
     ],
     signals: ['.csproj', '.sln'],
+  },
+  {
+    ecosystem: 'Generic monorepo',
+    paths: [
+      { label: 'workspace auth package', pattern: 'packages/auth/**', tier: 'large' },
+      { label: 'workspace auth package', pattern: 'packages/*/auth/**', tier: 'large' },
+      { label: 'workspace database package', pattern: 'packages/db/**', tier: 'large' },
+      { label: 'workspace database package', pattern: 'packages/*/db/**', tier: 'large' },
+      { label: 'workspace database package', pattern: 'packages/database/**', tier: 'large' },
+      { label: 'workspace database package', pattern: 'packages/*/database/**', tier: 'large' },
+      { label: 'workspace database migration', pattern: 'packages/migrations/**', tier: 'large' },
+      { label: 'workspace database migration', pattern: 'packages/*/migrations/**', tier: 'large' },
+      { label: 'workspace middleware', pattern: 'apps/*/middleware.*', tier: 'large' },
+      { label: 'workspace middleware', pattern: 'apps/*/src/middleware.*', tier: 'large' },
+      { label: 'workspace API route', pattern: 'apps/*/src/app/api/**', tier: 'standard' },
+    ],
+    signals: ['pnpm-workspace.yaml', 'turbo.json', 'nx.json', 'lerna.json', 'package-workspaces'],
   },
 ]
 
@@ -131,6 +204,7 @@ export async function onboardRepository(rootDir, options = {}) {
 
   return {
     applied: Boolean(options.apply),
+    detectedSignals: profile.detectedSignals,
     detectedEcosystems: profile.ecosystems,
     recommendedConfig,
     recommendedRuleCount:
@@ -151,15 +225,22 @@ export async function profileRepository(rootDir) {
     ...contentSignals,
   ])
   const ecosystems = []
+  const detectedSignals = []
   const recommendedPaths = [...UNIVERSAL_HIGH_RISK_PATHS]
   const recommendedKeywords = [...UNIVERSAL_HIGH_RISK_KEYWORDS]
 
   for (const rule of DETECTION_RULES) {
-    if (!rule.signals.some((signal) => signalMatches(signal, signals))) {
+    const matchedSignals = rule.signals.filter((signal) => signalMatches(signal, signals))
+
+    if (matchedSignals.length === 0) {
       continue
     }
 
     ecosystems.push(rule.ecosystem)
+    detectedSignals.push({
+      ecosystem: rule.ecosystem,
+      signals: matchedSignals,
+    })
 
     for (const pathRule of rule.paths) {
       if (files.some((file) => pathRuleMatchesFile(pathRule.pattern, file, fileSet))) {
@@ -170,6 +251,7 @@ export async function profileRepository(rootDir) {
 
   return {
     ecosystems: ecosystems.length > 0 ? ecosystems : ['Generic repository'],
+    detectedSignals,
     filesScanned: files.length,
     packageManager: detectPackageManager(fileSet),
     recommendedKeywords: dedupeKeywordRules(recommendedKeywords),
@@ -258,6 +340,15 @@ async function writeOnboardingFiles(rootDir, profileContent, recommendedConfig) 
 
 function formatProjectProfile(profile, recommendedConfig, { preset, timestamp }) {
   const ecosystemLines = profile.ecosystems.map((ecosystem) => `- ${ecosystem}`).join('\n')
+  const detectedSignalLines =
+    profile.detectedSignals.length > 0
+      ? profile.detectedSignals
+          .map(
+            (match) =>
+              `- ${match.ecosystem}: ${match.signals.map((signal) => `\`${signal}\``).join(', ')}`,
+          )
+          .join('\n')
+      : '- No stack-specific signals found.'
   const pathLines = recommendedConfig.highRiskPaths
     .slice(0, 20)
     .map((rule) => `- \`${rule.pattern}\` - ${rule.label} (${rule.tier})`)
@@ -279,6 +370,9 @@ ${modeLine}
 ## Detected Ecosystems
 ${ecosystemLines}
 
+## Why Detected
+${detectedSignalLines}
+
 ## Repository Shape
 - Files scanned: ${profile.filesScanned}
 - Package manager: ${profile.packageManager}
@@ -294,6 +388,27 @@ ${keywordLines}
 - Run \`pnpm ace:onboard -- --apply\` to apply the recommended profile.
 - For known Next/tRPC/Drizzle SaaS repos, run \`pnpm ace:onboard -- --preset next-trpc-drizzle-saas --apply\`.
 `
+}
+
+function formatOnboardingCliSummary(result) {
+  const ecosystemSummary = result.detectedEcosystems.join(', ')
+  const projectPathCount = countProjectSpecificHighRiskPaths(result.recommendedConfig)
+  const pathLabel = projectPathCount === 1 ? 'path rule' : 'path rules'
+
+  return [
+    `[ACE] Detected ${ecosystemSummary}.`,
+    `[ACE] Found ${projectPathCount} project-specific high-risk ${pathLabel}.`,
+  ].join('\n')
+}
+
+function countProjectSpecificHighRiskPaths(config) {
+  const universalKeys = new Set(
+    UNIVERSAL_HIGH_RISK_PATHS.map((rule) => `${rule.pattern}:${rule.tier}:${rule.label}`),
+  )
+
+  return config.highRiskPaths.filter(
+    (rule) => !universalKeys.has(`${rule.pattern}:${rule.tier}:${rule.label}`),
+  ).length
 }
 
 async function scanRepoFiles(rootDir) {
@@ -355,6 +470,10 @@ async function readPackageMetadata(rootDir) {
     }
 
     packageSignals.push(...Object.keys(dependencies))
+
+    if (packageJson.workspaces) {
+      packageSignals.push('package-workspaces')
+    }
   } catch {
     return { packageSignals }
   }
@@ -365,19 +484,33 @@ async function readPackageMetadata(rootDir) {
 async function readContentSignals(rootDir, files) {
   const signals = []
 
-  for (const file of ['requirements.txt', 'pyproject.toml', 'go.mod']) {
+  for (const file of ['requirements.txt', 'pyproject.toml', 'Pipfile', 'go.mod', 'Cargo.toml']) {
     if (!files.includes(file)) {
       continue
     }
 
     const content = await readTextIfExists(path.join(rootDir, file))
+    const lowerContent = content?.toLowerCase() ?? ''
 
-    if (content?.toLowerCase().includes('fastapi')) {
-      signals.push('fastapi')
+    for (const [needle, signal] of [
+      ['fastapi', 'fastapi'],
+      ['django', 'django'],
+      ['flask', 'flask'],
+      ['sqlalchemy', 'sqlalchemy'],
+      ['alembic', 'alembic'],
+      ['axum', 'axum'],
+      ['actix-web', 'actix-web'],
+      ['rocket', 'rocket'],
+      ['sqlx', 'sqlx'],
+      ['diesel', 'diesel'],
+    ]) {
+      if (lowerContent.includes(needle)) {
+        signals.push(signal)
+      }
     }
   }
 
-  return signals
+  return [...new Set(signals)]
 }
 
 function detectPackageManager(fileSet) {
@@ -403,6 +536,10 @@ function detectPackageManager(fileSet) {
 
   if (fileSet.has('go.mod')) {
     return 'go'
+  }
+
+  if (fileSet.has('Cargo.toml')) {
+    return 'cargo'
   }
 
   return 'not detected'
@@ -489,8 +626,8 @@ async function main() {
 
   process.stdout.write(
     result.applied
-      ? `ACE project profile applied. Updated: ${result.writtenFiles.join(', ')}\n`
-      : `ACE project profile generated. Review ${RECOMMENDED_CONFIG_PATH}, then run pnpm ace:onboard -- --apply.\n`,
+      ? `${formatOnboardingCliSummary(result)}\nACE project profile applied. Updated: ${result.writtenFiles.join(', ')}\n`
+      : `${formatOnboardingCliSummary(result)}\nACE project profile generated. Review ${RECOMMENDED_CONFIG_PATH}, then run pnpm ace:onboard -- --apply.\n`,
   )
 }
 

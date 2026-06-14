@@ -98,3 +98,20 @@
 - Confirmed npm latest is still `0.1.6`, so the change remains part of the
   pending `0.1.7` release.
 - Verified Vitest after the template test updates.
+
+## 2026-06-14 10:46
+
+- Confirmed `ace-pack@0.1.7` is published on npm.
+- Updated repo-local ACE handoff/current-task state so future sessions do not
+  keep recommending another `0.1.7` publish.
+
+## 2026-06-14 10:59
+
+- Implemented v0.2 onboarding scanner expansion and bumped package version to
+  `0.2.0`.
+- Added richer JS/TS, Python, Go, Rust, and generic monorepo detection while
+  keeping rules conservative and dependency-free.
+- Added `## Why Detected` project-profile output plus concise CLI summary lines
+  for the first-run “aha” moment.
+- Verified Vitest, ACE memory check, npm payload guard, and full npm release
+  dry-run for `ace-pack@0.2.0`.

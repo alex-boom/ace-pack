@@ -1,6 +1,6 @@
 {
   "name": "ace-pack",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Local AgentOps for AI coding agents: durable memory, guardrails, and quality gates for vibe coding in real repositories.",
   "type": "module",
   "license": "MIT",

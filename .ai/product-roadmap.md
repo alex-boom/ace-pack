@@ -31,11 +31,12 @@ handoff and browser-context workflows.
 - **Closeout priority ladder.** Installed workflow templates now tell agents to
   close tasks by priority, preserving future context and safety without
   ceremony.
+- **v0.2 onboarding scanner.** `ace:onboard` now recognizes broader JS/TS,
+  Python, Go, Rust, .NET, and monorepo signals, explains why each ecosystem was
+  detected, and prints a concise terminal summary.
 
 ## Planned Features
 
-- **v0.2: Preset Platform and Onboarding.** Smart risk profiles for Next.js,
-  FastAPI, Go, .NET, Rust, and generic monorepos.
 - **v0.3: ACE Hub as Primary UX.** Focused context modes for start context,
   architect review, PR summary, and agent handoff.
 - **v0.4: PR and CI Quality Gates.** Verify `.ai/**` state, design reviews,

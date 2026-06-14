@@ -153,7 +153,8 @@ explicitly. The code comes after the architectural decision, not before it.
 
 Unknown repositories start with a neutral memory config. Then `ace:onboard`
 profiles the repo and recommends project-specific risk rules before they are
-applied.
+applied. The scanner recognizes common JS/TS, Python, Go, Rust, .NET, and
+monorepo signals without installing dependencies or calling external services.
 
 ## What Init Does
 
@@ -239,11 +240,36 @@ pnpm ace:onboard -- --apply
 pnpm ace:classify
 ```
 
+### Rust Service
+
+ACE detects `Cargo.toml`, web framework signals such as Axum, Actix, and
+Rocket, database tooling such as SQLx and Diesel, plus auth, middleware,
+handlers, routes, schema, and migrations.
+
+```bash
+pnpm dlx ace-pack init
+pnpm ace:onboard -- --apply
+pnpm ace:hub
+```
+
+### Generic Monorepo
+
+ACE detects `pnpm-workspace.yaml`, `turbo.json`, `nx.json`, `lerna.json`, and
+`package.json` workspaces. It keeps rules conservative, marking sensitive
+workspace auth, database, middleware, and API paths without treating every
+`apps/**` or `packages/**` file as high-risk.
+
+```bash
+pnpm dlx ace-pack init
+pnpm ace:onboard -- --apply
+pnpm ace:classify
+```
+
 ## CLI Reference
 
 | Command | Purpose |
 | --- | --- |
-| `ace:onboard` | Smart repository profiling. Writes `.ai/project-profile.md` and `.ai/memory-config.recommended.json` without changing active config. |
+| `ace:onboard` | Smart repository profiling with terminal summary. Writes `.ai/project-profile.md` and `.ai/memory-config.recommended.json` without changing active config. |
 | `ace:onboard -- --apply` | Merges recommendations into `.ai/memory-config.json` and marks the repo as profiled. |
 | `ace:onboard -- --preset next-trpc-drizzle-saas --apply` | Applies the built-in Next.js + tRPC + Drizzle SaaS profile. |
 | `ace:onboard -- --check` | Fails if the repository is still unprofiled. |

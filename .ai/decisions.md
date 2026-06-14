@@ -179,3 +179,20 @@ Impact:
   the smallest closeout that preserves future agent context and project safety.
 - Future changes should add stricter closeout gates only when there is a real
   safety or handoff failure that template guidance cannot solve.
+
+## 2026-06-14 10:59
+
+Decision:
+- Implement v0.2 onboarding by extending the existing `ace:onboard` scanner
+  instead of adding a second preset engine or new CLI flow.
+
+Reason:
+- The current scanner already has the right zero-dependency shape. Extending its
+  rules, signal explanation, and terminal summary gives users the first-run
+  value without adding runtime bloat or command complexity.
+
+Impact:
+- `ace:onboard` now detects broader JS/TS, Python, Go, Rust, .NET, and monorepo
+  signals while keeping `.ai/memory-config.json` schema version `1`.
+- Future onboarding improvements should continue using conservative path rules
+  and explicit signal summaries before considering new config or preset layers.

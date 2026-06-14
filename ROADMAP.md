@@ -86,7 +86,7 @@ fallbacks from local to cloud are not allowed.
 
 ## Release Roadmap
 
-### v0.2: Preset Platform and Onboarding
+### v0.2: Preset Platform and Onboarding (shipped)
 
 Make project profiling immediately useful across common stacks. Ship smart,
 inspectable risk rules for Next.js, FastAPI, Go, .NET, Rust, and generic

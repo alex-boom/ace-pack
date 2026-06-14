@@ -19,6 +19,10 @@ without reading large implementation files.
   AI Coder Context starts with `.ai/report-brief.md` when available so new
   chats see the Start Snapshot first, but fresh repos still work before the
   first report is generated.
+- `ace:onboard` performs a bounded local file scan and package/content signal
+  scan to recommend conservative repository-specific risk rules. It writes
+  `.ai/project-profile.md` and `.ai/memory-config.recommended.json`, and applies
+  those rules to `.ai/memory-config.json` only when invoked with `--apply`.
 
 ## Data Model / DB Schema
 - Durable state is plain Markdown under `.ai/**` plus JSON configuration in
@@ -28,6 +32,10 @@ without reading large implementation files.
   `.ai/session-handoff.md`.
 - Report Start Snapshot values are generated from local git state and existing
   Markdown sections; no new persistent schema fields were added for `0.1.7`.
+- Onboarding profile output includes detected ecosystems, a concise
+  `Why Detected` signal summary, repository shape, recommended high-risk paths,
+  and recommended high-risk keywords. The memory config schema remains version
+  `1` for `0.2.0`.
 
 ## Auth, RBAC, and Security
 - ACE has no authentication layer and does not manage user credentials.

@@ -3,18 +3,18 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 01:28
+- Generated: 2026-06-14 11:01
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 01:28
-- Source session-handoff: 2026-06-14 01:28
+- Source current-task: 2026-06-14 11:01
+- Source session-handoff: 2026-06-14 10:59
 - Verification level: test-backed
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (13 changed files)
-- Last commit: c2a7725 Bump package version to 0.1.7 and enhance report generation with a new `## Start Snapshot` section. Implement local helpers for capturing git state, task lifecycle, next command, and release decision. Update AI Coder Context to prioritize `.ai/report-brief.md` in new sessions while ensuring compatibility with fresh repositories. Add tests for snapshot output and command parsing.
+- Worktree: dirty (18 changed files)
+- Last commit: 81a6158 Refactor ACE closeout guidance to prioritize task completion by introducing a priority ladder in templates. Updated AGENTS and CLAUDE workflows to emphasize minimal closeout actions that maintain future context and project safety. Enhanced documentation and tests to reflect these changes, ensuring clarity and consistency across the system.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
 - Next command: `npm.cmd run release:npm`
 - Release decision: NPM publish: required
@@ -23,70 +23,75 @@ Project: `ace-pack`
 Detected ecosystems: Generic repository | Package manager: pnpm
 
 ## Current Task
-ACE Closeout Priority Ladder
+v0.2 Preset Platform and Onboarding
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 01:25
+Started: 2026-06-14 10:54
 Ready For Archive: yes
 
 ## Goal
-Make ACE task closeout instructions easier for different AI agents to follow by
-turning the flat completion checklist into a priority ladder.
+Strengthen `ace:onboard` so first-time users get useful project-specific risk
+rules for common stacks in one local scan, without dependencies or new workflow
+ceremony.
 
 ## Business Value
-Agents should preserve future context and project safety without doing ceremony
-or writing documentation that does not reduce real risk. This keeps ACE fast,
-local-first, and useful for practical AI coding workflows.
+The first onboarding experience should feel immediately useful: ACE should
+recognize common JS/TS, Python, Go, Rust, and monorepo shapes and recommend
+conservative risk rules that protect auth, middleware, migrations, schemas, and
+deployment surfaces.
 
 ## Current Status
-- [x] Plan approved for template-only closeout priority ladder.
-- [x] Confirmed latest npm registry version is `0.1.6`, so this stays in
-  pending `0.1.7`.
-- [x] Update shipped ACE workflow and task templates.
-- [x] Update template tests.
-- [x] Run verification and closeout.
+- [x] Plan approved for v0.2 onboarding expansion.
+- [x] Ran `ace:classify` with large override before implementation.
+- [x] Extend scanner coverage and profile output.
+- [x] Bump package version to `0.2.0`.
+- [x] Update docs and tests.
+- [x] Run release verification and closeout.
 
 ## Next Steps
 - Publish with `npm.cmd run release:npm` when ready.
 
 ## Risks / Blockers
-- None for this template-only closeout guidance change.
+- None for this v0.2 onboarding expansion.
 
 ## Verification
-- `npm.cmd view ace-pack version` returned `0.1.6`, so no `0.1.8` bump was needed.
-- `npm.cmd run ace:classify -- --tier large --reason "template closeout priority ladder changes shipped ACE workflow behavior"` passed before implementation.
-- `npm.cmd test` passed: 7 files, 47 tests.
+- `npm.cmd run ace:classify -- --tier large --reason "v0.2 onboarding scanner expands shipped repository profiling behavior"` passed before implementation.
+- `npm.cmd test` passed: 7 files, 52 tests.
 - `npm.cmd run ace:check` passed.
+- `npm.cmd run check:npm-payload` passed and checked 27 packed files.
 
 ## Recent Decision
-## 2026-06-14 01:26
+## 2026-06-14 10:59
 
 Decision:
-- Improve ACE closeout prioritization through shipped templates only, not new
-  `ace:finish` enforcement logic.
+- Implement v0.2 onboarding by extending the existing `ace:onboard` scanner
+  instead of adding a second preset engine or new CLI flow.
 
 Reason:
-- Different AI agents over-close tasks in different ways when presented with a
-  flat wall of rules. A priority ladder gives universal guidance while avoiding
-  new blockers, schemas, parsers, or code written for ceremony.
+- The current scanner already has the right zero-dependency shape. Extending its
+  rules, signal explanation, and terminal summary gives users the first-run
+  value without adding runtime bloat or command complexity.
 
 Impact:
-- Installed AGENTS, CLAUDE, current-task, and handoff templates now emphasize
-  the smallest closeout that preserves future agent context and project safety.
-- Future changes should add stricter closeout gates only when there is a real
-  safety or handoff failure that template guidance cannot solve.
+- `ace:onboard` now detects broader JS/TS, Python, Go, Rust, .NET, and monorepo
+  signals while keeping `.ai/memory-config.json` schema version `1`.
+- Future onboarding improvements should continue using conservative path rules
+  and explicit signal summaries before considering new config or preset layers.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.
 
 ## Changed Areas
-- `scripts/agent-memory-templates.mjs`
-- `tests/agent-memory.test.ts`
-- `.ai/**`
+- `package.json`
+- `scripts/ace-onboard.mjs`
+- `tests/ace-onboard.test.ts`
+- `README.md`
+- `README.npm.md`
+- `ROADMAP.md`
 
 ## Overall Progress
 - Completion checklist: 6/6

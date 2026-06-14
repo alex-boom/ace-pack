@@ -241,6 +241,15 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-14 10:59 First-run onboarding needs terminal feedback
+Status: resolved
+- Stuck Point: A useful `.ai/project-profile.md` can still hide the onboarding
+  “aha” moment if the terminal only says to open another file.
+- Likely Cause: Early onboarding output focused on generated artifacts rather
+  than the detected project shape.
+- Proposed Improvement: Keep the scanner deterministic, but print a concise CLI
+  summary of detected ecosystems and project-specific risk rules.
+
 ### 2026-06-14 01:26 Flat closeout checklists invite overwork
 Status: resolved
 - Stuck Point: Agents can treat every ACE closeout instruction as equally
@@ -551,84 +560,117 @@ Impact:
 - Installed AGENTS, CLAUDE, current-task, and handoff templates now emphasize
   the smallest closeout that preserves future agent context and project safety.
 - Future changes should add stricter closeout gates only when there is a real
-  safety or handoff failure that template guidance cannot solve.</file><file path=".ai/changed-files.md"># Changed Files
+  safety or handoff failure that template guidance cannot solve.
 
-[scripts/agent-memory-templates.mjs]
-- Replaced the flat default completion checklist with priority-based closeout
-  guidance.
-- Updated installed AGENTS and CLAUDE workflow text to tell agents to do the
-  smallest closeout that preserves future context and project safety.
-- Clarified handoff notes for publish/deploy decisions when relevant.
+## 2026-06-14 10:59
 
-[tests/agent-memory.test.ts]
-- Added assertions that generated AGENTS, CLAUDE, and current-task templates
-  include the closeout priority ladder language.
+Decision:
+- Implement v0.2 onboarding by extending the existing `ace:onboard` scanner
+  instead of adding a second preset engine or new CLI flow.
+
+Reason:
+- The current scanner already has the right zero-dependency shape. Extending its
+  rules, signal explanation, and terminal summary gives users the first-run
+  value without adding runtime bloat or command complexity.
+
+Impact:
+- `ace:onboard` now detects broader JS/TS, Python, Go, Rust, .NET, and monorepo
+  signals while keeping `.ai/memory-config.json` schema version `1`.
+- Future onboarding improvements should continue using conservative path rules
+  and explicit signal summaries before considering new config or preset layers.</file><file path=".ai/changed-files.md"># Changed Files
+
+[package.json]
+- Bumped package version from `0.1.7` to `0.2.0`.
+
+[scripts/ace-onboard.mjs]
+- Added broader JS/TS, Python, Go, Rust, and generic monorepo detection rules.
+- Added detected signal tracking for profile output.
+- Added CLI summary output for detected ecosystems and project-specific
+  high-risk path rule count.
+- Kept config schema and CLI names unchanged.
+
+[tests/ace-onboard.test.ts]
+- Added fixture coverage for Node API, Python web/database, Rust, generic
+  monorepo, conservative rules, profile explanation, and CLI summary output.
+
+[README.md]
+- Documented v0.2 onboarding scanner coverage and added Rust/monorepo examples.
+
+[README.npm.md]
+- Mirrored npm-facing v0.2 onboarding documentation and examples.
+
+[ROADMAP.md]
+- Marked v0.2 onboarding as shipped and moved the forward roadmap to v0.3+.
 
 [.ai/**]
-- Updated current task, session handoff, changed-files, work-log, decisions,
-  product roadmap, and reflection notes for the closeout priority ladder task.</file><file path=".ai/current-task.md"># Current Task
+- Updated task, handoff, changed-files, work-log, decisions, tech docs,
+  product roadmap, reflection, and generated report state for v0.2.</file><file path=".ai/current-task.md"># Current Task
 
 ## Feature Name
-ACE Closeout Priority Ladder
+v0.2 Preset Platform and Onboarding
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 01:25
+Started: 2026-06-14 10:54
 Ready For Archive: yes
 
 ## Goal
-Make ACE task closeout instructions easier for different AI agents to follow by
-turning the flat completion checklist into a priority ladder.
+Strengthen `ace:onboard` so first-time users get useful project-specific risk
+rules for common stacks in one local scan, without dependencies or new workflow
+ceremony.
 
 ## Business Value / Product Alignment
-Agents should preserve future context and project safety without doing ceremony
-or writing documentation that does not reduce real risk. This keeps ACE fast,
-local-first, and useful for practical AI coding workflows.
+The first onboarding experience should feel immediately useful: ACE should
+recognize common JS/TS, Python, Go, Rust, and monorepo shapes and recommend
+conservative risk rules that protect auth, middleware, migrations, schemas, and
+deployment surfaces.
 
 ## Technical Approach
 Option 1:
-- Change only the product templates. This keeps the improvement lightweight and
-  avoids adding validation code or new schema.
+- Add a new preset system beside the current scanner. This risks duplicate
+  logic and more CLI surface.
 
 Option 2:
-- Add new `ace:finish` logic that prints or enforces a tiered closeout recipe.
-  This could help agents but risks new blockers and extra code for a guidance
-  problem.
+- Extend the existing `ace:onboard` detection rules, profile output, and tests
+  while keeping CLI names and config schema stable.
 
 Chosen Approach:
-- Use Option 1. The approved scope is templates only; clear instructions solve
-  the agent-behavior issue without overengineering ACE.
+- Use Option 2. It is incremental, zero-dependency, and preserves the current
+  local Markdown workflow while making v0.2 onboarding more valuable.
 
 ## Current Status
-- [x] Plan approved for template-only closeout priority ladder.
-- [x] Confirmed latest npm registry version is `0.1.6`, so this stays in
-  pending `0.1.7`.
-- [x] Update shipped ACE workflow and task templates.
-- [x] Update template tests.
-- [x] Run verification and closeout.
+- [x] Plan approved for v0.2 onboarding expansion.
+- [x] Ran `ace:classify` with large override before implementation.
+- [x] Extend scanner coverage and profile output.
+- [x] Bump package version to `0.2.0`.
+- [x] Update docs and tests.
+- [x] Run release verification and closeout.
 
 ## Affected Areas
-- `scripts/agent-memory-templates.mjs`
-- `tests/agent-memory.test.ts`
+- `package.json`
+- `scripts/ace-onboard.mjs`
+- `README.md`
+- `README.npm.md`
+- `tests/ace-onboard.test.ts`
 - `.ai/**` closeout notes
 
 ## Constraints
+- Do not add dependencies, network calls, AI calls, or installs.
 - Do not change CLI command names.
-- Do not add new parser, schema, config, or validation gates.
-- Keep `ace:finish` logic unchanged.
-- Keep the guidance short and priority-based.
-- Do not bump beyond `0.1.7` unless npm already has `0.1.7` published.
+- Keep `.ai/memory-config.json` schema version `1`.
+- Keep rules conservative; do not blindly mark all `apps/**` or `packages/**`
+  high-risk.
+- Keep scanner fast through existing scan caps and skipped directories.
 
 ## Acceptance Criteria
-- Installed AGENTS workflow says to do the smallest closeout that preserves
-  future agent context and project safety.
-- Default completion checklist reads as conditional priorities, not a flat wall
-  of mandatory chores.
-- CLAUDE end-of-task guidance describes the same closeout priority ladder.
-- Template tests assert the new priority language.
+- `package.json` version is `0.2.0`.
+- `ace:onboard` detects richer JS/TS, Python, Go, Rust, and generic monorepo
+  signals.
+- `.ai/project-profile.md` includes a concise “Why Detected” summary.
+- Tests cover the new ecosystems and conservative rule behavior.
 - `npm.cmd test`, `npm.cmd run ace:check`, `npm.cmd run check:npm-payload`, and
   `npm.cmd run release:npm:dry` pass.
 
@@ -641,60 +683,60 @@ Chosen Approach:
 - [x] `ace:validate` and `ace:finish` passed</file><file path=".ai/session-handoff.md"># Session Handoff
 
 ## Last Update
-2026-06-14 01:26
+2026-06-14 10:59
 
 ## What Was Done
-- Added template-only closeout priority guidance to shipped ACE workflow
-  templates.
-- Shortened the default completion checklist into conditional priority levels:
-  always, standard/large, large/high-risk, and only-if-changed.
-- Updated CLAUDE end-of-task guidance to match the same priority ladder.
-- Clarified handoff notes so publish/deploy decisions are captured when
-  relevant.
-- Added template tests that assert the priority language is installed.
+- Bumped package version from `0.1.7` to `0.2.0`.
+- Expanded `ace:onboard` detection for JS/TS API backends, Python web/database
+  tooling, Go services, Rust services, .NET services, and generic monorepos.
+- Added `## Why Detected` to `.ai/project-profile.md` so users can see the
+  signals behind each detected ecosystem.
+- Added concise CLI summary output for `ace:onboard` dry-run/apply flows.
+- Kept CLI names, config schema, runtime dependencies, network behavior, and
+  AI behavior unchanged.
+- Updated GitHub/npm README onboarding docs and added test fixtures for the new
+  scanner coverage.
 
 ## Current State
-- `ace:finish` logic, CLI names, schemas, config, report generation, and
-  validation gates are unchanged.
-- The change stays in the pending `ace-pack@0.1.7` release because npm registry
-  latest is still `0.1.6`.
-- Product behavior changed only in shipped templates that future repositories
-  receive on init.
+- `ace:onboard` remains deterministic, local, and zero-dependency.
+- `.ai/memory-config.json` schema remains version `1`.
+- Rules stay conservative: sensitive workspace paths are marked, but generic
+  `apps/**` and `packages/**` are not blindly high-risk.
+- The staged npm payload carries `ace-pack@0.2.0`.
 
 ## Quality Review
 Product Alignment:
-- The new wording keeps ACE focused on future context and project safety while
-  reducing ceremony for agents that otherwise over-close small tasks.
+- v0.2 improves first-install value by making ACE recognize common repository
+  shapes and explain what it found immediately in terminal and profile output.
 
 Architecture:
-- The change is template-only and avoids adding enforcement logic for a guidance
-  problem, preserving ACE&apos;s low-bloat local architecture.
+- The implementation extends the existing scanner rather than adding a second
+  preset system or new CLI surface, preserving the local Markdown architecture.
 
 Security:
-- No auth, credentials, network behavior, hidden AI calls, or publish-secret
-  handling changed.
+- No auth, credential, token, external network, SaaS, or hidden AI behavior
+  changed. Risk rules remain conservative and local.
 
 Code Quality:
-- Existing template tests now cover the new closeout priority language without
-  adding brittle parser behavior.
+- New fixtures cover JS/TS backend, Python web/database, Go, Rust, monorepo,
+  conservative rule behavior, profile explanation, and CLI summary output.
 
 ## Next Steps
 - Publish with `npm.cmd run release:npm` when ready.
 
 ## Known Issues
-- None for this template-only closeout guidance change.
+- None for this v0.2 onboarding expansion.
 
 ## Verification
-- `npm.cmd view ace-pack version` returned `0.1.6`, so no `0.1.8` bump was needed.
-- `npm.cmd run ace:classify -- --tier large --reason &quot;template closeout priority ladder changes shipped ACE workflow behavior&quot;` passed before implementation.
-- `npm.cmd test` passed: 7 files, 47 tests.
+- `npm.cmd run ace:classify -- --tier large --reason &quot;v0.2 onboarding scanner expands shipped repository profiling behavior&quot;` passed before implementation.
+- `npm.cmd test` passed: 7 files, 52 tests.
 - `npm.cmd run ace:check` passed.
 - `npm.cmd run check:npm-payload` passed and checked 27 packed files.
-- `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.1.7`.
+- `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.2.0`.
 
 ## Notes
-- NPM publish: required, because shipped ACE templates in `scripts/*.mjs` changed
-  installed workflow behavior.</file><file path=".ai/work-log.md"># Work Log
+- NPM publish: required, because `package.json`, `README.npm.md`, and shipped
+  `scripts/ace-onboard.mjs` changed the npm payload and installed behavior.</file><file path=".ai/work-log.md"># Work Log
 
 ## 2026-06-13 20:59
 
@@ -793,4 +835,21 @@ Code Quality:
   new validation burden.
 - Confirmed npm latest is still `0.1.6`, so the change remains part of the
   pending `0.1.7` release.
-- Verified Vitest after the template test updates.</file></files></repomix>
+- Verified Vitest after the template test updates.
+
+## 2026-06-14 10:46
+
+- Confirmed `ace-pack@0.1.7` is published on npm.
+- Updated repo-local ACE handoff/current-task state so future sessions do not
+  keep recommending another `0.1.7` publish.
+
+## 2026-06-14 10:59
+
+- Implemented v0.2 onboarding scanner expansion and bumped package version to
+  `0.2.0`.
+- Added richer JS/TS, Python, Go, Rust, and generic monorepo detection while
+  keeping rules conservative and dependency-free.
+- Added `## Why Detected` project-profile output plus concise CLI summary lines
+  for the first-run “aha” moment.
+- Verified Vitest, ACE memory check, npm payload guard, and full npm release
+  dry-run for `ace-pack@0.2.0`.</file></files></repomix>
