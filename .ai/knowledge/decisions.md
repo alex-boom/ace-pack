@@ -389,3 +389,23 @@ Impact:
   `pnpm ace ai:task:finish`.
 - Installer upgrades prune only old ACE-managed default aliases and preserve
   custom user scripts.
+
+## 2026-06-14 17:10
+
+Decision:
+- Implement ACE uninstall as a guarded two-step `ace eject` then `ace destroy`
+  workflow.
+
+Reason:
+- ACE needs to demonstrate zero-lock-in while protecting project-owned AI
+  memory from accidental deletion. A direct destructive command would undermine
+  the product promise.
+
+Impact:
+- `ace eject` exports active `.ai/**` memory and agent rule files into a
+  searchable `ace-export-*` folder with manual restore instructions.
+- `ace destroy` refuses active memory without an export, refuses the ACE
+  product repository unless explicitly overridden for internal tests, and
+  removes only ACE-owned files/scripts while preserving custom project content.
+- Installer, router, docs, payload, and tests now treat eject/destroy as shipped
+  `ace-pack@2.1.0` behavior.

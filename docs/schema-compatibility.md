@@ -25,6 +25,8 @@ The router supports modern commands:
 - `init`
 - `check`
 - `classify`
+- `eject`
+- `destroy`
 - `finish`
 - `gate`
 - `hub`
@@ -51,6 +53,9 @@ Previous ACE package script names remain supported only as router arguments:
 - `ace:onboard`
 - `ace:classify`
 - `ace:finish`
+- `ace:eject`
+- `ace:destroy`
+- `ace:purge`
 - `ace:gate`
 - `ace:hub`
 - `ace:report`
@@ -71,6 +76,26 @@ The generic `ace` router script is added only when the project does not already
 own an `ace` script. During upgrades, the installer removes old ACE-managed
 script aliases only when their values exactly match known ACE defaults; custom
 project scripts are preserved.
+
+## Safe Eject and Destroy
+
+ACE supports a two-step uninstall flow:
+
+```bash
+pnpm ace eject
+pnpm ace destroy
+```
+
+`ace eject` inspects canonical v2 memory paths and legacy aliases. If the ACE
+memory is template-only, it reports that ACE is safe to remove. If active memory
+exists, it creates a searchable `ace-export-YYYYMMDD-HHMMSS/` folder containing
+`.ai/`, agent rule files, IDE bridge files, and `RESTORE.md`.
+
+`ace destroy` refuses to remove active memory unless an `ace-export-*` backup is
+present. It removes only ACE-owned artifacts: `.ai/`, exact ACE-generated files,
+managed ACE scripts, and ACE-owned package scripts. It preserves custom
+`AGENTS.md`, custom `CLAUDE.md`, custom `ace:validate`, project-owned scripts,
+`DEVELOPING.md`, and `ROADMAP.md`.
 
 ## Canonical v2 Memory Layout
 

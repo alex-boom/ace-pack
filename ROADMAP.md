@@ -150,7 +150,15 @@ stay folder-structured by default; teams that still need old paths can request
 explicit legacy mirrors. Migration is deterministic, local, and never
 overwrites meaningful project-owned memory.
 
-## Long-Term Research and Development (v2.1+)
+### v2.1: Safe Eject and Uninstall (shipped)
+
+Make ACE visibly zero-lock-in. `ace eject` exports active project memory into a
+searchable `ace-export-*` folder with restore instructions, while `ace destroy`
+removes only ACE-owned files and package scripts after a backup exists. The
+cleanup preserves custom project files, custom validation scripts, project docs,
+and shared script folders.
+
+## Long-Term Research and Development (v2.2+)
 
 ### Deeper Memory Consolidation Research
 

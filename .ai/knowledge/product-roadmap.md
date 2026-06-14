@@ -68,13 +68,17 @@ handoff and browser-context workflows.
   `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` categories,
   generated artifact hygiene, and deterministic v1-to-v2 migration aliases that
   preserve old `.ai/*` input without cluttering fresh v2 installs.
+- **v2.1 Safe Eject and Uninstall.** ACE now has a two-step zero-lock-in
+  uninstall flow: `ace eject` exports active memory to a searchable
+  `ace-export-*` folder, and `ace destroy` removes only ACE-owned artifacts
+  after an export exists.
 
 ## Planned Features
 
 - No next feature is selected yet. Future work should preserve the v2.0
   compatibility contract unless a deliberate major-version migration is planned.
 
-## Long-Term Research and Development (v2.1+)
+## Long-Term Research and Development (v2.2+)
 
 - **Deeper Memory Consolidation.** Research merging high-churn project state
   such as current task, handoff, and changed-files into fewer files beyond the

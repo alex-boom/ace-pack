@@ -259,3 +259,13 @@
 - Updated installer, shared memory helpers, reports, hub, onboard, MCP, finish, gate, check, update helpers, templates, README surfaces, schema docs, roadmap, and tests.
 - Applied v2 migration to this repository and verified tests, fake-project smoke, ace:gate, npm payload guard, npm dry-run, and dogfood self-check.
 - NPM publish: required before final release; deferred by maintainer.
+
+## 2026-06-14 17:10
+
+- Implemented the v2.1.0 Safe Eject and Uninstall candidate.
+- Added `ace eject`, guarded `ace destroy` / `ace purge`, shared uninstall
+  utilities, installer/router wiring, README/schema docs, roadmap updates, and
+  focused uninstall safety tests.
+- Verified focused Vitest, full Vitest, fake-project smoke, npm payload guard,
+  project-owned `ace:validate`, and dogfood self-check.
+- NPM publish: required before final release; deferred by maintainer.

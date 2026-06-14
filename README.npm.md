@@ -92,6 +92,29 @@ npx ace-pack@latest --help
 npx ace-pack@latest init --help
 ```
 
+## Safe Eject & Uninstall
+
+ACE is zero-lock-in. Before removing it, export your project memory into a
+searchable folder:
+
+```bash
+pnpm ace eject
+pnpm ace destroy
+```
+
+Using npm:
+
+```bash
+npm run ace -- eject
+npm run ace -- destroy
+```
+
+`ace eject` creates `ace-export-YYYYMMDD-HHMMSS/` with `.ai/`, agent rule
+files, IDE bridge files, and `RESTORE.md` when active memory exists. `ace
+destroy` then removes only ACE-owned artifacts: `.ai/`, exact ACE-generated
+files, managed ACE scripts, and ACE-owned package scripts. Custom project files,
+custom scripts, `DEVELOPING.md`, and `ROADMAP.md` are preserved.
+
 ## Why ACE Exists
 
 AI-assisted development has a new set of failure modes that ordinary chat does
@@ -457,6 +480,8 @@ then stops if unexpected files changed.
 | `ace onboard --check` | Fails if the repository is still unprofiled. |
 | `ace classify` | Git diff risk analysis for small, standard, and large tasks. |
 | `ace:validate` | Project-owned mechanical quality gate for lint, typecheck, tests, or equivalent checks. ACE installs a placeholder only when absent. |
+| `ace eject` | Safe data-takeout step that exports active ACE memory before uninstall. |
+| `ace destroy` | Guarded cleanup that removes only ACE-owned files after export. |
 | `ace finish` | Adaptive closeout, small low-risk auto-closeout, memory documentation, reports, and reflection. |
 | `ace gate` | Optional PR/CI quality gate with actionable failures, PR refs, JSON output, explicit human override, and opt-in hook/workflow generation. |
 | `ace hub` | Interactive and named-mode context generator for start, architect-lite, architect, handoff, PR, business, and docs payloads. |

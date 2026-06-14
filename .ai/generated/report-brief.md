@@ -3,18 +3,18 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 16:42
+- Generated: 2026-06-14 19:43
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 16:42
-- Source session-handoff: 2026-06-14 16:42
+- Source current-task: 2026-06-14 19:43
+- Source session-handoff: 2026-06-14 19:42
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (37 changed files)
-- Last commit: ed45f5b Update documentation to reflect changes in ACE memory paths and command usage. Replace references to legacy `.ai/report-brief.md` with the new `.ai/generated/report-brief.md` format across various files, ensuring consistency in the workflow instructions. Adjust command formats in the IDE bridge scripts to align with the new command structure. Remove outdated `.ai/changed-files.md`, `.ai/current-task.md`, `.ai/decisions.md`, and memory configuration files as part of the transition to the new memory schema.
+- Worktree: dirty (27 changed files)
+- Last commit: dca94cd Refactor ACE command structure to unify under a single `ace` router, replacing legacy command scripts with router arguments. Update documentation to reflect changes in command usage and memory validation processes. Bump version to 2.0.1, ensuring compatibility with existing repositories while streamlining the user experience.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
 - Next command: `npm.cmd run release:npm`
 - Release decision: NPM publish: required before final release; deferred by maintainer.
@@ -23,80 +23,79 @@ Project: `ace-pack`
 Detected ecosystems: Generic repository | Package manager: pnpm
 
 ## Current Task
-v2.0.1 Single ACE Router Cleanup
+v2.1.0 Safe ACE Eject & Destroy
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 16:26
+Started: 2026-06-14 17:10
 Ready For Archive: yes
 
 ## Goal
-Clean the shipped ACE command surface so installed repositories expose only the
-single `ace` router plus a project-owned `ace:validate` mechanical gate.
+Add a safe two-step uninstall flow so installed repositories can export ACE
+memory before removing ACE-owned files.
 
 ## Business Value
-This protects consumer repositories from script bloat and keeps ACE aligned
-with its zero-bloat DevEx promise. The `ace:validate` correction preserves the
-project-owned quality-gate concept instead of replacing real code checks with
-ACE Markdown validation.
+This strengthens ACE's zero-lock-in promise. Developers can inspect how to leave
+before adopting the tool, keep their AI memory in a searchable export, and avoid
+destructive cleanup of project-owned files.
 
 ## Current Status
-- Implemented the single-router cleanup for `ace-pack@2.0.1`.
-- Consumer installs now expose only `ace` plus a project-owned `ace:validate`
-  placeholder when missing.
-- Legacy command names route through `ace` arguments instead of package scripts.
-- Verification passed for tests, router check, fake-project smoke, payload
-  guard, dogfood self-check, and the project-owned mechanical gate.
+- [x] Implement eject/export command.
+- [x] Implement guarded destroy command.
+- [x] Wire router, installer, docs, version, and tests.
+- [x] Run validation and closeout.
 
 ## Next Steps
 - Publish when ready with `npm.cmd run release:npm`.
 - After publish, verify `npm.cmd view ace-pack version` and update repo-local
-  ACE memory to mark npm latest as `2.0.1`.
+  ACE memory to mark npm latest as `2.1.0`.
 
 ## Risks / Blockers
-- None known for the v2.0.1 candidate.
+- None known for the v2.1.0 candidate.
 
 ## Verification
 - `pnpm.cmd ace classify` passed before implementation; it detected `small`
-because the working tree was clean, but the product scope was treated as
-large.
-- `npm.cmd test` passed: 14 files, 110 tests.
-- `pnpm.cmd ace check` passed.
+because the working tree was clean, but the shipped product scope was treated
+as large.
+- Focused Vitest passed for uninstall, router, installer, and schema docs:
+4 files, 31 tests.
+- `npm.cmd test` passed: 15 files, 116 tests.
 - `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
 
 ## Recent Decision
-## 2026-06-14 16:26
+## 2026-06-14 17:10
 
 Decision:
-- Tighten the ACE command surface to a single installed `ace` router plus a
-  project-owned `ace:validate` mechanical gate.
+- Implement ACE uninstall as a guarded two-step `ace eject` then `ace destroy`
+  workflow.
 
 Reason:
-- Injecting many `ace:*`, `ai:*`, and `agent-memory:*` scripts into consumer
-  repositories makes ACE look intrusive. `ace:validate` must remain a project
-  code-quality gate rather than an alias for ACE memory validation.
+- ACE needs to demonstrate zero-lock-in while protecting project-owned AI
+  memory from accidental deletion. A direct destructive command would undermine
+  the product promise.
 
 Impact:
-- Fresh installs expose only `ace` and `ace:validate` in package scripts.
-- `ace check` runs ACE memory validation.
-- Legacy command names remain available only as router arguments such as
-  `pnpm ace ai:task:finish`.
-- Installer upgrades prune only old ACE-managed default aliases and preserve
-  custom user scripts.
+- `ace eject` exports active `.ai/**` memory and agent rule files into a
+  searchable `ace-export-*` folder with manual restore instructions.
+- `ace destroy` refuses active memory without an export, refuses the ACE
+  product repository unless explicitly overridden for internal tests, and
+  removes only ACE-owned files/scripts while preserving custom project content.
+- Installer, router, docs, payload, and tests now treat eject/destroy as shipped
+  `ace-pack@2.1.0` behavior.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.
 
 ## Changed Areas
 - `package.json`
+- `scripts/ace-eject.mjs`
+- `scripts/ace-destroy.mjs`
+- `scripts/ace-uninstall-utils.mjs`
 - `install-ace-pack.mjs`
 - `scripts/ace-cli.mjs`
-- `scripts/*`
-- `README.md, README.npm.md, docs/**`
-- `AGENTS.md, CLAUDE.md, scripts/agent-memory-templates.mjs`
 
 ## Overall Progress
 - Completion checklist: 9/9

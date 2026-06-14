@@ -1,45 +1,38 @@
 # Changed Files
 
 [package.json]
-- Bumped `ace-pack` to `2.0.1`.
-- Removed exposed granular `ace:*`, `ai:*`, and `agent-memory:*` aliases.
-- Kept the `ace` router and changed `ace:validate` to this repo's mechanical
-  test gate.
+- Bumped `ace-pack` to `2.1.0` for the shipped backward-compatible uninstall
+  feature.
+
+[scripts/ace-eject.mjs]
+- Added the safe data-takeout command that detects active ACE memory and writes
+  searchable `ace-export-*` folders with `RESTORE.md`.
+
+[scripts/ace-destroy.mjs]
+- Added guarded cleanup that refuses active memory without export, protects the
+  ACE product repo, and removes only ACE-owned files/scripts.
+
+[scripts/ace-uninstall-utils.mjs]
+- Centralized managed script names, package script defaults, IDE bridge
+  templates, exact-template checks, export discovery, and active-memory
+  detection shared by install/eject/destroy.
 
 [install-ace-pack.mjs]
-- Installs only `ace` plus a missing project-owned `ace:validate` placeholder.
-- Prunes old ACE-managed alias scripts only when their values exactly match
-  known defaults.
-- Prints next-step commands through the router.
+- Reused the shared managed-file definitions and added eject/destroy utilities
+  to installed consumer projects.
 
 [scripts/ace-cli.mjs]
-- Routes modern commands and legacy alias arguments through the single entry
-  point.
-- Supports legacy update aliases with required internal `ai-update.mjs`
-  subcommands.
+- Routed `eject`, `destroy`, and `purge`, plus legacy `ace:*` variants, through
+  the single ACE router.
 
-[scripts/*]
-- Updated command text, generated hooks/workflows, onboarding messages, and
-  classify guidance from old package scripts to router syntax.
+[README.md, README.npm.md, docs/schema-compatibility.md, ROADMAP.md]
+- Documented the prominent Safe Eject and Uninstall flow, CLI contract, and
+  v2.1 shipped roadmap state.
 
-[README.md, README.npm.md, docs/**]
-- Documented the minimal installed script surface, npm `--` separator, router
-  commands, and project-owned `ace:validate` behavior.
-
-[AGENTS.md, CLAUDE.md, scripts/agent-memory-templates.mjs]
-- Synced local and installed agent instructions to use `pnpm ace <command>` or
-  `npm run ace -- <command>`.
-- Clarified that `ace:validate` is the mechanical project gate, while
-  `ace check` validates ACE memory.
-
-[tests/**, tools/**]
-- Updated install, schema, router, docs, smoke, and quality-gate coverage for
-  the clean command surface.
-- Fake-project smoke now exercises the installed router and asserts old default
-  scripts are not exposed.
+[tests/ace-uninstall.test.ts, tests/**]
+- Added focused uninstall safety coverage and extended router, installer, and
+  schema compatibility assertions.
 
 [.ai/**]
-- Updated current task, handoff, changed files, tech docs, and durable
-  decisions for the v2.0.1 command cleanup.
-- Regenerated ACE reports and refreshed generated start context during
-  dogfood self-check.
+- Updated current task, handoff, changed files, tech docs, product roadmap,
+  durable decision, and generated context for the v2.1.0 closeout.

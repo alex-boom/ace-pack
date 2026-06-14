@@ -8,6 +8,18 @@ describe('ACE command router', () => {
       rest: [],
       scriptName: 'ai-task-finish.mjs',
     })
+    expect(resolveAceCommand(['eject'])).toMatchObject({
+      rest: [],
+      scriptName: 'ace-eject.mjs',
+    })
+    expect(resolveAceCommand(['destroy'])).toMatchObject({
+      rest: [],
+      scriptName: 'ace-destroy.mjs',
+    })
+    expect(resolveAceCommand(['purge'])).toMatchObject({
+      rest: [],
+      scriptName: 'ace-destroy.mjs',
+    })
     expect(resolveAceCommand(['gate', '--json'])).toMatchObject({
       rest: ['--json'],
       scriptName: 'ace-quality-gate.mjs',
@@ -31,6 +43,14 @@ describe('ACE command router', () => {
       rest: [],
       scriptName: 'ai-task-finish.mjs',
     })
+    expect(resolveAceCommand(['ace:eject'])).toMatchObject({
+      rest: [],
+      scriptName: 'ace-eject.mjs',
+    })
+    expect(resolveAceCommand(['ace:destroy'])).toMatchObject({
+      rest: [],
+      scriptName: 'ace-destroy.mjs',
+    })
     expect(resolveAceCommand(['agent-memory:init'])).toMatchObject({
       rest: [],
       scriptName: 'bootstrap-agent-memory.mjs',
@@ -52,6 +72,8 @@ describe('ACE command router', () => {
   it('prints help and rejects unknown commands', () => {
     expect(resolveAceCommand([])).toMatchObject({ help: true })
     expect(getAceHelpText()).toContain('npm run ace -- <command>')
+    expect(getAceHelpText()).toContain('eject')
+    expect(getAceHelpText()).toContain('destroy')
     expect(getAceHelpText()).toContain('migrate')
     expect(getAceHelpText()).toContain('supported only as router arguments')
     expect(() => resolveAceCommand(['unknown'])).toThrow('Unknown ACE command: unknown')

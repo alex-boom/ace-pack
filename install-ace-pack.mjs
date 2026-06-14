@@ -4,85 +4,20 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { onboardRepository } from './scripts/ace-onboard.mjs'
+import {
+  DEFAULT_AGENTS_TEMPLATE,
+  DEFAULT_PACKAGE_SCRIPTS,
+  IDE_BRIDGE_FILES,
+  MANAGED_SCRIPT_FILES,
+  OLD_ACE_PACKAGE_SCRIPTS,
+  RUNNER_PACKAGE_DESCRIPTION,
+  formatIdeBridgeContent,
+} from './scripts/ace-uninstall-utils.mjs'
 import { ensureAgentMemory } from './scripts/agent-memory-lib.mjs'
-
-const ACE_ROUTER_SCRIPT = 'node ./scripts/ace-cli.mjs'
-const ACE_VALIDATE_PLACEHOLDER_SCRIPT =
-  'echo "Add project mechanical checks here: lint, typecheck, test"'
-
-const OLD_ACE_PACKAGE_SCRIPTS = {
-  'ace:init': 'node ./scripts/bootstrap-agent-memory.mjs',
-  'ace:check': 'node ./scripts/check-agent-memory.mjs',
-  'ace:classify': 'node ./scripts/ai-task-classify.mjs',
-  'ace:finish': 'node ./scripts/ai-task-finish.mjs',
-  'ace:gate': 'node ./scripts/ace-quality-gate.mjs',
-  'ace:hub': 'node ./scripts/ace-hub.mjs',
-  'ace:onboard': 'node ./scripts/ace-onboard.mjs',
-  'ace:report': 'node ./scripts/ai-report.mjs',
-  'ace:report:brief': 'node ./scripts/ai-report-brief.mjs',
-  'agent-memory:init': 'node ./scripts/bootstrap-agent-memory.mjs',
-  'agent-memory:check': 'node ./scripts/check-agent-memory.mjs',
-  'ai:project:onboard': 'node ./scripts/ace-onboard.mjs',
-  'ai:report': 'node ./scripts/ai-report.mjs',
-  'ai:report:brief': 'node ./scripts/ai-report-brief.mjs',
-  'ai:report:currentTaskCode': 'node ./scripts/ai-report-current-task-code.mjs',
-  'ai:task:classify': 'node ./scripts/ai-task-classify.mjs',
-  'ai:task:finish': 'node ./scripts/ai-task-finish.mjs',
-  'ai:update:task': 'node ./scripts/ai-update.mjs task',
-  'ai:update:handoff': 'node ./scripts/ai-update.mjs handoff',
-  'ai:update:log': 'node ./scripts/ai-update.mjs log',
-  'ai:update:decision': 'node ./scripts/ai-update.mjs decision',
-  'ai:update:changed': 'node ./scripts/ai-update.mjs changed',
-  'ace:validate': 'node ./scripts/check-agent-memory.mjs',
-}
-
-const DEFAULT_PACKAGE_SCRIPTS = {
-  ace: ACE_ROUTER_SCRIPT,
-  'ace:validate': ACE_VALIDATE_PLACEHOLDER_SCRIPT,
-}
-
-const MANAGED_SCRIPT_FILES = [
-  'ace-cli.mjs',
-  'ace-hub.mjs',
-  'ace-migrate.mjs',
-  'ace-mcp-server.mjs',
-  'ace-onboard.mjs',
-  'ace-project-presets.mjs',
-  'ace-quality-gate.mjs',
-  'ace-universal-doc-templates.mjs',
-  'agent-memory-lib.mjs',
-  'agent-memory-templates.mjs',
-  'ai-memory-config.mjs',
-  'ai-memory-utils.mjs',
-  'ai-report-brief.mjs',
-  'ai-report-current-task-code.mjs',
-  'ai-report.mjs',
-  'ai-task-classify.mjs',
-  'ai-task-finish.mjs',
-  'ai-update.mjs',
-  'bootstrap-agent-memory.mjs',
-  'check-agent-memory.mjs',
-]
-
-const defaultAgentsTemplate = `# AGENTS.md
-
-Repository rules for AI coding agents working in this project.
-
-## Project Rules
-
-- Add project-specific stack, architecture, and workflow rules here.
-`
 
 const currentFilePath = fileURLToPath(import.meta.url)
 const currentScriptDir = path.join(path.dirname(currentFilePath), 'scripts')
-const RUNNER_PACKAGE_DESCRIPTION =
-  'Auto-generated lightweight runner for ACE (Agentic Context Engine) scripts. No node_modules required.'
 const KNOWN_PACKAGE_MANAGERS = new Set(['npm', 'pnpm', 'yarn', 'bun'])
-const IDE_BRIDGE_FILES = [
-  '.cursorrules',
-  '.windsurfrules',
-  '.github/copilot-instructions.md',
-]
 
 function normalizeTrailingNewline(content) {
   return content.endsWith('\n') ? content : `${content}\n`
@@ -121,7 +56,7 @@ async function ensureDefaultAgentsFile(rootDir) {
     return { created: false, path: 'AGENTS.md' }
   }
 
-  await writeFile(agentsPath, normalizeTrailingNewline(defaultAgentsTemplate), 'utf8')
+  await writeFile(agentsPath, normalizeTrailingNewline(DEFAULT_AGENTS_TEMPLATE), 'utf8')
   return { created: true, path: 'AGENTS.md' }
 }
 
@@ -223,46 +158,6 @@ async function ensureIdeRuleBridges(rootDir, packageManager) {
   }
 
   return { createdFiles }
-}
-
-function formatIdeBridgeContent(packageManager, relativePath) {
-  const hubCommand = formatAceRouterCommand(packageManager, 'hub start')
-  const classifyCommand = formatAceRouterCommand(packageManager, 'classify')
-  const finishCommand = formatAceRouterCommand(packageManager, 'finish')
-  const checkCommand = formatAceRouterCommand(packageManager, 'check')
-  const heading =
-    relativePath.endsWith('.md') ? '# ACE IDE Agent Instructions' : '# ACE IDE Agent Bridge'
-
-  return `${heading}
-
-Follow AGENTS.md as the authoritative repository instruction file.
-
-For new work:
-- Read .ai/generated/report-brief.md first when it exists.
-- Generate startup context with ${hubCommand}.
-- Classify the task with ${classifyCommand} before implementation.
-- Validate ACE memory with ${checkCommand} when context may be stale.
-- Close the task with ${finishCommand} before handoff.
-
-Do not replace AGENTS.md or .ai/* workflow rules with IDE-specific policy. This
-file is only a thin bridge from the IDE agent to ACE.
-`
-}
-
-function formatAceRouterCommand(packageManager, command) {
-  if (packageManager === 'npm') {
-    return `npm run ace -- ${command}`
-  }
-
-  if (packageManager === 'yarn') {
-    return `yarn ace ${command}`
-  }
-
-  if (packageManager === 'bun') {
-    return `bun run ace -- ${command}`
-  }
-
-  return `pnpm ace ${command}`
 }
 
 function buildPackageName(rootDir) {

@@ -14,6 +14,17 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-14 17:10 Uninstall must share install ownership rules
+Status: resolved
+- Stuck Point: A cleanup command can easily delete project-owned files if it
+  uses broad paths such as `scripts/` or assumes all agent rule files belong to
+  ACE.
+- Likely Cause: ACE is a scaffold that copies files into consumer repositories,
+  so file ownership becomes mixed after installation.
+- Proposed Improvement: Keep install and uninstall on the same managed-file
+  definitions, remove exact generated content only, and require export before
+  deleting active memory.
+
 ### 2026-06-14 15:46 Schema v2 needs a mirror layer before file moves
 Status: resolved
 - Stuck Point: Reorganizing `.ai/**` by category can desynchronize older agents,

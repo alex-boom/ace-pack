@@ -47,6 +47,10 @@ without reading large implementation files.
   `.windsurfrules`, and `.github/copilot-instructions.md` when missing. These
   files are package-manager-aware pointers back to `AGENTS.md` and the local
   `ace` router; existing project-owned IDE rule files are not overwritten.
+- `ace eject` and `ace destroy` provide the safe uninstall path. Shared
+  uninstall utilities define the same managed script list, package script
+  defaults, IDE bridge templates, and memory activity checks used by the
+  installer, so cleanup policy stays aligned with install behavior.
 - `ace-mcp-server.mjs` is the optional read-only MCP stdio adapter. It exposes
   selected ACE Markdown files through `resources/list` and `resources/read`,
   with no tools, writes, SDK dependency, network listener, or npm-script wrapper.
@@ -100,6 +104,9 @@ without reading large implementation files.
   missing thresholds fall back to defaults.
 - Smoke and dogfood readiness output is ephemeral. The tools do not add config
   files or schema fields.
+- Eject exports are plain folders named `ace-export-YYYYMMDD-HHMMSS/`. They are
+  searchable and restorable by humans; no restore script or new persistent ACE
+  schema is introduced.
 
 ## Auth, RBAC, and Security
 - ACE has no authentication layer and does not manage user credentials.
@@ -117,6 +124,10 @@ without reading large implementation files.
 - `2.0.0` migration is deterministic and local. It creates canonical category
   paths from legacy aliases without AI calls, network behavior, or overwriting
   meaningful project memory.
+- `2.1.0` destroy refuses active memory unless an `ace-export-*` backup exists,
+  refuses the ACE product repository without an explicit internal override, and
+  removes only exact ACE-generated files plus known ACE-managed scripts and
+  package script values.
 - `1.0.1` adoption docs add no runtime behavior and remain outside the npm
   payload except for README links.
 - Dogfood self-check refuses dirty git worktrees by default and stops when

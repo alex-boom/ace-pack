@@ -9,6 +9,9 @@ const COMMANDS = new Map([
   ['validate', ['check-agent-memory.mjs']],
   ['classify', ['ai-task-classify.mjs']],
   ['finish', ['ai-task-finish.mjs']],
+  ['eject', ['ace-eject.mjs']],
+  ['destroy', ['ace-destroy.mjs']],
+  ['purge', ['ace-destroy.mjs']],
   ['gate', ['ace-quality-gate.mjs']],
   ['hub', ['ace-hub.mjs']],
   ['migrate', ['ace-migrate.mjs']],
@@ -21,6 +24,9 @@ const COMMANDS = new Map([
   ['ace:check', ['check-agent-memory.mjs']],
   ['ace:classify', ['ai-task-classify.mjs']],
   ['ace:finish', ['ai-task-finish.mjs']],
+  ['ace:eject', ['ace-eject.mjs']],
+  ['ace:destroy', ['ace-destroy.mjs']],
+  ['ace:purge', ['ace-destroy.mjs']],
   ['ace:gate', ['ace-quality-gate.mjs']],
   ['ace:hub', ['ace-hub.mjs']],
   ['ace:migrate', ['ace-migrate.mjs']],
@@ -94,6 +100,9 @@ Commands:
   check                Validate ACE memory.
   classify             Classify current repository changes.
   finish               Run adaptive task finish.
+  eject                Export active ACE memory before uninstall.
+  destroy              Remove ACE-owned files after eject.
+  purge                Alias for destroy.
   gate                 Run PR/CI quality gate.
   hub [mode]           Generate focused context payload.
   migrate              Create schema v2 canonical memory mirrors.
