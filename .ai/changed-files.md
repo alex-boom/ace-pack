@@ -1,44 +1,24 @@
 # Changed Files
 
 [package.json]
-- Added `smoke:fake-project`, `dogfood:self-check`, and `release:ready`
-  scripts for local release-readiness validation.
+- Bumped package version to `0.4.1`.
 
-[tools/smoke-fake-project.mjs]
-- Added disposable JS and non-JS project smoke that installs ACE from the local
-  staged package and runs onboarding, memory check, hub start context, and gate.
+[scripts/ace-quality-gate.mjs]
+- Added explicit `--human-override <reason>` support that passes the gate while
+  preserving original issues and override metadata.
+- Relaxed Quality Review enforcement for standard low-risk changes, while
+  keeping strict enforcement for large tasks and high-risk matches.
 
-[tools/dogfood-self-check.mjs]
-- Added explicit local candidate self-apply check with clean-worktree guard,
-  core ACE workflow verification, and unexpected changed-file detection.
-
-[scripts/agent-memory-templates.mjs]
-- Added deferred release wording and release-bound smoke/dogfood guidance to
-  shipped closeout templates.
+[tests/ace-quality-gate.test.ts]
+- Added coverage for standard low-risk pass behavior, large quality-review
+  enforcement, human override metadata, missing override reason, and JSON output.
 
 [README.md]
-- Documented fake-project smoke, `release:ready`, and explicit dogfood
-  self-check for ACE maintainers.
+- Documented explicit human override usage and updated the CLI reference.
 
 [README.npm.md]
-- Mirrored npm-facing release-readiness documentation.
-
-[DEVELOPING.md]
-- Documented deferred publish wording, release-readiness sequence, and explicit
-  dogfood self-check policy.
-
-[ROADMAP.md]
-- Noted that v0.4 release readiness includes local fake-project smoke and
-  explicit dogfood self-checks.
-
-[tests/smoke-release.test.ts]
-- Added coverage for JS/non-JS smoke, dogfood self-check pass, and dirty repo
-  guard behavior including explicit allow-dirty release-readiness mode.
-
-[tests/agent-memory.test.ts]
-- Added assertions for deferred release and dogfood/self-check template wording
-  plus package script entries.
+- Mirrored npm-facing human override documentation.
 
 [.ai/**]
-- Updated current task, handoff, changed-files, work-log, decisions, tech docs,
-  product roadmap, generated context, and regenerated reports for this closeout.
+- Updated current task, handoff, changed-files, work-log, decisions, reports,
+  and generated context for the v0.4.1 closeout.

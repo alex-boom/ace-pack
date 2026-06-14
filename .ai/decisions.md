@@ -252,3 +252,20 @@ Impact:
   reviewed pass and refuses dirty worktrees by default.
 - Future handoffs may state `NPM publish: required before final release;
   deferred by maintainer` when shipped changes are intentionally batched.
+
+## 2026-06-14 12:22
+
+Decision:
+- Tune `ace:gate` for DevEx by allowing standard low-risk changes without
+  Quality Review and adding explicit human override with a required reason.
+
+Reason:
+- PR/CI gates should prevent risky AI-assisted merges, not punish humans for
+  small safe edits. A visible override keeps accountability without encouraging
+  users to delete hooks or disable ACE.
+
+Impact:
+- Strict gate review remains for large tasks and high-risk matches.
+- `ace:gate -- --human-override <reason>` records intentional bypasses in CLI
+  and JSON output.
+- `ace:finish` closeout requirements remain unchanged.

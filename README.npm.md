@@ -306,6 +306,13 @@ pnpm ace:gate -- --base origin/main --head HEAD
 pnpm ace:gate -- --json
 ```
 
+For small human-reviewed changes where the team intentionally accepts a gate
+bypass, record the reason explicitly:
+
+```bash
+pnpm ace:gate -- --human-override "Human reviewed typo-only docs change."
+```
+
 Generate an opt-in GitHub Actions workflow:
 
 ```bash
@@ -362,7 +369,7 @@ then stops if unexpected files changed.
 | `ace:classify` | Git diff risk analysis for small, standard, and large tasks. |
 | `ace:validate` | Default mechanical quality gate alias for `ace:check`. Projects may replace it with a stricter local gate. |
 | `ace:finish` | Adaptive closeout, memory documentation, reports, and reflection. |
-| `ace:gate` | Optional PR/CI quality gate with actionable failures, PR refs, JSON output, and opt-in hook/workflow generation. |
+| `ace:gate` | Optional PR/CI quality gate with actionable failures, PR refs, JSON output, explicit human override, and opt-in hook/workflow generation. |
 | `ace:hub` | Interactive and named-mode context generator for start, architect, handoff, PR, business, and docs payloads. |
 
 ## Installed Project Files

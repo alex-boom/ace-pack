@@ -240,7 +240,7 @@ describe('ace quality gate', () => {
     )
   })
 
-  it('requires quality review notes for standard or large changes', async () => {
+  it('does not require quality review notes for standard low-risk changes', async () => {
     const rootDir = await createCompleteGateRepo('ace-gate-standard-')
 
     await writeRepoFile(rootDir, '.ai/session-handoff.md', handoffContent({ qualityReview: 'TODO' }))
@@ -252,12 +252,68 @@ describe('ace quality gate', () => {
     const result = await runQualityGate(rootDir)
 
     expect(result.classification.tier).toBe('standard')
+    expect(result.passed).toBe(true)
+    expect(result.issues).not.toContainEqual(
+      expect.objectContaining({
+        code: 'quality-review-missing',
+      }),
+    )
+  })
+
+  it('requires quality review notes for large changes', async () => {
+    const rootDir = await createCompleteGateRepo('ace-gate-large-')
+
+    await writeRepoFile(rootDir, '.ai/session-handoff.md', handoffContent({ qualityReview: 'TODO' }))
+    await initGitRepo(rootDir)
+
+    for (let index = 0; index < 8; index += 1) {
+      await writeRepoFile(rootDir, `src/file-${index}.ts`, `export const value${index} = true\n`)
+    }
+
+    await git(rootDir, ['add', 'src'])
+
+    const result = await runQualityGate(rootDir)
+
+    expect(result.classification.tier).toBe('large')
     expect(result.passed).toBe(false)
     expect(result.issues).toContainEqual(
       expect.objectContaining({
         code: 'quality-review-missing',
-        message: expect.stringContaining('standard task detected'),
+        message: expect.stringContaining('large task detected'),
       }),
+    )
+  })
+
+  it('passes with an explicit human override while preserving original issues', async () => {
+    const rootDir = await createCompleteGateRepo('ace-gate-override-')
+
+    await writeRepoFile(
+      rootDir,
+      '.ai/session-handoff.md',
+      handoffContent({ verification: '- [List checks that passed or could not be run]' }),
+    )
+
+    const result = await runQualityGate(rootDir, {
+      humanOverride: 'Human reviewed typo-only change.',
+    })
+
+    expect(result.passed).toBe(true)
+    expect(result.humanOverride).toEqual({
+      reason: 'Human reviewed typo-only change.',
+      type: 'human',
+    })
+    expect(result.issues).toContainEqual(
+      expect.objectContaining({
+        code: 'handoff-verification-missing',
+      }),
+    )
+  })
+
+  it('requires a reason for human override', async () => {
+    const rootDir = await createCompleteGateRepo('ace-gate-override-missing-')
+
+    await expect(runQualityGate(rootDir, { humanOverride: true })).rejects.toThrow(
+      'Human override requires a reason',
     )
   })
 
@@ -314,6 +370,34 @@ describe('ace quality gate', () => {
 
     expect(parsed.passed).toBe(true)
     expect(parsed.classification.tier).toBe('small')
+  })
+
+  it('prints parseable JSON for human override metadata', async () => {
+    const rootDir = await createCompleteGateRepo('ace-gate-json-override-')
+
+    await writeRepoFile(
+      rootDir,
+      '.ai/session-handoff.md',
+      handoffContent({ verification: '- [List checks that passed or could not be run]' }),
+    )
+
+    const { stdout } = await execFileAsync(process.execPath, [
+      gateScriptPath,
+      '--root',
+      rootDir,
+      '--json',
+      '--human-override',
+      'Human approved release note typo.',
+    ])
+    const parsed = JSON.parse(stdout)
+
+    expect(parsed.passed).toBe(true)
+    expect(parsed.humanOverride.reason).toBe('Human approved release note typo.')
+    expect(parsed.issues).toContainEqual(
+      expect.objectContaining({
+        code: 'handoff-verification-missing',
+      }),
+    )
   })
 
   it('installs a native pre-push hook idempotently', async () => {

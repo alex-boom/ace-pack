@@ -157,3 +157,14 @@
 - Verified `npm.cmd run release:ready` for the pending `0.4.0` candidate.
 - Ran `npm.cmd run dogfood:self-check -- --allow-dirty` as an explicit reviewed
   self-dogfood pass; it reported no created or updated installed files.
+
+## 2026-06-14 12:22
+
+- Confirmed `ace-pack@0.4.0` is published on npm and applied the published
+  installer to this repository; the repo was already up to date.
+- Started v0.4.1 Gate DevEx Polish and bumped local package version to `0.4.1`.
+- Added explicit `ace:gate -- --human-override <reason>` support with CLI/JSON
+  metadata.
+- Relaxed `ace:gate` Quality Review enforcement for standard low-risk changes
+  while preserving strict checks for large or high-risk changes.
+- Updated README surfaces and gate tests for the new DevEx behavior.

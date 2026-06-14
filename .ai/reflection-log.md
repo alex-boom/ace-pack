@@ -14,6 +14,16 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-14 12:22 Strict gates can hurt adoption
+Status: resolved
+- Stuck Point: A quality gate that blocks small human edits may train users to
+  bypass or remove ACE entirely.
+- Likely Cause: Standard task closeout expectations were being reused directly
+  inside PR/CI gate behavior.
+- Proposed Improvement: Keep `ace:finish` disciplined, but make `ace:gate`
+  stricter only for large or high-risk changes and require an explicit reason
+  for human overrides.
+
 ### 2026-06-14 11:56 Release readiness needs install-level smoke
 Status: resolved
 - Stuck Point: Unit tests and dry-run publish can pass while installed ACE

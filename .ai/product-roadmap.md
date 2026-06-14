@@ -41,7 +41,8 @@ handoff and browser-context workflows.
   risk classification, design/quality closeout, PR refs, and handoff
   verification, with opt-in GitHub Actions and native pre-push helpers.
   Release readiness now includes local fake-project smoke and explicit dogfood
-  self-checks before final npm publish.
+  self-checks before final npm publish. v0.4.1 adds explicit human override and
+  reduces gate friction for standard low-risk changes.
 
 ## Planned Features
 

@@ -17,6 +17,7 @@ const ACE_HOOK_MARKER = '# ACE QUALITY GATE HOOK'
 const GITHUB_ACTION_PATH = '.github/workflows/ace-quality-gate.yml'
 
 export async function runQualityGate(rootDir, options = {}) {
+  const humanOverride = normalizeHumanOverride(options.humanOverride)
   const [memoryIssues, classification, currentTaskContent, handoffContent, reflectionLogContent] =
     await Promise.all([
       validateAgentMemory(rootDir),
@@ -49,6 +50,10 @@ export async function runQualityGate(rootDir, options = {}) {
       handoffContent,
       reflectionLogContent,
     })) {
+      if (!shouldEnforceFinishRequirement(missingRequirement, classification)) {
+        continue
+      }
+
       issues.push(createFinishIssue(missingRequirement, classification))
     }
   }
@@ -67,8 +72,9 @@ export async function runQualityGate(rootDir, options = {}) {
 
   return {
     classification: summarizeClassification(classification),
+    humanOverride,
     issues,
-    passed: issues.length === 0,
+    passed: humanOverride !== null || issues.length === 0,
   }
 }
 
@@ -200,6 +206,33 @@ function createFinishIssue(missingRequirement, classification) {
   }
 }
 
+function shouldEnforceFinishRequirement(missingRequirement, classification) {
+  if (!missingRequirement.includes('Quality Review')) {
+    return true
+  }
+
+  return classification.tier === 'large' || classification.riskMatches.length > 0
+}
+
+function normalizeHumanOverride(value) {
+  if (value === undefined || value === null || value === false) {
+    return null
+  }
+
+  const reason = String(value).replace(/\s+/g, ' ').trim()
+
+  if (!reason || reason === 'true') {
+    throw new Error(
+      'Human override requires a reason. Use --human-override "<reason for bypass>".',
+    )
+  }
+
+  return {
+    reason,
+    type: 'human',
+  }
+}
+
 function describeRisk(classification) {
   const matchedPaths = classification.riskMatches
     .flatMap((match) => match.matched)
@@ -237,6 +270,23 @@ async function readAiFile(rootDir, fileName) {
 }
 
 function formatGateResult(result) {
+  if (result.humanOverride) {
+    const lines = [
+      `[ACE GATE] Passed with human override: ${result.humanOverride.reason}`,
+      `[ACE GATE] Tier: ${result.classification.tier} (detected: ${result.classification.detectedTier})`,
+    ]
+
+    if (result.issues.length > 0) {
+      lines.push(`[ACE GATE] Bypassed ${result.issues.length} issue(s):`)
+
+      for (const issue of result.issues) {
+        lines.push(`  - ${issue.message}`)
+      }
+    }
+
+    return lines.join('\n')
+  }
+
   if (result.passed) {
     return [
       '[ACE GATE] Passed: ACE memory and handoff checks are ready for merge.',
@@ -292,6 +342,7 @@ async function main() {
     const result = await runQualityGate(rootDir, {
       baseRef: getArgValue(args, 'base'),
       headRef: getArgValue(args, 'head'),
+      humanOverride: getArgValue(args, 'human-override'),
     })
 
     if (json) {

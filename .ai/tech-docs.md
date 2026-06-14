@@ -26,7 +26,9 @@ without reading large implementation files.
   those rules to `.ai/memory-config.json` only when invoked with `--apply`.
 - `ace:gate` is the optional PR/CI quality gate. It reuses ACE memory
   validation, task classification, finish requirements, and shared Markdown
-  helpers instead of maintaining a second policy engine.
+  helpers instead of maintaining a second policy engine. v0.4.1 keeps strict
+  Quality Review enforcement for large or high-risk changes, but lets standard
+  low-risk changes pass without review ceremony.
 - Release-readiness tooling lives in `tools/`. `smoke:fake-project` builds the
   local staged package and validates ACE inside disposable JS and non-JS
   projects. `dogfood:self-check` explicitly reapplies the local candidate to
@@ -48,7 +50,7 @@ without reading large implementation files.
   files, and missing optional files. PR mode also includes local git status and
   diff stat, degrading to `unknown` when git is unavailable.
 - Gate output is ephemeral CLI output or optional JSON. No new persistent config
-  or memory schema fields were added for `0.4.0`.
+  or memory schema fields were added for `0.4.0` or `0.4.1`.
 - Smoke and dogfood readiness output is ephemeral. The tools do not add config
   files or schema fields.
 
@@ -59,6 +61,8 @@ without reading large implementation files.
   `unknown` if git is unavailable or the target is not a git repository.
 - `0.4.0` gate checks use local git commands only. GitHub Actions workflow and
   pre-push hook files are generated only when explicitly requested.
+- `0.4.1` human override requires a reason and surfaces that reason in CLI/JSON
+  output; it does not hide failures or create persistent policy state.
 - Dogfood self-check refuses dirty git worktrees by default and stops when
   unexpected files change after candidate self-apply.
 - Publish-secret handling is outside ACE scripts; release commands delegate to
