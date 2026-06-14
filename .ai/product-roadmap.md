@@ -61,11 +61,21 @@ handoff and browser-context workflows.
 
 ## Planned Features
 
-- No next v1.x feature is selected yet. Future work should preserve the v1.0
-  compatibility contract unless a deliberate major-version migration is planned.
+- **v1.1 IDE Rule Bridging.** Future `ace-pack init` may scaffold thin
+  `.cursorrules`, `.windsurfrules`, and `.github/copilot-instructions.md`
+  adapters that point IDE-native agents back to `AGENTS.md` and local `ace:*`
+  scripts without creating vendor lock-in.
+- **v1.1 Zero-Ceremony Small Tasks.** Future `ace:finish` may auto-close
+  low-risk `small` tasks with compact handoff, changed-files, and verification
+  notes while preserving stricter review for standard, large, high-risk, and
+  design-review-required changes.
 
 ## Long-Term Research and Development (v2.0+)
 
+- **Memory Consolidation and Schema v2 Research.** Research merging high-churn
+  `.ai` files such as `current-task`, `session-handoff`, and `changed-files`
+  into fewer state files to reduce token load and LLM desync, with deterministic
+  migration rules before any schema change.
 - **Standalone ACE Engine.** Research native binaries for macOS, Linux, and
   Windows so teams can use ACE without Node.js/npm on developer machines.
 - **Automated PR/CI Reviewer.** Research GitHub Action and GitLab CI templates

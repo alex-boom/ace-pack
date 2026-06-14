@@ -128,7 +128,31 @@ names, installed file expectations, `.ai/memory-config.json` schema version `1`,
 AGENTS workflow markers, and the migration policy for future template/schema
 changes.
 
+### v1.1: IDE Rule Bridging (planned)
+
+Bridge native IDE agents into ACE without vendor lock-in. Future `ace-pack init`
+may scaffold thin `.cursorrules`, `.windsurfrules`, and
+`.github/copilot-instructions.md` adapters that instruct IDE-native agents to
+obey `AGENTS.md` and use the local `ace:*` scripts. This must remain
+idempotent, project-owned, and compatible with repositories that already manage
+their own IDE rule files.
+
+### v1.1: Zero-Ceremony Small Tasks (planned)
+
+Reduce closeout friction for trivial work. Future `ace:finish` may automatically
+close `small` tier tasks by generating compact handoff, changed-files, and
+verification notes when the change is low-risk. Standard, large, high-risk, and
+design-review-required changes must keep stricter manual review expectations.
+
 ## Long-Term Research and Development (v2.0+)
+
+### Memory Consolidation and Schema v2 Research
+
+Research whether high-churn `.ai` files such as `current-task`,
+`session-handoff`, and `changed-files` should be consolidated into fewer state
+files. The goal is to reduce token load, prevent LLM desync, and simplify future
+agent context. Any implementation must follow the v1.0 compatibility contract
+and include a deterministic migration plan before changing schema shape.
 
 ### Standalone ACE Engine
 
