@@ -55,9 +55,10 @@ Chosen Approach:
 - [ ] Goal completed
 - [ ] Always: summarize what changed in \`.ai/session-handoff.md\`
 - [ ] Always: update \`.ai/changed-files.md\`, record verification, and run \`ace:validate\`
-- [ ] Always: state publish/deploy decision when relevant
+- [ ] Always: state publish/deploy decision when relevant, including deferred release wording
 - [ ] If standard/large: add product, architecture, security, and code-quality review notes
 - [ ] If large/high-risk: confirm design approach, add useful reflection, and let \`ace:finish\` archive the snapshot
+- [ ] If release-bound shipped behavior changed: run local smoke and dogfood/self-check routines when available
 - [ ] Only if changed: update tech docs, product roadmap, durable decisions, or release notes
 - [ ] \`ace:finish\` passed and generated reports
 `
@@ -96,7 +97,7 @@ Code Quality:
 - [List checks that passed or could not be run]
 
 ## Notes
-- [Add publish/deploy decision when relevant and any extra context another agent will need]
+- [Add publish/deploy decision when relevant. If batching releases, use "NPM publish: required before final release; deferred by maintainer."]
 `
 
 export const decisionsTemplate = `# Decisions
@@ -188,12 +189,15 @@ safety:
 
 1. Always summarize what changed, update changed files, record verification,
    run \`pnpm ace:validate\`, and state publish/deploy decision when relevant.
+   If release is deferred, say so explicitly.
 2. For standard or large tasks, add product, architecture, security, and
    code-quality review notes.
 3. For large or high-risk tasks, confirm the design approach, add reflection
    only when useful, and let \`pnpm ace:finish\` archive the snapshot.
 4. Update tech docs, product roadmap, durable decisions, or release notes only
    when those facts actually changed.
+5. For release-bound shipped changes, run the project's local smoke and
+   dogfood/self-check routines before final publish or deploy when available.
 `
 
 export const agentsWorkflowSection = `<!-- agent-memory-workflow:start -->
@@ -260,12 +264,15 @@ safety:
 
 1. Always summarize what changed, update changed files, record verification,
    run \`pnpm ace:validate\`, and state publish/deploy decision when relevant.
+   If release is deferred, say so explicitly.
 2. For standard or large tasks, add product, architecture, security, and
    code-quality review notes.
 3. For large or high-risk tasks, confirm the design approach, add reflection
    only when useful, and let \`pnpm ace:finish\` archive the snapshot.
 4. Update \`.ai/tech-docs.md\`, \`.ai/product-roadmap.md\`, durable decisions,
    or release notes only when those facts actually changed.
+5. For release-bound shipped changes, run the project's local smoke and
+   dogfood/self-check routines before final publish or deploy when available.
 <!-- agent-memory-workflow:end -->
 `
 

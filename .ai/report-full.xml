@@ -225,65 +225,7 @@ AGENTS.md</directory_structure><files>This section contains the contents of the 
     }
   },
   &quot;version&quot;: 1
-}</file><file path=".ai/reflection-log.md"># Reflection Log
-
-Use this file for short, actionable agent-process reflections. Do not log every
-minor task; record repeated tool friction, unclear prompts, poor assumptions,
-or workflow improvements worth carrying into future sessions.
-
-## Unresolved
-
-### [YYYY-MM-DD HH:mm] [Short issue title]
-Status: unresolved
-- Stuck Point: [Where the agent got stuck]
-- Likely Cause: [Tooling, prompt, missing context, or process issue]
-- Proposed Improvement: [Concrete change to try next time]
-
-## Resolved
-
-### 2026-06-14 11:40 CI gates need actionable failures
-Status: resolved
-- Stuck Point: A failing PR gate is only useful if the developer can fix it
-  from plain CI logs.
-- Likely Cause: Generic gate failures hide which ACE memory section needs
-  attention.
-- Proposed Improvement: Keep gate failures file-specific and include the exact
-  next fix, while reusing existing ACE validation logic.
-
-### 2026-06-14 10:59 First-run onboarding needs terminal feedback
-Status: resolved
-- Stuck Point: A useful `.ai/project-profile.md` can still hide the onboarding
-  “aha” moment if the terminal only says to open another file.
-- Likely Cause: Early onboarding output focused on generated artifacts rather
-  than the detected project shape.
-- Proposed Improvement: Keep the scanner deterministic, but print a concise CLI
-  summary of detected ecosystems and project-specific risk rules.
-
-### 2026-06-14 01:26 Flat closeout checklists invite overwork
-Status: resolved
-- Stuck Point: Agents can treat every ACE closeout instruction as equally
-  mandatory and spend effort on docs or ceremony that does not reduce risk.
-- Likely Cause: The default completion checklist and end-of-task instructions
-  were presented as a flat list instead of a priority ladder.
-- Proposed Improvement: Keep closeout guidance template-only and instruct
-  agents to do the smallest closeout that preserves future context and safety.
-
-### 2026-06-14 01:15 New chats need an operational start snapshot
-Status: resolved
-- Stuck Point: A new AI chat had to read several `.ai/*` files and run git
-  commands to answer simple &quot;where are we?&quot; questions.
-- Likely Cause: The brief report summarized task memory but did not surface
-  repo state, next command, or publish decision as a first-class startup block.
-- Proposed Improvement: Generate `## Start Snapshot` in brief/full reports and
-  put `.ai/report-brief.md` first in AI Coder hub context.
-
-### 2026-06-13 20:59 Persist release process outside chat
-Status: resolved
-- Stuck Point: npm publishing details and README/logo split can be forgotten in
-  a new chat.
-- Likely Cause: Release steps were previously only discussed in conversation.
-- Proposed Improvement: Keep publish commands discoverable through
-  `package.json` scripts and record npm publishing notes in `.ai/session-handoff.md`.</file><file path="AGENTS.md">&gt; [!WARNING]
+}</file><file path="AGENTS.md">&gt; [!WARNING]
 &gt; **META-ARCHITECTURE WARNING:** This repository BUILDS the ACE product, but also USES ACE locally. If you are instructed to modify ACE behavior for users, edit the product source and templates in `scripts/`. Do not edit this local `AGENTS.md`, `CLAUDE.md`, or `.ai/**` to change global product behavior.
 
 # AGENTS.md
@@ -389,7 +331,75 @@ After completing a task:
 6. Large tasks also need design review, reflection entry when useful, archive
    snapshot, full report, and a review of `.ai/tech-docs.md` or
    `.ai/product-roadmap.md` when technical or business state changed.
-&lt;!-- agent-memory-workflow:end --&gt;</file><file path=".ai/decisions.md"># Decisions
+&lt;!-- agent-memory-workflow:end --&gt;</file><file path=".ai/reflection-log.md"># Reflection Log
+
+Use this file for short, actionable agent-process reflections. Do not log every
+minor task; record repeated tool friction, unclear prompts, poor assumptions,
+or workflow improvements worth carrying into future sessions.
+
+## Unresolved
+
+### [YYYY-MM-DD HH:mm] [Short issue title]
+Status: unresolved
+- Stuck Point: [Where the agent got stuck]
+- Likely Cause: [Tooling, prompt, missing context, or process issue]
+- Proposed Improvement: [Concrete change to try next time]
+
+## Resolved
+
+### 2026-06-14 11:56 Release readiness needs install-level smoke
+Status: resolved
+- Stuck Point: Unit tests and dry-run publish can pass while installed ACE
+  behavior in a fresh repository or dogfooding sync still has regressions.
+- Likely Cause: Packaging and self-apply paths cross repository boundaries that
+  source-only tests do not fully exercise.
+- Proposed Improvement: Run fake-project smoke from the local staged package and
+  use explicit dogfood self-check before final release, never as hidden publish
+  automation.
+
+### 2026-06-14 11:40 CI gates need actionable failures
+Status: resolved
+- Stuck Point: A failing PR gate is only useful if the developer can fix it
+  from plain CI logs.
+- Likely Cause: Generic gate failures hide which ACE memory section needs
+  attention.
+- Proposed Improvement: Keep gate failures file-specific and include the exact
+  next fix, while reusing existing ACE validation logic.
+
+### 2026-06-14 10:59 First-run onboarding needs terminal feedback
+Status: resolved
+- Stuck Point: A useful `.ai/project-profile.md` can still hide the onboarding
+  “aha” moment if the terminal only says to open another file.
+- Likely Cause: Early onboarding output focused on generated artifacts rather
+  than the detected project shape.
+- Proposed Improvement: Keep the scanner deterministic, but print a concise CLI
+  summary of detected ecosystems and project-specific risk rules.
+
+### 2026-06-14 01:26 Flat closeout checklists invite overwork
+Status: resolved
+- Stuck Point: Agents can treat every ACE closeout instruction as equally
+  mandatory and spend effort on docs or ceremony that does not reduce risk.
+- Likely Cause: The default completion checklist and end-of-task instructions
+  were presented as a flat list instead of a priority ladder.
+- Proposed Improvement: Keep closeout guidance template-only and instruct
+  agents to do the smallest closeout that preserves future context and safety.
+
+### 2026-06-14 01:15 New chats need an operational start snapshot
+Status: resolved
+- Stuck Point: A new AI chat had to read several `.ai/*` files and run git
+  commands to answer simple &quot;where are we?&quot; questions.
+- Likely Cause: The brief report summarized task memory but did not surface
+  repo state, next command, or publish decision as a first-class startup block.
+- Proposed Improvement: Generate `## Start Snapshot` in brief/full reports and
+  put `.ai/report-brief.md` first in AI Coder hub context.
+
+### 2026-06-13 20:59 Persist release process outside chat
+Status: resolved
+- Stuck Point: npm publishing details and README/logo split can be forgotten in
+  a new chat.
+- Likely Cause: Release steps were previously only discussed in conversation.
+- Proposed Improvement: Keep publish commands discoverable through
+  `package.json` scripts and record npm publishing notes in `.ai/session-handoff.md`.</file><file path=".ai/decisions.md"># Decisions
 
 ## 2026-06-13 20:59
 
@@ -623,133 +633,152 @@ Impact:
   messages, PR refs, JSON output, GitHub Actions workflow generation, and safe
   pre-push hook installation.
 - Future CI providers should build on the same gate command instead of adding
-  provider-specific policy engines.</file><file path=".ai/changed-files.md"># Changed Files
+  provider-specific policy engines.
+
+## 2026-06-14 11:56
+
+Decision:
+- Treat fake-project smoke and explicit dogfood self-check as release-readiness
+  checks for shipped ACE changes, not as automatic npm publish triggers.
+
+Reason:
+- The maintainer wants to batch intermediate versions and publish only the final
+  release, but the final candidate still needs installation-level validation in
+  disposable projects and in this dogfooding repository.
+
+Impact:
+- `smoke:fake-project` validates the local staged package without network or
+  npm-latest dependence.
+- `dogfood:self-check` applies the local staged package only during an explicit
+  reviewed pass and refuses dirty worktrees by default.
+- Future handoffs may state `NPM publish: required before final release;
+  deferred by maintainer` when shipped changes are intentionally batched.</file><file path=".ai/changed-files.md"># Changed Files
 
 [package.json]
-- Bumped package version to `0.4.0`.
-- Added `ace:gate` package script.
+- Added `smoke:fake-project`, `dogfood:self-check`, and `release:ready`
+  scripts for local release-readiness validation.
 
-[install-ace-pack.mjs]
-- Added `ace:gate` to installed package scripts.
-- Added `scripts/ace-quality-gate.mjs` to managed installed scripts.
+[tools/smoke-fake-project.mjs]
+- Added disposable JS and non-JS project smoke that installs ACE from the local
+  staged package and runs onboarding, memory check, hub start context, and gate.
 
-[scripts/ace-quality-gate.mjs]
-- Added the new PR/CI quality gate command.
-- Reused existing memory validation, classification, finish validation, and
-  Markdown helpers.
-- Added actionable console failures, JSON output, PR refs, GitHub workflow
-  generation, and safe pre-push hook installation.
+[tools/dogfood-self-check.mjs]
+- Added explicit local candidate self-apply check with clean-worktree guard,
+  core ACE workflow verification, and unexpected changed-file detection.
 
-[scripts/ai-task-classify.mjs]
-- Added optional `--base` and `--head` PR diff classification support while
-  preserving default working-tree classification.
-
-[scripts/ai-memory-utils.mjs]
-- Added shared meaningful-content helper for gate and finish validation.
-
-[scripts/ai-task-finish.mjs]
-- Reused the shared meaningful-content helper instead of a local duplicate.
-
-[tests/ace-quality-gate.test.ts]
-- Added coverage for gate pass/fail behavior, actionable failures, PR refs,
-  JSON output, hooks, and GitHub workflow generation.
-
-[tests/install-agent-memory-pack.test.ts]
-- Verified installed repos receive `ace:gate` and `scripts/ace-quality-gate.mjs`.
+[scripts/agent-memory-templates.mjs]
+- Added deferred release wording and release-bound smoke/dogfood guidance to
+  shipped closeout templates.
 
 [README.md]
-- Documented `ace:gate`, PR refs, JSON output, GitHub workflow generation, and
-  safe pre-push hook installation.
+- Documented fake-project smoke, `release:ready`, and explicit dogfood
+  self-check for ACE maintainers.
 
 [README.npm.md]
-- Mirrored npm-facing `ace:gate` documentation.
+- Mirrored npm-facing release-readiness documentation.
+
+[DEVELOPING.md]
+- Documented deferred publish wording, release-readiness sequence, and explicit
+  dogfood self-check policy.
 
 [ROADMAP.md]
-- Marked v0.4 PR and CI Quality Gates as shipped.
+- Noted that v0.4 release readiness includes local fake-project smoke and
+  explicit dogfood self-checks.
+
+[tests/smoke-release.test.ts]
+- Added coverage for JS/non-JS smoke, dogfood self-check pass, and dirty repo
+  guard behavior including explicit allow-dirty release-readiness mode.
+
+[tests/agent-memory.test.ts]
+- Added assertions for deferred release and dogfood/self-check template wording
+  plus package script entries.
 
 [.ai/**]
-- Updated v0.4 task, handoff, changed-files, work-log, decisions, tech docs,
-  product roadmap, reflection, and generated reports.</file><file path=".ai/current-task.md"># Current Task
+- Updated current task, handoff, changed-files, work-log, decisions, tech docs,
+  product roadmap, generated context, and regenerated reports for this closeout.</file><file path=".ai/current-task.md"># Current Task
 
 ## Feature Name
-v0.4.0 PR and CI Quality Gates
+ACE Smoke Testing and Dogfood Upgrade Routine
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 11:30
+Started: 2026-06-14 11:49
 Ready For Archive: yes
 
 ## Goal
-Ship a lightweight `ace:gate` quality gate for PR/CI workflows that verifies
-ACE memory, risk classification, design-review readiness, handoff quality, and
-closeout state before merge.
+Add release-readiness checks that validate the local ACE candidate in disposable
+fake projects and make self-dogfooding an explicit, reviewed step before final
+publish.
 
 ## Business Value / Product Alignment
-v0.4 gives teams a practical governance layer for AI-generated changes without
-requiring SaaS, hidden network calls, Husky, or heavyweight CI tooling. It
-turns ACE memory discipline into an optional pre-merge safety check.
+This reduces release risk without forcing npm publish after every task. ACE can
+now batch intermediate shipped changes while still proving the final candidate
+works when installed into fresh projects and when re-applied to this repository.
 
 ## Technical Approach
 Option 1:
-- Build a standalone gate script with its own Markdown parsing and risk
-  heuristics. This would be quick but duplicates existing classification,
-  finish-validation, and memory-check logic.
+- Document the smoke and dogfood expectations only. This is cheap, but future
+  agents can skip or inconsistently perform the checks.
 
 Option 2:
-- Add `ace-quality-gate.mjs` as a thin orchestration layer that reuses
-  `validateAgentMemory`, `classifyRepositoryTask`, `validateFinishRequirements`,
-  and shared Markdown helpers. Add only the missing PR diff and output helpers
-  needed for CI-quality messages.
+- Add local zero-dependency tools for fake-project smoke and explicit dogfood
+  self-check, wire them into npm scripts, and cover the workflow with tests.
 
 Chosen Approach:
-- Use Option 2. It keeps v0.4 zero-dependency and DRY, makes failures
-  actionable in CI logs, and avoids creating a second policy engine.
+- Use Option 2. It keeps the process local and deterministic, avoids network or
+  npm-latest dependence, and turns release readiness into a repeatable command
+  sequence without publishing intermediate versions.
 
 ## Current Status
-- [x] Plan approved for v0.4 quality gate MVP.
-- [x] Ran `ace:classify` before implementation.
-- [x] Add `ace:gate` command and shipped gate script.
-- [x] Add PR diff support for `--base` and `--head`.
-- [x] Add opt-in GitHub Actions and pre-push hook generation.
-- [x] Update install flow, docs, tests, and package version.
-- [x] Run full verification and closeout.
+- [x] Added local fake-project smoke tooling for JS and non-JS fixtures.
+- [x] Added explicit dogfood self-check tooling with clean-worktree protection.
+- [x] Added `smoke:fake-project`, `dogfood:self-check`, and `release:ready`
+  npm scripts.
+- [x] Updated shipped closeout templates with deferred release wording and
+  release-readiness smoke/self-check guidance.
+- [x] Updated README, npm README, DEVELOPING, and roadmap documentation.
+- [x] Added automated tests for smoke, dogfood pass, and dirty-worktree guard.
+- [x] Ran the release-readiness verification sequence.
+- [x] Ran explicit dogfood self-check against this repository with
+  `--allow-dirty` during the reviewed release-readiness pass.
 
 ## Affected Areas
 - `package.json`
-- `install-ace-pack.mjs`
-- `scripts/ace-quality-gate.mjs`
-- `scripts/ai-task-classify.mjs`
-- `scripts/ai-memory-utils.mjs`
+- `tools/smoke-fake-project.mjs`
+- `tools/dogfood-self-check.mjs`
+- `scripts/agent-memory-templates.mjs`
 - `README.md`
 - `README.npm.md`
+- `DEVELOPING.md`
 - `ROADMAP.md`
-- `tests/**`
+- `tests/smoke-release.test.ts`
+- `tests/agent-memory.test.ts`
+- `.ai/generated-context.md`
 - `.ai/**` closeout notes
 
 ## Constraints
-- No dependencies, AI calls, network calls, SaaS requirements, Husky, MCP, or
-  hidden hook installation.
-- Reuse existing ACE validation/classification/finish logic instead of
-  duplicating parsers.
-- Keep `.ai/memory-config.json` schema version unchanged.
-- Git hooks and GitHub Actions workflow generation must be opt-in only.
-- Do not overwrite project-owned `ace:validate` or existing non-ACE hooks.
+- No dependencies, AI calls, network calls, automatic npm publish, or automatic
+  hook installation.
+- Smoke tests must use the local candidate package, not `npm latest`.
+- Dogfood self-check must be explicit and reviewed; it must not blindly run over
+  a dirty product worktree.
+- Intermediate versions may remain unpublished until the maintainer decides to
+  cut the final release.
 
 ## Acceptance Criteria
-- `package.json` version is `0.4.0`.
-- Installed repos receive `scripts/ace-quality-gate.mjs` and `ace:gate`.
-- `ace:gate` exits non-zero with actionable `[ACE GATE] Failed:` messages.
-- `ace:gate -- --json` emits parseable JSON.
-- `ace:gate -- --base &lt;ref&gt; --head &lt;ref&gt;` classifies PR diffs.
-- `ace:gate -- --install-pre-push` installs or samples a native hook safely.
-- `ace:gate -- --write-github-action` writes a Node 20 GitHub Actions workflow.
-- Tests cover pass/fail gate behavior, PR refs, JSON, hooks, workflow
-  generation, and install flow.
-- `npm.cmd test`, `npm.cmd run ace:check`, `npm.cmd run check:npm-payload`, and
-  `npm.cmd run release:npm:dry` pass.
+- `npm run smoke:fake-project` creates disposable JS and non-JS projects,
+  installs ACE from the local candidate, runs onboarding, `ace:check`,
+  `ace:hub start`, and `ace:gate`.
+- `npm run dogfood:self-check` checks git state first, applies the local staged
+  ACE package, runs `ace:check`, `ace:gate`, and `ace:hub start`, and fails on
+  unexpected changed files.
+- `npm run release:ready` runs tests, fake-project smoke, `ace:gate`, npm
+  payload guard, and npm release dry-run.
+- Future handoffs can state `NPM publish: required before final release;
+  deferred by maintainer`.
 
 ## Completion Checklist
 - [x] Goal completed
@@ -760,70 +789,80 @@ Chosen Approach:
 - [x] `ace:validate` and `ace:finish` passed</file><file path=".ai/session-handoff.md"># Session Handoff
 
 ## Last Update
-2026-06-14 11:40
+2026-06-14 12:02
 
 ## What Was Done
-- Bumped package version from `0.3.0` to `0.4.0`.
-- Added shipped `ace:gate` command via `scripts/ace-quality-gate.mjs`.
-- Reused existing ACE validation layers: `validateAgentMemory`,
-  `classifyRepositoryTask`, `validateFinishRequirements`, and shared Markdown
-  helpers.
-- Added PR diff support through `--base &lt;ref&gt;` and `--head &lt;ref&gt;`.
-- Added actionable `[ACE GATE] Failed:` messages for CI logs and parseable
-  `--json` output.
-- Added opt-in `--write-github-action` and `--install-pre-push` helpers.
-- Updated install flow so target repos receive `scripts/ace-quality-gate.mjs`
-  and `ace:gate`.
-- Updated README/README.npm and marked v0.4 shipped in `ROADMAP.md`.
+- Added `tools/smoke-fake-project.mjs` to validate the local ACE candidate in
+  disposable JS and non-JS repositories.
+- Added `tools/dogfood-self-check.mjs` for explicit self-dogfooding with a
+  clean-worktree guard and unexpected-diff detection.
+- Added `smoke:fake-project`, `dogfood:self-check`, and `release:ready` npm
+  scripts.
+- Updated shipped ACE workflow templates so future agents can record deferred
+  release decisions and run smoke/self-check routines before final publish.
+- Updated README surfaces, `DEVELOPING.md`, and `ROADMAP.md` with the new
+  release-readiness routine.
+- Added tests covering fake-project smoke, dogfood self-check, dirty-worktree
+  protection, template wording, and package scripts.
+- Ran explicit `dogfood:self-check -- --allow-dirty` against this repository as
+  a reviewed release-readiness pass.
 
 ## Current State
-- `ace:gate` remains local, deterministic, zero-dependency, and opt-in.
-- Git hooks are never installed automatically; existing non-ACE pre-push hooks
-  are preserved by writing `.git/hooks/pre-push.ace.sample`.
-- GitHub Actions is the only official CI template in v0.4.0.
-- `.ai/memory-config.json` schema remains version `1`.
-- The staged npm payload carries `ace-pack@0.4.0`.
+- Local package version remains `0.4.0`; intermediate npm publish is deferred
+  by maintainer.
+- `npm run release:ready` is the main pre-final-release command.
+- `npm run dogfood:self-check` is intentionally separate because it should run
+  only during an explicit release-readiness pass on a clean or reviewed tree.
+- The current worktree contains active product and repo-local memory changes
+  for this routine.
+- The self-dogfood pass did not create or update product files; it refreshed
+  `.ai/generated-context.md` through `ace:hub start`.
 
 ## Quality Review
 Product Alignment:
-- v0.4 delivers the roadmap&apos;s PR/CI governance layer for AI-assisted changes
-  without adding SaaS, hidden network calls, or dependency-heavy tooling.
+- The routine supports the maintainer&apos;s decision to batch intermediate changes
+  and publish only a final version while still preserving release confidence.
 
 Architecture:
-- The gate is a thin orchestration script that reuses existing ACE memory,
-  classification, and finish-validation logic instead of duplicating Markdown
-  parsers or risk policy.
+- Fake-project smoke builds the local staged package and imports its installer,
+  so the check exercises packaged install behavior instead of source-only
+  assumptions. Dogfood self-check uses the same staged candidate and installed
+  scripts.
 
 Security:
-- Gate checks run locally and inspect only repository files and local git state.
-  Hook/workflow generation is explicit opt-in and does not call external
-  services by itself.
+- No network calls, AI calls, hidden npm publish, or hook installation were
+  added. Dogfood self-check refuses dirty worktrees by default to avoid mixing
+  sync changes with active product edits.
 
 Code Quality:
-- Tests cover gate pass/fail behavior, actionable errors, PR refs, JSON output,
-  hook safety, GitHub workflow generation, and install flow wiring.
+- The tools use Node built-ins, fail with actionable messages, and are covered
+  by Vitest. `release:ready` verifies tests, smoke, gate, payload guard, and npm
+  dry-run in one command.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when ready.
+- Run `npm.cmd run release:ready` before the final npm release.
+- Commit this smoke/dogfood routine with the pending v0.4.0 work.
+- After committing or during an explicit reviewed release-readiness pass, run
+  `npm.cmd run dogfood:self-check`.
+- Publish only when the maintainer decides the final v0.4.0 batch is ready.
 
 ## Known Issues
-- `.ai/generated-context.md` was already dirty before v0.4 implementation and
-  was not modified as part of the product change.
+- None known for this routine. Dogfood self-check was run on this repository
+  with `--allow-dirty` because product changes are still uncommitted; the guard
+  would still fail on newly introduced unexpected paths.
 
 ## Verification
-- `npm.cmd run ace:classify` passed before implementation.
-- `npm.cmd test` passed: 8 files, 69 tests.
-- `npm.cmd run ace:check` passed.
+- `npm.cmd test` passed: 9 files, 73 tests.
+- `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
+- `npm.cmd run ace:gate` passed and classified the work as large.
 - `npm.cmd run check:npm-payload` passed and checked 28 packed files.
-- `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.4.0`.
-- `npm.cmd run ace:gate` passed.
-- `npm.cmd run ace:validate` passed.
-- `npm.cmd run ace:finish` passed and archived the v0.4 task snapshot.
+- `npm.cmd run release:npm:dry` passed for `ace-pack@0.4.0`.
+- `npm.cmd run release:ready` passed the full readiness sequence.
+- `npm.cmd run dogfood:self-check -- --allow-dirty` passed and reported no
+  created or updated installed files.
 
 ## Notes
-- NPM publish: required, because `package.json`, `README.npm.md`,
-  `install-ace-pack.mjs`, and shipped `scripts/*.mjs` changed the npm payload
-  and installed ACE behavior.</file><file path=".ai/work-log.md"># Work Log
+- NPM publish: required before final release; deferred by maintainer.</file><file path=".ai/work-log.md"># Work Log
 
 ## 2026-06-13 20:59
 
@@ -968,4 +1007,17 @@ Code Quality:
   generation, and safe native pre-push hook installation.
 - Updated install flow, README surfaces, roadmap, and tests.
 - Verified Vitest, ACE memory check, npm payload guard, and full npm release
-  dry-run for `ace-pack@0.4.0`.</file></files></repomix>
+  dry-run for `ace-pack@0.4.0`.
+
+## 2026-06-14 11:56
+
+- Added local release-readiness smoke for disposable JS and non-JS fake projects.
+- Added explicit dogfood self-check that refuses dirty worktrees by default and
+  stops on unexpected changed files.
+- Added `smoke:fake-project`, `dogfood:self-check`, and `release:ready` npm
+  scripts.
+- Updated shipped closeout templates and maintainer docs to support deferred
+  npm publish wording for batched releases.
+- Verified `npm.cmd run release:ready` for the pending `0.4.0` candidate.
+- Ran `npm.cmd run dogfood:self-check -- --allow-dirty` as an explicit reviewed
+  self-dogfood pass; it reported no created or updated installed files.</file></files></repomix>

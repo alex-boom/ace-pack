@@ -27,6 +27,10 @@ without reading large implementation files.
 - `ace:gate` is the optional PR/CI quality gate. It reuses ACE memory
   validation, task classification, finish requirements, and shared Markdown
   helpers instead of maintaining a second policy engine.
+- Release-readiness tooling lives in `tools/`. `smoke:fake-project` builds the
+  local staged package and validates ACE inside disposable JS and non-JS
+  projects. `dogfood:self-check` explicitly reapplies the local candidate to
+  this repository after checking git state.
 
 ## Data Model / DB Schema
 - Durable state is plain Markdown under `.ai/**` plus JSON configuration in
@@ -45,6 +49,8 @@ without reading large implementation files.
   diff stat, degrading to `unknown` when git is unavailable.
 - Gate output is ephemeral CLI output or optional JSON. No new persistent config
   or memory schema fields were added for `0.4.0`.
+- Smoke and dogfood readiness output is ephemeral. The tools do not add config
+  files or schema fields.
 
 ## Auth, RBAC, and Security
 - ACE has no authentication layer and does not manage user credentials.
@@ -53,6 +59,8 @@ without reading large implementation files.
   `unknown` if git is unavailable or the target is not a git repository.
 - `0.4.0` gate checks use local git commands only. GitHub Actions workflow and
   pre-push hook files are generated only when explicitly requested.
+- Dogfood self-check refuses dirty git worktrees by default and stops when
+  unexpected files change after candidate self-apply.
 - Publish-secret handling is outside ACE scripts; release commands delegate to
   the user's configured npm environment.
 
@@ -67,6 +75,12 @@ without reading large implementation files.
 - Use `npm.cmd test` for Vitest on Windows.
 - Use `npm.cmd run ace:check` for ACE memory validation.
 - Use `npm.cmd run ace:gate` for optional PR/CI quality gate validation.
+- Use `npm.cmd run smoke:fake-project` to validate the local staged package in
+  disposable projects before final release.
+- Use `npm.cmd run release:ready` for the full pre-final-release sequence:
+  tests, fake-project smoke, `ace:gate`, payload guard, and npm dry-run.
+- Use `npm.cmd run dogfood:self-check` only during an explicit reviewed
+  release-readiness pass on a clean or intentionally accepted worktree.
 - Use `npm.cmd run check:npm-payload` to verify the staged npm tarball excludes
   repo-local dogfooding files.
 - Use `npm.cmd run release:npm:dry` before telling the maintainer to publish.

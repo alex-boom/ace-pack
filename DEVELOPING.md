@@ -108,6 +108,7 @@ Every task handoff must explicitly state one of:
 
 - `NPM publish: required`
 - `NPM publish: not required`
+- `NPM publish: required before final release; deferred by maintainer`
 
 Use the staged npm payload as the decision boundary. Publishing is required only
 when a change affects files that consumers receive from `.npm-publish/` or
@@ -125,6 +126,37 @@ Publishing is not required for GitHub-only or repo-local changes by themselves:
 - `README.md` when `README.npm.md` is unchanged.
 - `ROADMAP.md`, `DEVELOPING.md`, `AGENTS.md`, `CLAUDE.md`, `.ai/**`,
   `.vscode/**`, `.local/**`, `tools/**`, reports, and archive snapshots.
+
+Intermediate versions may remain unpublished while a final release is still
+being assembled. In that case, use the deferred publish wording above and keep
+the next release-readiness checks in `.ai/session-handoff.md`.
+
+## Release Readiness Checks
+
+Before final npm publish for shipped package changes, run the local candidate
+through both automated release checks and explicit dogfood validation:
+
+```bash
+npm run release:ready
+```
+
+`release:ready` runs unit tests, the fake-project smoke, `ace:gate`, npm payload
+guard, and npm dry-run publishing. The fake-project smoke installs ACE from the
+local staged package into disposable JS and non-JS repositories; it never uses
+`npm latest`.
+
+Run dogfood self-check only as an explicit release-readiness pass:
+
+```bash
+git status --short
+npm run dogfood:self-check
+```
+
+The dogfood self-check requires a clean git worktree by default, applies the
+local staged ACE package to this repository, then runs `ace:check`, `ace:gate`,
+and `ace:hub start`. If only expected ACE-managed files changed, review and keep
+them as dogfood sync. If unexpected product files changed, stop and inspect the
+diff before continuing.
 
 Before telling the maintainer to publish, run `npm.cmd run release:npm:dry`.
 If npm says the current version already exists, bump semver first. Use

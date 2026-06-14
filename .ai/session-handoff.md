@@ -1,67 +1,77 @@
 # Session Handoff
 
 ## Last Update
-2026-06-14 11:40
+2026-06-14 12:02
 
 ## What Was Done
-- Bumped package version from `0.3.0` to `0.4.0`.
-- Added shipped `ace:gate` command via `scripts/ace-quality-gate.mjs`.
-- Reused existing ACE validation layers: `validateAgentMemory`,
-  `classifyRepositoryTask`, `validateFinishRequirements`, and shared Markdown
-  helpers.
-- Added PR diff support through `--base <ref>` and `--head <ref>`.
-- Added actionable `[ACE GATE] Failed:` messages for CI logs and parseable
-  `--json` output.
-- Added opt-in `--write-github-action` and `--install-pre-push` helpers.
-- Updated install flow so target repos receive `scripts/ace-quality-gate.mjs`
-  and `ace:gate`.
-- Updated README/README.npm and marked v0.4 shipped in `ROADMAP.md`.
+- Added `tools/smoke-fake-project.mjs` to validate the local ACE candidate in
+  disposable JS and non-JS repositories.
+- Added `tools/dogfood-self-check.mjs` for explicit self-dogfooding with a
+  clean-worktree guard and unexpected-diff detection.
+- Added `smoke:fake-project`, `dogfood:self-check`, and `release:ready` npm
+  scripts.
+- Updated shipped ACE workflow templates so future agents can record deferred
+  release decisions and run smoke/self-check routines before final publish.
+- Updated README surfaces, `DEVELOPING.md`, and `ROADMAP.md` with the new
+  release-readiness routine.
+- Added tests covering fake-project smoke, dogfood self-check, dirty-worktree
+  protection, template wording, and package scripts.
+- Ran explicit `dogfood:self-check -- --allow-dirty` against this repository as
+  a reviewed release-readiness pass.
 
 ## Current State
-- `ace:gate` remains local, deterministic, zero-dependency, and opt-in.
-- Git hooks are never installed automatically; existing non-ACE pre-push hooks
-  are preserved by writing `.git/hooks/pre-push.ace.sample`.
-- GitHub Actions is the only official CI template in v0.4.0.
-- `.ai/memory-config.json` schema remains version `1`.
-- The staged npm payload carries `ace-pack@0.4.0`.
+- Local package version remains `0.4.0`; intermediate npm publish is deferred
+  by maintainer.
+- `npm run release:ready` is the main pre-final-release command.
+- `npm run dogfood:self-check` is intentionally separate because it should run
+  only during an explicit release-readiness pass on a clean or reviewed tree.
+- The current worktree contains active product and repo-local memory changes
+  for this routine.
+- The self-dogfood pass did not create or update product files; it refreshed
+  `.ai/generated-context.md` through `ace:hub start`.
 
 ## Quality Review
 Product Alignment:
-- v0.4 delivers the roadmap's PR/CI governance layer for AI-assisted changes
-  without adding SaaS, hidden network calls, or dependency-heavy tooling.
+- The routine supports the maintainer's decision to batch intermediate changes
+  and publish only a final version while still preserving release confidence.
 
 Architecture:
-- The gate is a thin orchestration script that reuses existing ACE memory,
-  classification, and finish-validation logic instead of duplicating Markdown
-  parsers or risk policy.
+- Fake-project smoke builds the local staged package and imports its installer,
+  so the check exercises packaged install behavior instead of source-only
+  assumptions. Dogfood self-check uses the same staged candidate and installed
+  scripts.
 
 Security:
-- Gate checks run locally and inspect only repository files and local git state.
-  Hook/workflow generation is explicit opt-in and does not call external
-  services by itself.
+- No network calls, AI calls, hidden npm publish, or hook installation were
+  added. Dogfood self-check refuses dirty worktrees by default to avoid mixing
+  sync changes with active product edits.
 
 Code Quality:
-- Tests cover gate pass/fail behavior, actionable errors, PR refs, JSON output,
-  hook safety, GitHub workflow generation, and install flow wiring.
+- The tools use Node built-ins, fail with actionable messages, and are covered
+  by Vitest. `release:ready` verifies tests, smoke, gate, payload guard, and npm
+  dry-run in one command.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when ready.
+- Run `npm.cmd run release:ready` before the final npm release.
+- Commit this smoke/dogfood routine with the pending v0.4.0 work.
+- After committing or during an explicit reviewed release-readiness pass, run
+  `npm.cmd run dogfood:self-check`.
+- Publish only when the maintainer decides the final v0.4.0 batch is ready.
 
 ## Known Issues
-- `.ai/generated-context.md` was already dirty before v0.4 implementation and
-  was not modified as part of the product change.
+- None known for this routine. Dogfood self-check was run on this repository
+  with `--allow-dirty` because product changes are still uncommitted; the guard
+  would still fail on newly introduced unexpected paths.
 
 ## Verification
-- `npm.cmd run ace:classify` passed before implementation.
-- `npm.cmd test` passed: 8 files, 69 tests.
-- `npm.cmd run ace:check` passed.
+- `npm.cmd test` passed: 9 files, 73 tests.
+- `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
+- `npm.cmd run ace:gate` passed and classified the work as large.
 - `npm.cmd run check:npm-payload` passed and checked 28 packed files.
-- `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.4.0`.
-- `npm.cmd run ace:gate` passed.
-- `npm.cmd run ace:validate` passed.
-- `npm.cmd run ace:finish` passed and archived the v0.4 task snapshot.
+- `npm.cmd run release:npm:dry` passed for `ace-pack@0.4.0`.
+- `npm.cmd run release:ready` passed the full readiness sequence.
+- `npm.cmd run dogfood:self-check -- --allow-dirty` passed and reported no
+  created or updated installed files.
 
 ## Notes
-- NPM publish: required, because `package.json`, `README.npm.md`,
-  `install-ace-pack.mjs`, and shipped `scripts/*.mjs` changed the npm payload
-  and installed ACE behavior.
+- NPM publish: required before final release; deferred by maintainer.

@@ -334,13 +334,17 @@ export function extractNextCommand(nextStepsContent) {
 }
 
 export function extractReleaseDecision(handoffContent) {
-  const match = handoffContent.match(/npm\s+publish\s*:\s*(not\s+required|required)/i)
+  const match = handoffContent.match(/npm\s+publish\s*:\s*((?:not\s+required|required)[^\r\n]*)/i)
 
   if (!match?.[1]) {
     return ''
   }
 
-  const decision = match[1].replace(/\s+/g, ' ').trim().toLowerCase()
+  const decision = match[1]
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^not required/i, 'not required')
+    .replace(/^required/i, 'required')
 
   return `NPM publish: ${decision}`
 }

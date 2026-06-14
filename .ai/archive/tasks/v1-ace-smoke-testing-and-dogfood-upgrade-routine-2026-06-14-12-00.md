@@ -45,8 +45,6 @@ Chosen Approach:
 - [x] Updated README, npm README, DEVELOPING, and roadmap documentation.
 - [x] Added automated tests for smoke, dogfood pass, and dirty-worktree guard.
 - [x] Ran the release-readiness verification sequence.
-- [x] Ran explicit dogfood self-check against this repository with
-  `--allow-dirty` during the reviewed release-readiness pass.
 
 ## Affected Areas
 - `package.json`
@@ -59,7 +57,6 @@ Chosen Approach:
 - `ROADMAP.md`
 - `tests/smoke-release.test.ts`
 - `tests/agent-memory.test.ts`
-- `.ai/generated-context.md`
 - `.ai/**` closeout notes
 
 ## Constraints

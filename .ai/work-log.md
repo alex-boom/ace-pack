@@ -144,3 +144,16 @@
 - Updated install flow, README surfaces, roadmap, and tests.
 - Verified Vitest, ACE memory check, npm payload guard, and full npm release
   dry-run for `ace-pack@0.4.0`.
+
+## 2026-06-14 11:56
+
+- Added local release-readiness smoke for disposable JS and non-JS fake projects.
+- Added explicit dogfood self-check that refuses dirty worktrees by default and
+  stops on unexpected changed files.
+- Added `smoke:fake-project`, `dogfood:self-check`, and `release:ready` npm
+  scripts.
+- Updated shipped closeout templates and maintainer docs to support deferred
+  npm publish wording for batched releases.
+- Verified `npm.cmd run release:ready` for the pending `0.4.0` candidate.
+- Ran `npm.cmd run dogfood:self-check -- --allow-dirty` as an explicit reviewed
+  self-dogfood pass; it reported no created or updated installed files.

@@ -63,6 +63,8 @@ describe('ensureAgentMemory', () => {
       'Do the smallest closeout that preserves future agent context and project',
     )
     expect(agentsContent).toContain('state publish/deploy decision when relevant')
+    expect(agentsContent).toContain('If release is deferred, say so explicitly.')
+    expect(agentsContent).toContain('dogfood/self-check routines before final publish')
     expect(memoryConfigContent).toContain('"ACE (Agentic Context Engine) Configuration"')
     const memoryConfig = JSON.parse(memoryConfigContent) as {
       _profile?: { status?: string }
@@ -87,12 +89,15 @@ describe('ensureAgentMemory', () => {
     expect(claudeContent).toContain(
       'Do the smallest closeout that preserves future agent context and project',
     )
+    expect(claudeContent).toContain('If release is deferred, say so explicitly.')
     expect(currentTaskContent).toContain(
       'Always: update `.ai/changed-files.md`, record verification, and run `ace:validate`',
     )
     expect(currentTaskContent).toContain(
       'Only if changed: update tech docs, product roadmap, durable decisions, or release notes',
     )
+    expect(currentTaskContent).toContain('deferred release wording')
+    expect(currentTaskContent).toContain('run local smoke and dogfood/self-check routines')
   })
 
   it('does not overwrite existing memory files', async () => {
@@ -176,6 +181,12 @@ describe('package metadata', () => {
     expect(packageJson.bin?.['agent-memory-pack']).toBe('install-agent-memory-pack.mjs')
     expect(packageJson.scripts?.['install:pack']).toBe('node ./install-ace-pack.mjs')
     expect(packageJson.scripts?.test).toBe('vitest run')
+    expect(packageJson.scripts?.['smoke:fake-project']).toBe(
+      'node ./tools/smoke-fake-project.mjs',
+    )
+    expect(packageJson.scripts?.['dogfood:self-check']).toBe(
+      'node ./tools/dogfood-self-check.mjs',
+    )
   })
 })
 

@@ -101,7 +101,9 @@ start context, architect review, PR summary, and agent handoff.
 
 Add governance for teams using AI-generated code. Verify `.ai/**` state, design
 reviews, risk classification, and handoffs before merge. Prefer native Git hooks
-and CI templates over Husky-style dependency stacks.
+and CI templates over Husky-style dependency stacks. Release readiness includes
+local fake-project smoke testing and explicit dogfood self-checks before final
+publish.
 
 ### v0.5: Read-Only MCP Adapter
 

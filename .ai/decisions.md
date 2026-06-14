@@ -233,3 +233,22 @@ Impact:
   pre-push hook installation.
 - Future CI providers should build on the same gate command instead of adding
   provider-specific policy engines.
+
+## 2026-06-14 11:56
+
+Decision:
+- Treat fake-project smoke and explicit dogfood self-check as release-readiness
+  checks for shipped ACE changes, not as automatic npm publish triggers.
+
+Reason:
+- The maintainer wants to batch intermediate versions and publish only the final
+  release, but the final candidate still needs installation-level validation in
+  disposable projects and in this dogfooding repository.
+
+Impact:
+- `smoke:fake-project` validates the local staged package without network or
+  npm-latest dependence.
+- `dogfood:self-check` applies the local staged package only during an explicit
+  reviewed pass and refuses dirty worktrees by default.
+- Future handoffs may state `NPM publish: required before final release;
+  deferred by maintainer` when shipped changes are intentionally batched.

@@ -321,6 +321,36 @@ pnpm ace:gate -- --install-pre-push
 ACE never installs hooks automatically. If a non-ACE pre-push hook already
 exists, ACE writes `.git/hooks/pre-push.ace.sample` instead of overwriting it.
 
+## Release Readiness for ACE Maintainers
+
+ACE maintainers can batch shipped changes and publish only a final release. For
+local candidate validation, run the disposable fake-project smoke before final
+publish:
+
+```bash
+npm run smoke:fake-project
+```
+
+The smoke creates temporary JS and non-JS projects, installs ACE from the local
+candidate package, runs onboarding, validates memory, generates start context,
+and runs `ace:gate`. It does not use `npm latest`.
+
+Before a final release, run the release-readiness sequence:
+
+```bash
+npm run release:ready
+```
+
+When explicitly dogfooding the candidate against this repository, use:
+
+```bash
+npm run dogfood:self-check
+```
+
+The dogfood self-check requires a clean git worktree by default, applies the
+local staged ACE package, runs `ace:check`, `ace:gate`, and `ace:hub start`, and
+then stops if unexpected files changed.
+
 ## CLI Reference
 
 | Command | Purpose |

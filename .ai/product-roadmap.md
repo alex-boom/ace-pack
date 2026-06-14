@@ -40,6 +40,8 @@ handoff and browser-context workflows.
 - **v0.4 PR and CI Quality Gates.** `ace:gate` now verifies ACE memory,
   risk classification, design/quality closeout, PR refs, and handoff
   verification, with opt-in GitHub Actions and native pre-push helpers.
+  Release readiness now includes local fake-project smoke and explicit dogfood
+  self-checks before final npm publish.
 
 ## Planned Features
 

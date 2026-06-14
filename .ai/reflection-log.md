@@ -14,6 +14,16 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-14 11:56 Release readiness needs install-level smoke
+Status: resolved
+- Stuck Point: Unit tests and dry-run publish can pass while installed ACE
+  behavior in a fresh repository or dogfooding sync still has regressions.
+- Likely Cause: Packaging and self-apply paths cross repository boundaries that
+  source-only tests do not fully exercise.
+- Proposed Improvement: Run fake-project smoke from the local staged package and
+  use explicit dogfood self-check before final release, never as hidden publish
+  automation.
+
 ### 2026-06-14 11:40 CI gates need actionable failures
 Status: resolved
 - Stuck Point: A failing PR gate is only useful if the developer can fix it

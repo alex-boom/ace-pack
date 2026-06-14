@@ -326,7 +326,9 @@ describe('ai report scripts', () => {
     expect(briefReport).toContain('- Worktree: clean (0 changed files)')
     expect(briefReport).toMatch(/- Last commit: [0-9a-f]+ Initial fixture/)
     expect(briefReport).toContain('- Next command: `npm.cmd run release:npm`')
-    expect(briefReport).toContain('- Release decision: NPM publish: required')
+    expect(briefReport).toContain(
+      '- Release decision: NPM publish: required because shipped scripts changed.',
+    )
   })
 
   it('records dirty git state from porcelain status and caps large changed counts', async () => {
@@ -405,6 +407,9 @@ describe('ai report scripts', () => {
     expect(extractReleaseDecision('- nPm   Publish :   Not   Required')).toBe(
       'NPM publish: not required',
     )
+    expect(
+      extractReleaseDecision('- NPM publish: required before final release; deferred by maintainer.'),
+    ).toBe('NPM publish: required before final release; deferred by maintainer.')
     expect(extractReleaseDecision('- Release later.')).toBe('')
   })
 
