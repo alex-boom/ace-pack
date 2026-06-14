@@ -4,8 +4,8 @@ This document defines the compatibility contract for installed ACE repositories
 starting with `ace-pack@2.0.0`.
 
 ACE remains Markdown-first and zero-dependency. v2 changes the canonical memory
-layout, but it keeps v1 paths readable and writable through deterministic
-mirrors so existing repositories can upgrade without losing local memory.
+layout, but it keeps v1 paths readable as deterministic migration aliases so
+existing repositories can upgrade without losing local memory.
 
 ## Stable CLI Surface
 
@@ -98,11 +98,12 @@ v2 organizes ACE memory by category:
     tasks/
 ```
 
-For v1 compatibility, ACE mirrors canonical files back to the legacy root
-`.ai/*` paths where those paths existed:
+For v1 compatibility, ACE reads legacy root `.ai/*` paths as migration aliases
+where those paths existed:
 
-The legacy root `.ai/*` paths remain compatible mirrors, not the canonical v2
-layout.
+The legacy root `.ai/*` paths remain compatible read aliases, not the canonical
+v2 layout. v2 writes canonical paths by default so fresh installs keep `.ai/`
+visibly organized.
 
 | Canonical v2 path | Legacy compatible path |
 | --- | --- |
@@ -125,7 +126,8 @@ layout.
 When both canonical and legacy files exist, ACE reads the newest copy. If a
 canonical file is still a template placeholder but the legacy file contains
 meaningful project memory, migration promotes the legacy content into the
-canonical file.
+canonical file. Legacy aliases can be removed after canonical files exist with
+`npm run ace -- migrate --prune-legacy`.
 
 ## Installed Files
 
@@ -134,14 +136,14 @@ ACE installs or updates:
 - `AGENTS.md`
 - `CLAUDE.md`
 - canonical v2 `.ai/**` files listed above
-- legacy `.ai/*` mirrors for compatibility
 - `.ai/archive/.gitkeep`
 - `.ai/archive/tasks/.gitkeep`
 - `scripts/*.mjs`
 
 Existing memory files are project-owned after creation. The installer may create
-missing files and deterministic mirrors, but it must not overwrite meaningful
-project memory.
+missing canonical files and deterministic migration copies, but it must not
+overwrite meaningful project memory. It does not create legacy root mirrors by
+default.
 
 ACE may also create optional IDE bridge files such as `.cursorrules`,
 `.windsurfrules`, and `.github/copilot-instructions.md` when they are missing.
@@ -238,9 +240,12 @@ The v2 migration is deterministic and local:
 
 - `ace-pack init`, `ace:init`, and `npm run ace -- migrate` create canonical v2
   files from existing v1 legacy files when canonical files are missing.
-- Generated reports and hub context write canonical `.ai/generated/**` files and
-  legacy mirrors.
+- Generated reports and hub context write canonical `.ai/generated/**` files.
 - Readers accept both canonical and legacy paths.
+- `npm run ace -- migrate --prune-legacy` removes legacy root aliases after
+  canonical files exist.
+- `npm run ace -- migrate --mirror-legacy` can recreate legacy root aliases for
+  teams that still depend on old path conventions.
 - Migration never calls AI, network services, or package registries.
 - If both paths contain meaningful but different content, ACE preserves them and
   reads the newest copy instead of guessing intent.

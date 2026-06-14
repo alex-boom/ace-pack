@@ -211,10 +211,10 @@ TODO
       cwd: rootDir,
     })
 
-    const currentTask = await readFile(path.join(rootDir, '.ai/current-task.md'), 'utf8')
-    const handoff = await readFile(path.join(rootDir, '.ai/session-handoff.md'), 'utf8')
-    const changedFiles = await readFile(path.join(rootDir, '.ai/changed-files.md'), 'utf8')
-    const workLog = await readFile(path.join(rootDir, '.ai/work-log.md'), 'utf8')
+    const currentTask = await readFile(path.join(rootDir, '.ai/state/current-task.md'), 'utf8')
+    const handoff = await readFile(path.join(rootDir, '.ai/state/session-handoff.md'), 'utf8')
+    const changedFiles = await readFile(path.join(rootDir, '.ai/state/changed-files.md'), 'utf8')
+    const workLog = await readFile(path.join(rootDir, '.ai/knowledge/work-log.md'), 'utf8')
     const archiveFiles = await readdir(path.join(rootDir, '.ai/archive/tasks'))
 
     expect(currentTask).toContain('Status: active')

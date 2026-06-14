@@ -181,8 +181,8 @@ if (!shouldSkipXml && xmlReportStatus.includes('generated at')) {
 async function runRepomix(cwd) {
   const command =
     process.platform === 'win32'
-      ? 'pnpm.cmd dlx repomix --include ".ai/current-task.md,.ai/session-handoff.md,.ai/work-log.md,.ai/changed-files.md,.ai/decisions.md,.ai/reflection-log.md,.ai/memory-config.json,AGENTS.md" --output .ai/generated/report-full.xml --style xml --parsable-style --no-default-patterns'
-      : 'pnpm dlx repomix --include ".ai/current-task.md,.ai/session-handoff.md,.ai/work-log.md,.ai/changed-files.md,.ai/decisions.md,.ai/reflection-log.md,.ai/memory-config.json,AGENTS.md" --output .ai/generated/report-full.xml --style xml --parsable-style --no-default-patterns'
+      ? 'pnpm.cmd dlx repomix --include ".ai/state/current-task.md,.ai/state/session-handoff.md,.ai/knowledge/work-log.md,.ai/state/changed-files.md,.ai/knowledge/decisions.md,.ai/knowledge/reflection-log.md,.ai/config/memory-config.json,AGENTS.md" --output .ai/generated/report-full.xml --style xml --parsable-style --no-default-patterns'
+      : 'pnpm dlx repomix --include ".ai/state/current-task.md,.ai/state/session-handoff.md,.ai/knowledge/work-log.md,.ai/state/changed-files.md,.ai/knowledge/decisions.md,.ai/knowledge/reflection-log.md,.ai/config/memory-config.json,AGENTS.md" --output .ai/generated/report-full.xml --style xml --parsable-style --no-default-patterns'
 
   await new Promise((resolve, reject) => {
     const child = spawn(command, [], {

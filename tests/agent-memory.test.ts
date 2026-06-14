@@ -40,19 +40,22 @@ describe('ensureAgentMemory', () => {
     const secondRun = await ensureAgentMemory(rootDir)
     const agentsContent = await readFile(path.join(rootDir, 'AGENTS.md'), 'utf8')
     const claudeContent = await readFile(path.join(rootDir, 'CLAUDE.md'), 'utf8')
-    const currentTaskContent = await readFile(path.join(rootDir, '.ai', 'current-task.md'), 'utf8')
+    const currentTaskContent = await readFile(
+      path.join(rootDir, '.ai', 'state', 'current-task.md'),
+      'utf8',
+    )
     const memoryConfigContent = await readFile(
-      path.join(rootDir, '.ai', 'memory-config.json'),
+      path.join(rootDir, '.ai', 'config', 'memory-config.json'),
       'utf8',
     )
 
     expect(firstRun.updatedFiles).toEqual(['AGENTS.md'])
     expect(firstRun.createdFiles).toContain('CLAUDE.md')
-    expect(firstRun.createdFiles).toContain('.ai/memory-config.json')
-    expect(firstRun.createdFiles).toContain('.ai/current-task.md')
-    expect(firstRun.createdFiles).toContain('.ai/product-roadmap.md')
-    expect(firstRun.createdFiles).toContain('.ai/tech-docs.md')
-    expect(firstRun.createdFiles).toContain('.ai/reflection-log.md')
+    expect(firstRun.createdFiles).toContain('.ai/config/memory-config.json')
+    expect(firstRun.createdFiles).toContain('.ai/state/current-task.md')
+    expect(firstRun.createdFiles).toContain('.ai/knowledge/product-roadmap.md')
+    expect(firstRun.createdFiles).toContain('.ai/knowledge/tech-docs.md')
+    expect(firstRun.createdFiles).toContain('.ai/knowledge/reflection-log.md')
     expect(firstRun.createdFiles).toContain('.ai/archive/.gitkeep')
     expect(firstRun.createdFiles).toContain('.ai/archive/tasks/.gitkeep')
     expect(secondRun).toEqual({ createdFiles: [], updatedFiles: [] })
@@ -90,7 +93,7 @@ describe('ensureAgentMemory', () => {
     expect(memoryConfig.highRiskPaths?.map((rule) => rule.pattern)).not.toContain(
       'packages/api/src/routers/**',
     )
-    expect(claudeContent).toContain('.ai/report-brief.md')
+    expect(claudeContent).toContain('.ai/generated/report-brief.md')
     expect(claudeContent).toContain('pnpm.cmd ace:validate')
     expect(claudeContent).toContain(
       'Do the smallest closeout that preserves future agent context and project',
@@ -167,11 +170,11 @@ describe('validateAgentMemory', () => {
       'AGENTS.md is missing the ## ACE (Agentic Context Engine) Workflow section',
     )
     expect(issues).toContain('Missing CLAUDE.md')
-    expect(issues).toContain('Missing .ai/memory-config.json')
-    expect(issues).toContain('Missing .ai/current-task.md')
-    expect(issues).toContain('Missing .ai/product-roadmap.md')
-    expect(issues).toContain('Missing .ai/tech-docs.md')
-    expect(issues).toContain('Missing .ai/reflection-log.md')
+    expect(issues).toContain('Missing .ai/config/memory-config.json')
+    expect(issues).toContain('Missing .ai/state/current-task.md')
+    expect(issues).toContain('Missing .ai/knowledge/product-roadmap.md')
+    expect(issues).toContain('Missing .ai/knowledge/tech-docs.md')
+    expect(issues).toContain('Missing .ai/knowledge/reflection-log.md')
     expect(issues).toContain('Missing .ai/archive/.gitkeep')
     expect(issues).toContain('Missing .ai/archive/tasks/.gitkeep')
   })
@@ -181,7 +184,7 @@ describe('validateAgentMemory', () => {
 
     await ensureAgentMemory(rootDir)
     await writeFile(
-      path.join(rootDir, '.ai/current-task.md'),
+      path.join(rootDir, '.ai/state/current-task.md'),
       `# Current Task
 
 ## Feature Name
@@ -212,7 +215,7 @@ Fixture approach.
 `,
     )
     await writeFile(
-      path.join(rootDir, '.ai/session-handoff.md'),
+      path.join(rootDir, '.ai/state/session-handoff.md'),
       `# Session Handoff
 
 ## Last Update
@@ -239,7 +242,7 @@ TODO
 `,
     )
     await writeFile(
-      path.join(rootDir, '.ai/report-brief.md'),
+      path.join(rootDir, '.ai/generated/report-brief.md'),
       `# AI Brief Report
 
 ## Report Metadata

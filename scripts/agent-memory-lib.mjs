@@ -43,13 +43,11 @@ async function ensureAgentsWorkflow(filePath) {
   }
 
   if (currentContent.includes(AGENTS_WORKFLOW_MARKER)) {
-    if (!currentContent.includes(AGENTS_WORKFLOW_HEADER)) {
-      const upgradedContent = replaceMarkedSection(currentContent, agentsWorkflowSection)
+    const upgradedContent = replaceMarkedSection(currentContent, agentsWorkflowSection)
 
-      if (upgradedContent !== currentContent) {
-        await writeTextFile(filePath, upgradedContent)
-        return true
-      }
+    if (upgradedContent !== currentContent) {
+      await writeTextFile(filePath, upgradedContent)
+      return true
     }
 
     return false
@@ -69,8 +67,11 @@ function replaceMarkedSection(content, replacement) {
   }
 
   const afterEndIndex = endIndex + AGENTS_WORKFLOW_END_MARKER.length
+  const suffix = content.slice(afterEndIndex)
+  const normalizedSuffix =
+    replacement.endsWith('\n') && suffix.startsWith('\n') ? suffix.replace(/^\r?\n/, '') : suffix
 
-  return `${content.slice(0, startIndex)}${replacement}${content.slice(afterEndIndex)}`
+  return `${content.slice(0, startIndex)}${replacement}${normalizedSuffix}`
 }
 
 export async function ensureAgentMemory(rootDir) {

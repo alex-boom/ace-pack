@@ -14,39 +14,40 @@ product files from repo-local dogfooding memory.
 
 After reading `AGENTS.md`, read:
 
-1. `.ai/report-brief.md` if available for compact context.
-2. `.ai/current-task.md`
-3. `.ai/session-handoff.md`
-4. `.ai/decisions.md`
-5. `.ai/changed-files.md`
-6. Recent unresolved entries in `.ai/reflection-log.md`
+1. `.ai/generated/report-brief.md` if available for compact context.
+2. `.ai/state/current-task.md`
+3. `.ai/state/session-handoff.md`
+4. `.ai/knowledge/decisions.md`
+5. `.ai/state/changed-files.md`
+6. Recent unresolved entries in `.ai/knowledge/reflection-log.md`
 
-Read `.ai/work-log.md` only when you need additional history for the current
-task.
+Read `.ai/knowledge/work-log.md` only when you need additional history for the
+current task.
 
 ## Working Rules
 
 - Prefer minimal diffs over rewrites.
 - Preserve existing TypeScript, UI, and API contracts unless the task says
   otherwise.
-- Use `npm run ace:classify` to select the adaptive task tier when `pnpm` is
+- Use `npm run ace -- classify` to select the adaptive task tier when `pnpm` is
   unavailable on PATH.
-- Run `npm run ace:onboard -- --apply` after fresh installation in an unfamiliar project
-  before trusting project-specific risk rules.
+- Run `npm run ace -- onboard --apply` after fresh installation in an unfamiliar
+  project before trusting project-specific risk rules.
 - On Windows PowerShell in this repository, use `npm.cmd run ace:classify`,
   `npm.cmd run ace:validate`, and similar commands if script execution policy
   blocks the regular `npm` shim.
-- For large or high-risk standard tasks, complete `.ai/current-task.md`
+- For large or high-risk standard tasks, complete `.ai/state/current-task.md`
   Business Value and Technical Approach before writing code.
 - Treat `.ai/*` as the current source of task context and handoff state.
 - Before publishing shipped package changes, bump `package.json` version with
   semver. Do not bump solely for repo-local dogfooding files excluded from npm.
-- Use `YYYY-MM-DD HH:mm` timestamps in `.ai/session-handoff.md`,
-  `.ai/work-log.md`, `.ai/reflection-log.md`, and `.ai/decisions.md`.
+- Use `YYYY-MM-DD HH:mm` timestamps in `.ai/state/session-handoff.md`,
+  `.ai/knowledge/work-log.md`, `.ai/knowledge/reflection-log.md`, and
+  `.ai/knowledge/decisions.md`.
 
 ## End-of-Task Routine
 
-Run `npm run ace:validate`, fix failures, then run `npm run ace:finish` after
+Run `npm run ace -- validate`, fix failures, then run `npm run ace -- finish` after
 updating the relevant `.ai/*` files. The finish script validates the
 required closeout depth for the detected task tier and generates the
 appropriate reports.

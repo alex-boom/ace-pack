@@ -3,18 +3,18 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 15:53
+- Generated: 2026-06-14 16:14
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 15:48
-- Source session-handoff: 2026-06-14 15:53
+- Source current-task: 2026-06-14 16:09
+- Source session-handoff: 2026-06-14 16:13
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (46 changed files)
-- Last commit: 49e698e Document post-release state for `ace-pack@1.1.0`, confirming successful publication to npm and updating ACE memory to prevent future republishing attempts. Mark current product milestone as complete with no active implementation tasks remaining.
+- Worktree: dirty (48 changed files)
+- Last commit: 6a1022a Upgrade to version 2.0.0, introducing a unified command router (`npm run ace -- <command>` / `pnpm ace <command>`) and a new memory schema with categorized paths under `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated`. Legacy paths are preserved for compatibility. Updated documentation and tests to reflect these changes, ensuring a smooth transition for existing repositories.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
 - Next command: `npm.cmd run release:npm`
 - Release decision: NPM publish: required before final release; deferred by maintainer.
@@ -56,8 +56,8 @@ Option 1:
 Option 2:
 - Add a router and schema v2 layout as compatibility-first behavior. Keep all
   existing `ace:*`, `ai:*`, and `agent-memory:*` scripts, write generated
-  artifacts to new paths while mirroring legacy paths, and migrate memory files
-  deterministically only when safe.
+  artifacts to new canonical paths, keep legacy paths readable as migration
+  aliases, and migrate memory files deterministically only when safe.
 
 Chosen Approach:
 - Use Option 2. The final package version becomes `2.0.0` because schema v2 is
@@ -67,24 +67,32 @@ Chosen Approach:
 ## Current Status
 - Bumped package version to `2.0.0`.
 - Added `npm run ace -- <command>` / `pnpm ace <command>` router while preserving existing scripts.
-- Added canonical `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` memory layout with legacy mirrors.
-- Moved generated reports and hub context to `.ai/generated/**` with old path compatibility.
-- Updated installer, templates, README surfaces, schema docs, roadmap, and local ACE docs.
-- Added router, schema migration, generated path, installer, and compatibility tests.
-- Ran release-readiness checks and explicit dogfood self-check.
+- Added canonical `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` memory layout with legacy read aliases.
+- Changed v2 writes to canonical-only defaults so fresh installs keep `.ai/` folder-structured.
+- Added `ace migrate -- --prune-legacy` and pruned this repository
 
 ## What Was Done
 - Bumped package version to `2.0.0` for the schema v2 candidate.
-- Added the `ace` command router and kept all existing `ace:*`, `ai:*`, and `agent-memory:*` scripts.
-- Added canonical v2 memory categories under `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` with legacy mirror compatibility.
-- Moved generated hub/report outputs to `.ai/generated/**` while mirroring old paths.
-- Updated installer, templates, README surfaces, schema compatibility docs, roadmap, tests, and dogfood ACE memory.
-- Applied v2 migration to this repository and ran dogfood self-check.
+- Added the `ace` command router and kept existing `ace:*`, `ai:*`, and
+  `agent-memory:*` scripts.
+- Added canonical v2 memory categories under `.ai/config`, `.ai/state`,
+  `.ai/knowledge`, and `.ai/generated`.
+- Changed v2 writes to canonical-only defaults so fresh installs keep `.ai/`
+  folder-structured.
+- Kept legacy root `.ai/*` paths readable as migration aliases.
+- Added `ace migrate -- --prune-legacy` and `--mirror-legacy` behavior.
+- Pruned this repository's root `.ai/*` legacy files and moved `.ai/README.md`
+  to `.ai/knowledge/README.md`.
+- Updated docs, templates, tests, smoke tooling, and local ACE memory for
+  canonical-only v2.
 
 ## Current State
 - Local candidate is `ace-pack@2.0.0`.
+- The `.ai` root now contains only folders: `archive`, `config`, `generated`,
+  `knowledge`, and `state`.
 - npm latest remains `ace-pack@1.1.0` until the maintainer publishes.
-- v2 implementation is complete and release-readiness checks passed.
+- v2 implementation is complete and release-readiness checks passed after the
+  canonical-only refinement.
 
 ## Next Steps
 - Publish when ready with `npm.cmd run release:npm`.
@@ -101,7 +109,7 @@ Product Alignment:
 Architecture:
 - Major-version schema work stayed compatibility-first: new categorized memory
   paths and generated artifact paths have deterministic migration and legacy
-  mirrors/read fallbacks.
+  read fallbacks.
 
 Security:
 - No network calls, AI calls, SaaS behavior, credential handling, or automatic
@@ -128,7 +136,7 @@ Decision:
 - Implement v2.0 as a compatibility-first command router and memory layout
   release: add `npm run ace -- <command>` / `pnpm ace <command>`, canonical
   `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` paths, and
-  deterministic v1 legacy mirrors.
+  deterministic v1 legacy migration aliases.
 
 Reason:
 - The repo had accumulated many package scripts and high-churn root `.ai/*`
@@ -141,7 +149,7 @@ Impact:
   changes.
 - Existing `ace:*`, `ai:*`, and `agent-memory:*` scripts remain valid.
 - Legacy `.ai/*.md`, `.ai/report-*`, and `.ai/generated-context.md` paths remain
-  readable/writable compatibility mirrors.
+  readable during migration without cluttering fresh v2 installs.
 - Future schema work must use deterministic migration and old-repo fixture tests
   before changing memory contracts again.
 
@@ -422,6 +430,6 @@ Impact:
 - No unresolved reflections recorded.
 
 ## Overall Progress
-- Completion checklist: 0/9
+- Completion checklist: 0/7
 - Canonical context lives in `.ai/*`.
 - XML bundle generated at `.ai/generated/report-full.xml` for parsable handoff.

@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process'
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { promisify } from 'node:util'
 
@@ -208,7 +208,7 @@ export async function writeMemoryFile(rootDir, memoryKeyOrPath, content, options
   const memoryKey = ACE_MEMORY_PATHS[memoryKeyOrPath]
     ? memoryKeyOrPath
     : resolveMemoryKeyByPath(memoryKeyOrPath)
-  const mirrorLegacy = options.mirrorLegacy !== false
+  const mirrorLegacy = options.mirrorLegacy === true
   const paths = memoryKey
     ? [
         ACE_MEMORY_PATHS[memoryKey].canonical,
@@ -231,6 +231,7 @@ export async function ensureMemoryFileMirror(rootDir, memoryKey, options = {}) {
   }
 
   const createdFiles = []
+  const removedFiles = []
   const updatedFiles = []
   const canonicalPath = path.join(rootDir, spec.canonical)
   let canonicalContent = await readTextIfExists(canonicalPath)
@@ -268,7 +269,7 @@ export async function ensureMemoryFileMirror(rootDir, memoryKey, options = {}) {
     }
   }
 
-  if (canonicalContent !== null && options.mirrorLegacy !== false) {
+  if (canonicalContent !== null && options.mirrorLegacy === true) {
     for (const alias of spec.aliases) {
       const aliasPath = path.join(rootDir, alias)
       const aliasContent = await readTextIfExists(aliasPath)
@@ -280,17 +281,35 @@ export async function ensureMemoryFileMirror(rootDir, memoryKey, options = {}) {
     }
   }
 
-  return { createdFiles, updatedFiles }
+  if (canonicalContent !== null && options.pruneLegacy === true) {
+    for (const alias of spec.aliases) {
+      const aliasPath = path.join(rootDir, alias)
+      const aliasContent = await readTextIfExists(aliasPath)
+
+      if (aliasContent !== null) {
+        await rm(aliasPath, { force: true })
+        removedFiles.push(alias)
+      }
+    }
+  }
+
+  return { createdFiles, removedFiles, updatedFiles }
 }
 
 export async function migrateMemorySchemaV2(rootDir, options = {}) {
   const createdFiles = []
+  const removedFiles = []
   const updatedFiles = []
-  const mirrorLegacy = options.mirrorLegacy !== false
+  const mirrorLegacy = options.mirrorLegacy === true
+  const pruneLegacy = options.pruneLegacy === true
 
   for (const memoryKey of Object.keys(ACE_MEMORY_PATHS)) {
-    const result = await ensureMemoryFileMirror(rootDir, memoryKey, { mirrorLegacy })
+    const result = await ensureMemoryFileMirror(rootDir, memoryKey, {
+      mirrorLegacy,
+      pruneLegacy,
+    })
     createdFiles.push(...result.createdFiles)
+    removedFiles.push(...result.removedFiles)
     updatedFiles.push(...result.updatedFiles)
   }
 
@@ -299,7 +318,7 @@ export async function migrateMemorySchemaV2(rootDir, options = {}) {
   await mkdir(path.join(rootDir, '.ai', 'knowledge'), { recursive: true })
   await mkdir(path.join(rootDir, '.ai', 'generated'), { recursive: true })
 
-  return { createdFiles, updatedFiles }
+  return { createdFiles, removedFiles, updatedFiles }
 }
 
 export async function readFileTimestamp(filePath) {

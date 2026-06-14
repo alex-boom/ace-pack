@@ -244,7 +244,9 @@ describe('ace quality gate', () => {
 
   it('requires technical approach notes for high-risk changes', async () => {
     const rootDir = await createCompleteGateRepo('ace-gate-high-risk-')
-    const memoryConfig = JSON.parse(await readFile(path.join(rootDir, '.ai/memory-config.json'), 'utf8'))
+    const memoryConfig = JSON.parse(
+      await readFile(path.join(rootDir, '.ai/config/memory-config.json'), 'utf8'),
+    )
     memoryConfig.highRiskPaths = [
         {
           label: 'Auth',
@@ -254,7 +256,11 @@ describe('ace quality gate', () => {
         },
       ]
 
-    await writeRepoFile(rootDir, '.ai/memory-config.json', `${JSON.stringify(memoryConfig, null, 2)}\n`)
+    await writeRepoFile(
+      rootDir,
+      '.ai/config/memory-config.json',
+      `${JSON.stringify(memoryConfig, null, 2)}\n`,
+    )
     await writeRepoFile(rootDir, '.ai/current-task.md', currentTaskContent({ technicalApproach: 'TODO' }))
     await writeRepoFile(rootDir, 'src/auth/token.ts', 'export const token = "initial"\n')
     await initGitRepo(rootDir)

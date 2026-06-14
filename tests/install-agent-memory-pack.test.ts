@@ -134,10 +134,10 @@ describe('installAcePack', () => {
 
     for (const content of [cursorRules, windsurfRules, copilotInstructions]) {
       expect(content).toContain('Follow AGENTS.md')
-      expect(content).toContain('Read .ai/report-brief.md')
-      expect(content).toContain('pnpm ace:hub start')
-      expect(content).toContain('pnpm ace:classify')
-      expect(content).toContain('pnpm ace:finish')
+      expect(content).toContain('Read .ai/generated/report-brief.md')
+      expect(content).toContain('pnpm ace hub start')
+      expect(content).toContain('pnpm ace classify')
+      expect(content).toContain('pnpm ace finish')
     }
   })
 
@@ -267,9 +267,12 @@ describe('installAcePack', () => {
       '--apply',
     ])
     const memoryConfig = JSON.parse(
-      await readFile(path.join(rootDir, '.ai', 'memory-config.json'), 'utf8'),
+      await readFile(path.join(rootDir, '.ai', 'config', 'memory-config.json'), 'utf8'),
     )
-    const projectProfile = await readFile(path.join(rootDir, '.ai', 'project-profile.md'), 'utf8')
+    const projectProfile = await readFile(
+      path.join(rootDir, '.ai', 'config', 'project-profile.md'),
+      'utf8',
+    )
 
     expect(memoryConfig._profile.status).toBe('profiled')
     expect(projectProfile).toContain('# ACE Project Profile')

@@ -120,7 +120,7 @@ async function createFakeProject(rootDir, caseName) {
 async function writeCompleteTaskState(rootDir) {
   await writeProjectFile(
     rootDir,
-    '.ai/current-task.md',
+    '.ai/state/current-task.md',
     `# Current Task
 
 ## Feature Name
@@ -175,7 +175,7 @@ Chosen Approach:
   )
   await writeProjectFile(
     rootDir,
-    '.ai/session-handoff.md',
+    '.ai/state/session-handoff.md',
     `# Session Handoff
 
 ## Last Update
@@ -218,7 +218,7 @@ Code Quality:
   )
   await writeProjectFile(
     rootDir,
-    '.ai/changed-files.md',
+    '.ai/state/changed-files.md',
     `# Changed Files
 
 [fake-project]
@@ -227,7 +227,7 @@ Code Quality:
   )
   await writeProjectFile(
     rootDir,
-    '.ai/reflection-log.md',
+    '.ai/knowledge/reflection-log.md',
     `# Reflection Log
 
 ## Unresolved
@@ -246,9 +246,11 @@ Status: resolved
 async function verifySmokeProject(rootDir) {
   const packageJson = JSON.parse(await readFile(path.join(rootDir, 'package.json'), 'utf8'))
   const agentsContent = await readFile(path.join(rootDir, 'AGENTS.md'), 'utf8')
-  const memoryConfig = JSON.parse(await readFile(path.join(rootDir, '.ai/memory-config.json'), 'utf8'))
-  const generatedContext = await readFile(path.join(rootDir, '.ai/generated-context.md'), 'utf8')
-  const handoff = await readFile(path.join(rootDir, '.ai/session-handoff.md'), 'utf8')
+  const memoryConfig = JSON.parse(
+    await readFile(path.join(rootDir, '.ai/config/memory-config.json'), 'utf8'),
+  )
+  const generatedContext = await readFile(path.join(rootDir, '.ai/generated/context.md'), 'utf8')
+  const handoff = await readFile(path.join(rootDir, '.ai/state/session-handoff.md'), 'utf8')
   const cursorRules = await readFile(path.join(rootDir, '.cursorrules'), 'utf8')
   const windsurfRules = await readFile(path.join(rootDir, '.windsurfrules'), 'utf8')
   const copilotInstructions = await readFile(
@@ -263,7 +265,10 @@ async function verifySmokeProject(rootDir) {
     agentsContent.includes('## ACE (Agentic Context Engine) Workflow'),
     'AGENTS.md missing ACE workflow',
   )
-  assert(memoryConfig._profile?.status === 'profiled', '.ai/memory-config.json is not profiled')
+  assert(
+    memoryConfig._profile?.status === 'profiled',
+    '.ai/config/memory-config.json is not profiled',
+  )
   assert(generatedContext.includes('# ACE Hub Context'), 'ace:hub did not generate context')
   assert(handoff.includes('ACE small-task auto-closeout'), 'ace:finish did not auto-close small smoke diff')
   assert(cursorRules.includes('AGENTS.md'), '.cursorrules missing ACE bridge')
@@ -273,7 +278,7 @@ async function verifySmokeProject(rootDir) {
 
   return {
     bridges: ['.cursorrules', '.windsurfrules', '.github/copilot-instructions.md'],
-    generatedContext: '.ai/generated-context.md',
+    generatedContext: '.ai/generated/context.md',
     packageManager: memoryConfig._profile?.packageManager ?? 'unknown',
     profileStatus: memoryConfig._profile?.status,
     smallAutoCloseout: handoff.includes('ACE small-task auto-closeout'),

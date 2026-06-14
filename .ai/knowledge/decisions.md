@@ -354,7 +354,7 @@ Decision:
 - Implement v2.0 as a compatibility-first command router and memory layout
   release: add `npm run ace -- <command>` / `pnpm ace <command>`, canonical
   `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` paths, and
-  deterministic v1 legacy mirrors.
+  deterministic v1 legacy migration aliases.
 
 Reason:
 - The repo had accumulated many package scripts and high-churn root `.ai/*`
@@ -367,6 +367,6 @@ Impact:
   changes.
 - Existing `ace:*`, `ai:*`, and `agent-memory:*` scripts remain valid.
 - Legacy `.ai/*.md`, `.ai/report-*`, and `.ai/generated-context.md` paths remain
-  readable/writable compatibility mirrors.
+  readable during migration without cluttering fresh v2 installs.
 - Future schema work must use deterministic migration and old-repo fixture tests
   before changing memory contracts again.

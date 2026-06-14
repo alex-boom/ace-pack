@@ -3,18 +3,18 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 15:53
+- Generated: 2026-06-14 16:14
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 15:48
-- Source session-handoff: 2026-06-14 15:53
+- Source current-task: 2026-06-14 16:09
+- Source session-handoff: 2026-06-14 16:13
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (46 changed files)
-- Last commit: 49e698e Document post-release state for `ace-pack@1.1.0`, confirming successful publication to npm and updating ACE memory to prevent future republishing attempts. Mark current product milestone as complete with no active implementation tasks remaining.
+- Worktree: dirty (47 changed files)
+- Last commit: 6a1022a Upgrade to version 2.0.0, introducing a unified command router (`npm run ace -- <command>` / `pnpm ace <command>`) and a new memory schema with categorized paths under `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated`. Legacy paths are preserved for compatibility. Updated documentation and tests to reflect these changes, ensuring a smooth transition for existing repositories.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
 - Next command: `npm.cmd run release:npm`
 - Release decision: NPM publish: required before final release; deferred by maintainer.
@@ -47,11 +47,9 @@ categories without abandoning existing installed repositories.
 ## Current Status
 - Bumped package version to `2.0.0`.
 - Added `npm run ace -- <command>` / `pnpm ace <command>` router while preserving existing scripts.
-- Added canonical `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` memory layout with legacy mirrors.
-- Moved generated reports and hub context to `.ai/generated/**` with old path compatibility.
-- Updated installer, templates, README surfaces, schema docs, roadmap, and local ACE docs.
-- Added router, schema migration, generated path, installer, and compatibility tests.
-- Ran release-readiness checks and explicit dogfood self-check.
+- Added canonical `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` memory layout with legacy read aliases.
+- Changed v2 writes to canonical-only defaults so fresh installs keep `.ai/` folder-structured.
+- Added `ace migrate -- --prune-legacy` and pruned this repository
 
 ## Next Steps
 - Publish when ready with `npm.cmd run release:npm`.
@@ -75,7 +73,7 @@ Decision:
 - Implement v2.0 as a compatibility-first command router and memory layout
   release: add `npm run ace -- <command>` / `pnpm ace <command>`, canonical
   `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` paths, and
-  deterministic v1 legacy mirrors.
+  deterministic v1 legacy migration aliases.
 
 Reason:
 - The repo had accumulated many package scripts and high-churn root `.ai/*`
@@ -88,7 +86,7 @@ Impact:
   changes.
 - Existing `ace:*`, `ai:*`, and `agent-memory:*` scripts remain valid.
 - Legacy `.ai/*.md`, `.ai/report-*`, and `.ai/generated-context.md` paths remain
-  readable/writable compatibility mirrors.
+  readable during migration without cluttering fresh v2 installs.
 - Future schema work must use deterministic migration and old-repo fixture tests
   before changing memory contracts again.
 
@@ -104,5 +102,5 @@ Impact:
 - `scripts/agent-memory-lib.mjs`
 
 ## Overall Progress
-- Completion checklist: 0/9
+- Completion checklist: 0/7
 - Source of truth: `.ai/*` files remain authoritative.

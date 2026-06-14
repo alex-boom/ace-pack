@@ -211,10 +211,10 @@ async function ensureIdeRuleBridges(rootDir, packageManager) {
 }
 
 function formatIdeBridgeContent(packageManager, relativePath) {
-  const hubCommand = formatHubModeCommand(packageManager, 'start')
-  const classifyCommand = formatScriptCommand(packageManager, 'ace:classify')
-  const finishCommand = formatScriptCommand(packageManager, 'ace:finish')
-  const checkCommand = formatScriptCommand(packageManager, 'ace:check')
+  const hubCommand = formatAceRouterCommand(packageManager, 'hub start')
+  const classifyCommand = formatAceRouterCommand(packageManager, 'classify')
+  const finishCommand = formatAceRouterCommand(packageManager, 'finish')
+  const checkCommand = formatAceRouterCommand(packageManager, 'check')
   const heading =
     relativePath.endsWith('.md') ? '# ACE IDE Agent Instructions' : '# ACE IDE Agent Bridge'
 
@@ -223,7 +223,7 @@ function formatIdeBridgeContent(packageManager, relativePath) {
 Follow AGENTS.md as the authoritative repository instruction file.
 
 For new work:
-- Read .ai/report-brief.md first when it exists.
+- Read .ai/generated/report-brief.md first when it exists.
 - Generate startup context with ${hubCommand}.
 - Classify the task with ${classifyCommand} before implementation.
 - Validate ACE memory with ${checkCommand} when context may be stale.
@@ -234,20 +234,20 @@ file is only a thin bridge from the IDE agent to ACE.
 `
 }
 
-function formatHubModeCommand(packageManager, mode) {
+function formatAceRouterCommand(packageManager, command) {
   if (packageManager === 'npm') {
-    return `npm run ace:hub -- ${mode}`
+    return `npm run ace -- ${command}`
   }
 
   if (packageManager === 'yarn') {
-    return `yarn ace:hub ${mode}`
+    return `yarn ace ${command}`
   }
 
   if (packageManager === 'bun') {
-    return `bun run ace:hub ${mode}`
+    return `bun run ace -- ${command}`
   }
 
-  return `pnpm ace:hub ${mode}`
+  return `pnpm ace ${command}`
 }
 
 function buildPackageName(rootDir) {

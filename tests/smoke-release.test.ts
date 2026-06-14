@@ -59,7 +59,7 @@ async function git(rootDir: string, args: string[]) {
 async function writeCompleteTaskState(rootDir: string) {
   await writeRepoFile(
     rootDir,
-    '.ai/current-task.md',
+    '.ai/state/current-task.md',
     `# Current Task
 
 ## Feature Name
@@ -113,7 +113,7 @@ Chosen Approach:
   )
   await writeRepoFile(
     rootDir,
-    '.ai/session-handoff.md',
+    '.ai/state/session-handoff.md',
     `# Session Handoff
 
 ## Last Update
@@ -153,7 +153,7 @@ Code Quality:
   )
   await writeRepoFile(
     rootDir,
-    '.ai/changed-files.md',
+    '.ai/state/changed-files.md',
     `# Changed Files
 
 [dogfood-fixture]
@@ -162,7 +162,7 @@ Code Quality:
   )
   await writeRepoFile(
     rootDir,
-    '.ai/reflection-log.md',
+    '.ai/knowledge/reflection-log.md',
     `# Reflection Log
 
 ## Unresolved

@@ -261,19 +261,17 @@ describe('ai report scripts', () => {
       },
     })
 
-    const briefReport = await readFile(path.join(rootDir, '.ai', 'report-brief.md'), 'utf8')
-    const fullReport = await readFile(path.join(rootDir, '.ai', 'report-full.md'), 'utf8')
-    const canonicalBriefReport = await readFile(
+    const briefReport = await readFile(
       path.join(rootDir, '.ai/generated/report-brief.md'),
       'utf8',
     )
-    const canonicalFullReport = await readFile(
+    const fullReport = await readFile(
       path.join(rootDir, '.ai/generated/report-full.md'),
       'utf8',
     )
 
-    expect(canonicalBriefReport).toBe(briefReport)
-    expect(canonicalFullReport).toBe(fullReport)
+    await expect(readFile(path.join(rootDir, '.ai', 'report-brief.md'), 'utf8')).rejects.toThrow()
+    await expect(readFile(path.join(rootDir, '.ai', 'report-full.md'), 'utf8')).rejects.toThrow()
     expect(briefReport).toContain('## Report Metadata')
     expect(briefReport).toContain('Freshness: Fresh')
     expect(briefReport).toContain('Current task version: v99')
@@ -330,7 +328,10 @@ describe('ai report scripts', () => {
       cwd: process.cwd(),
     })
 
-    const briefReport = await readFile(path.join(rootDir, '.ai', 'report-brief.md'), 'utf8')
+    const briefReport = await readFile(
+      path.join(rootDir, '.ai/generated/report-brief.md'),
+      'utf8',
+    )
 
     expect(briefReport).toMatch(/- Branch: (?!unknown).+/)
     expect(briefReport).toContain('- Worktree: clean (0 changed files)')
@@ -446,7 +447,10 @@ describe('ai report scripts', () => {
       cwd: process.cwd(),
     })
 
-    const briefReport = await readFile(path.join(rootDir, '.ai', 'report-brief.md'), 'utf8')
+    const briefReport = await readFile(
+      path.join(rootDir, '.ai/generated/report-brief.md'),
+      'utf8',
+    )
 
     expect(resolveStackSummary('', '')).toBe('Not recorded')
     expect(briefReport).toContain('Detected ecosystems: Python / FastAPI | Package manager: uv')

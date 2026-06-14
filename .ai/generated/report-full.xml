@@ -15,17 +15,17 @@ or other automated processes.</purpose><file_format>The content is organized as 
 - Be aware that this file may contain sensitive information. Handle it with
   the same level of security as you would the original repository.</usage_guidelines><notes>- Some files may have been excluded based on .gitignore rules and Repomix&apos;s configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
-- Only files matching these patterns are included: .ai/current-task.md, .ai/session-handoff.md, .ai/work-log.md, .ai/changed-files.md, .ai/decisions.md, .ai/reflection-log.md, .ai/memory-config.json, AGENTS.md
+- Only files matching these patterns are included: .ai/state/current-task.md, .ai/state/session-handoff.md, .ai/knowledge/work-log.md, .ai/state/changed-files.md, .ai/knowledge/decisions.md, .ai/knowledge/reflection-log.md, .ai/config/memory-config.json, AGENTS.md
 - Files matching patterns in .gitignore are excluded
 - Content has been formatted for parsing in xml style
-- Files are sorted by Git change count (files with more changes are at the bottom)</notes></file_summary><directory_structure>.ai/changed-files.md
-.ai/current-task.md
-.ai/decisions.md
-.ai/memory-config.json
-.ai/reflection-log.md
-.ai/session-handoff.md
-.ai/work-log.md
-AGENTS.md</directory_structure><files>This section contains the contents of the repository&apos;s files.<file path=".ai/memory-config.json">{
+- Files are sorted by Git change count (files with more changes are at the bottom)</notes></file_summary><directory_structure>.ai/config/memory-config.json
+.ai/knowledge/decisions.md
+.ai/knowledge/reflection-log.md
+.ai/knowledge/work-log.md
+.ai/state/changed-files.md
+.ai/state/current-task.md
+.ai/state/session-handoff.md
+AGENTS.md</directory_structure><files>This section contains the contents of the repository&apos;s files.<file path=".ai/config/memory-config.json">{
   &quot;_name&quot;: &quot;ACE (Agentic Context Engine) Configuration&quot;,
   &quot;_profile&quot;: {
     &quot;detectedEcosystems&quot;: [
@@ -225,240 +225,7 @@ AGENTS.md</directory_structure><files>This section contains the contents of the 
     }
   },
   &quot;version&quot;: 1
-}</file><file path="AGENTS.md">&gt; [!WARNING]
-&gt; **META-ARCHITECTURE WARNING:** This repository BUILDS the ACE product, but also USES ACE locally. If you are instructed to modify ACE behavior for users, edit the product source and templates in `scripts/`. Do not edit this local `AGENTS.md`, `CLAUDE.md`, or `.ai/**` to change global product behavior.
-
-# AGENTS.md
-
-Repository rules for AI coding agents working in this project.
-
-## Project Rules
-
-- Read `DEVELOPING.md` before changing package behavior. It defines the
-  boundary between shipped ACE product files and repo-local dogfooding memory.
-- Read `ROADMAP.md` before product or architecture changes. Preserve the
-  anti-goals, zero-bloat constraints, and explicit AI opt-in policy.
-- This package supports npm-based local workflow commands. If `pnpm` is not on
-  PATH, use `npm run ace:check`, `npm run ace:classify`, `npm run ace:finish`,
-  and related `npm run ace:*` scripts.
-- The active default Node on this machine may be older than the package engine.
-  Use the currently selected Node version for simple repo inspection, but
-  switch through nvm to any installed Node `&gt;=20` before running Vitest,
-  payload checks, or npm publish flows. Do not hardcode a local Node executable
-  path in repo scripts or instructions.
-- For npm publishing, use `npm run preview:npm` and `npm run publish:npm` so
-  the staged package uses `README.npm.md` and `logo-npm.svg`.
-- Versioning policy: before publishing any change that affects the shipped
-  package payload or user-visible ACE behavior, bump `package.json` version
-  with semver. Use `patch` for fixes/docs in the published payload, `minor` for
-  new backward-compatible behavior, and `major` for breaking CLI/template
-  changes. Do not bump solely for repo-local dogfooding files excluded from npm
-  such as `.ai/**`, `AGENTS.md`, `CLAUDE.md`, `DEVELOPING.md`, or `ROADMAP.md`.
-- NPM publish decision: after every task, explicitly tell the maintainer
-  `NPM publish: required` or `NPM publish: not required`, with the reason.
-  Publish is required only when the staged npm payload or user-visible installed
-  ACE behavior changes. GitHub-only docs, local `.ai/**` memory, `AGENTS.md`,
-  `CLAUDE.md`, `DEVELOPING.md`, `ROADMAP.md`, `.vscode/**`, `.local/**`, and
-  `tools/**` changes do not require npm publish by themselves.
-
-&lt;!-- agent-memory-workflow:start --&gt;
-## ACE (Agentic Context Engine) Workflow
-
-ACE is the local automation framework for managing AI context, code quality,
-and decision history. Use this workflow on top of the repo rules above;
-`AGENTS.md` remains the authoritative source for stack, architecture, and
-quality constraints.
-
-Before starting work:
-
-1. Read `AGENTS.md` first.
-2. If available, read `.ai/report-brief.md` first for a compact summary,
-   including recent unresolved reflections.
-3. Treat `.ai/*` as authoritative and read `.ai/current-task.md`,
-   `.ai/session-handoff.md`, `.ai/decisions.md`, and
-   `.ai/changed-files.md` when you need detail or verification.
-4. Run `pnpm ace:classify` before implementation to identify whether the
-   task is small, standard, or large.
-5. If this is a newly installed or unknown project and `.ai/memory-config.json`
-   is still marked `unprofiled`, run `pnpm ace:onboard` and apply an
-   approved profile before implementation.
-6. For large tasks, and standard tasks with high-risk signals, complete the
-   `.ai/current-task.md` Business Value and Technical Approach sections before
-   writing code. Compare at least two viable patterns and choose explicitly.
-7. Read `.ai/work-log.md` only when you need extra historical context.
-8. If the memory files are missing, run `pnpm ace:init`.
-
-Command note: examples use `pnpm`. On Windows PowerShell, use
-`pnpm.cmd ace:classify`, `pnpm.cmd ace:validate`, and similar commands if
-the `pnpm` shim is blocked by execution policy.
-
-Legacy commands such as `pnpm ai:task:classify`, `pnpm ai:task:finish`,
-and `pnpm agent-memory:init` remain supported for compatibility.
-
-While working:
-
-- Prefer minimal, safe diffs that preserve existing UI and API contracts.
-- Do not rewrite large components or architecture unless the task requires it.
-- Keep `.ai/current-task.md` aligned with the active task when scope changes.
-- Keep project-specific tier and risk rules in `.ai/memory-config.json`, the
-  canonical ACE config, not inside the scripts, so the toolset remains
-  portable.
-- Use `pnpm ace:onboard` to generate `.ai/project-profile.md` and
-  recommended project-specific risk rules when ACE is installed into an
-  unfamiliar repo.
-- When updating `.ai/session-handoff.md`, `.ai/work-log.md`,
-  `.ai/reflection-log.md`, or `.ai/decisions.md`, use timestamps in
-  `YYYY-MM-DD HH:mm` format.
-- Keep `.ai/current-task.md`, `.ai/session-handoff.md`,
-  `.ai/reflection-log.md`, and `.ai/changed-files.md` compact.
-- Archive only `.ai/work-log.md`, `.ai/reflection-log.md`, and
-  `.ai/decisions.md` into `.ai/archive/` when they grow past the documented
-  thresholds.
-- Use `.ai/current-task.md` lifecycle fields for task/version transitions.
-  When a large task version is complete, mark its completion checklist and let
-  `pnpm ace:finish` archive a final snapshot.
-
-After completing a task:
-
-1. Update the authoritative `.ai/*` files directly or through
-   `ai:update:*` helpers.
-2. Run `pnpm ace:validate` and fix any mechanical quality gate failures.
-3. Run `pnpm ace:finish` to validate the adaptive closeout and generate
-   reports.
-4. Small tasks need compact handoff, changed-files, work-log, and brief report.
-5. Standard tasks also need product, architecture, security, and code-quality
-   review notes.
-6. Large tasks also need design review, reflection entry when useful, archive
-   snapshot, full report, and a review of `.ai/tech-docs.md` or
-   `.ai/product-roadmap.md` when technical or business state changed.
-&lt;!-- agent-memory-workflow:end --&gt;</file><file path=".ai/reflection-log.md"># Reflection Log
-
-Use this file for short, actionable agent-process reflections. Do not log every
-minor task; record repeated tool friction, unclear prompts, poor assumptions,
-or workflow improvements worth carrying into future sessions.
-
-## Unresolved
-
-### [YYYY-MM-DD HH:mm] [Short issue title]
-Status: unresolved
-- Stuck Point: [Where the agent got stuck]
-- Likely Cause: [Tooling, prompt, missing context, or process issue]
-- Proposed Improvement: [Concrete change to try next time]
-
-## Resolved
-
-### 2026-06-14 15:46 Schema v2 needs a mirror layer before file moves
-Status: resolved
-- Stuck Point: Reorganizing `.ai/**` by category can desynchronize older agents,
-  tests, and local memory if files are moved without a compatibility layer.
-- Likely Cause: Markdown memory is both product data and agent operating
-  context, so path cleanup has to preserve human and agent habits.
-- Proposed Improvement: Add shared canonical/legacy path helpers first, read
-  both paths, write mirrors, and require old-repo fixture tests before future
-  schema migrations.
-
-### 2026-06-14 14:34 External agent feedback exposed daily DevEx friction
-Status: resolved
-- Stuck Point: After v1.0.1 adoption hardening, fast low-risk edits still paid
-  too much closeout ceremony and IDE-native agents had no automatic bridge into
-  ACE rules.
-- Likely Cause: v1.0 focused on stability and rollout documentation, leaving
-  daily-loop polish as planned but not shipped behavior.
-- Proposed Improvement: Ship v1.1 with small low-risk auto-closeout,
-  finish/gate consistency, optional IDE rule bridges, slim planning context,
-  and warning-only freshness hints.
-
-### 2026-06-14 13:37 Stability docs before migration machinery
-Status: resolved
-- Stuck Point: A v1.0 stability milestone can tempt agents to build a migration
-  framework before ACE has a concrete breaking schema change.
-- Likely Cause: &quot;Stable schema&quot; sounds like an engine requirement, but the
-  current product already has a lightweight compatibility contract.
-- Proposed Improvement: Document and test the existing contract first; add a
-  deterministic migrator only when a future schema version actually needs it.
-
-### 2026-06-14 13:17 Growth assets must not become runtime bloat
-Status: resolved
-- Stuck Point: Product launch material can accidentally creep into package
-  payload or runtime behavior.
-- Likely Cause: Demo scripts and fixtures are useful for adoption but not needed
-  by installed consumer repositories.
-- Proposed Improvement: Keep growth assets GitHub-only, link to them from the
-  npm README, and enforce the payload boundary in tests and payload guard.
-
-### 2026-06-14 12:56 MCP stdio must stay dependency-light
-Status: resolved
-- Stuck Point: Adding MCP support can easily pull SDK dependencies or wrapper
-  command output into the core package.
-- Likely Cause: MCP examples often use SDKs, while stdio JSON-RPC requires
-  stdout framing that npm lifecycle output can corrupt.
-- Proposed Improvement: Keep ACE MCP as a direct `node` stdio resource adapter
-  with Node built-ins only, and consider a separate optional package only if
-  future MCP features truly require dependencies.
-
-### 2026-06-14 12:22 Strict gates can hurt adoption
-Status: resolved
-- Stuck Point: A quality gate that blocks small human edits may train users to
-  bypass or remove ACE entirely.
-- Likely Cause: Standard task closeout expectations were being reused directly
-  inside PR/CI gate behavior.
-- Proposed Improvement: Keep `ace:finish` disciplined, but make `ace:gate`
-  stricter only for large or high-risk changes and require an explicit reason
-  for human overrides.
-
-### 2026-06-14 11:56 Release readiness needs install-level smoke
-Status: resolved
-- Stuck Point: Unit tests and dry-run publish can pass while installed ACE
-  behavior in a fresh repository or dogfooding sync still has regressions.
-- Likely Cause: Packaging and self-apply paths cross repository boundaries that
-  source-only tests do not fully exercise.
-- Proposed Improvement: Run fake-project smoke from the local staged package and
-  use explicit dogfood self-check before final release, never as hidden publish
-  automation.
-
-### 2026-06-14 11:40 CI gates need actionable failures
-Status: resolved
-- Stuck Point: A failing PR gate is only useful if the developer can fix it
-  from plain CI logs.
-- Likely Cause: Generic gate failures hide which ACE memory section needs
-  attention.
-- Proposed Improvement: Keep gate failures file-specific and include the exact
-  next fix, while reusing existing ACE validation logic.
-
-### 2026-06-14 10:59 First-run onboarding needs terminal feedback
-Status: resolved
-- Stuck Point: A useful `.ai/project-profile.md` can still hide the onboarding
-  “aha” moment if the terminal only says to open another file.
-- Likely Cause: Early onboarding output focused on generated artifacts rather
-  than the detected project shape.
-- Proposed Improvement: Keep the scanner deterministic, but print a concise CLI
-  summary of detected ecosystems and project-specific risk rules.
-
-### 2026-06-14 01:26 Flat closeout checklists invite overwork
-Status: resolved
-- Stuck Point: Agents can treat every ACE closeout instruction as equally
-  mandatory and spend effort on docs or ceremony that does not reduce risk.
-- Likely Cause: The default completion checklist and end-of-task instructions
-  were presented as a flat list instead of a priority ladder.
-- Proposed Improvement: Keep closeout guidance template-only and instruct
-  agents to do the smallest closeout that preserves future context and safety.
-
-### 2026-06-14 01:15 New chats need an operational start snapshot
-Status: resolved
-- Stuck Point: A new AI chat had to read several `.ai/*` files and run git
-  commands to answer simple &quot;where are we?&quot; questions.
-- Likely Cause: The brief report summarized task memory but did not surface
-  repo state, next command, or publish decision as a first-class startup block.
-- Proposed Improvement: Generate `## Start Snapshot` in brief/full reports and
-  put `.ai/report-brief.md` first in AI Coder hub context.
-
-### 2026-06-13 20:59 Persist release process outside chat
-Status: resolved
-- Stuck Point: npm publishing details and README/logo split can be forgotten in
-  a new chat.
-- Likely Cause: Release steps were previously only discussed in conversation.
-- Proposed Improvement: Keep publish commands discoverable through
-  `package.json` scripts and record npm publishing notes in `.ai/session-handoff.md`.</file><file path=".ai/decisions.md"># Decisions
+}</file><file path=".ai/knowledge/decisions.md"># Decisions
 
 ## 2026-06-13 20:59
 
@@ -814,7 +581,7 @@ Decision:
 - Implement v2.0 as a compatibility-first command router and memory layout
   release: add `npm run ace -- &lt;command&gt;` / `pnpm ace &lt;command&gt;`, canonical
   `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` paths, and
-  deterministic v1 legacy mirrors.
+  deterministic v1 legacy migration aliases.
 
 Reason:
 - The repo had accumulated many package scripts and high-churn root `.ai/*`
@@ -827,266 +594,136 @@ Impact:
   changes.
 - Existing `ace:*`, `ai:*`, and `agent-memory:*` scripts remain valid.
 - Legacy `.ai/*.md`, `.ai/report-*`, and `.ai/generated-context.md` paths remain
-  readable/writable compatibility mirrors.
+  readable during migration without cluttering fresh v2 installs.
 - Future schema work must use deterministic migration and old-repo fixture tests
-  before changing memory contracts again.</file><file path=".ai/changed-files.md"># Changed Files
+  before changing memory contracts again.</file><file path=".ai/knowledge/reflection-log.md"># Reflection Log
 
-[package.json]
-- Bumped package version to `2.0.0`.
-- Added the unified `ace` router script while keeping existing `ace:*` scripts.
+Use this file for short, actionable agent-process reflections. Do not log every
+minor task; record repeated tool friction, unclear prompts, poor assumptions,
+or workflow improvements worth carrying into future sessions.
 
-[install-ace-pack.mjs]
-- Installs `scripts/ace-cli.mjs` and `scripts/ace-migrate.mjs`.
-- Adds the `ace` router script only when the target project does not already
-  own one.
+## Unresolved
 
-[scripts/ace-cli.mjs]
-- Added the zero-dependency command router for `npm run ace -- &lt;command&gt;` and
-  `pnpm ace &lt;command&gt;`.
+### [YYYY-MM-DD HH:mm] [Short issue title]
+Status: unresolved
+- Stuck Point: [Where the agent got stuck]
+- Likely Cause: [Tooling, prompt, missing context, or process issue]
+- Proposed Improvement: [Concrete change to try next time]
 
-[scripts/ace-migrate.mjs]
-- Added the deterministic schema v2 migration entrypoint.
+## Resolved
 
-[scripts/ai-memory-utils.mjs]
-- Added canonical v2 memory path definitions, legacy alias resolution, mirror
-  writes, and schema v2 migration helpers.
+### 2026-06-14 15:46 Schema v2 needs a mirror layer before file moves
+Status: resolved
+- Stuck Point: Reorganizing `.ai/**` by category can desynchronize older agents,
+  tests, and local memory if files are moved without a compatibility layer.
+- Likely Cause: Markdown memory is both product data and agent operating
+  context, so path cleanup has to preserve human and agent habits.
+- Proposed Improvement: Add shared canonical/legacy path helpers first, read
+  both paths, write mirrors, and require old-repo fixture tests before future
+  schema migrations.
 
-[scripts/agent-memory-lib.mjs]
-- Runs schema v2 migration during ACE memory initialization.
-- Validates memory through the canonical/legacy resolver.
+### 2026-06-14 14:34 External agent feedback exposed daily DevEx friction
+Status: resolved
+- Stuck Point: After v1.0.1 adoption hardening, fast low-risk edits still paid
+  too much closeout ceremony and IDE-native agents had no automatic bridge into
+  ACE rules.
+- Likely Cause: v1.0 focused on stability and rollout documentation, leaving
+  daily-loop polish as planned but not shipped behavior.
+- Proposed Improvement: Ship v1.1 with small low-risk auto-closeout,
+  finish/gate consistency, optional IDE rule bridges, slim planning context,
+  and warning-only freshness hints.
 
-[scripts/ai-report-brief.mjs]
-- Writes brief reports to `.ai/generated/report-brief.md` and mirrors the
-  legacy `.ai/report-brief.md` path.
+### 2026-06-14 13:37 Stability docs before migration machinery
+Status: resolved
+- Stuck Point: A v1.0 stability milestone can tempt agents to build a migration
+  framework before ACE has a concrete breaking schema change.
+- Likely Cause: &quot;Stable schema&quot; sounds like an engine requirement, but the
+  current product already has a lightweight compatibility contract.
+- Proposed Improvement: Document and test the existing contract first; add a
+  deterministic migrator only when a future schema version actually needs it.
 
-[scripts/ai-report.mjs]
-- Writes full reports and XML bundles under `.ai/generated/**` while preserving
-  legacy report mirrors.
+### 2026-06-14 13:17 Growth assets must not become runtime bloat
+Status: resolved
+- Stuck Point: Product launch material can accidentally creep into package
+  payload or runtime behavior.
+- Likely Cause: Demo scripts and fixtures are useful for adoption but not needed
+  by installed consumer repositories.
+- Proposed Improvement: Keep growth assets GitHub-only, link to them from the
+  npm README, and enforce the payload boundary in tests and payload guard.
 
-[scripts/ace-hub.mjs]
-- Writes generated hub context to `.ai/generated/context.md` and mirrors
-  `.ai/generated-context.md`.
-- Displays canonical v2 context paths in generated headers.
+### 2026-06-14 12:56 MCP stdio must stay dependency-light
+Status: resolved
+- Stuck Point: Adding MCP support can easily pull SDK dependencies or wrapper
+  command output into the core package.
+- Likely Cause: MCP examples often use SDKs, while stdio JSON-RPC requires
+  stdout framing that npm lifecycle output can corrupt.
+- Proposed Improvement: Keep ACE MCP as a direct `node` stdio resource adapter
+  with Node built-ins only, and consider a separate optional package only if
+  future MCP features truly require dependencies.
 
-[scripts/ace-onboard.mjs]
-- Writes profile and recommended config under `.ai/config/**` with legacy
-  mirrors.
+### 2026-06-14 12:22 Strict gates can hurt adoption
+Status: resolved
+- Stuck Point: A quality gate that blocks small human edits may train users to
+  bypass or remove ACE entirely.
+- Likely Cause: Standard task closeout expectations were being reused directly
+  inside PR/CI gate behavior.
+- Proposed Improvement: Keep `ace:finish` disciplined, but make `ace:gate`
+  stricter only for large or high-risk changes and require an explicit reason
+  for human overrides.
 
-[scripts/ace-mcp-server.mjs]
-- Exposes canonical v2 memory resources while continuing to read legacy files.
+### 2026-06-14 11:56 Release readiness needs install-level smoke
+Status: resolved
+- Stuck Point: Unit tests and dry-run publish can pass while installed ACE
+  behavior in a fresh repository or dogfooding sync still has regressions.
+- Likely Cause: Packaging and self-apply paths cross repository boundaries that
+  source-only tests do not fully exercise.
+- Proposed Improvement: Run fake-project smoke from the local staged package and
+  use explicit dogfood self-check before final release, never as hidden publish
+  automation.
 
-[scripts/ai-task-finish.mjs]
-- Reads and writes closeout memory through canonical/legacy helpers.
+### 2026-06-14 11:40 CI gates need actionable failures
+Status: resolved
+- Stuck Point: A failing PR gate is only useful if the developer can fix it
+  from plain CI logs.
+- Likely Cause: Generic gate failures hide which ACE memory section needs
+  attention.
+- Proposed Improvement: Keep gate failures file-specific and include the exact
+  next fix, while reusing existing ACE validation logic.
 
-[scripts/ace-quality-gate.mjs]
-- Reads current task, handoff, and reflection memory through canonical/legacy
-  helpers.
+### 2026-06-14 10:59 First-run onboarding needs terminal feedback
+Status: resolved
+- Stuck Point: A useful `.ai/project-profile.md` can still hide the onboarding
+  “aha” moment if the terminal only says to open another file.
+- Likely Cause: Early onboarding output focused on generated artifacts rather
+  than the detected project shape.
+- Proposed Improvement: Keep the scanner deterministic, but print a concise CLI
+  summary of detected ecosystems and project-specific risk rules.
 
-[scripts/ai-update.mjs]
-- Writes task, handoff, decision, work-log, and changed-file updates to
-  canonical v2 paths and legacy mirrors.
+### 2026-06-14 01:26 Flat closeout checklists invite overwork
+Status: resolved
+- Stuck Point: Agents can treat every ACE closeout instruction as equally
+  mandatory and spend effort on docs or ceremony that does not reduce risk.
+- Likely Cause: The default completion checklist and end-of-task instructions
+  were presented as a flat list instead of a priority ladder.
+- Proposed Improvement: Keep closeout guidance template-only and instruct
+  agents to do the smallest closeout that preserves future context and safety.
 
-[scripts/check-agent-memory.mjs]
-- Reads freshness hints through canonical/legacy memory helpers.
+### 2026-06-14 01:15 New chats need an operational start snapshot
+Status: resolved
+- Stuck Point: A new AI chat had to read several `.ai/*` files and run git
+  commands to answer simple &quot;where are we?&quot; questions.
+- Likely Cause: The brief report summarized task memory but did not surface
+  repo state, next command, or publish decision as a first-class startup block.
+- Proposed Improvement: Generate `## Start Snapshot` in brief/full reports and
+  put `.ai/report-brief.md` first in AI Coder hub context.
 
-[scripts/ai-memory-config.mjs]
-- Reads memory config through the v2 config path resolver.
-
-[scripts/ai-report-current-task-code.mjs]
-- Updated generated report behavior for schema v2 compatibility.
-
-[scripts/agent-memory-templates.mjs]
-- Updated installed workflow templates to describe canonical v2 paths, legacy
-  mirrors, and router usage.
-
-[README.md]
-- Documented the router, schema v2 layout, generated artifact hygiene, and
-  compatibility contract.
-
-[README.npm.md]
-- Mirrored npm-facing v2 documentation.
-
-[docs/schema-compatibility.md]
-- Replaced the v1 contract with the v2 command/router, canonical memory layout,
-  legacy mirror, and migration policy contract.
-
-[ROADMAP.md]
-- Marked v2.0 command router and memory schema v2 as shipped.
-
-[tools/smoke-fake-project.mjs]
-- Improved fake-project smoke failure reporting for installed script failures.
-
-[tests/ace-cli.test.ts]
-- Added router resolution tests.
-
-[tests/ace-hub.test.ts]
-- Updated hub tests for canonical generated context paths.
-
-[tests/agent-memory.test.ts]
-- Updated memory initialization expectations for the router and v2 migration.
-
-[tests/ai-report.test.ts]
-- Added canonical generated report and legacy mirror assertions.
-
-[tests/install-agent-memory-pack.test.ts]
-- Added install coverage for router/migration scripts and package-owned `ace`
-  preservation.
-
-[tests/schema-compatibility.test.ts]
-- Added schema v2 migration and compatibility contract coverage.
-
-[.ai/**]
-- Applied schema v2 dogfood migration to canonical `.ai/config`, `.ai/state`,
-  `.ai/knowledge`, and `.ai/generated` categories while preserving legacy root
-  mirrors.</file><file path=".ai/current-task.md"># Current Task
-
-## Feature Name
-v2.0.0 Command Router and Memory Schema v2
-
-## Lifecycle
-Status: complete
-Version: v1
-Task Tier: large
-Design Review Required: yes
-Started: 2026-06-14 15:24
-Ready For Archive: yes
-
-## Goal
-Implement the planned command-surface cleanup, generated artifact hygiene, and
-memory schema v2 migration while preserving old ACE commands and old `.ai/*`
-paths as compatibility aliases.
-
-## Business Value / Product Alignment
-This keeps ACE easier to use daily while reducing long-term memory clutter. A
-single `ace` router lowers `package.json` script noise, generated reports move
-out of the main memory surface, and schema v2 gives future agents clearer
-categories without abandoning existing installed repositories.
-
-## Technical Approach
-Option 1:
-- Physically move all `.ai` files immediately and remove old `ace:*` scripts.
-  This makes the repository tidy, but it breaks the v1 compatibility promise and
-  existing user habits.
-
-Option 2:
-- Add a router and schema v2 layout as compatibility-first behavior. Keep all
-  existing `ace:*`, `ai:*`, and `agent-memory:*` scripts, write generated
-  artifacts to new paths while mirroring legacy paths, and migrate memory files
-  deterministically only when safe.
-
-Chosen Approach:
-- Use Option 2. The final package version becomes `2.0.0` because schema v2 is
-  a new memory layout, but old commands and old paths remain readable/writable
-  during the transition.
-
-## Current Status
-- Bumped package version to `2.0.0`.
-- Added `npm run ace -- &lt;command&gt;` / `pnpm ace &lt;command&gt;` router while preserving existing scripts.
-- Added canonical `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` memory layout with legacy mirrors.
-- Moved generated reports and hub context to `.ai/generated/**` with old path compatibility.
-- Updated installer, templates, README surfaces, schema docs, roadmap, and local ACE docs.
-- Added router, schema migration, generated path, installer, and compatibility tests.
-- Ran release-readiness checks and explicit dogfood self-check.
-
-## Affected Areas
-- `package.json`
-- `install-ace-pack.mjs`
-- `scripts/*`
-- `README.md`
-- `README.npm.md`
-- `docs/schema-compatibility.md`
-- `ROADMAP.md`
-- `tests/**`
-- `.ai/**` local memory and generated reports
-
-## Constraints
-- Preserve existing command names and legacy aliases.
-- Preserve old `.ai/*.md` path compatibility for v1 repositories.
-- No new dependencies, AI calls, network calls, automatic hooks, or SaaS
-  behavior.
-- Deterministic migration only; do not infer project intent with AI.
-- Do not overwrite meaningful project-owned memory.
-
-## Acceptance Criteria
-- `npm run ace -- &lt;command&gt;` routes to the same commands as existing `ace:*`
-  scripts.
-- Existing `ace:*`, `ai:*`, and `agent-memory:*` scripts remain valid.
-- New reports/generated contexts are written under `.ai/generated/**` and
-  legacy `.ai/report-*` / `.ai/generated-context.md` paths remain compatible.
-- Fresh install creates the schema v2 categorized layout or migration-ready
-  metadata without breaking `ace:check`.
-- Existing v1 repositories can be upgraded deterministically without losing
-  memory.
-- Tests cover router, generated path compatibility, schema v2 migration, and
-  legacy command/path behavior.
-
-## Completion Checklist
-- [ ] Goal completed
-- [ ] Always: summarize what changed in `.ai/session-handoff.md`
-- [ ] Always: update `.ai/changed-files.md`, record verification, and run `ace:validate`
-- [ ] Always: state publish/deploy decision when relevant
-- [ ] If standard/large: add product, architecture, security, and code-quality review notes
-- [ ] If large/high-risk: confirm design approach, add useful reflection, and let `ace:finish` archive the snapshot
-- [ ] If release-bound shipped behavior changed: run local smoke and dogfood/self-check routines when available
-- [ ] Only if changed: update tech docs, product roadmap, durable decisions, or release notes
-- [ ] `ace:finish` passed and generated reports</file><file path=".ai/session-handoff.md"># Session Handoff
-
-## Last Update
-2026-06-14 15:48
-
-## What Was Done
-- Bumped package version to `2.0.0` for the schema v2 candidate.
-- Added the `ace` command router and kept all existing `ace:*`, `ai:*`, and `agent-memory:*` scripts.
-- Added canonical v2 memory categories under `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` with legacy mirror compatibility.
-- Moved generated hub/report outputs to `.ai/generated/**` while mirroring old paths.
-- Updated installer, templates, README surfaces, schema compatibility docs, roadmap, tests, and dogfood ACE memory.
-- Applied v2 migration to this repository and ran dogfood self-check.
-
-## Current State
-- Local candidate is `ace-pack@2.0.0`.
-- npm latest remains `ace-pack@1.1.0` until the maintainer publishes.
-- v2 implementation is complete and release-readiness checks passed.
-
-## Quality Review
-Product Alignment:
-- The work targets daily UX and long-term maintainability after v1.1 while
-  preserving the ACE promise of local, inspectable, zero-bloat workflows.
-
-Architecture:
-- Major-version schema work stayed compatibility-first: new categorized memory
-  paths and generated artifact paths have deterministic migration and legacy
-  mirrors/read fallbacks.
-
-Security:
-- No network calls, AI calls, SaaS behavior, credential handling, or automatic
-  hook installation were added.
-
-Code Quality:
-- Shared path helpers resolve canonical v2 paths and legacy aliases, avoiding a
-  second path-policy engine across scripts.
-
-## Next Steps
-- Publish when ready with `npm.cmd run release:npm`.
-- After publish, verify `npm.cmd view ace-pack version` and update repo-local ACE memory to mark npm latest as `2.0.0`.
-
-## Known Issues
-- None known for the v2.0.0 candidate.
-
-## Verification
-- `npm.cmd run ace:classify` passed before implementation, but detected `small`
-  only because the working tree was clean. The requested product scope is being
-  treated as large.
-- `npm.cmd test` passed: 14 files, 108 tests.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
-- `npm.cmd run ace:gate` passed and classified the work as large.
-- `npm.cmd run check:npm-payload` passed and checked 31 packed files.
-- `npm.cmd run release:npm:dry` passed for `ace-pack@2.0.0`.
-- `npm.cmd run dogfood:self-check -- --allow-dirty` passed with no updated or
-  created files.
-- `npm.cmd run release:ready` passed for the final `ace-pack@2.0.0` candidate.
-
-## Notes
-- NPM publish: required before final release; deferred by maintainer.</file><file path=".ai/work-log.md"># Work Log
+### 2026-06-13 20:59 Persist release process outside chat
+Status: resolved
+- Stuck Point: npm publishing details and README/logo split can be forgotten in
+  a new chat.
+- Likely Cause: Release steps were previously only discussed in conversation.
+- Proposed Improvement: Keep publish commands discoverable through
+  `package.json` scripts and record npm publishing notes in `.ai/session-handoff.md`.</file><file path=".ai/knowledge/work-log.md"># Work Log
 
 ## 2026-06-13 20:59
 
@@ -1346,4 +983,423 @@ Code Quality:
 - Implemented the combined v2.0 candidate: command router, generated artifact hygiene, and categorized ACE memory layout with legacy mirrors.
 - Updated installer, shared memory helpers, reports, hub, onboard, MCP, finish, gate, check, update helpers, templates, README surfaces, schema docs, roadmap, and tests.
 - Applied v2 migration to this repository and verified tests, fake-project smoke, ace:gate, npm payload guard, npm dry-run, and dogfood self-check.
-- NPM publish: required before final release; deferred by maintainer.</file></files></repomix>
+- NPM publish: required before final release; deferred by maintainer.</file><file path=".ai/state/changed-files.md"># Changed Files
+
+[package.json]
+- Bumped package version to `2.0.0`.
+- Added the unified `ace` router script while keeping existing `ace:*` scripts.
+
+[install-ace-pack.mjs]
+- Installs `scripts/ace-cli.mjs` and `scripts/ace-migrate.mjs`.
+- Adds the `ace` router script only when the target project does not already
+  own one.
+
+[scripts/ace-cli.mjs]
+- Added the zero-dependency command router for `npm run ace -- &lt;command&gt;` and
+  `pnpm ace &lt;command&gt;`.
+
+[scripts/ace-migrate.mjs]
+- Added the deterministic schema v2 migration entrypoint.
+- Added `--prune-legacy`, `--mirror-legacy`, and `--root` option handling.
+
+[scripts/ai-memory-utils.mjs]
+- Added canonical v2 memory path definitions, legacy alias resolution,
+  canonical-only writes, and schema v2 migration helpers.
+
+[scripts/agent-memory-lib.mjs]
+- Runs schema v2 migration during ACE memory initialization.
+- Validates memory through the canonical/legacy resolver.
+- Updates the managed AGENTS workflow block idempotently when templates change.
+
+[scripts/ai-report-brief.mjs]
+- Writes brief reports to `.ai/generated/report-brief.md`.
+
+[scripts/ai-report.mjs]
+- Writes full reports and XML bundles under `.ai/generated/**`.
+
+[scripts/ace-hub.mjs]
+- Writes generated hub context to `.ai/generated/context.md`.
+- Displays canonical v2 context paths in generated headers.
+
+[scripts/ace-onboard.mjs]
+- Writes profile and recommended config under `.ai/config/**`.
+
+[scripts/ace-mcp-server.mjs]
+- Exposes canonical v2 memory resources while continuing to read legacy files.
+
+[scripts/ai-task-finish.mjs]
+- Reads and writes closeout memory through canonical/legacy helpers.
+
+[scripts/ace-quality-gate.mjs]
+- Reads current task, handoff, and reflection memory through canonical/legacy
+  helpers.
+
+[scripts/ai-update.mjs]
+- Writes task, handoff, decision, work-log, and changed-file updates to
+  canonical v2 paths.
+
+[scripts/check-agent-memory.mjs]
+- Reads freshness hints through canonical/legacy memory helpers.
+
+[scripts/ai-memory-config.mjs]
+- Reads memory config through the v2 config path resolver.
+
+[scripts/ai-report-current-task-code.mjs]
+- Updated generated report behavior for schema v2 compatibility.
+
+[scripts/agent-memory-templates.mjs]
+- Updated installed workflow templates to describe canonical v2 paths, legacy
+  migration aliases, and router usage.
+
+[README.md]
+- Documented the router, schema v2 layout, generated artifact hygiene, and
+  compatibility contract.
+
+[README.npm.md]
+- Mirrored npm-facing v2 documentation.
+
+[docs/schema-compatibility.md]
+- Replaced the v1 contract with the v2 command/router, canonical memory layout,
+  legacy migration alias, and migration policy contract.
+- Documented canonical-only writes, explicit legacy mirror mode, and
+  `--prune-legacy`.
+
+[ROADMAP.md]
+- Marked v2.0 command router and memory schema v2 as shipped.
+
+[tools/smoke-fake-project.mjs]
+- Improved fake-project smoke failure reporting for installed script failures.
+
+[tests/ace-cli.test.ts]
+- Added router resolution tests.
+
+[tests/ace-hub.test.ts]
+- Updated hub tests for canonical generated context paths.
+
+[tests/agent-memory.test.ts]
+- Updated memory initialization expectations for the router and v2 migration.
+
+[tests/ai-report.test.ts]
+- Added canonical generated report assertions.
+
+[tests/install-agent-memory-pack.test.ts]
+- Added install coverage for router/migration scripts and package-owned `ace`
+  preservation.
+
+[tests/schema-compatibility.test.ts]
+- Added schema v2 migration and compatibility contract coverage.
+
+[AGENTS.md]
+- Synced the repo-local managed ACE workflow block to canonical v2 paths.
+
+[CLAUDE.md]
+- Synced repo-local Claude instructions to canonical v2 paths and router
+  commands.
+
+[.cursorrules]
+- Updated the repo-local Cursor bridge to read canonical brief reports and use
+  router commands.
+
+[.windsurfrules]
+- Updated the repo-local Windsurf bridge to read canonical brief reports and use
+  router commands.
+
+[.github/copilot-instructions.md]
+- Updated the repo-local Copilot bridge to read canonical brief reports and use
+  router commands.
+
+[.ai/**]
+- Applied schema v2 dogfood migration to canonical `.ai/config`, `.ai/state`,
+  `.ai/knowledge`, and `.ai/generated` categories, then pruned legacy root
+  aliases for a folder-only `.ai` surface.
+- Moved `.ai/README.md` to `.ai/knowledge/README.md`.</file><file path=".ai/state/current-task.md"># Current Task
+
+## Feature Name
+v2.0.0 Command Router and Memory Schema v2
+
+## Lifecycle
+Status: complete
+Version: v1
+Task Tier: large
+Design Review Required: yes
+Started: 2026-06-14 15:24
+Ready For Archive: yes
+
+## Goal
+Implement the planned command-surface cleanup, generated artifact hygiene, and
+memory schema v2 migration while preserving old ACE commands and old `.ai/*`
+paths as compatibility aliases.
+
+## Business Value / Product Alignment
+This keeps ACE easier to use daily while reducing long-term memory clutter. A
+single `ace` router lowers `package.json` script noise, generated reports move
+out of the main memory surface, and schema v2 gives future agents clearer
+categories without abandoning existing installed repositories.
+
+## Technical Approach
+Option 1:
+- Physically move all `.ai` files immediately and remove old `ace:*` scripts.
+  This makes the repository tidy, but it breaks the v1 compatibility promise and
+  existing user habits.
+
+Option 2:
+- Add a router and schema v2 layout as compatibility-first behavior. Keep all
+  existing `ace:*`, `ai:*`, and `agent-memory:*` scripts, write generated
+  artifacts to new canonical paths, keep legacy paths readable as migration
+  aliases, and migrate memory files deterministically only when safe.
+
+Chosen Approach:
+- Use Option 2. The final package version becomes `2.0.0` because schema v2 is
+  a new memory layout, but old commands and old paths remain readable/writable
+  during the transition.
+
+## Current Status
+- Bumped package version to `2.0.0`.
+- Added `npm run ace -- &lt;command&gt;` / `pnpm ace &lt;command&gt;` router while preserving existing scripts.
+- Added canonical `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` memory layout with legacy read aliases.
+- Changed v2 writes to canonical-only defaults so fresh installs keep `.ai/` folder-structured.
+- Added `ace migrate -- --prune-legacy` and pruned this repository
+
+## Affected Areas
+- `package.json`
+- `install-ace-pack.mjs`
+- `scripts/*`
+- `README.md`
+- `README.npm.md`
+- `docs/schema-compatibility.md`
+- `ROADMAP.md`
+- `tests/**`
+- `.ai/**` local memory and generated reports
+
+## Constraints
+- Preserve existing command names and legacy aliases.
+- Preserve old `.ai/*.md` path compatibility for v1 repositories.
+- No new dependencies, AI calls, network calls, automatic hooks, or SaaS
+  behavior.
+- Deterministic migration only; do not infer project intent with AI.
+- Do not overwrite meaningful project-owned memory.
+
+## Acceptance Criteria
+- `npm run ace -- &lt;command&gt;` routes to the same commands as existing `ace:*`
+  scripts.
+- Existing `ace:*`, `ai:*`, and `agent-memory:*` scripts remain valid.
+- New reports/generated contexts are written under `.ai/generated/**`; legacy
+  `.ai/report-*` / `.ai/generated-context.md` paths remain readable during
+  migration.
+- Fresh install creates the schema v2 categorized layout or migration-ready
+  metadata without breaking `ace:check`.
+- Existing v1 repositories can be upgraded deterministically without losing
+  memory.
+- Tests cover router, generated path compatibility, schema v2 migration, and
+  legacy command/path behavior.
+
+## Completion Checklist
+- [ ] Always: update `.ai/changed-files.md`, record verification, and run `ace:validate`
+- [ ] Always: state publish/deploy decision when relevant
+- [ ] If standard/large: add product, architecture, security, and code-quality review notes
+- [ ] If large/high-risk: confirm design approach, add useful reflection, and let `ace:finish` archive the snapshot
+- [ ] If release-bound shipped behavior changed: run local smoke and dogfood/self-check routines when available
+- [ ] Only if changed: update tech docs, product roadmap, durable decisions, or release notes
+- [ ] `ace:finish` passed and generated reports</file><file path=".ai/state/session-handoff.md"># Session Handoff
+
+## Last Update
+2026-06-14 16:10
+
+## What Was Done
+- Bumped package version to `2.0.0` for the schema v2 candidate.
+- Added the `ace` command router and kept existing `ace:*`, `ai:*`, and
+  `agent-memory:*` scripts.
+- Added canonical v2 memory categories under `.ai/config`, `.ai/state`,
+  `.ai/knowledge`, and `.ai/generated`.
+- Changed v2 writes to canonical-only defaults so fresh installs keep `.ai/`
+  folder-structured.
+- Kept legacy root `.ai/*` paths readable as migration aliases.
+- Added `ace migrate -- --prune-legacy` and `--mirror-legacy` behavior.
+- Pruned this repository&apos;s root `.ai/*` legacy files and moved `.ai/README.md`
+  to `.ai/knowledge/README.md`.
+- Updated docs, templates, tests, smoke tooling, and local ACE memory for
+  canonical-only v2.
+
+## Current State
+- Local candidate is `ace-pack@2.0.0`.
+- The `.ai` root now contains only folders: `archive`, `config`, `generated`,
+  `knowledge`, and `state`.
+- npm latest remains `ace-pack@1.1.0` until the maintainer publishes.
+- v2 implementation is complete and release-readiness checks passed after the
+  canonical-only refinement.
+
+## Quality Review
+Product Alignment:
+- The work targets daily UX and long-term maintainability after v1.1 while
+  preserving the ACE promise of local, inspectable, zero-bloat workflows.
+
+Architecture:
+- Major-version schema work stayed compatibility-first: new categorized memory
+  paths and generated artifact paths have deterministic migration and legacy
+  read fallbacks.
+
+Security:
+- No network calls, AI calls, SaaS behavior, credential handling, or automatic
+  hook installation were added.
+
+Code Quality:
+- Shared path helpers resolve canonical v2 paths and legacy aliases, avoiding a
+  second path-policy engine across scripts.
+
+## Next Steps
+- Publish when ready with `npm.cmd run release:npm`.
+- After publish, verify `npm.cmd view ace-pack version` and update repo-local ACE memory to mark npm latest as `2.0.0`.
+
+## Known Issues
+- None known for the v2.0.0 candidate.
+
+## Verification
+- `npm.cmd run ace:classify` passed before implementation, but detected `small`
+  only because the working tree was clean. The requested product scope is being
+  treated as large.
+- `npm.cmd test` passed: 14 files, 108 tests.
+- `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
+- `npm.cmd run ace:gate` passed and classified the work as large.
+- `npm.cmd run check:npm-payload` passed and checked 31 packed files.
+- `npm.cmd run release:npm:dry` passed for `ace-pack@2.0.0`.
+- `npm.cmd run dogfood:self-check -- --allow-dirty` passed with no updated or
+  created files.
+- `npm.cmd run release:ready` passed for the final `ace-pack@2.0.0` candidate.
+- `npm.cmd test` passed after canonical-only write/prune refinement: 14 files,
+  108 tests.
+- `npm.cmd run release:ready` passed after canonical-only write/prune
+  refinement; npm dry-run packed 31 files for `ace-pack@2.0.0`.
+- `npm.cmd run dogfood:self-check -- --allow-dirty` passed after refinement
+  with no updated or created files.
+
+## Notes
+- NPM publish: required before final release; deferred by maintainer.</file><file path="AGENTS.md">&gt; [!WARNING]
+&gt; **META-ARCHITECTURE WARNING:** This repository BUILDS the ACE product, but also USES ACE locally. If you are instructed to modify ACE behavior for users, edit the product source and templates in `scripts/`. Do not edit this local `AGENTS.md`, `CLAUDE.md`, or `.ai/**` to change global product behavior.
+
+# AGENTS.md
+
+Repository rules for AI coding agents working in this project.
+
+## Project Rules
+
+- Read `DEVELOPING.md` before changing package behavior. It defines the
+  boundary between shipped ACE product files and repo-local dogfooding memory.
+- Read `ROADMAP.md` before product or architecture changes. Preserve the
+  anti-goals, zero-bloat constraints, and explicit AI opt-in policy.
+- This package supports npm-based local workflow commands. If `pnpm` is not on
+  PATH, use `npm run ace:check`, `npm run ace:classify`, `npm run ace:finish`,
+  and related `npm run ace:*` scripts.
+- The active default Node on this machine may be older than the package engine.
+  Use the currently selected Node version for simple repo inspection, but
+  switch through nvm to any installed Node `&gt;=20` before running Vitest,
+  payload checks, or npm publish flows. Do not hardcode a local Node executable
+  path in repo scripts or instructions.
+- For npm publishing, use `npm run preview:npm` and `npm run publish:npm` so
+  the staged package uses `README.npm.md` and `logo-npm.svg`.
+- Versioning policy: before publishing any change that affects the shipped
+  package payload or user-visible ACE behavior, bump `package.json` version
+  with semver. Use `patch` for fixes/docs in the published payload, `minor` for
+  new backward-compatible behavior, and `major` for breaking CLI/template
+  changes. Do not bump solely for repo-local dogfooding files excluded from npm
+  such as `.ai/**`, `AGENTS.md`, `CLAUDE.md`, `DEVELOPING.md`, or `ROADMAP.md`.
+- NPM publish decision: after every task, explicitly tell the maintainer
+  `NPM publish: required` or `NPM publish: not required`, with the reason.
+  Publish is required only when the staged npm payload or user-visible installed
+  ACE behavior changes. GitHub-only docs, local `.ai/**` memory, `AGENTS.md`,
+  `CLAUDE.md`, `DEVELOPING.md`, `ROADMAP.md`, `.vscode/**`, `.local/**`, and
+  `tools/**` changes do not require npm publish by themselves.
+
+&lt;!-- agent-memory-workflow:start --&gt;
+## ACE (Agentic Context Engine) Workflow
+
+ACE is the local automation framework for managing AI context, code quality,
+and decision history. Use this workflow on top of the repo rules above;
+`AGENTS.md` remains the authoritative source for stack, architecture, and
+quality constraints.
+
+ACE v2 canonical memory is organized under `.ai/config`, `.ai/state`,
+`.ai/knowledge`, and `.ai/generated`. Legacy root `.ai/*.md` paths remain
+compatible mirrors for older agents and scripts.
+
+Before starting work:
+
+1. Read `AGENTS.md` first.
+2. If available, read `.ai/generated/report-brief.md` first for a compact
+   summary, including recent unresolved reflections.
+3. Treat `.ai/*` as authoritative and read `.ai/state/current-task.md`,
+   `.ai/state/session-handoff.md`, `.ai/knowledge/decisions.md`, and
+   `.ai/state/changed-files.md` when you need detail or verification.
+4. Run `pnpm ace classify` or `pnpm ace:classify` before implementation to
+   identify whether the task is small, standard, or large.
+5. If this is a newly installed or unknown project and
+   `.ai/config/memory-config.json` is still marked `unprofiled`, run
+   `pnpm ace onboard` or `pnpm ace:onboard` and apply an approved profile
+   before implementation.
+6. For large tasks, and standard tasks with high-risk signals, complete the
+   `.ai/state/current-task.md` Business Value and Technical Approach sections
+   before writing code. Compare at least two viable patterns and choose
+   explicitly.
+7. Read `.ai/knowledge/work-log.md` only when you need extra historical
+   context.
+8. If the memory files are missing, run `pnpm ace init` or `pnpm ace:init`.
+
+Command note: examples use `pnpm`. On Windows PowerShell, use
+`pnpm.cmd ace:classify`, `pnpm.cmd ace:validate`, and similar commands if
+the `pnpm` shim is blocked by execution policy.
+
+Router command note: npm users can run `npm run ace -- &lt;command&gt;`; pnpm users
+can run `pnpm ace &lt;command&gt;`. Existing `ace:*` scripts remain supported.
+
+Legacy commands such as `pnpm ai:task:classify`, `pnpm ai:task:finish`,
+and `pnpm agent-memory:init` remain supported for compatibility.
+
+IDE rule files such as `.cursorrules`, `.windsurfrules`, and
+`.github/copilot-instructions.md` are thin bridges into this workflow.
+`AGENTS.md` remains authoritative.
+
+While working:
+
+- Prefer minimal, safe diffs that preserve existing UI and API contracts.
+- Do not rewrite large components or architecture unless the task requires it.
+- Keep `.ai/state/current-task.md` aligned with the active task when scope
+  changes.
+- Keep project-specific tier and risk rules in
+  `.ai/config/memory-config.json`, the canonical ACE config, not inside the
+  scripts, so the toolset remains portable.
+- Use `pnpm ace onboard` or `pnpm ace:onboard` to generate
+  `.ai/config/project-profile.md` and recommended project-specific risk rules
+  when ACE is installed into an unfamiliar repo.
+- When updating `.ai/session-handoff.md`, `.ai/work-log.md`,
+  `.ai/reflection-log.md`, or `.ai/decisions.md`, use timestamps in
+  `YYYY-MM-DD HH:mm` format.
+- Keep `.ai/state/current-task.md`, `.ai/state/session-handoff.md`,
+  `.ai/knowledge/reflection-log.md`, and `.ai/state/changed-files.md`
+  compact.
+- Archive only `.ai/knowledge/work-log.md`,
+  `.ai/knowledge/reflection-log.md`, and `.ai/knowledge/decisions.md` into
+  `.ai/archive/` when they grow past the documented thresholds.
+- Use `.ai/state/current-task.md` lifecycle fields for task/version
+  transitions.
+  When a large task version is complete, mark its completion checklist and let
+  `pnpm ace:finish` archive a final snapshot.
+
+After completing a task:
+
+Do the smallest closeout that preserves future agent context and project
+safety:
+
+1. Always summarize what changed, update changed files, record verification,
+   run `pnpm ace:validate`, and state publish/deploy decision when relevant.
+   If release is deferred, say so explicitly.
+2. For small low-risk tasks, `pnpm ace:finish` may auto-close compact
+   handoff, changed-files, work-log, and brief report notes without changing
+   current-task lifecycle.
+3. For standard or large tasks, add product, architecture, security, and
+   code-quality review notes.
+4. For large or high-risk tasks, confirm the design approach, add reflection
+   only when useful, and let `pnpm ace:finish` archive the snapshot.
+5. Update `.ai/tech-docs.md`, `.ai/product-roadmap.md`, durable decisions,
+   or release notes only when those facts actually changed.
+6. For release-bound shipped changes, run the project&apos;s local smoke and
+   dogfood/self-check routines before final publish or deploy when available.
+&lt;!-- agent-memory-workflow:end --&gt;</file></files></repomix>

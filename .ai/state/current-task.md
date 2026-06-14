@@ -31,8 +31,8 @@ Option 1:
 Option 2:
 - Add a router and schema v2 layout as compatibility-first behavior. Keep all
   existing `ace:*`, `ai:*`, and `agent-memory:*` scripts, write generated
-  artifacts to new paths while mirroring legacy paths, and migrate memory files
-  deterministically only when safe.
+  artifacts to new canonical paths, keep legacy paths readable as migration
+  aliases, and migrate memory files deterministically only when safe.
 
 Chosen Approach:
 - Use Option 2. The final package version becomes `2.0.0` because schema v2 is
@@ -42,11 +42,9 @@ Chosen Approach:
 ## Current Status
 - Bumped package version to `2.0.0`.
 - Added `npm run ace -- <command>` / `pnpm ace <command>` router while preserving existing scripts.
-- Added canonical `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` memory layout with legacy mirrors.
-- Moved generated reports and hub context to `.ai/generated/**` with old path compatibility.
-- Updated installer, templates, README surfaces, schema docs, roadmap, and local ACE docs.
-- Added router, schema migration, generated path, installer, and compatibility tests.
-- Ran release-readiness checks and explicit dogfood self-check.
+- Added canonical `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` memory layout with legacy read aliases.
+- Changed v2 writes to canonical-only defaults so fresh installs keep `.ai/` folder-structured.
+- Added `ace migrate -- --prune-legacy` and pruned this repository
 
 ## Affected Areas
 - `package.json`
@@ -71,8 +69,9 @@ Chosen Approach:
 - `npm run ace -- <command>` routes to the same commands as existing `ace:*`
   scripts.
 - Existing `ace:*`, `ai:*`, and `agent-memory:*` scripts remain valid.
-- New reports/generated contexts are written under `.ai/generated/**` and
-  legacy `.ai/report-*` / `.ai/generated-context.md` paths remain compatible.
+- New reports/generated contexts are written under `.ai/generated/**`; legacy
+  `.ai/report-*` / `.ai/generated-context.md` paths remain readable during
+  migration.
 - Fresh install creates the schema v2 categorized layout or migration-ready
   metadata without breaking `ace:check`.
 - Existing v1 repositories can be upgraded deterministically without losing
@@ -81,8 +80,6 @@ Chosen Approach:
   legacy command/path behavior.
 
 ## Completion Checklist
-- [ ] Goal completed
-- [ ] Always: summarize what changed in `.ai/session-handoff.md`
 - [ ] Always: update `.ai/changed-files.md`, record verification, and run `ace:validate`
 - [ ] Always: state publish/deploy decision when relevant
 - [ ] If standard/large: add product, architecture, security, and code-quality review notes

@@ -17,9 +17,8 @@ without reading large implementation files.
 - Report generation is deterministic and local. `ai-report-brief.mjs` and
   `ai-report.mjs` read Markdown memory, use helpers from
   `ai-memory-utils.mjs`, and write `.ai/generated/report-brief.md` /
-  `.ai/generated/report-full.md` with legacy `.ai/report-*` mirrors.
-- `ace:hub` builds focused context payloads in `.ai/generated/context.md` with
-  a legacy `.ai/generated-context.md` mirror.
+  `.ai/generated/report-full.md`.
+- `ace:hub` builds focused context payloads in `.ai/generated/context.md`.
   Numeric options remain compatible, and named modes now cover start/coder,
   architect-lite/plan, architect, handoff, PR, business, and docs contexts.
   AI Coder Context starts with `.ai/generated/report-brief.md` when available
@@ -30,7 +29,7 @@ without reading large implementation files.
   `.ai/config/project-profile.md` and
   `.ai/config/memory-config.recommended.json`, and applies those rules to
   `.ai/config/memory-config.json` only when invoked with `--apply`. Legacy root
-  `.ai/*` mirrors remain readable and writable for older agents.
+  `.ai/*` files remain readable as migration aliases for older repositories.
 - `ace:gate` is the optional PR/CI quality gate. It reuses ACE memory
   validation, task classification, finish requirements, and shared Markdown
   helpers instead of maintaining a second policy engine. v0.4.1 keeps strict
@@ -54,7 +53,7 @@ without reading large implementation files.
   `docs/launch-copy.md`, and `examples/context-loss-demo/**` support demos and
   launch work, while README/README.npm provide only the concise entry point.
 - v2.0 schema documentation lives in `docs/schema-compatibility.md`. It defines
-  the command router, canonical categorized `.ai/**` paths, legacy mirrors,
+  the command router, canonical categorized `.ai/**` paths, legacy read aliases,
   Markdown section expectations, `.ai/config/memory-config.json` schema version
   `1`, and deterministic migration policy.
 - v1.0.1 adoption documentation lives in `docs/adoption-checklist.md` and
@@ -71,7 +70,7 @@ without reading large implementation files.
 - v2 canonical memory is categorized under `.ai/config`, `.ai/state`,
   `.ai/knowledge`, and `.ai/generated`.
 - Legacy root paths such as `.ai/current-task.md`, `.ai/session-handoff.md`,
-  and `.ai/report-brief.md` remain compatible mirrors. Readers accept both
+  and `.ai/report-brief.md` remain compatible read aliases. Readers accept both
   canonical and legacy paths and prefer the newest meaningful copy.
 - Task lifecycle state is stored in `.ai/state/current-task.md`.
 - Handoff state, next steps, verification, and publish decisions are stored in
@@ -114,7 +113,7 @@ without reading large implementation files.
 - `0.6.0` marketing/demo materials are excluded from the npm payload through the
   package file list and payload guard; they do not run automatically.
 - `2.0.0` migration is deterministic and local. It creates canonical category
-  paths and legacy mirrors without AI calls, network behavior, or overwriting
+  paths from legacy aliases without AI calls, network behavior, or overwriting
   meaningful project memory.
 - `1.0.1` adoption docs add no runtime behavior and remain outside the npm
   payload except for README links.

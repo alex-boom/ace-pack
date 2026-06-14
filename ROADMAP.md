@@ -145,8 +145,10 @@ repositories. v2 adds `npm run ace -- <command>` / `pnpm ace <command>` as a
 single router while preserving all `ace:*` and legacy aliases. It introduces
 canonical `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated`
 categories, writes generated reports and hub payloads under `.ai/generated/**`,
-and mirrors legacy `.ai/*` paths for compatibility. Migration is deterministic,
-local, and never overwrites meaningful project-owned memory.
+and keeps legacy `.ai/*` paths readable as migration aliases. Fresh v2 installs
+stay folder-structured by default; teams that still need old paths can request
+explicit legacy mirrors. Migration is deterministic, local, and never
+overwrites meaningful project-owned memory.
 
 ## Long-Term Research and Development (v2.1+)
 

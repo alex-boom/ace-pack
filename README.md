@@ -46,7 +46,8 @@ ACE turns those soft expectations into local project structure:
   readable by any LLM.
 - `AGENTS.md` keeps stack, architecture, and workflow rules close to the code.
 - `.ai/config/memory-config.json` marks high-risk paths and keywords for the
-  current repository, with `.ai/memory-config.json` kept as a legacy mirror.
+  current repository; legacy `.ai/memory-config.json` is still readable during
+  migration.
 - `ace:validate` starts as an ACE memory check and can be replaced by each
   repo with its real mechanical quality gate.
 
@@ -305,7 +306,7 @@ pnpm ace:hub -- --list
 Available modes:
 
 - `start` / `coder` - startup context with `.ai/generated/report-brief.md`
-  first, mirrored to `.ai/report-brief.md`.
+  first.
 - `architect` - repo rules, technical docs, decisions, roadmap, and brief.
 - `architect-lite` / `plan` - lower-token planning context without full
   decisions history.
@@ -314,8 +315,8 @@ Available modes:
 - `business` - roadmap and work log.
 - `docs` - technical docs and optional setup/devops notes.
 
-By default ACE writes `.ai/generated/context.md` and mirrors it to the legacy
-`.ai/generated-context.md`. For automation:
+By default ACE writes `.ai/generated/context.md`. Legacy
+`.ai/generated-context.md` remains readable during migration. For automation:
 
 ```bash
 pnpm ace:hub -- --mode start --stdout
@@ -394,9 +395,9 @@ roadmap, technical docs, and generated hub context when those files exist.
 
 ACE v2.0 introduces categorized canonical memory paths under `.ai/config`,
 `.ai/state`, `.ai/knowledge`, and `.ai/generated`. The config schema remains
-version `1`, and legacy `.ai/*` paths are still mirrored for compatibility.
-Existing memory remains project-owned, and the installer stays additive and
-idempotent.
+version `1`, and legacy `.ai/*` paths remain readable as migration aliases.
+Fresh v2 installs keep `.ai/` folder-structured by default. Existing memory
+remains project-owned, and the installer stays additive and idempotent.
 
 Read the full contract:
 [ACE v2.0 Schema and Compatibility](./docs/schema-compatibility.md).

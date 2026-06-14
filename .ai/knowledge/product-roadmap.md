@@ -66,8 +66,8 @@ handoff and browser-context workflows.
 - **v2.0 Command Router and Memory Schema v2.** ACE now has a unified
   `npm run ace -- <command>` / `pnpm ace <command>` router, canonical
   `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` categories,
-  generated artifact hygiene, and deterministic v1-to-v2 mirrors that preserve
-  old `.ai/*` paths.
+  generated artifact hygiene, and deterministic v1-to-v2 migration aliases that
+  preserve old `.ai/*` input without cluttering fresh v2 installs.
 
 ## Planned Features
 

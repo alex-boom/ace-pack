@@ -64,8 +64,13 @@ describe('ace:onboard', () => {
     await ensureAgentMemory(rootDir)
 
     const result = await onboardRepository(rootDir)
-    const activeConfig = JSON.parse(await readFile(path.join(rootDir, '.ai/memory-config.json'), 'utf8'))
-    const profileContent = await readFile(path.join(rootDir, '.ai/project-profile.md'), 'utf8')
+    const activeConfig = JSON.parse(
+      await readFile(path.join(rootDir, '.ai/config/memory-config.json'), 'utf8'),
+    )
+    const profileContent = await readFile(
+      path.join(rootDir, '.ai/config/project-profile.md'),
+      'utf8',
+    )
     const recommendedConfig = JSON.parse(
       await readFile(path.join(rootDir, RECOMMENDED_CONFIG_PATH), 'utf8'),
     )
@@ -107,7 +112,9 @@ describe('ace:onboard', () => {
 
     const applyResult = await onboardRepository(rootDir, { apply: true })
     const checkResult = await onboardRepository(rootDir, { check: true })
-    const activeConfig = JSON.parse(await readFile(path.join(rootDir, '.ai/memory-config.json'), 'utf8'))
+    const activeConfig = JSON.parse(
+      await readFile(path.join(rootDir, '.ai/config/memory-config.json'), 'utf8'),
+    )
     const activePaths = activeConfig.highRiskPaths.map((rule: { pattern: string }) => rule.pattern)
 
     expect(applyResult.applied).toBe(true)
@@ -123,7 +130,9 @@ describe('ace:onboard', () => {
       apply: true,
       preset: 'next-trpc-drizzle-saas',
     })
-    const activeConfig = JSON.parse(await readFile(path.join(rootDir, '.ai/memory-config.json'), 'utf8'))
+    const activeConfig = JSON.parse(
+      await readFile(path.join(rootDir, '.ai/config/memory-config.json'), 'utf8'),
+    )
     const activePaths = activeConfig.highRiskPaths.map((rule: { pattern: string }) => rule.pattern)
 
     expect(result.applied).toBe(true)

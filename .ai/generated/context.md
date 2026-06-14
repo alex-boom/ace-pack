@@ -1,6 +1,6 @@
 # ACE Hub Context
 - Mode: architect (AI Architect Context)
-- Generated: 2026-06-14T12:53:22.993Z
+- Generated: 2026-06-14T13:15:05.763Z
 - Included files: AGENTS.md, .ai/knowledge/tech-docs.md, .ai/knowledge/decisions.md, .ai/knowledge/product-roadmap.md, .ai/generated/report-brief.md
 - Missing optional files: none
 
@@ -50,68 +50,91 @@ and decision history. Use this workflow on top of the repo rules above;
 `AGENTS.md` remains the authoritative source for stack, architecture, and
 quality constraints.
 
+ACE v2 canonical memory is organized under `.ai/config`, `.ai/state`,
+`.ai/knowledge`, and `.ai/generated`. Legacy root `.ai/*.md` paths remain
+compatible mirrors for older agents and scripts.
+
 Before starting work:
 
 1. Read `AGENTS.md` first.
-2. If available, read `.ai/report-brief.md` first for a compact summary,
-   including recent unresolved reflections.
-3. Treat `.ai/*` as authoritative and read `.ai/current-task.md`,
-   `.ai/session-handoff.md`, `.ai/decisions.md`, and
-   `.ai/changed-files.md` when you need detail or verification.
-4. Run `pnpm ace:classify` before implementation to identify whether the
-   task is small, standard, or large.
-5. If this is a newly installed or unknown project and `.ai/memory-config.json`
-   is still marked `unprofiled`, run `pnpm ace:onboard` and apply an
-   approved profile before implementation.
+2. If available, read `.ai/generated/report-brief.md` first for a compact
+   summary, including recent unresolved reflections.
+3. Treat `.ai/*` as authoritative and read `.ai/state/current-task.md`,
+   `.ai/state/session-handoff.md`, `.ai/knowledge/decisions.md`, and
+   `.ai/state/changed-files.md` when you need detail or verification.
+4. Run `pnpm ace classify` or `pnpm ace:classify` before implementation to
+   identify whether the task is small, standard, or large.
+5. If this is a newly installed or unknown project and
+   `.ai/config/memory-config.json` is still marked `unprofiled`, run
+   `pnpm ace onboard` or `pnpm ace:onboard` and apply an approved profile
+   before implementation.
 6. For large tasks, and standard tasks with high-risk signals, complete the
-   `.ai/current-task.md` Business Value and Technical Approach sections before
-   writing code. Compare at least two viable patterns and choose explicitly.
-7. Read `.ai/work-log.md` only when you need extra historical context.
-8. If the memory files are missing, run `pnpm ace:init`.
+   `.ai/state/current-task.md` Business Value and Technical Approach sections
+   before writing code. Compare at least two viable patterns and choose
+   explicitly.
+7. Read `.ai/knowledge/work-log.md` only when you need extra historical
+   context.
+8. If the memory files are missing, run `pnpm ace init` or `pnpm ace:init`.
 
 Command note: examples use `pnpm`. On Windows PowerShell, use
 `pnpm.cmd ace:classify`, `pnpm.cmd ace:validate`, and similar commands if
 the `pnpm` shim is blocked by execution policy.
 
+Router command note: npm users can run `npm run ace -- <command>`; pnpm users
+can run `pnpm ace <command>`. Existing `ace:*` scripts remain supported.
+
 Legacy commands such as `pnpm ai:task:classify`, `pnpm ai:task:finish`,
 and `pnpm agent-memory:init` remain supported for compatibility.
+
+IDE rule files such as `.cursorrules`, `.windsurfrules`, and
+`.github/copilot-instructions.md` are thin bridges into this workflow.
+`AGENTS.md` remains authoritative.
 
 While working:
 
 - Prefer minimal, safe diffs that preserve existing UI and API contracts.
 - Do not rewrite large components or architecture unless the task requires it.
-- Keep `.ai/current-task.md` aligned with the active task when scope changes.
-- Keep project-specific tier and risk rules in `.ai/memory-config.json`, the
-  canonical ACE config, not inside the scripts, so the toolset remains
-  portable.
-- Use `pnpm ace:onboard` to generate `.ai/project-profile.md` and
-  recommended project-specific risk rules when ACE is installed into an
-  unfamiliar repo.
+- Keep `.ai/state/current-task.md` aligned with the active task when scope
+  changes.
+- Keep project-specific tier and risk rules in
+  `.ai/config/memory-config.json`, the canonical ACE config, not inside the
+  scripts, so the toolset remains portable.
+- Use `pnpm ace onboard` or `pnpm ace:onboard` to generate
+  `.ai/config/project-profile.md` and recommended project-specific risk rules
+  when ACE is installed into an unfamiliar repo.
 - When updating `.ai/session-handoff.md`, `.ai/work-log.md`,
   `.ai/reflection-log.md`, or `.ai/decisions.md`, use timestamps in
   `YYYY-MM-DD HH:mm` format.
-- Keep `.ai/current-task.md`, `.ai/session-handoff.md`,
-  `.ai/reflection-log.md`, and `.ai/changed-files.md` compact.
-- Archive only `.ai/work-log.md`, `.ai/reflection-log.md`, and
-  `.ai/decisions.md` into `.ai/archive/` when they grow past the documented
-  thresholds.
-- Use `.ai/current-task.md` lifecycle fields for task/version transitions.
+- Keep `.ai/state/current-task.md`, `.ai/state/session-handoff.md`,
+  `.ai/knowledge/reflection-log.md`, and `.ai/state/changed-files.md`
+  compact.
+- Archive only `.ai/knowledge/work-log.md`,
+  `.ai/knowledge/reflection-log.md`, and `.ai/knowledge/decisions.md` into
+  `.ai/archive/` when they grow past the documented thresholds.
+- Use `.ai/state/current-task.md` lifecycle fields for task/version
+  transitions.
   When a large task version is complete, mark its completion checklist and let
   `pnpm ace:finish` archive a final snapshot.
 
 After completing a task:
 
-1. Update the authoritative `.ai/*` files directly or through
-   `ai:update:*` helpers.
-2. Run `pnpm ace:validate` and fix any mechanical quality gate failures.
-3. Run `pnpm ace:finish` to validate the adaptive closeout and generate
-   reports.
-4. Small tasks need compact handoff, changed-files, work-log, and brief report.
-5. Standard tasks also need product, architecture, security, and code-quality
-   review notes.
-6. Large tasks also need design review, reflection entry when useful, archive
-   snapshot, full report, and a review of `.ai/tech-docs.md` or
-   `.ai/product-roadmap.md` when technical or business state changed.
+Do the smallest closeout that preserves future agent context and project
+safety:
+
+1. Always summarize what changed, update changed files, record verification,
+   run `pnpm ace:validate`, and state publish/deploy decision when relevant.
+   If release is deferred, say so explicitly.
+2. For small low-risk tasks, `pnpm ace:finish` may auto-close compact
+   handoff, changed-files, work-log, and brief report notes without changing
+   current-task lifecycle.
+3. For standard or large tasks, add product, architecture, security, and
+   code-quality review notes.
+4. For large or high-risk tasks, confirm the design approach, add reflection
+   only when useful, and let `pnpm ace:finish` archive the snapshot.
+5. Update `.ai/tech-docs.md`, `.ai/product-roadmap.md`, durable decisions,
+   or release notes only when those facts actually changed.
+6. For release-bound shipped changes, run the project's local smoke and
+   dogfood/self-check routines before final publish or deploy when available.
 <!-- agent-memory-workflow:end -->
 
 # --- FILE: .ai/knowledge/tech-docs.md ---
@@ -135,9 +158,8 @@ without reading large implementation files.
 - Report generation is deterministic and local. `ai-report-brief.mjs` and
   `ai-report.mjs` read Markdown memory, use helpers from
   `ai-memory-utils.mjs`, and write `.ai/generated/report-brief.md` /
-  `.ai/generated/report-full.md` with legacy `.ai/report-*` mirrors.
-- `ace:hub` builds focused context payloads in `.ai/generated/context.md` with
-  a legacy `.ai/generated-context.md` mirror.
+  `.ai/generated/report-full.md`.
+- `ace:hub` builds focused context payloads in `.ai/generated/context.md`.
   Numeric options remain compatible, and named modes now cover start/coder,
   architect-lite/plan, architect, handoff, PR, business, and docs contexts.
   AI Coder Context starts with `.ai/generated/report-brief.md` when available
@@ -148,7 +170,7 @@ without reading large implementation files.
   `.ai/config/project-profile.md` and
   `.ai/config/memory-config.recommended.json`, and applies those rules to
   `.ai/config/memory-config.json` only when invoked with `--apply`. Legacy root
-  `.ai/*` mirrors remain readable and writable for older agents.
+  `.ai/*` files remain readable as migration aliases for older repositories.
 - `ace:gate` is the optional PR/CI quality gate. It reuses ACE memory
   validation, task classification, finish requirements, and shared Markdown
   helpers instead of maintaining a second policy engine. v0.4.1 keeps strict
@@ -172,7 +194,7 @@ without reading large implementation files.
   `docs/launch-copy.md`, and `examples/context-loss-demo/**` support demos and
   launch work, while README/README.npm provide only the concise entry point.
 - v2.0 schema documentation lives in `docs/schema-compatibility.md`. It defines
-  the command router, canonical categorized `.ai/**` paths, legacy mirrors,
+  the command router, canonical categorized `.ai/**` paths, legacy read aliases,
   Markdown section expectations, `.ai/config/memory-config.json` schema version
   `1`, and deterministic migration policy.
 - v1.0.1 adoption documentation lives in `docs/adoption-checklist.md` and
@@ -189,7 +211,7 @@ without reading large implementation files.
 - v2 canonical memory is categorized under `.ai/config`, `.ai/state`,
   `.ai/knowledge`, and `.ai/generated`.
 - Legacy root paths such as `.ai/current-task.md`, `.ai/session-handoff.md`,
-  and `.ai/report-brief.md` remain compatible mirrors. Readers accept both
+  and `.ai/report-brief.md` remain compatible read aliases. Readers accept both
   canonical and legacy paths and prefer the newest meaningful copy.
 - Task lifecycle state is stored in `.ai/state/current-task.md`.
 - Handoff state, next steps, verification, and publish decisions are stored in
@@ -232,7 +254,7 @@ without reading large implementation files.
 - `0.6.0` marketing/demo materials are excluded from the npm payload through the
   package file list and payload guard; they do not run automatically.
 - `2.0.0` migration is deterministic and local. It creates canonical category
-  paths and legacy mirrors without AI calls, network behavior, or overwriting
+  paths from legacy aliases without AI calls, network behavior, or overwriting
   meaningful project memory.
 - `1.0.1` adoption docs add no runtime behavior and remain outside the npm
   payload except for README links.
@@ -625,7 +647,7 @@ Decision:
 - Implement v2.0 as a compatibility-first command router and memory layout
   release: add `npm run ace -- <command>` / `pnpm ace <command>`, canonical
   `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` paths, and
-  deterministic v1 legacy mirrors.
+  deterministic v1 legacy migration aliases.
 
 Reason:
 - The repo had accumulated many package scripts and high-churn root `.ai/*`
@@ -638,7 +660,7 @@ Impact:
   changes.
 - Existing `ace:*`, `ai:*`, and `agent-memory:*` scripts remain valid.
 - Legacy `.ai/*.md`, `.ai/report-*`, and `.ai/generated-context.md` paths remain
-  readable/writable compatibility mirrors.
+  readable during migration without cluttering fresh v2 installs.
 - Future schema work must use deterministic migration and old-repo fixture tests
   before changing memory contracts again.
 
@@ -712,8 +734,8 @@ handoff and browser-context workflows.
 - **v2.0 Command Router and Memory Schema v2.** ACE now has a unified
   `npm run ace -- <command>` / `pnpm ace <command>` router, canonical
   `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` categories,
-  generated artifact hygiene, and deterministic v1-to-v2 mirrors that preserve
-  old `.ai/*` paths.
+  generated artifact hygiene, and deterministic v1-to-v2 migration aliases that
+  preserve old `.ai/*` input without cluttering fresh v2 installs.
 
 ## Planned Features
 
@@ -760,18 +782,18 @@ handoff and browser-context workflows.
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 15:53
+- Generated: 2026-06-14 16:14
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 15:48
-- Source session-handoff: 2026-06-14 15:53
+- Source current-task: 2026-06-14 16:09
+- Source session-handoff: 2026-06-14 16:13
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (46 changed files)
-- Last commit: 49e698e Document post-release state for `ace-pack@1.1.0`, confirming successful publication to npm and updating ACE memory to prevent future republishing attempts. Mark current product milestone as complete with no active implementation tasks remaining.
+- Worktree: dirty (47 changed files)
+- Last commit: 6a1022a Upgrade to version 2.0.0, introducing a unified command router (`npm run ace -- <command>` / `pnpm ace <command>`) and a new memory schema with categorized paths under `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated`. Legacy paths are preserved for compatibility. Updated documentation and tests to reflect these changes, ensuring a smooth transition for existing repositories.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
 - Next command: `npm.cmd run release:npm`
 - Release decision: NPM publish: required before final release; deferred by maintainer.
@@ -804,11 +826,9 @@ categories without abandoning existing installed repositories.
 ## Current Status
 - Bumped package version to `2.0.0`.
 - Added `npm run ace -- <command>` / `pnpm ace <command>` router while preserving existing scripts.
-- Added canonical `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` memory layout with legacy mirrors.
-- Moved generated reports and hub context to `.ai/generated/**` with old path compatibility.
-- Updated installer, templates, README surfaces, schema docs, roadmap, and local ACE docs.
-- Added router, schema migration, generated path, installer, and compatibility tests.
-- Ran release-readiness checks and explicit dogfood self-check.
+- Added canonical `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` memory layout with legacy read aliases.
+- Changed v2 writes to canonical-only defaults so fresh installs keep `.ai/` folder-structured.
+- Added `ace migrate -- --prune-legacy` and pruned this repository
 
 ## Next Steps
 - Publish when ready with `npm.cmd run release:npm`.
@@ -832,7 +852,7 @@ Decision:
 - Implement v2.0 as a compatibility-first command router and memory layout
   release: add `npm run ace -- <command>` / `pnpm ace <command>`, canonical
   `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` paths, and
-  deterministic v1 legacy mirrors.
+  deterministic v1 legacy migration aliases.
 
 Reason:
 - The repo had accumulated many package scripts and high-churn root `.ai/*`
@@ -845,7 +865,7 @@ Impact:
   changes.
 - Existing `ace:*`, `ai:*`, and `agent-memory:*` scripts remain valid.
 - Legacy `.ai/*.md`, `.ai/report-*`, and `.ai/generated-context.md` paths remain
-  readable/writable compatibility mirrors.
+  readable during migration without cluttering fresh v2 installs.
 - Future schema work must use deterministic migration and old-repo fixture tests
   before changing memory contracts again.
 
@@ -861,5 +881,5 @@ Impact:
 - `scripts/agent-memory-lib.mjs`
 
 ## Overall Progress
-- Completion checklist: 0/9
+- Completion checklist: 0/7
 - Source of truth: `.ai/*` files remain authoritative.

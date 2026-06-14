@@ -4,7 +4,7 @@ import { productRoadmapTemplate, techDocsTemplate } from './ace-universal-doc-te
 export const AGENTS_WORKFLOW_HEADER = '## ACE (Agentic Context Engine) Workflow'
 export const AGENTS_WORKFLOW_MARKER = '<!-- agent-memory-workflow:start -->'
 export const AGENTS_WORKFLOW_END_MARKER = '<!-- agent-memory-workflow:end -->'
-export const CLAUDE_REQUIRED_SNIPPETS = ['AGENTS.md', '.ai/current-task.md']
+export const CLAUDE_REQUIRED_SNIPPETS = ['AGENTS.md', '.ai/']
 
 export const memoryConfigTemplate = JSON.stringify(NEUTRAL_MEMORY_CONFIG, null, 2)
 
@@ -156,17 +156,16 @@ choices, architecture rules, and quality gates. Read it first in every session.
 
 After reading \`AGENTS.md\`, read:
 
-1. \`.ai/generated/report-brief.md\` if available for compact context
-   (\`.ai/report-brief.md\` is the legacy mirror).
+1. \`.ai/generated/report-brief.md\` if available for compact context.
 2. \`.ai/state/current-task.md\`
 3. \`.ai/state/session-handoff.md\`
 4. \`.ai/knowledge/decisions.md\`
 5. \`.ai/state/changed-files.md\`
 6. Recent unresolved entries in \`.ai/knowledge/reflection-log.md\`
 
-Legacy root \`.ai/*.md\` files remain compatible, including the
-\`.ai/current-task.md\` mirror. Read \`.ai/knowledge/work-log.md\` only when
-you need additional history for the current task.
+Legacy root \`.ai/*.md\` files remain readable as migration aliases. Read
+\`.ai/knowledge/work-log.md\` only when you need additional history for the
+current task.
 
 ## Working Rules
 
@@ -306,7 +305,7 @@ safety:
 
 export const AI_FILE_SPECS = [
   {
-    path: '.ai/memory-config.json',
+    path: '.ai/config/memory-config.json',
     requiredSnippets: [
       '"_name": "ACE (Agentic Context Engine) Configuration"',
       '"version": 1',
@@ -316,7 +315,7 @@ export const AI_FILE_SPECS = [
     template: memoryConfigTemplate,
   },
   {
-    path: '.ai/current-task.md',
+    path: '.ai/state/current-task.md',
     requiredSnippets: [
       '# Current Task',
       '## Lifecycle',
@@ -331,7 +330,7 @@ export const AI_FILE_SPECS = [
     template: currentTaskTemplate,
   },
   {
-    path: '.ai/session-handoff.md',
+    path: '.ai/state/session-handoff.md',
     requiredSnippets: [
       '# Session Handoff',
       '## What Was Done',
@@ -341,12 +340,12 @@ export const AI_FILE_SPECS = [
     template: handoffTemplate,
   },
   {
-    path: '.ai/decisions.md',
+    path: '.ai/knowledge/decisions.md',
     requiredSnippets: ['# Decisions', 'Decision:', 'Impact:'],
     template: decisionsTemplate,
   },
   {
-    path: '.ai/product-roadmap.md',
+    path: '.ai/knowledge/product-roadmap.md',
     requiredSnippets: [
       '# Product Roadmap',
       '## Business Goals',
@@ -356,7 +355,7 @@ export const AI_FILE_SPECS = [
     template: productRoadmapTemplate,
   },
   {
-    path: '.ai/tech-docs.md',
+    path: '.ai/knowledge/tech-docs.md',
     requiredSnippets: [
       '# Technical Docs',
       '## Architecture',
@@ -367,17 +366,17 @@ export const AI_FILE_SPECS = [
     template: techDocsTemplate,
   },
   {
-    path: '.ai/changed-files.md',
+    path: '.ai/state/changed-files.md',
     requiredSnippets: ['# Changed Files'],
     template: changedFilesTemplate,
   },
   {
-    path: '.ai/work-log.md',
+    path: '.ai/knowledge/work-log.md',
     requiredSnippets: ['# Work Log'],
     template: workLogTemplate,
   },
   {
-    path: '.ai/reflection-log.md',
+    path: '.ai/knowledge/reflection-log.md',
     requiredSnippets: ['# Reflection Log', '## Unresolved', '## Resolved'],
     template: reflectionLogTemplate,
   },
