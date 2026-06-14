@@ -9,7 +9,12 @@ import {
   agentsWorkflowSection,
   claudeTemplate,
 } from './agent-memory-templates.mjs'
-import { readTextIfExists, writeTextFile } from './ai-memory-utils.mjs'
+import {
+  migrateMemorySchemaV2,
+  readMemoryFile,
+  readTextIfExists,
+  writeTextFile,
+} from './ai-memory-utils.mjs'
 
 export {
   AGENTS_WORKFLOW_END_MARKER,
@@ -90,6 +95,10 @@ export async function ensureAgentMemory(rootDir) {
     }
   }
 
+  const migrationResult = await migrateMemorySchemaV2(rootDir)
+  createdFiles.push(...migrationResult.createdFiles)
+  updatedFiles.push(...migrationResult.updatedFiles)
+
   return {
     createdFiles,
     updatedFiles,
@@ -122,8 +131,7 @@ export async function validateAgentMemory(rootDir) {
   }
 
   for (const fileSpec of AI_FILE_SPECS) {
-    const absolutePath = path.join(rootDir, fileSpec.path)
-    const content = await readTextIfExists(absolutePath)
+    const content = await readMemoryFile(rootDir, fileSpec.path)
 
     if (content === null) {
       issues.push(`Missing ${fileSpec.path}`)

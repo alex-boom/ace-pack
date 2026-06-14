@@ -5,7 +5,7 @@ import {
   extractLabeledValue,
   extractMarkdownSection,
   hasMeaningfulContent,
-  readTextIfExists,
+  readMemoryFile,
   writeAceBanner,
 } from './ai-memory-utils.mjs'
 
@@ -39,9 +39,9 @@ if (warnings.length > 0) {
 
 async function collectMemoryWarnings(rootDir) {
   const [currentTaskContent, handoffContent, reportBriefContent] = await Promise.all([
-    readTextIfExists(path.join(rootDir, '.ai', 'current-task.md')),
-    readTextIfExists(path.join(rootDir, '.ai', 'session-handoff.md')),
-    readTextIfExists(path.join(rootDir, '.ai', 'report-brief.md')),
+    readMemoryFile(rootDir, 'currentTask'),
+    readMemoryFile(rootDir, 'sessionHandoff'),
+    readMemoryFile(rootDir, 'reportBrief'),
   ])
   const warnings = []
 

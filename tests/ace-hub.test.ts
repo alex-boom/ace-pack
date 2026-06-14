@@ -103,16 +103,16 @@ describe('generateContextPayload', () => {
 
     expect(result.mode.id).toBe('start')
     expect(result.includedFiles).toEqual([
-      '.ai/report-brief.md',
-      '.ai/current-task.md',
-      '.ai/session-handoff.md',
-      '.ai/changed-files.md',
-      '.ai/reflection-log.md',
+      '.ai/generated/report-brief.md',
+      '.ai/state/current-task.md',
+      '.ai/state/session-handoff.md',
+      '.ai/state/changed-files.md',
+      '.ai/knowledge/reflection-log.md',
     ])
     expect(generatedContent).toContain('# ACE Hub Context')
     expect(generatedContent).toContain('- Mode: start (Start / AI Coder Context)')
-    expect(generatedContent.indexOf('# --- FILE: .ai/report-brief.md ---')).toBeLessThan(
-      generatedContent.indexOf('# --- FILE: .ai/current-task.md ---'),
+    expect(generatedContent.indexOf('# --- FILE: .ai/generated/report-brief.md ---')).toBeLessThan(
+      generatedContent.indexOf('# --- FILE: .ai/state/current-task.md ---'),
     )
   })
 
@@ -126,15 +126,15 @@ describe('generateContextPayload', () => {
 
     expect(result.mode.id).toBe('start')
     expect(result.includedFiles).toEqual([
-      '.ai/current-task.md',
-      '.ai/session-handoff.md',
-      '.ai/changed-files.md',
-      '.ai/reflection-log.md',
+      '.ai/state/current-task.md',
+      '.ai/state/session-handoff.md',
+      '.ai/state/changed-files.md',
+      '.ai/knowledge/reflection-log.md',
     ])
-    expect(result.missingOptionalFiles).toEqual(['.ai/report-brief.md'])
-    expect(generatedContent).toContain('- Missing optional files: .ai/report-brief.md')
-    expect(generatedContent).not.toContain('# --- FILE: .ai/report-brief.md ---')
-    expect(generatedContent).toContain('# --- FILE: .ai/current-task.md ---')
+    expect(result.missingOptionalFiles).toEqual(['.ai/generated/report-brief.md'])
+    expect(generatedContent).toContain('- Missing optional files: .ai/generated/report-brief.md')
+    expect(generatedContent).not.toContain('# --- FILE: .ai/generated/report-brief.md ---')
+    expect(generatedContent).toContain('# --- FILE: .ai/state/current-task.md ---')
   })
 
   it('keeps numeric architect, business, and docs modes compatible', async () => {
@@ -147,15 +147,18 @@ describe('generateContextPayload', () => {
     expect(architect.mode.id).toBe('architect')
     expect(architect.includedFiles).toEqual([
       'AGENTS.md',
-      '.ai/tech-docs.md',
-      '.ai/decisions.md',
-      '.ai/product-roadmap.md',
-      '.ai/report-brief.md',
+      '.ai/knowledge/tech-docs.md',
+      '.ai/knowledge/decisions.md',
+      '.ai/knowledge/product-roadmap.md',
+      '.ai/generated/report-brief.md',
     ])
     expect(business.mode.id).toBe('business')
-    expect(business.includedFiles).toEqual(['.ai/product-roadmap.md', '.ai/work-log.md'])
+    expect(business.includedFiles).toEqual([
+      '.ai/knowledge/product-roadmap.md',
+      '.ai/knowledge/work-log.md',
+    ])
     expect(docs.mode.id).toBe('docs')
-    expect(docs.includedFiles).toEqual(['.ai/tech-docs.md'])
+    expect(docs.includedFiles).toEqual(['.ai/knowledge/tech-docs.md'])
     expect(docs.missingOptionalFiles).toEqual(['DEVOPS.md'])
   })
 
@@ -167,13 +170,13 @@ describe('generateContextPayload', () => {
 
     expect(result.mode.id).toBe('architect-lite')
     expect(result.includedFiles).toEqual([
-      '.ai/report-brief.md',
+      '.ai/generated/report-brief.md',
       'AGENTS.md',
-      '.ai/product-roadmap.md',
-      '.ai/tech-docs.md',
+      '.ai/knowledge/product-roadmap.md',
+      '.ai/knowledge/tech-docs.md',
     ])
     expect(generatedContent).toContain('- Mode: architect-lite (AI Architect Lite Context)')
-    expect(generatedContent).not.toContain('# --- FILE: .ai/decisions.md ---')
+    expect(generatedContent).not.toContain('# --- FILE: .ai/knowledge/decisions.md ---')
   })
 
   it('generates named handoff and PR modes', async () => {
@@ -184,11 +187,11 @@ describe('generateContextPayload', () => {
     const generatedContent = await readFile(path.join(rootDir, GENERATED_CONTEXT_PATH), 'utf8')
 
     expect(handoff.includedFiles).toEqual([
-      '.ai/report-brief.md',
-      '.ai/session-handoff.md',
-      '.ai/changed-files.md',
-      '.ai/current-task.md',
-      '.ai/decisions.md',
+      '.ai/generated/report-brief.md',
+      '.ai/state/session-handoff.md',
+      '.ai/state/changed-files.md',
+      '.ai/state/current-task.md',
+      '.ai/knowledge/decisions.md',
     ])
     expect(pr.mode.id).toBe('pr')
     expect(pr.gitSummary?.status).toBe('unknown')
@@ -202,7 +205,7 @@ describe('generateContextPayload', () => {
     await unlink(path.join(rootDir, '.ai', 'current-task.md'))
 
     await expect(generateContextPayload(rootDir, 'start')).rejects.toThrow(
-      'Missing required context file: .ai/current-task.md',
+      'Missing required context file: .ai/state/current-task.md',
     )
   })
 
@@ -259,7 +262,7 @@ describe('ace hub CLI', () => {
 
     expect(parsed.mode).toEqual({ id: 'start', label: 'Start / AI Coder Context' })
     expect(parsed.outputPath).toBe(outputPath)
-    expect(parsed.includedFiles[0]).toBe('.ai/report-brief.md')
+    expect(parsed.includedFiles[0]).toBe('.ai/generated/report-brief.md')
     expect(generatedContent).toContain('# ACE Hub Context')
   })
 
@@ -272,6 +275,6 @@ describe('ace hub CLI', () => {
 
     await expect(readFile(path.join(rootDir, GENERATED_CONTEXT_PATH), 'utf8')).rejects.toThrow()
     expect(stdout).toContain('# ACE Hub Context')
-    expect(stdout).toContain('# --- FILE: .ai/report-brief.md ---')
+    expect(stdout).toContain('# --- FILE: .ai/generated/report-brief.md ---')
   })
 })

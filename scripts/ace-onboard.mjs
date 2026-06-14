@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
@@ -13,14 +13,17 @@ import {
 } from './ace-project-presets.mjs'
 import {
   getArgValue,
+  getMemoryPath,
   nowTimestamp,
   parseCliArgs,
+  readMemoryFile,
   readTextIfExists,
   writeAceBanner,
+  writeMemoryFile,
 } from './ai-memory-utils.mjs'
 
-export const PROJECT_PROFILE_PATH = '.ai/project-profile.md'
-export const RECOMMENDED_CONFIG_PATH = '.ai/memory-config.recommended.json'
+export const PROJECT_PROFILE_PATH = getMemoryPath('projectProfile')
+export const RECOMMENDED_CONFIG_PATH = getMemoryPath('memoryConfigRecommended')
 
 const MAX_SCANNED_FILES = 5000
 const MAX_SCAN_DEPTH = 8
@@ -198,8 +201,8 @@ export async function onboardRepository(rootDir, options = {}) {
       ? recommendedConfig
       : await mergeRecommendedConfig(rootDir, recommendedConfig, timestamp)
 
-    await writeJsonFile(path.join(rootDir, '.ai', 'memory-config.json'), appliedConfig)
-    writtenFiles.push('.ai/memory-config.json')
+    await writeMemoryFile(rootDir, 'memoryConfig', JSON.stringify(appliedConfig, null, 2))
+    writtenFiles.push(getMemoryPath('memoryConfig'))
   }
 
   return {
@@ -274,12 +277,12 @@ export function buildRecommendedMemoryConfig(profile, timestamp = nowTimestamp()
 }
 
 async function checkOnboarding(rootDir) {
-  const configContent = await readTextIfExists(path.join(rootDir, '.ai', 'memory-config.json'))
-  const profileContent = await readTextIfExists(path.join(rootDir, PROJECT_PROFILE_PATH))
+  const configContent = await readMemoryFile(rootDir, 'memoryConfig')
+  const profileContent = await readMemoryFile(rootDir, 'projectProfile')
   const issues = []
 
   if (configContent === null) {
-    issues.push('Missing .ai/memory-config.json.')
+    issues.push('Missing .ai/config/memory-config.json.')
   } else {
     const config = JSON.parse(configContent)
 
@@ -300,7 +303,7 @@ async function checkOnboarding(rootDir) {
 }
 
 async function mergeRecommendedConfig(rootDir, recommendedConfig, timestamp) {
-  const existingContent = await readTextIfExists(path.join(rootDir, '.ai', 'memory-config.json'))
+  const existingContent = await readMemoryFile(rootDir, 'memoryConfig')
   const existingConfig = existingContent ? JSON.parse(existingContent) : {}
 
   return {
@@ -327,12 +330,10 @@ async function mergeRecommendedConfig(rootDir, recommendedConfig, timestamp) {
 
 async function writeOnboardingFiles(rootDir, profileContent, recommendedConfig) {
   const writtenFiles = []
-  const profilePath = path.join(rootDir, PROJECT_PROFILE_PATH)
-  const recommendedPath = path.join(rootDir, RECOMMENDED_CONFIG_PATH)
 
-  await writeTextFile(profilePath, profileContent)
+  await writeMemoryFile(rootDir, 'projectProfile', profileContent)
   writtenFiles.push(PROJECT_PROFILE_PATH)
-  await writeJsonFile(recommendedPath, recommendedConfig)
+  await writeMemoryFile(rootDir, 'memoryConfigRecommended', JSON.stringify(recommendedConfig, null, 2))
   writtenFiles.push(RECOMMENDED_CONFIG_PATH)
 
   return writtenFiles
@@ -577,19 +578,6 @@ function normalizeRepoPath(filePath) {
 
 function stripByteOrderMark(content) {
   return content.replace(/^\uFEFF/u, '')
-}
-
-async function writeTextFile(filePath, content) {
-  await mkdir(path.dirname(filePath), { recursive: true })
-  await writeFile(filePath, normalizeTrailingNewline(content), 'utf8')
-}
-
-async function writeJsonFile(filePath, value) {
-  await writeTextFile(filePath, JSON.stringify(value, null, 2))
-}
-
-function normalizeTrailingNewline(content) {
-  return content.endsWith('\n') ? content : `${content}\n`
 }
 
 async function main() {

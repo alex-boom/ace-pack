@@ -112,8 +112,8 @@ ACE turns those soft expectations into local project structure:
 - `.ai/*` Markdown files keep task state, decisions, handoffs, and reflection
   readable by any LLM.
 - `AGENTS.md` keeps stack, architecture, and workflow rules close to the code.
-- `.ai/memory-config.json` marks high-risk paths and keywords for the current
-  repository.
+- `.ai/config/memory-config.json` marks high-risk paths and keywords for the
+  current repository, with `.ai/memory-config.json` kept as a legacy mirror.
 - `ace:validate` starts as an ACE memory check and can be replaced by each
   repo with its real mechanical quality gate.
 
@@ -164,8 +164,19 @@ Classify Risk -> Shift-Left Design Review -> Write Code -> Validate -> Commit to
 ACE is intentionally boring technology: standard Markdown in `.ai/`, standard
 `package.json` scripts, and native Node.js.
 
+From v2 onward, daily commands can use a single router:
+
+```bash
+npm run ace -- hub start
+npm run ace -- classify
+npm run ace -- finish
+```
+
+The older `ace:*` scripts remain supported, so `pnpm ace:finish` and
+`npm run ace:finish` continue to work.
+
 The key behavior is **Shift-Left Design Review**. For large or high-risk tasks,
-the agent must stop before implementation, fill `.ai/current-task.md` with the
+the agent must stop before implementation, fill `.ai/state/current-task.md` with the
 business value and technical approach, compare viable patterns, and choose one
 explicitly. The code comes after the architectural decision, not before it.
 
@@ -179,10 +190,11 @@ monorepo signals without installing dependencies or calling external services.
 `ace-pack init` adds or updates local project files:
 
 - `AGENTS.md` and `CLAUDE.md`
-- `.ai/*` memory, task, handoff, decisions, and profile files
+- `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated` memory files
+  plus legacy `.ai/*` mirrors for older agents
 - `scripts/*` ACE automation copied into the project
 - `package.json` commands such as `ace:onboard`, `ace:classify`,
-  `ace:validate`, `ace:finish`, and `ace:hub`
+  `ace:validate`, `ace:finish`, `ace:hub`, and the `ace` router
 
 ACE does not need to remain installed as a runtime dependency. The npm package
 acts as a scaffold CLI, then the project owns the copied scripts.
@@ -297,7 +309,8 @@ pnpm ace:hub -- --list
 
 Available modes:
 
-- `start` / `coder` - startup context with `.ai/report-brief.md` first.
+- `start` / `coder` - startup context with `.ai/generated/report-brief.md`
+  first, mirrored to `.ai/report-brief.md`.
 - `architect` - repo rules, technical docs, decisions, roadmap, and brief.
 - `architect-lite` / `plan` - lower-token planning context without full
   decisions history.
@@ -306,7 +319,8 @@ Available modes:
 - `business` - roadmap and work log.
 - `docs` - technical docs and optional setup/devops notes.
 
-By default ACE writes `.ai/generated-context.md`. For automation:
+By default ACE writes `.ai/generated/context.md` and mirrors it to the legacy
+`.ai/generated-context.md`. For automation:
 
 ```bash
 pnpm ace:hub -- --mode start --stdout
@@ -381,15 +395,16 @@ to stdout, which breaks stdio MCP framing.
 Exposed resources include the brief report, current task, handoff, decisions,
 roadmap, technical docs, and generated hub context when those files exist.
 
-## v1.0 Stability Contract
+## v2.0 Schema and Compatibility
 
-ACE v1.0 stabilizes installed file expectations, command names,
-`.ai/memory-config.json` schema version `1`, and migration rules for future
-template changes. Existing `.ai/*` memory remains project-owned, and the
-installer stays additive and idempotent.
+ACE v2.0 introduces categorized canonical memory paths under `.ai/config`,
+`.ai/state`, `.ai/knowledge`, and `.ai/generated`. The config schema remains
+version `1`, and legacy `.ai/*` paths are still mirrored for compatibility.
+Existing memory remains project-owned, and the installer stays additive and
+idempotent.
 
 Read the full contract on GitHub:
-[ACE v1.0 Schema and Compatibility](https://github.com/alex-boom/ace-pack/blob/main/docs/schema-compatibility.md).
+[ACE v2.0 Schema and Compatibility](https://github.com/alex-boom/ace-pack/blob/main/docs/schema-compatibility.md).
 
 ## Adoption Guides
 
@@ -434,8 +449,9 @@ then stops if unexpected files changed.
 
 | Command | Purpose |
 | --- | --- |
-| `ace:onboard` | Smart repository profiling with terminal summary. Writes `.ai/project-profile.md` and `.ai/memory-config.recommended.json` without changing active config. |
-| `ace:onboard -- --apply` | Merges recommendations into `.ai/memory-config.json` and marks the repo as profiled. |
+| `ace <command>` | Unified router for daily commands, used as `npm run ace -- <command>` or `pnpm ace <command>`. |
+| `ace:onboard` | Smart repository profiling with terminal summary. Writes `.ai/config/project-profile.md` and `.ai/config/memory-config.recommended.json` without changing active config. |
+| `ace:onboard -- --apply` | Merges recommendations into `.ai/config/memory-config.json` and marks the repo as profiled. |
 | `ace:onboard -- --preset next-trpc-drizzle-saas --apply` | Applies the built-in Next.js + tRPC + Drizzle SaaS profile. |
 | `ace:onboard -- --check` | Fails if the repository is still unprofiled. |
 | `ace:classify` | Git diff risk analysis for small, standard, and large tasks. |
@@ -450,15 +466,11 @@ ACE installs or updates:
 
 - `AGENTS.md` workflow section
 - `CLAUDE.md`
-- `.ai/current-task.md`
-- `.ai/session-handoff.md`
-- `.ai/decisions.md`
-- `.ai/changed-files.md`
-- `.ai/work-log.md`
-- `.ai/reflection-log.md`
-- `.ai/product-roadmap.md`
-- `.ai/tech-docs.md`
-- `.ai/memory-config.json`
+- `.ai/config/**`
+- `.ai/state/**`
+- `.ai/knowledge/**`
+- `.ai/generated/**`
+- legacy `.ai/*.md` and `.ai/*.json` mirrors for compatibility
 - `.ai/archive/.gitkeep`
 - `.ai/archive/tasks/.gitkeep`
 - `scripts/*` managed ACE automation

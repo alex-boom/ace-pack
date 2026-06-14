@@ -1,16 +1,40 @@
-# ACE v1.0 Schema and Compatibility
+# ACE v2.0 Schema and Compatibility
 
-This document defines the stable compatibility contract for installed ACE
-repositories starting with `ace-pack@1.0.0`.
+This document defines the compatibility contract for installed ACE repositories
+starting with `ace-pack@2.0.0`.
 
-ACE is intentionally Markdown-first. The stable contract is not a database
-schema; it is a set of file, section, command, and migration rules that future
-ACE releases must preserve unless a breaking major version intentionally changes
-them.
+ACE remains Markdown-first and zero-dependency. v2 changes the canonical memory
+layout, but it keeps v1 paths readable and writable through deterministic
+mirrors so existing repositories can upgrade without losing local memory.
 
 ## Stable CLI Surface
 
-These command names are stable in v1.x:
+v2 adds a single command router:
+
+- `ace` -> `node ./scripts/ace-cli.mjs`
+
+Use it as:
+
+```bash
+npm run ace -- finish
+pnpm ace finish
+```
+
+The router supports:
+
+- `init`
+- `check` / `validate`
+- `classify`
+- `finish`
+- `gate`
+- `hub`
+- `migrate`
+- `onboard`
+- `report`
+- `report brief`
+- `current-task-code`
+
+Existing command names remain supported for compatibility:
 
 - `ace:init`
 - `ace:check`
@@ -23,11 +47,7 @@ These command names are stable in v1.x:
 - `ace:report`
 - `ace:report:brief`
 
-Hub modes may grow additively in v1.x. For example, `architect-lite` is an
-optional lower-token planning mode; repositories created before that mode remain
-compatible without migration.
-
-Legacy aliases remain supported in v1.x:
+Legacy aliases remain supported:
 
 - `agent-memory:init`
 - `agent-memory:check`
@@ -40,34 +60,95 @@ Legacy aliases remain supported in v1.x:
 
 Projects may replace `ace:validate` with their own stricter local validation
 command. The installer must not overwrite a project-owned `ace:validate` script.
+The generic `ace` router script is added only when the project does not already
+own an `ace` script.
 
-## Stable Installed Files
+## Canonical v2 Memory Layout
 
-ACE installs or updates these files in consumer repositories:
+v2 organizes ACE memory by category:
+
+```text
+.ai/
+  config/
+    memory-config.json
+    memory-config.recommended.json
+    project-profile.md
+
+  state/
+    current-task.md
+    session-handoff.md
+    changed-files.md
+
+  knowledge/
+    decisions.md
+    tech-docs.md
+    product-roadmap.md
+    reflection-log.md
+    work-log.md
+
+  generated/
+    context.md
+    report-brief.md
+    report-full.md
+    report-full.xml
+    report-current-task-code.md
+    report-current-task-code.xml
+
+  archive/
+    tasks/
+```
+
+For v1 compatibility, ACE mirrors canonical files back to the legacy root
+`.ai/*` paths where those paths existed:
+
+The legacy root `.ai/*` paths remain compatible mirrors, not the canonical v2
+layout.
+
+| Canonical v2 path | Legacy compatible path |
+| --- | --- |
+| `.ai/config/memory-config.json` | `.ai/memory-config.json` |
+| `.ai/config/memory-config.recommended.json` | `.ai/memory-config.recommended.json` |
+| `.ai/config/project-profile.md` | `.ai/project-profile.md` |
+| `.ai/state/current-task.md` | `.ai/current-task.md` |
+| `.ai/state/session-handoff.md` | `.ai/session-handoff.md` |
+| `.ai/state/changed-files.md` | `.ai/changed-files.md` |
+| `.ai/knowledge/decisions.md` | `.ai/decisions.md` |
+| `.ai/knowledge/tech-docs.md` | `.ai/tech-docs.md` |
+| `.ai/knowledge/product-roadmap.md` | `.ai/product-roadmap.md` |
+| `.ai/knowledge/reflection-log.md` | `.ai/reflection-log.md` |
+| `.ai/knowledge/work-log.md` | `.ai/work-log.md` |
+| `.ai/generated/context.md` | `.ai/generated-context.md` |
+| `.ai/generated/report-brief.md` | `.ai/report-brief.md` |
+| `.ai/generated/report-full.md` | `.ai/report-full.md` |
+| `.ai/generated/report-full.xml` | `.ai/report-full.xml` |
+
+When both canonical and legacy files exist, ACE reads the newest copy. If a
+canonical file is still a template placeholder but the legacy file contains
+meaningful project memory, migration promotes the legacy content into the
+canonical file.
+
+## Installed Files
+
+ACE installs or updates:
 
 - `AGENTS.md`
 - `CLAUDE.md`
-- `.ai/current-task.md`
-- `.ai/session-handoff.md`
-- `.ai/decisions.md`
-- `.ai/changed-files.md`
-- `.ai/work-log.md`
-- `.ai/reflection-log.md`
-- `.ai/product-roadmap.md`
-- `.ai/tech-docs.md`
-- `.ai/memory-config.json`
+- canonical v2 `.ai/**` files listed above
+- legacy `.ai/*` mirrors for compatibility
 - `.ai/archive/.gitkeep`
 - `.ai/archive/tasks/.gitkeep`
 - `scripts/*.mjs`
 
-Existing `.ai/*` memory files are project-owned after creation. The installer
-may create missing files, but it must not overwrite existing memory content.
+Existing memory files are project-owned after creation. The installer may create
+missing files and deterministic mirrors, but it must not overwrite meaningful
+project memory.
 
 ACE may also create optional IDE bridge files such as `.cursorrules`,
 `.windsurfrules`, and `.github/copilot-instructions.md` when they are missing.
-These are thin adapters back to `AGENTS.md` and local `ace:*` scripts. They are
-not required by `ace:check`, and existing project-owned IDE rule files must not
-be overwritten.
+These are thin adapters back to `AGENTS.md` and local ACE commands. They are not
+required by `ace:check`, and existing project-owned IDE rule files must not be
+overwritten.
+IDE bridge files are optional and not required by `ace:check`.
 
 `AGENTS.md` is updated only inside this marked section:
 
@@ -77,31 +158,32 @@ be overwritten.
 <!-- agent-memory-workflow:end -->
 ```
 
-The marker names are stable in v1.x. Future releases may replace the marked ACE
+The marker names are stable. Future releases may replace the marked ACE
 workflow body, but they must preserve content outside the markers.
 
 ## Markdown Section Expectations
 
-ACE tools rely on headings, not exact prose. v1.x tools expect these sections to
-exist:
+ACE tools rely on headings, not exact prose. v2 tools expect these sections to
+exist in either canonical or legacy paths:
 
 | File | Required sections or signals |
 | --- | --- |
-| `.ai/current-task.md` | `## Lifecycle`, `## Goal`, `## Business Value / Product Alignment`, `## Technical Approach`, `## Acceptance Criteria`, `## Completion Checklist` |
-| `.ai/session-handoff.md` | `## What Was Done`, `## Quality Review`, `## Next Steps` |
-| `.ai/decisions.md` | `Decision:`, `Impact:` |
-| `.ai/product-roadmap.md` | `## Business Goals`, `## Completed Epics`, `## Planned Features` |
-| `.ai/tech-docs.md` | `## Architecture`, `## Data Model / DB Schema`, `## Auth, RBAC, and Security`, `## External APIs and Integrations` |
-| `.ai/changed-files.md` | `# Changed Files` |
-| `.ai/work-log.md` | `# Work Log` |
-| `.ai/reflection-log.md` | `## Unresolved`, `## Resolved` |
+| current task | `## Lifecycle`, `## Goal`, `## Business Value / Product Alignment`, `## Technical Approach`, `## Acceptance Criteria`, `## Completion Checklist` |
+| session handoff | `## What Was Done`, `## Quality Review`, `## Next Steps` |
+| decisions | `Decision:`, `Impact:` |
+| product roadmap | `## Business Goals`, `## Completed Epics`, `## Planned Features` |
+| technical docs | `## Architecture`, `## Data Model / DB Schema`, `## Auth, RBAC, and Security`, `## External APIs and Integrations` |
+| changed files | `# Changed Files` |
+| work log | `# Work Log` |
+| reflection log | `## Unresolved`, `## Resolved` |
 
 The wording inside sections may evolve. Agents and scripts should avoid
 depending on entire paragraphs when a heading or labeled value is enough.
 
-## `.ai/memory-config.json` Schema Version 1
+## `.ai/config/memory-config.json` Schema Version 1
 
-The active config schema remains version `1` in v1.0.
+The active config schema remains version `1` in v2.0. The memory layout changed;
+the risk-rule config did not.
 
 Stable fields:
 
@@ -152,20 +234,22 @@ changes, such as `ace:onboard -- --apply`.
 
 ## Migration Policy
 
-Within v1.x:
+The v2 migration is deterministic and local:
 
-- Prefer additive Markdown sections and optional config fields.
-- Keep existing command names and legacy aliases.
-- Preserve existing `.ai/*` files during install.
-- Preserve `AGENTS.md` content outside ACE markers.
-- Add regression tests for compatibility behavior before changing templates,
-  parser assumptions, or install behavior.
+- `ace-pack init`, `ace:init`, and `npm run ace -- migrate` create canonical v2
+  files from existing v1 legacy files when canonical files are missing.
+- Generated reports and hub context write canonical `.ai/generated/**` files and
+  legacy mirrors.
+- Readers accept both canonical and legacy paths.
+- Migration never calls AI, network services, or package registries.
+- If both paths contain meaningful but different content, ACE preserves them and
+  reads the newest copy instead of guessing intent.
 
-For a future schema version `2`:
+For future schema versions:
 
 - Document the reason for the schema bump before implementation.
 - Provide deterministic local migration behavior.
-- Keep a dry-run or reviewable migration path.
+- Keep a dry-run or reviewable migration path when changes are destructive.
 - Add fixture tests for repositories created by older ACE releases.
 - Fail clearly with actionable instructions if automatic migration is unsafe.
 

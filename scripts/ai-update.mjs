@@ -1,5 +1,3 @@
-import path from 'node:path'
-
 import {
   formatBullets,
   formatChecklist,
@@ -7,16 +5,15 @@ import {
   getArgValue,
   nowTimestamp,
   parseCliArgs,
-  readTextIfExists,
+  readMemoryFile,
   replaceLabeledValue,
   replaceMarkdownSection,
-  writeTextFile,
+  writeMemoryFile,
 } from './ai-memory-utils.mjs'
 
 const command = process.argv[2]
 const args = parseCliArgs(process.argv.slice(3))
 const rootDir = process.cwd()
-const aiDir = path.join(rootDir, '.ai')
 
 if (!command) {
   throw new Error(
@@ -45,8 +42,7 @@ switch (command) {
 }
 
 async function updateTask() {
-  const filePath = path.join(aiDir, 'current-task.md')
-  const existingContent = await requireFile(filePath)
+  const existingContent = await requireFile('currentTask')
   let nextContent = existingContent
 
   const feature = getArgValue(args, 'feature')
@@ -118,13 +114,12 @@ async function updateTask() {
     )
   }
 
-  await writeTextFile(filePath, nextContent)
-  process.stderr.write(`Updated ${filePath}\n`)
+  await writeMemoryFile(rootDir, 'currentTask', nextContent)
+  process.stderr.write('Updated .ai/state/current-task.md\n')
 }
 
 async function updateHandoff() {
-  const filePath = path.join(aiDir, 'session-handoff.md')
-  const existingContent = await requireFile(filePath)
+  const existingContent = await requireFile('sessionHandoff')
   let nextContent = existingContent
 
   const updated = getArgValue(args, 'updated')
@@ -163,13 +158,12 @@ async function updateHandoff() {
     nextContent = replaceMarkdownSection(nextContent, 'Notes', formatBullets(notes))
   }
 
-  await writeTextFile(filePath, nextContent)
-  process.stderr.write(`Updated ${filePath}\n`)
+  await writeMemoryFile(rootDir, 'sessionHandoff', nextContent)
+  process.stderr.write('Updated .ai/state/session-handoff.md\n')
 }
 
 async function appendWorkLog() {
-  const filePath = path.join(aiDir, 'work-log.md')
-  const existingContent = await requireFile(filePath)
+  const existingContent = await requireFile('workLog')
   const timestamp = getArgValue(args, 'timestamp')
   const messages = getArgList(args, 'message')
 
@@ -180,13 +174,12 @@ async function appendWorkLog() {
   const nextContent = `${existingContent.trimEnd()}\n\n## ${
     timestamp === undefined || timestamp === 'now' ? nowTimestamp() : timestamp
   }\n\n${formatBullets(messages)}\n`
-  await writeTextFile(filePath, nextContent)
-  process.stderr.write(`Updated ${filePath}\n`)
+  await writeMemoryFile(rootDir, 'workLog', nextContent)
+  process.stderr.write('Updated .ai/knowledge/work-log.md\n')
 }
 
 async function appendDecision() {
-  const filePath = path.join(aiDir, 'decisions.md')
-  const existingContent = await requireFile(filePath)
+  const existingContent = await requireFile('decisions')
   const timestamp = getArgValue(args, 'timestamp')
   const title = getArgValue(args, 'title')
   const decision = getArgList(args, 'decision')
@@ -204,13 +197,12 @@ async function appendDecision() {
   const block = `${heading}\n\nDecision:\n${formatBullets(decision)}\n\nReason:\n${formatBullets(reason)}\n\nImpact:\n${formatBullets(impact)}\n`
   const nextContent = existingContent.replace(/^# Decisions\r?\n\r?\n/, `# Decisions\n\n${block}\n`)
 
-  await writeTextFile(filePath, nextContent)
-  process.stderr.write(`Updated ${filePath}\n`)
+  await writeMemoryFile(rootDir, 'decisions', nextContent)
+  process.stderr.write('Updated .ai/knowledge/decisions.md\n')
 }
 
 async function appendChangedFile() {
-  const filePath = path.join(aiDir, 'changed-files.md')
-  const existingContent = await requireFile(filePath)
+  const existingContent = await requireFile('changedFiles')
   const changedFile = getArgValue(args, 'file')
   const notes = getArgList(args, 'note')
 
@@ -221,15 +213,15 @@ async function appendChangedFile() {
   const block = `\n[${changedFile}]\n${formatBullets(notes)}\n`
   const nextContent = `${existingContent.trimEnd()}${block}`
 
-  await writeTextFile(filePath, nextContent)
-  process.stderr.write(`Updated ${filePath}\n`)
+  await writeMemoryFile(rootDir, 'changedFiles', nextContent)
+  process.stderr.write('Updated .ai/state/changed-files.md\n')
 }
 
-async function requireFile(filePath) {
-  const content = await readTextIfExists(filePath)
+async function requireFile(memoryKey) {
+  const content = await readMemoryFile(rootDir, memoryKey)
 
   if (content === null) {
-    throw new Error(`Missing required file: ${filePath}`)
+    throw new Error(`Missing required ACE memory file: ${memoryKey}`)
   }
 
   return content

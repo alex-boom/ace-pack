@@ -263,7 +263,17 @@ describe('ai report scripts', () => {
 
     const briefReport = await readFile(path.join(rootDir, '.ai', 'report-brief.md'), 'utf8')
     const fullReport = await readFile(path.join(rootDir, '.ai', 'report-full.md'), 'utf8')
+    const canonicalBriefReport = await readFile(
+      path.join(rootDir, '.ai/generated/report-brief.md'),
+      'utf8',
+    )
+    const canonicalFullReport = await readFile(
+      path.join(rootDir, '.ai/generated/report-full.md'),
+      'utf8',
+    )
 
+    expect(canonicalBriefReport).toBe(briefReport)
+    expect(canonicalFullReport).toBe(fullReport)
     expect(briefReport).toContain('## Report Metadata')
     expect(briefReport).toContain('Freshness: Fresh')
     expect(briefReport).toContain('Current task version: v99')

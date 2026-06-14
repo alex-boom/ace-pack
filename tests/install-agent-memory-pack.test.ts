@@ -67,7 +67,9 @@ describe('installAcePack', () => {
 
     expect(result.createdFiles).toContain('AGENTS.md')
     expect(result.createdFiles).toContain('CLAUDE.md')
+    expect(result.createdFiles).toContain('scripts/ace-cli.mjs')
     expect(result.createdFiles).toContain('scripts/ace-hub.mjs')
+    expect(result.createdFiles).toContain('scripts/ace-migrate.mjs')
     expect(result.createdFiles).toContain('scripts/ace-mcp-server.mjs')
     expect(result.createdFiles).toContain('scripts/ace-onboard.mjs')
     expect(result.createdFiles).toContain('scripts/ace-project-presets.mjs')
@@ -91,6 +93,7 @@ describe('installAcePack', () => {
     expect(packageJson.scripts['ace:report']).toBe('node ./scripts/ai-report.mjs')
     expect(packageJson.scripts['ace:report:brief']).toBe('node ./scripts/ai-report-brief.mjs')
     expect(packageJson.scripts['ace:validate']).toBe('node ./scripts/check-agent-memory.mjs')
+    expect(packageJson.scripts.ace).toBe('node ./scripts/ace-cli.mjs')
     expect(packageJson.scripts['agent-memory:init']).toBe(
       'node ./scripts/bootstrap-agent-memory.mjs',
     )
@@ -101,6 +104,15 @@ describe('installAcePack', () => {
     expect(packageJson.scripts['ai:task:classify']).toBe('node ./scripts/ai-task-classify.mjs')
     expect(packageJson.scripts['ai:task:finish']).toBe('node ./scripts/ai-task-finish.mjs')
     expect(packageJson.scripts['ai:update:task']).toBe('node ./scripts/ai-update.mjs task')
+    await expect(readFile(path.join(rootDir, '.ai/state/current-task.md'), 'utf8')).resolves.toContain(
+      '# Current Task',
+    )
+    await expect(
+      readFile(path.join(rootDir, '.ai/config/memory-config.json'), 'utf8'),
+    ).resolves.toContain('"ACE (Agentic Context Engine) Configuration"')
+    await expect(
+      readFile(path.join(rootDir, '.ai/knowledge/tech-docs.md'), 'utf8'),
+    ).resolves.toContain('# Technical Docs')
     await expect(validateAgentMemory(rootDir)).resolves.toEqual([])
   })
 
@@ -170,7 +182,24 @@ describe('installAcePack', () => {
     const updatedPackageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'))
 
     expect(updatedPackageJson.scripts['ace:validate']).toBe('npm run lint && npm test')
+    expect(updatedPackageJson.scripts.ace).toBe('node ./scripts/ace-cli.mjs')
     expect(updatedPackageJson.scripts['ace:check']).toBe('node ./scripts/check-agent-memory.mjs')
+  })
+
+  it('does not overwrite a project-owned ace router script', async () => {
+    const rootDir = await createTargetRepo()
+
+    const packageJsonPath = path.join(rootDir, 'package.json')
+    const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'))
+    packageJson.scripts.ace = 'node ./custom-ace.js'
+    await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`, 'utf8')
+
+    await installAcePack(rootDir)
+
+    const updatedPackageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'))
+
+    expect(updatedPackageJson.scripts.ace).toBe('node ./custom-ace.js')
+    expect(updatedPackageJson.scripts['ace:finish']).toBe('node ./scripts/ai-task-finish.mjs')
   })
 
   it('is idempotent when installed again into the same repository', async () => {

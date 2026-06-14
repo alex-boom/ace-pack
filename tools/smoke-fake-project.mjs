@@ -281,11 +281,24 @@ async function verifySmokeProject(rootDir) {
 }
 
 async function runNodeScript(rootDir, scriptName, args) {
-  await execFileAsync(process.execPath, [path.join(rootDir, 'scripts', scriptName), ...args], {
-    cwd: rootDir,
-    encoding: 'utf8',
-    maxBuffer: 10 * 1024 * 1024,
-  })
+  try {
+    await execFileAsync(process.execPath, [path.join(rootDir, 'scripts', scriptName), ...args], {
+      cwd: rootDir,
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024,
+    })
+  } catch (error) {
+    const stdout = typeof error?.stdout === 'string' && error.stdout.trim() ? error.stdout.trim() : ''
+    const stderr = typeof error?.stderr === 'string' && error.stderr.trim() ? error.stderr.trim() : ''
+    const details = [stdout && `stdout:\n${stdout}`, stderr && `stderr:\n${stderr}`]
+      .filter(Boolean)
+      .join('\n\n')
+
+    throw new Error(
+      `${scriptName} failed${details ? `\n${details}` : ''}`,
+      { cause: error },
+    )
+  }
 }
 
 async function writeProjectFile(rootDir, relativePath, content) {

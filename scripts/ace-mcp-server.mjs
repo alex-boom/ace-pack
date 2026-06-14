@@ -3,7 +3,7 @@ import path from 'node:path'
 import readline from 'node:readline'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { readTextIfExists } from './ai-memory-utils.mjs'
+import { readMemoryFile } from './ai-memory-utils.mjs'
 
 export const MCP_PROTOCOL_VERSION = '2025-06-18'
 
@@ -13,49 +13,49 @@ const packageRoot = path.resolve(path.dirname(currentFilePath), '..')
 export const ACE_MCP_RESOURCE_SPECS = [
   {
     description: 'Compact ACE startup snapshot and current project state.',
-    filePath: '.ai/report-brief.md',
+    filePath: '.ai/generated/report-brief.md',
     name: 'ACE Brief Report',
     title: 'ACE Brief Report',
     uri: 'ace://memory/report-brief',
   },
   {
     description: 'Current ACE task lifecycle, goal, approach, status, and checklist.',
-    filePath: '.ai/current-task.md',
+    filePath: '.ai/state/current-task.md',
     name: 'ACE Current Task',
     title: 'ACE Current Task',
     uri: 'ace://memory/current-task',
   },
   {
     description: 'Latest ACE handoff, verification notes, risks, and next steps.',
-    filePath: '.ai/session-handoff.md',
+    filePath: '.ai/state/session-handoff.md',
     name: 'ACE Session Handoff',
     title: 'ACE Session Handoff',
     uri: 'ace://memory/session-handoff',
   },
   {
     description: 'Durable ACE project decisions and rationale.',
-    filePath: '.ai/decisions.md',
+    filePath: '.ai/knowledge/decisions.md',
     name: 'ACE Decisions',
     title: 'ACE Decisions',
     uri: 'ace://memory/decisions',
   },
   {
     description: 'Concise product roadmap and strategic context for ACE handoff.',
-    filePath: '.ai/product-roadmap.md',
+    filePath: '.ai/knowledge/product-roadmap.md',
     name: 'ACE Product Roadmap',
     title: 'ACE Product Roadmap',
     uri: 'ace://memory/product-roadmap',
   },
   {
     description: 'Technical architecture and operational context for the repository.',
-    filePath: '.ai/tech-docs.md',
+    filePath: '.ai/knowledge/tech-docs.md',
     name: 'ACE Technical Docs',
     title: 'ACE Technical Docs',
     uri: 'ace://memory/tech-docs',
   },
   {
     description: 'Last generated ACE hub payload, when available.',
-    filePath: '.ai/generated-context.md',
+    filePath: '.ai/generated/context.md',
     name: 'ACE Generated Context',
     title: 'ACE Generated Context',
     uri: 'ace://memory/generated-context',
@@ -66,7 +66,7 @@ export async function listAceMcpResources(rootDir) {
   const resources = []
 
   for (const resourceSpec of ACE_MCP_RESOURCE_SPECS) {
-    const content = await readTextIfExists(path.join(rootDir, resourceSpec.filePath))
+    const content = await readMemoryFile(rootDir, resourceSpec.filePath)
 
     if (content === null) {
       continue
@@ -85,7 +85,7 @@ export async function readAceMcpResource(rootDir, uri) {
     throw createRpcError(-32602, `Unknown ACE MCP resource: ${uri}`)
   }
 
-  const text = await readTextIfExists(path.join(rootDir, resourceSpec.filePath))
+  const text = await readMemoryFile(rootDir, resourceSpec.filePath)
 
   if (text === null) {
     throw createRpcError(-32002, `ACE MCP resource is not available: ${uri}`)

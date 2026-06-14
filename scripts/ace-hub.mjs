@@ -5,7 +5,9 @@ import { stdin as input, stdout as output } from 'node:process'
 import readline from 'node:readline'
 import { pathToFileURL } from 'node:url'
 
-export const GENERATED_CONTEXT_PATH = '.ai/generated-context.md'
+import { getMemoryPath, readMemoryFile, writeMemoryFile } from './ai-memory-utils.mjs'
+
+export const GENERATED_CONTEXT_PATH = getMemoryPath('generatedContext')
 
 function requiredFile(filePath) {
   return {
@@ -29,11 +31,11 @@ export const HUB_MODES = [
     label: 'Start / AI Coder Context',
     description: 'Brief, active task, handoff, changed files, and reflection.',
     files: [
-      optionalFile('.ai/report-brief.md'),
-      requiredFile('.ai/current-task.md'),
-      requiredFile('.ai/session-handoff.md'),
-      requiredFile('.ai/changed-files.md'),
-      requiredFile('.ai/reflection-log.md'),
+      optionalFile('.ai/generated/report-brief.md'),
+      requiredFile('.ai/state/current-task.md'),
+      requiredFile('.ai/state/session-handoff.md'),
+      requiredFile('.ai/state/changed-files.md'),
+      requiredFile('.ai/knowledge/reflection-log.md'),
     ],
   },
   {
@@ -44,10 +46,10 @@ export const HUB_MODES = [
     description: 'Repo rules, technical docs, decisions, roadmap, and brief.',
     files: [
       requiredFile('AGENTS.md'),
-      requiredFile('.ai/tech-docs.md'),
-      requiredFile('.ai/decisions.md'),
-      requiredFile('.ai/product-roadmap.md'),
-      optionalFile('.ai/report-brief.md'),
+      requiredFile('.ai/knowledge/tech-docs.md'),
+      requiredFile('.ai/knowledge/decisions.md'),
+      requiredFile('.ai/knowledge/product-roadmap.md'),
+      optionalFile('.ai/generated/report-brief.md'),
     ],
   },
   {
@@ -56,10 +58,10 @@ export const HUB_MODES = [
     label: 'AI Architect Lite Context',
     description: 'Brief, repo rules, roadmap, and technical docs without full decisions history.',
     files: [
-      optionalFile('.ai/report-brief.md'),
+      optionalFile('.ai/generated/report-brief.md'),
       requiredFile('AGENTS.md'),
-      requiredFile('.ai/product-roadmap.md'),
-      requiredFile('.ai/tech-docs.md'),
+      requiredFile('.ai/knowledge/product-roadmap.md'),
+      requiredFile('.ai/knowledge/tech-docs.md'),
     ],
   },
   {
@@ -68,7 +70,7 @@ export const HUB_MODES = [
     aliases: [],
     label: 'Business Report',
     description: 'Roadmap and recent work log for human review.',
-    files: [requiredFile('.ai/product-roadmap.md'), requiredFile('.ai/work-log.md')],
+    files: [requiredFile('.ai/knowledge/product-roadmap.md'), requiredFile('.ai/knowledge/work-log.md')],
   },
   {
     id: 'docs',
@@ -76,7 +78,7 @@ export const HUB_MODES = [
     aliases: [],
     label: 'Developer Docs',
     description: 'Technical docs and optional setup/devops notes.',
-    files: [requiredFile('.ai/tech-docs.md'), optionalFile('DEVOPS.md')],
+    files: [requiredFile('.ai/knowledge/tech-docs.md'), optionalFile('DEVOPS.md')],
   },
   {
     id: 'handoff',
@@ -84,11 +86,11 @@ export const HUB_MODES = [
     label: 'Agent Handoff Context',
     description: 'Brief, handoff, changed files, current task, and decisions.',
     files: [
-      optionalFile('.ai/report-brief.md'),
-      requiredFile('.ai/session-handoff.md'),
-      requiredFile('.ai/changed-files.md'),
-      requiredFile('.ai/current-task.md'),
-      requiredFile('.ai/decisions.md'),
+      optionalFile('.ai/generated/report-brief.md'),
+      requiredFile('.ai/state/session-handoff.md'),
+      requiredFile('.ai/state/changed-files.md'),
+      requiredFile('.ai/state/current-task.md'),
+      requiredFile('.ai/knowledge/decisions.md'),
     ],
   },
   {
@@ -98,10 +100,10 @@ export const HUB_MODES = [
     description: 'Brief, task, changed files, handoff verification, and git summary.',
     includeGitSummary: true,
     files: [
-      optionalFile('.ai/report-brief.md'),
-      requiredFile('.ai/current-task.md'),
-      requiredFile('.ai/changed-files.md'),
-      requiredFile('.ai/session-handoff.md'),
+      optionalFile('.ai/generated/report-brief.md'),
+      requiredFile('.ai/state/current-task.md'),
+      requiredFile('.ai/state/changed-files.md'),
+      requiredFile('.ai/state/session-handoff.md'),
     ],
   },
 ]
@@ -173,13 +175,15 @@ export async function generateContextPayload(rootDir, selection, options = {}) {
   })
 
   const shouldWrite = options.writeOutput !== false
-  const outputPath = shouldWrite
-    ? resolveOutputPath(rootDir, options.outputPath ?? GENERATED_CONTEXT_PATH)
-    : null
+  let outputPath = null
 
-  if (outputPath) {
+  if (shouldWrite && options.outputPath) {
+    outputPath = resolveOutputPath(rootDir, options.outputPath)
     await mkdir(path.dirname(outputPath), { recursive: true })
     await writeFile(outputPath, payload, 'utf8')
+  } else if (shouldWrite) {
+    const [relativeOutputPath] = await writeMemoryFile(rootDir, 'generatedContext', payload)
+    outputPath = path.join(rootDir, relativeOutputPath)
   }
 
   return {
@@ -205,21 +209,25 @@ function resolveOutputPath(rootDir, outputPath) {
 }
 
 async function readContextFile(rootDir, file) {
-  const filePath = path.join(rootDir, file.path)
+  const content = await readMemoryFile(rootDir, file.path)
+
+  if (content !== null) {
+    return content
+  }
 
   try {
-    return await readFile(filePath, 'utf8')
+    return await readFile(path.join(rootDir, file.path), 'utf8')
   } catch (error) {
-    if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
-      if (file.required) {
-        throw new Error(`Missing required context file: ${file.path}`)
-      }
-
-      return null
+    if (error && typeof error === 'object' && 'code' in error && error.code !== 'ENOENT') {
+      throw error
     }
-
-    throw error
   }
+
+  if (file.required) {
+    throw new Error(`Missing required context file: ${file.path}`)
+  }
+
+  return null
 }
 
 function formatContextPayload({

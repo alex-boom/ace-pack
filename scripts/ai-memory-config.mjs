@@ -1,6 +1,4 @@
-import path from 'node:path'
-
-import { readTextIfExists } from './ai-memory-utils.mjs'
+import { readMemoryFile } from './ai-memory-utils.mjs'
 
 const DEFAULT_MEMORY_CONFIG = {
   version: 1,
@@ -21,8 +19,7 @@ const DEFAULT_MEMORY_CONFIG = {
 const VALID_TIERS = new Set(['small', 'standard', 'large'])
 
 export async function readMemoryConfig(rootDir) {
-  const configPath = path.join(rootDir, '.ai', 'memory-config.json')
-  const content = await readTextIfExists(configPath)
+  const content = await readMemoryFile(rootDir, 'memoryConfig')
 
   if (content === null) {
     return DEFAULT_MEMORY_CONFIG

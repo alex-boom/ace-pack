@@ -10,6 +10,7 @@ import {
   getArgValue,
   hasMeaningfulContent,
   parseCliArgs,
+  readMemoryFile,
   readTextIfExists,
 } from './ai-memory-utils.mjs'
 
@@ -266,7 +267,7 @@ function summarizeClassification(classification) {
 }
 
 async function readAiFile(rootDir, fileName) {
-  return readTextIfExists(path.join(rootDir, '.ai', fileName))
+  return readMemoryFile(rootDir, fileName)
 }
 
 function formatGateResult(result) {

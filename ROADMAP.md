@@ -138,15 +138,26 @@ compact handoff, changed-files, work-log, and brief report updates while leaving
 current-task lifecycle untouched. `ace:hub` adds `architect-lite` / `plan` for
 lower-token planning context, and `ace:check` adds warning-only freshness hints.
 
-## Long-Term Research and Development (v2.0+)
+### v2.0: Command Router and Memory Schema v2 (shipped)
 
-### Memory Consolidation and Schema v2 Research
+Clean up the daily command and memory surfaces without abandoning existing
+repositories. v2 adds `npm run ace -- <command>` / `pnpm ace <command>` as a
+single router while preserving all `ace:*` and legacy aliases. It introduces
+canonical `.ai/config`, `.ai/state`, `.ai/knowledge`, and `.ai/generated`
+categories, writes generated reports and hub payloads under `.ai/generated/**`,
+and mirrors legacy `.ai/*` paths for compatibility. Migration is deterministic,
+local, and never overwrites meaningful project-owned memory.
 
-Research whether high-churn `.ai` files such as `current-task`,
-`session-handoff`, and `changed-files` should be consolidated into fewer state
-files. The goal is to reduce token load, prevent LLM desync, and simplify future
-agent context. Any implementation must follow the v1.0 compatibility contract
-and include a deterministic migration plan before changing schema shape.
+## Long-Term Research and Development (v2.1+)
+
+### Deeper Memory Consolidation Research
+
+Research whether high-churn state such as `current-task`, `session-handoff`,
+and `changed-files` should eventually be consolidated into fewer files instead
+of only categorized. The goal is to reduce token load, prevent LLM desync, and
+simplify future agent context. Any implementation must follow the v2
+compatibility contract and include deterministic migration behavior before
+changing schema shape again.
 
 ### Standalone ACE Engine
 

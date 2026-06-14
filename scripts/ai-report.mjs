@@ -12,19 +12,16 @@ import {
   formatStartSnapshot,
   formatTimestamp,
   getFreshnessStatus,
-  readFileTimestamp,
+  getMemoryPath,
+  readMemoryFile,
+  readMemoryFileTimestamp,
   readTextIfExists,
   resolveStackSummary,
   summarizeVerification,
-  writeTextFile,
+  writeMemoryFile,
 } from './ai-memory-utils.mjs'
 
 const rootDir = process.argv[2] ? path.resolve(process.cwd(), process.argv[2]) : process.cwd()
-const aiDir = path.join(rootDir, '.ai')
-const fullReportPath = path.join(aiDir, 'report-full.md')
-const xmlReportPath = path.join(aiDir, 'report-full.xml')
-const currentTaskPath = path.join(aiDir, 'current-task.md')
-const handoffPath = path.join(aiDir, 'session-handoff.md')
 const shouldSkipXml = process.env.AI_REPORT_SKIP_XML === '1'
 
 const [
@@ -42,15 +39,15 @@ const [
 ] = await Promise.all([
   readTextIfExists(path.join(rootDir, 'package.json')),
   readTextIfExists(path.join(rootDir, 'AGENTS.md')),
-  readTextIfExists(currentTaskPath),
-  readTextIfExists(handoffPath),
-  readTextIfExists(path.join(aiDir, 'decisions.md')),
-  readTextIfExists(path.join(aiDir, 'changed-files.md')),
-  readTextIfExists(path.join(aiDir, 'work-log.md')),
-  readTextIfExists(path.join(aiDir, 'reflection-log.md')),
-  readTextIfExists(path.join(aiDir, 'project-profile.md')),
-  readFileTimestamp(currentTaskPath),
-  readFileTimestamp(handoffPath),
+  readMemoryFile(rootDir, 'currentTask'),
+  readMemoryFile(rootDir, 'sessionHandoff'),
+  readMemoryFile(rootDir, 'decisions'),
+  readMemoryFile(rootDir, 'changedFiles'),
+  readMemoryFile(rootDir, 'workLog'),
+  readMemoryFile(rootDir, 'reflectionLog'),
+  readMemoryFile(rootDir, 'projectProfile'),
+  readMemoryFileTimestamp(rootDir, 'currentTask'),
+  readMemoryFileTimestamp(rootDir, 'sessionHandoff'),
 ])
 
 if (
@@ -91,7 +88,7 @@ let xmlReportStatus = '- XML bundle skipped because `AI_REPORT_SKIP_XML=1`.'
 if (!shouldSkipXml) {
   try {
     await runRepomix(rootDir)
-    xmlReportStatus = '- XML bundle generated at `.ai/report-full.xml` for parsable handoff.'
+    xmlReportStatus = '- XML bundle generated at `.ai/generated/report-full.xml` for parsable handoff.'
   } catch (error) {
     xmlReportStatus = `- XML bundle not generated: ${formatErrorMessage(error)}`
     process.stderr.write(`Skipped XML report: ${formatErrorMessage(error)}\n`)
@@ -174,18 +171,18 @@ ${unresolvedReflections.length > 0 ? unresolvedReflections.map((item) => `- ${it
 ${xmlReportStatus}
 `
 
-await writeTextFile(fullReportPath, fullReport)
-process.stderr.write(`Generated ${fullReportPath}\n`)
+const [fullReportPath] = await writeMemoryFile(rootDir, 'reportFull', fullReport)
+process.stderr.write(`Generated ${path.join(rootDir, fullReportPath)}\n`)
 
 if (!shouldSkipXml && xmlReportStatus.includes('generated at')) {
-  process.stderr.write(`Generated ${xmlReportPath}\n`)
+  process.stderr.write(`Generated ${path.join(rootDir, getMemoryPath('reportFullXml'))}\n`)
 }
 
 async function runRepomix(cwd) {
   const command =
     process.platform === 'win32'
-      ? 'pnpm.cmd dlx repomix --include ".ai/current-task.md,.ai/session-handoff.md,.ai/work-log.md,.ai/changed-files.md,.ai/decisions.md,.ai/reflection-log.md,.ai/memory-config.json,AGENTS.md" --output .ai/report-full.xml --style xml --parsable-style --no-default-patterns'
-      : 'pnpm dlx repomix --include ".ai/current-task.md,.ai/session-handoff.md,.ai/work-log.md,.ai/changed-files.md,.ai/decisions.md,.ai/reflection-log.md,.ai/memory-config.json,AGENTS.md" --output .ai/report-full.xml --style xml --parsable-style --no-default-patterns'
+      ? 'pnpm.cmd dlx repomix --include ".ai/current-task.md,.ai/session-handoff.md,.ai/work-log.md,.ai/changed-files.md,.ai/decisions.md,.ai/reflection-log.md,.ai/memory-config.json,AGENTS.md" --output .ai/generated/report-full.xml --style xml --parsable-style --no-default-patterns'
+      : 'pnpm dlx repomix --include ".ai/current-task.md,.ai/session-handoff.md,.ai/work-log.md,.ai/changed-files.md,.ai/decisions.md,.ai/reflection-log.md,.ai/memory-config.json,AGENTS.md" --output .ai/generated/report-full.xml --style xml --parsable-style --no-default-patterns'
 
   await new Promise((resolve, reject) => {
     const child = spawn(command, [], {
@@ -204,6 +201,12 @@ async function runRepomix(cwd) {
       reject(new Error(`repomix exited with code ${code ?? 'unknown'}`))
     })
   })
+
+  const xmlContent = await readTextIfExists(path.join(cwd, getMemoryPath('reportFullXml')))
+
+  if (xmlContent !== null) {
+    await writeMemoryFile(cwd, 'reportFullXml', xmlContent)
+  }
 }
 
 function formatErrorMessage(error) {

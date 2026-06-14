@@ -3,14 +3,11 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { promisify } from 'node:util'
 
-import { formatTimestamp, readTextIfExists, writeTextFile } from './ai-memory-utils.mjs'
+import { formatTimestamp, readTextIfExists, writeMemoryFile } from './ai-memory-utils.mjs'
 
 const execFileAsync = promisify(execFile)
 
 const rootDir = process.argv[2] ? path.resolve(process.cwd(), process.argv[2]) : process.cwd()
-const aiDir = path.join(rootDir, '.ai')
-const outputMdPath = path.join(aiDir, 'report-current-task-code.md')
-const outputXmlPath = path.join(aiDir, 'report-current-task-code.xml')
 
 const packageJsonContent = await readTextIfExists(path.join(rootDir, 'package.json'))
 if (packageJsonContent === null) {
@@ -122,7 +119,9 @@ const xml = [
   '</current-task-code-report>',
 ].join('\n')
 
-await writeTextFile(outputMdPath, md)
-await writeTextFile(outputXmlPath, xml)
+const [outputMdPath] = await writeMemoryFile(rootDir, 'reportCurrentTaskCode', md)
+const [outputXmlPath] = await writeMemoryFile(rootDir, 'reportCurrentTaskCodeXml', xml)
 
-process.stderr.write(`Generated ${outputMdPath}\nGenerated ${outputXmlPath}\n`)
+process.stderr.write(
+  `Generated ${path.join(rootDir, outputMdPath)}\nGenerated ${path.join(rootDir, outputXmlPath)}\n`,
+)

@@ -32,11 +32,14 @@ const REQUIRED_PACKAGE_SCRIPTS = {
 }
 
 const DEFAULT_PACKAGE_SCRIPTS = {
+  ace: 'node ./scripts/ace-cli.mjs',
   'ace:validate': 'node ./scripts/check-agent-memory.mjs',
 }
 
 const MANAGED_SCRIPT_FILES = [
+  'ace-cli.mjs',
   'ace-hub.mjs',
+  'ace-migrate.mjs',
   'ace-mcp-server.mjs',
   'ace-onboard.mjs',
   'ace-project-presets.mjs',

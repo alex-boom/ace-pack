@@ -270,6 +270,7 @@ describe('package metadata', () => {
     expect(packageJson.bin?.['ace-pack']).toBe('install-ace-pack.mjs')
     expect(packageJson.bin?.['agent-memory-pack']).toBe('install-agent-memory-pack.mjs')
     expect(packageJson.scripts?.['install:pack']).toBe('node ./install-ace-pack.mjs')
+    expect(packageJson.scripts?.ace).toBe('node ./scripts/ace-cli.mjs')
     expect(packageJson.scripts?.test).toBe('vitest run')
     expect(packageJson.scripts?.['smoke:fake-project']).toBe(
       'node ./tools/smoke-fake-project.mjs',

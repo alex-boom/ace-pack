@@ -156,29 +156,33 @@ choices, architecture rules, and quality gates. Read it first in every session.
 
 After reading \`AGENTS.md\`, read:
 
-1. \`.ai/report-brief.md\` if available for compact context.
-2. \`.ai/current-task.md\`
-3. \`.ai/session-handoff.md\`
-4. \`.ai/decisions.md\`
-5. \`.ai/changed-files.md\`
-6. Recent unresolved entries in \`.ai/reflection-log.md\`
+1. \`.ai/generated/report-brief.md\` if available for compact context
+   (\`.ai/report-brief.md\` is the legacy mirror).
+2. \`.ai/state/current-task.md\`
+3. \`.ai/state/session-handoff.md\`
+4. \`.ai/knowledge/decisions.md\`
+5. \`.ai/state/changed-files.md\`
+6. Recent unresolved entries in \`.ai/knowledge/reflection-log.md\`
 
-Read \`.ai/work-log.md\` only when you need additional history for the current
-task.
+Legacy root \`.ai/*.md\` files remain compatible, including the
+\`.ai/current-task.md\` mirror. Read \`.ai/knowledge/work-log.md\` only when
+you need additional history for the current task.
 
 ## Working Rules
 
 - Prefer minimal diffs over rewrites.
 - Preserve existing TypeScript, UI, and API contracts unless the task says
   otherwise.
-- Use \`pnpm ace:classify\` to select the adaptive task tier.
-- Run \`pnpm ace:onboard\` after fresh installation in an unfamiliar project
-  before trusting project-specific risk rules.
+- Use \`pnpm ace classify\` or \`pnpm ace:classify\` to select the adaptive task
+  tier.
+- Run \`pnpm ace onboard\` or \`pnpm ace:onboard\` after fresh installation in an
+  unfamiliar project before trusting project-specific risk rules.
 - On Windows PowerShell, use \`pnpm.cmd ace:classify\`,
   \`pnpm.cmd ace:validate\`, and similar commands if script execution policy
   blocks the \`pnpm\` shim.
-- For large or high-risk standard tasks, complete \`.ai/current-task.md\`
-  Business Value and Technical Approach before writing code.
+- For large or high-risk standard tasks, complete
+  \`.ai/state/current-task.md\` Business Value and Technical Approach before
+  writing code.
 - Treat \`.ai/*\` as the current source of task context and handoff state.
 - Use \`YYYY-MM-DD HH:mm\` timestamps in \`.ai/session-handoff.md\`,
   \`.ai/work-log.md\`, \`.ai/reflection-log.md\`, and \`.ai/decisions.md\`.
@@ -212,28 +216,38 @@ and decision history. Use this workflow on top of the repo rules above;
 \`AGENTS.md\` remains the authoritative source for stack, architecture, and
 quality constraints.
 
+ACE v2 canonical memory is organized under \`.ai/config\`, \`.ai/state\`,
+\`.ai/knowledge\`, and \`.ai/generated\`. Legacy root \`.ai/*.md\` paths remain
+compatible mirrors for older agents and scripts.
+
 Before starting work:
 
 1. Read \`AGENTS.md\` first.
-2. If available, read \`.ai/report-brief.md\` first for a compact summary,
-   including recent unresolved reflections.
-3. Treat \`.ai/*\` as authoritative and read \`.ai/current-task.md\`,
-   \`.ai/session-handoff.md\`, \`.ai/decisions.md\`, and
-   \`.ai/changed-files.md\` when you need detail or verification.
-4. Run \`pnpm ace:classify\` before implementation to identify whether the
-   task is small, standard, or large.
-5. If this is a newly installed or unknown project and \`.ai/memory-config.json\`
-   is still marked \`unprofiled\`, run \`pnpm ace:onboard\` and apply an
-   approved profile before implementation.
+2. If available, read \`.ai/generated/report-brief.md\` first for a compact
+   summary, including recent unresolved reflections.
+3. Treat \`.ai/*\` as authoritative and read \`.ai/state/current-task.md\`,
+   \`.ai/state/session-handoff.md\`, \`.ai/knowledge/decisions.md\`, and
+   \`.ai/state/changed-files.md\` when you need detail or verification.
+4. Run \`pnpm ace classify\` or \`pnpm ace:classify\` before implementation to
+   identify whether the task is small, standard, or large.
+5. If this is a newly installed or unknown project and
+   \`.ai/config/memory-config.json\` is still marked \`unprofiled\`, run
+   \`pnpm ace onboard\` or \`pnpm ace:onboard\` and apply an approved profile
+   before implementation.
 6. For large tasks, and standard tasks with high-risk signals, complete the
-   \`.ai/current-task.md\` Business Value and Technical Approach sections before
-   writing code. Compare at least two viable patterns and choose explicitly.
-7. Read \`.ai/work-log.md\` only when you need extra historical context.
-8. If the memory files are missing, run \`pnpm ace:init\`.
+   \`.ai/state/current-task.md\` Business Value and Technical Approach sections
+   before writing code. Compare at least two viable patterns and choose
+   explicitly.
+7. Read \`.ai/knowledge/work-log.md\` only when you need extra historical
+   context.
+8. If the memory files are missing, run \`pnpm ace init\` or \`pnpm ace:init\`.
 
 Command note: examples use \`pnpm\`. On Windows PowerShell, use
 \`pnpm.cmd ace:classify\`, \`pnpm.cmd ace:validate\`, and similar commands if
 the \`pnpm\` shim is blocked by execution policy.
+
+Router command note: npm users can run \`npm run ace -- <command>\`; pnpm users
+can run \`pnpm ace <command>\`. Existing \`ace:*\` scripts remain supported.
 
 Legacy commands such as \`pnpm ai:task:classify\`, \`pnpm ai:task:finish\`,
 and \`pnpm agent-memory:init\` remain supported for compatibility.
@@ -246,22 +260,25 @@ While working:
 
 - Prefer minimal, safe diffs that preserve existing UI and API contracts.
 - Do not rewrite large components or architecture unless the task requires it.
-- Keep \`.ai/current-task.md\` aligned with the active task when scope changes.
-- Keep project-specific tier and risk rules in \`.ai/memory-config.json\`, the
-  canonical ACE config, not inside the scripts, so the toolset remains
-  portable.
-- Use \`pnpm ace:onboard\` to generate \`.ai/project-profile.md\` and
-  recommended project-specific risk rules when ACE is installed into an
-  unfamiliar repo.
+- Keep \`.ai/state/current-task.md\` aligned with the active task when scope
+  changes.
+- Keep project-specific tier and risk rules in
+  \`.ai/config/memory-config.json\`, the canonical ACE config, not inside the
+  scripts, so the toolset remains portable.
+- Use \`pnpm ace onboard\` or \`pnpm ace:onboard\` to generate
+  \`.ai/config/project-profile.md\` and recommended project-specific risk rules
+  when ACE is installed into an unfamiliar repo.
 - When updating \`.ai/session-handoff.md\`, \`.ai/work-log.md\`,
   \`.ai/reflection-log.md\`, or \`.ai/decisions.md\`, use timestamps in
   \`YYYY-MM-DD HH:mm\` format.
-- Keep \`.ai/current-task.md\`, \`.ai/session-handoff.md\`,
-  \`.ai/reflection-log.md\`, and \`.ai/changed-files.md\` compact.
-- Archive only \`.ai/work-log.md\`, \`.ai/reflection-log.md\`, and
-  \`.ai/decisions.md\` into \`.ai/archive/\` when they grow past the documented
-  thresholds.
-- Use \`.ai/current-task.md\` lifecycle fields for task/version transitions.
+- Keep \`.ai/state/current-task.md\`, \`.ai/state/session-handoff.md\`,
+  \`.ai/knowledge/reflection-log.md\`, and \`.ai/state/changed-files.md\`
+  compact.
+- Archive only \`.ai/knowledge/work-log.md\`,
+  \`.ai/knowledge/reflection-log.md\`, and \`.ai/knowledge/decisions.md\` into
+  \`.ai/archive/\` when they grow past the documented thresholds.
+- Use \`.ai/state/current-task.md\` lifecycle fields for task/version
+  transitions.
   When a large task version is complete, mark its completion checklist and let
   \`pnpm ace:finish\` archive a final snapshot.
 

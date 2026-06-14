@@ -11,9 +11,11 @@ import {
   getArgValue,
   hasMeaningfulContent,
   parseCliArgs,
+  readMemoryFile,
   readTextIfExists,
   replaceMarkdownSection,
   writeAceBanner,
+  writeMemoryFile,
   writeTextFile,
 } from './ai-memory-utils.mjs'
 import { classifyRepositoryTask } from './ai-task-classify.mjs'
@@ -71,8 +73,7 @@ export function isSmallLowRiskClassification(classification) {
 }
 
 export async function archiveCurrentTask(rootDir) {
-  const currentTaskPath = path.join(rootDir, '.ai', 'current-task.md')
-  const currentTaskContent = await readTextIfExists(currentTaskPath)
+  const currentTaskContent = await readMemoryFile(rootDir, 'currentTask')
 
   if (currentTaskContent === null) {
     throw new Error('Cannot archive missing .ai/current-task.md.')
@@ -182,7 +183,6 @@ async function writeSmallHandoff(rootDir, {
   timestamp,
   verificationLine,
 }) {
-  const handoffPath = path.join(rootDir, '.ai', 'session-handoff.md')
   let nextContent = replaceMarkdownSection(handoffContent, 'Last Update', timestamp)
 
   nextContent = mergeSection(nextContent, 'What Was Done', [
@@ -208,12 +208,11 @@ async function writeSmallHandoff(rootDir, {
     '- NPM publish: not required for this small low-risk closeout unless repository release policy says otherwise.',
   ].join('\n'))
 
-  await writeTextFile(handoffPath, nextContent)
+  await writeMemoryFile(rootDir, 'sessionHandoff', nextContent)
 }
 
 async function writeSmallChangedFiles(rootDir, { changedFiles }) {
-  const changedFilesPath = path.join(rootDir, '.ai', 'changed-files.md')
-  const currentContent = (await readTextIfExists(changedFilesPath)) ?? '# Changed Files\n'
+  const currentContent = (await readMemoryFile(rootDir, 'changedFiles')) ?? '# Changed Files\n'
   const missingEntries =
     changedFiles.length > 0
       ? changedFiles.filter((filePath) => !currentContent.includes(`[${filePath}]`))
@@ -235,7 +234,7 @@ async function writeSmallChangedFiles(rootDir, { changedFiles }) {
     })
     .join('\n\n')
 
-  await writeTextFile(changedFilesPath, `${currentContent.trimEnd()}\n\n${entries}\n`)
+  await writeMemoryFile(rootDir, 'changedFiles', `${currentContent.trimEnd()}\n\n${entries}\n`)
 }
 
 async function writeSmallWorkLog(rootDir, {
@@ -243,8 +242,7 @@ async function writeSmallWorkLog(rootDir, {
   timestamp,
   verificationLine,
 }) {
-  const workLogPath = path.join(rootDir, '.ai', 'work-log.md')
-  const currentContent = (await readTextIfExists(workLogPath)) ?? '# Work Log\n'
+  const currentContent = (await readMemoryFile(rootDir, 'workLog')) ?? '# Work Log\n'
   const entry = [
     `## ${timestamp}`,
     '',
@@ -254,7 +252,7 @@ async function writeSmallWorkLog(rootDir, {
     '- NPM publish: not required for this small low-risk closeout unless repository release policy says otherwise.',
   ].join('\n')
 
-  await writeTextFile(workLogPath, `${currentContent.trimEnd()}\n\n${entry}\n`)
+  await writeMemoryFile(rootDir, 'workLog', `${currentContent.trimEnd()}\n\n${entry}\n`)
 }
 
 function mergeSection(content, heading, generatedBody) {
@@ -281,11 +279,10 @@ function formatSmallCloseoutBlock(body) {
 }
 
 async function requireAiFile(rootDir, fileName) {
-  const filePath = path.join(rootDir, '.ai', fileName)
-  const content = await readTextIfExists(filePath)
+  const content = await readMemoryFile(rootDir, fileName)
 
   if (content === null) {
-    throw new Error(`Missing required file: ${filePath}`)
+    throw new Error(`Missing required file: .ai/${fileName}`)
   }
 
   return content

@@ -1,6 +1,6 @@
 {
   "name": "ace-pack",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Local AgentOps for AI coding agents: durable memory, guardrails, and quality gates for vibe coding in real repositories.",
   "type": "module",
   "license": "MIT",
@@ -59,6 +59,7 @@
     "release:ready": "npm run test && npm run smoke:fake-project && npm run ace:gate && npm run check:npm-payload && npm run release:npm:dry",
     "smoke:fake-project": "node ./tools/smoke-fake-project.mjs",
     "dogfood:self-check": "node ./tools/dogfood-self-check.mjs",
+    "ace": "node ./scripts/ace-cli.mjs",
     "ace:validate": "node ./scripts/check-agent-memory.mjs",
     "test": "vitest run",
     "ace:init": "node ./scripts/bootstrap-agent-memory.mjs",

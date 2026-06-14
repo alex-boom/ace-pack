@@ -11,17 +11,15 @@ import {
   formatStartSnapshot,
   formatTimestamp,
   getFreshnessStatus,
-  readFileTimestamp,
+  readMemoryFile,
+  readMemoryFileTimestamp,
   readTextIfExists,
   resolveStackSummary,
   summarizeVerification,
-  writeTextFile,
+  writeMemoryFile,
 } from './ai-memory-utils.mjs'
 
 const rootDir = process.argv[2] ? path.resolve(process.cwd(), process.argv[2]) : process.cwd()
-const aiDir = path.join(rootDir, '.ai')
-const currentTaskPath = path.join(aiDir, 'current-task.md')
-const handoffPath = path.join(aiDir, 'session-handoff.md')
 
 const [
   packageJsonContent,
@@ -37,14 +35,14 @@ const [
 ] = await Promise.all([
   readTextIfExists(path.join(rootDir, 'package.json')),
   readTextIfExists(path.join(rootDir, 'AGENTS.md')),
-  readTextIfExists(currentTaskPath),
-  readTextIfExists(handoffPath),
-  readTextIfExists(path.join(aiDir, 'decisions.md')),
-  readTextIfExists(path.join(aiDir, 'changed-files.md')),
-  readTextIfExists(path.join(aiDir, 'reflection-log.md')),
-  readTextIfExists(path.join(aiDir, 'project-profile.md')),
-  readFileTimestamp(currentTaskPath),
-  readFileTimestamp(handoffPath),
+  readMemoryFile(rootDir, 'currentTask'),
+  readMemoryFile(rootDir, 'sessionHandoff'),
+  readMemoryFile(rootDir, 'decisions'),
+  readMemoryFile(rootDir, 'changedFiles'),
+  readMemoryFile(rootDir, 'reflectionLog'),
+  readMemoryFile(rootDir, 'projectProfile'),
+  readMemoryFileTimestamp(rootDir, 'currentTask'),
+  readMemoryFileTimestamp(rootDir, 'sessionHandoff'),
 ])
 
 if (
@@ -138,6 +136,5 @@ ${changedAreas.length > 0 ? changedAreas.map((item) => `- \`${item}\``).join('\n
 - Source of truth: \`.ai/*\` files remain authoritative.
 `
 
-const outputPath = path.join(aiDir, 'report-brief.md')
-await writeTextFile(outputPath, briefReport)
-process.stderr.write(`Generated ${outputPath}\n`)
+const [outputPath] = await writeMemoryFile(rootDir, 'reportBrief', briefReport)
+process.stderr.write(`Generated ${path.join(rootDir, outputPath)}\n`)
