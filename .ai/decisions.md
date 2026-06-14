@@ -327,3 +327,23 @@ Impact:
 - Regression tests protect installed-repo compatibility and legacy aliases.
 - Future schema v2 work must document the reason, add deterministic migration
   behavior, and include old-repo fixture tests.
+
+## 2026-06-14 14:34
+
+Decision:
+- Implement v1.1 daily DevEx polish as additive runtime behavior: small
+  low-risk auto-closeout, finish/gate consistency, optional IDE bridges,
+  `architect-lite` planning context, and warning-only freshness hints.
+
+Reason:
+- v1.0.1 solved adoption documentation, but daily use still had unnecessary
+  ceremony for trivial edits and weak native IDE-agent onboarding. These issues
+  can be solved without schema v2, dependencies, AI calls, or breaking CLI
+  changes.
+
+Impact:
+- `ace:finish` and `ace:gate` now share the same small low-risk boundary.
+- `ace-pack init` may create missing IDE bridge files but must not overwrite
+  project-owned rule files.
+- Memory consolidation, docs-only classify tuning, offline adoption docs, and
+  mechanical classify-before-code enforcement remain deferred.

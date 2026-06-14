@@ -198,16 +198,48 @@ describe('ace quality gate', () => {
       '.ai/session-handoff.md',
       handoffContent({ verification: '- [List checks that passed or could not be run]' }),
     )
+    await initGitRepo(rootDir)
+    await writeRepoFile(rootDir, 'a.ts', 'export const a = true\n')
+    await writeRepoFile(rootDir, 'b.ts', 'export const b = true\n')
+    await writeRepoFile(rootDir, 'c.ts', 'export const c = true\n')
 
     const result = await runQualityGate(rootDir)
 
     expect(result.passed).toBe(false)
+    expect(result.classification.tier).toBe('standard')
     expect(result.issues).toContainEqual(
       expect.objectContaining({
         code: 'handoff-verification-missing',
         message: expect.stringContaining('Verification'),
       }),
     )
+  })
+
+  it('accepts small low-risk changes without business value, quality review, or verification ceremony', async () => {
+    const rootDir = await createCompleteGateRepo('ace-gate-small-relaxed-')
+
+    await writeRepoFile(
+      rootDir,
+      '.ai/current-task.md',
+      currentTaskContent().replace(
+        'This protects PR merges by ensuring AI-assisted work leaves useful project memory.',
+        'TODO',
+      ),
+    )
+    await writeRepoFile(
+      rootDir,
+      '.ai/session-handoff.md',
+      handoffContent({
+        qualityReview: 'TODO',
+        verification: '- [List checks that passed or could not be run]',
+      }),
+    )
+
+    const result = await runQualityGate(rootDir)
+
+    expect(result.classification.tier).toBe('small')
+    expect(result.passed).toBe(true)
+    expect(result.issues).toEqual([])
   })
 
   it('requires technical approach notes for high-risk changes', async () => {
@@ -292,6 +324,10 @@ describe('ace quality gate', () => {
       '.ai/session-handoff.md',
       handoffContent({ verification: '- [List checks that passed or could not be run]' }),
     )
+    await initGitRepo(rootDir)
+    await writeRepoFile(rootDir, 'a.ts', 'export const a = true\n')
+    await writeRepoFile(rootDir, 'b.ts', 'export const b = true\n')
+    await writeRepoFile(rootDir, 'c.ts', 'export const c = true\n')
 
     const result = await runQualityGate(rootDir, {
       humanOverride: 'Human reviewed typo-only change.',
@@ -380,6 +416,10 @@ describe('ace quality gate', () => {
       '.ai/session-handoff.md',
       handoffContent({ verification: '- [List checks that passed or could not be run]' }),
     )
+    await initGitRepo(rootDir)
+    await writeRepoFile(rootDir, 'a.ts', 'export const a = true\n')
+    await writeRepoFile(rootDir, 'b.ts', 'export const b = true\n')
+    await writeRepoFile(rootDir, 'c.ts', 'export const c = true\n')
 
     const { stdout } = await execFileAsync(process.execPath, [
       gateScriptPath,

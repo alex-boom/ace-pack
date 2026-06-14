@@ -51,6 +51,18 @@ export const HUB_MODES = [
     ],
   },
   {
+    id: 'architect-lite',
+    aliases: ['plan'],
+    label: 'AI Architect Lite Context',
+    description: 'Brief, repo rules, roadmap, and technical docs without full decisions history.',
+    files: [
+      optionalFile('.ai/report-brief.md'),
+      requiredFile('AGENTS.md'),
+      requiredFile('.ai/product-roadmap.md'),
+      requiredFile('.ai/tech-docs.md'),
+    ],
+  },
+  {
     id: 'business',
     number: '3',
     aliases: [],

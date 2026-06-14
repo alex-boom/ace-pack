@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url'
 
 import { validateAgentMemory } from './agent-memory-lib.mjs'
 import { classifyRepositoryTask } from './ai-task-classify.mjs'
-import { validateFinishRequirements } from './ai-task-finish.mjs'
+import { isSmallLowRiskClassification, validateFinishRequirements } from './ai-task-finish.mjs'
 import {
   extractMarkdownSection,
   getArgValue,
@@ -61,7 +61,7 @@ export async function runQualityGate(rootDir, options = {}) {
   if (handoffContent !== null) {
     const verification = extractMarkdownSection(handoffContent, 'Verification')
 
-    if (!hasMeaningfulContent(verification)) {
+    if (!isSmallLowRiskClassification(classification) && !hasMeaningfulContent(verification)) {
       issues.push({
         code: 'handoff-verification-missing',
         fix: 'Record the checks that passed in .ai/session-handoff.md Verification, or explicitly document why a check could not be run.',

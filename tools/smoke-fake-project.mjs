@@ -32,6 +32,9 @@ async function runSmokeCase(caseName, options) {
     await writeCompleteTaskState(rootDir)
 
     await runNodeScript(rootDir, 'ace-onboard.mjs', ['--root', rootDir, '--apply'])
+    await initGitRepo(rootDir)
+    await writeProjectFile(rootDir, 'README.md', `# ${caseName} smoke change\n`)
+    await runNodeScript(rootDir, 'ai-task-finish.mjs', ['--root', rootDir])
     await runNodeScript(rootDir, 'check-agent-memory.mjs', [rootDir])
     await runNodeScript(rootDir, 'ace-hub.mjs', ['--mode', 'start'])
     await runNodeScript(rootDir, 'ace-quality-gate.mjs', ['--root', rootDir])
@@ -61,6 +64,14 @@ async function buildStagedPackage() {
   await execFileAsync(process.execPath, [path.join(repoRoot, 'tools', 'build-npm-package.mjs')], {
     cwd: repoRoot,
   })
+}
+
+async function initGitRepo(rootDir) {
+  await execFileAsync('git', ['init'], { cwd: rootDir })
+  await execFileAsync('git', ['config', 'user.email', 'ace@example.com'], { cwd: rootDir })
+  await execFileAsync('git', ['config', 'user.name', 'ACE Smoke'], { cwd: rootDir })
+  await execFileAsync('git', ['add', '.'], { cwd: rootDir })
+  await execFileAsync('git', ['commit', '-m', 'Initial smoke fixture'], { cwd: rootDir })
 }
 
 async function installFromStagedPackage(rootDir) {
@@ -237,6 +248,13 @@ async function verifySmokeProject(rootDir) {
   const agentsContent = await readFile(path.join(rootDir, 'AGENTS.md'), 'utf8')
   const memoryConfig = JSON.parse(await readFile(path.join(rootDir, '.ai/memory-config.json'), 'utf8'))
   const generatedContext = await readFile(path.join(rootDir, '.ai/generated-context.md'), 'utf8')
+  const handoff = await readFile(path.join(rootDir, '.ai/session-handoff.md'), 'utf8')
+  const cursorRules = await readFile(path.join(rootDir, '.cursorrules'), 'utf8')
+  const windsurfRules = await readFile(path.join(rootDir, '.windsurfrules'), 'utf8')
+  const copilotInstructions = await readFile(
+    path.join(rootDir, '.github/copilot-instructions.md'),
+    'utf8',
+  )
   const qualityGateScript = await readFile(path.join(rootDir, 'scripts/ace-quality-gate.mjs'), 'utf8')
 
   assert(packageJson.scripts?.['ace:onboard'], 'package.json missing ace:onboard script')
@@ -247,12 +265,18 @@ async function verifySmokeProject(rootDir) {
   )
   assert(memoryConfig._profile?.status === 'profiled', '.ai/memory-config.json is not profiled')
   assert(generatedContext.includes('# ACE Hub Context'), 'ace:hub did not generate context')
+  assert(handoff.includes('ACE small-task auto-closeout'), 'ace:finish did not auto-close small smoke diff')
+  assert(cursorRules.includes('AGENTS.md'), '.cursorrules missing ACE bridge')
+  assert(windsurfRules.includes('AGENTS.md'), '.windsurfrules missing ACE bridge')
+  assert(copilotInstructions.includes('AGENTS.md'), 'Copilot instructions missing ACE bridge')
   assert(qualityGateScript.includes('runQualityGate'), 'ace-quality-gate script missing gate export')
 
   return {
+    bridges: ['.cursorrules', '.windsurfrules', '.github/copilot-instructions.md'],
     generatedContext: '.ai/generated-context.md',
     packageManager: memoryConfig._profile?.packageManager ?? 'unknown',
     profileStatus: memoryConfig._profile?.status,
+    smallAutoCloseout: handoff.includes('ACE small-task auto-closeout'),
   }
 }
 

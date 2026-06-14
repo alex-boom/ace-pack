@@ -17,9 +17,10 @@ without reading large implementation files.
   `.ai/report-full.md`.
 - `ace:hub` builds focused context payloads in `.ai/generated-context.md`.
   Numeric options remain compatible, and named modes now cover start/coder,
-  architect, handoff, PR, business, and docs contexts. AI Coder Context starts
-  with `.ai/report-brief.md` when available so new chats see the Start Snapshot
-  first, but fresh repos still work before the first report is generated.
+  architect-lite/plan, architect, handoff, PR, business, and docs contexts.
+  AI Coder Context starts with `.ai/report-brief.md` when available so new chats
+  see the Start Snapshot first, but fresh repos still work before the first
+  report is generated.
 - `ace:onboard` performs a bounded local file scan and package/content signal
   scan to recommend conservative repository-specific risk rules. It writes
   `.ai/project-profile.md` and `.ai/memory-config.recommended.json`, and applies
@@ -28,7 +29,18 @@ without reading large implementation files.
   validation, task classification, finish requirements, and shared Markdown
   helpers instead of maintaining a second policy engine. v0.4.1 keeps strict
   Quality Review enforcement for large or high-risk changes, but lets standard
-  low-risk changes pass without review ceremony.
+  low-risk changes pass without review ceremony. v1.1 keeps `ace:gate`
+  consistent with `ace:finish` so small low-risk changes do not require
+  Business Value, Quality Review, or Verification ceremony.
+- `ace:finish` can auto-close small low-risk changes by writing compact
+  handoff, changed-files, work-log, and brief report updates from deterministic
+  local git/classification data. It does not change `.ai/current-task.md`
+  lifecycle and still keeps stricter closeout for standard, large, high-risk,
+  and design-review-required work.
+- `ace-pack init` creates optional IDE rule bridges for `.cursorrules`,
+  `.windsurfrules`, and `.github/copilot-instructions.md` when missing. These
+  files are package-manager-aware pointers back to `AGENTS.md` and local
+  `ace:*` scripts; existing project-owned IDE rule files are not overwritten.
 - `ace-mcp-server.mjs` is the optional read-only MCP stdio adapter. It exposes
   selected ACE Markdown files through `resources/list` and `resources/read`,
   with no tools, writes, SDK dependency, network listener, or npm-script wrapper.
@@ -64,6 +76,8 @@ without reading large implementation files.
   diff stat, degrading to `unknown` when git is unavailable.
 - Gate output is ephemeral CLI output or optional JSON. No new persistent config
   or memory schema fields were added for `0.4.0` or `0.4.1`.
+- v1.1 IDE bridges and `architect-lite` are additive optional behavior, not new
+  required schema fields or validation requirements.
 - MCP output is ephemeral JSON-RPC over stdio. No new persistent config,
   schema fields, or generated memory files were added for `0.5.0`.
 - v0.6 growth-kit output is static documentation and demo fixtures only. No

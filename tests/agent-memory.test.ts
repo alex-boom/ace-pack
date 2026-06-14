@@ -1,6 +1,8 @@
+import { execFile } from 'node:child_process'
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
+import { promisify } from 'node:util'
 
 import { afterEach, describe, expect, it } from 'vitest'
 
@@ -8,6 +10,7 @@ import { ensureAgentMemory, validateAgentMemory } from '../scripts/agent-memory-
 import { getProjectPreset } from '../scripts/ace-project-presets.mjs'
 
 const tempDirs: string[] = []
+const execFileAsync = promisify(execFile)
 
 async function createRepo() {
   const rootDir = await mkdtemp(path.join(os.tmpdir(), 'agent-memory-'))
@@ -64,6 +67,9 @@ describe('ensureAgentMemory', () => {
     )
     expect(agentsContent).toContain('state publish/deploy decision when relevant')
     expect(agentsContent).toContain('If release is deferred, say so explicitly.')
+    expect(agentsContent).toContain('For small low-risk tasks')
+    expect(agentsContent).toContain('current-task lifecycle')
+    expect(agentsContent).toContain('.cursorrules')
     expect(agentsContent).toContain('dogfood/self-check routines before final publish')
     expect(memoryConfigContent).toContain('"ACE (Agentic Context Engine) Configuration"')
     const memoryConfig = JSON.parse(memoryConfigContent) as {
@@ -97,6 +103,7 @@ describe('ensureAgentMemory', () => {
       'Only if changed: update tech docs, product roadmap, durable decisions, or release notes',
     )
     expect(currentTaskContent).toContain('deferred release wording')
+    expect(currentTaskContent).toContain('If small/low-risk')
     expect(currentTaskContent).toContain('run local smoke and dogfood/self-check routines')
   })
 
@@ -167,6 +174,89 @@ describe('validateAgentMemory', () => {
     expect(issues).toContain('Missing .ai/reflection-log.md')
     expect(issues).toContain('Missing .ai/archive/.gitkeep')
     expect(issues).toContain('Missing .ai/archive/tasks/.gitkeep')
+  })
+
+  it('prints freshness warnings without failing validation', async () => {
+    const rootDir = await createRepo()
+
+    await ensureAgentMemory(rootDir)
+    await writeFile(
+      path.join(rootDir, '.ai/current-task.md'),
+      `# Current Task
+
+## Feature Name
+Complete fixture
+
+## Lifecycle
+Status: complete
+Version: v1
+Task Tier: small
+Design Review Required: no
+Started: 2026-06-01 10:00
+Ready For Archive: yes
+
+## Goal
+Fixture.
+
+## Business Value / Product Alignment
+Fixture value.
+
+## Technical Approach
+Fixture approach.
+
+## Acceptance Criteria
+- Fixture passes.
+
+## Completion Checklist
+- [x] Goal completed
+`,
+    )
+    await writeFile(
+      path.join(rootDir, '.ai/session-handoff.md'),
+      `# Session Handoff
+
+## Last Update
+2026-01-01 10:00
+
+## What Was Done
+- Fixture.
+
+## Quality Review
+Product Alignment:
+- Fixture.
+
+Architecture:
+- Fixture.
+
+Security:
+- Fixture.
+
+Code Quality:
+- Fixture.
+
+## Next Steps
+TODO
+`,
+    )
+    await writeFile(
+      path.join(rootDir, '.ai/report-brief.md'),
+      `# AI Brief Report
+
+## Report Metadata
+- Freshness: Possibly stale
+`,
+    )
+
+    const { stderr } = await execFileAsync(process.execPath, [
+      path.resolve('scripts/check-agent-memory.mjs'),
+      rootDir,
+    ])
+
+    expect(stderr).toContain('ACE memory check passed')
+    expect(stderr).toContain('Warnings:')
+    expect(stderr).toContain('Last Update is')
+    expect(stderr).toContain('freshness is "Possibly stale"')
+    expect(stderr).toContain('Current task is complete')
   })
 })
 

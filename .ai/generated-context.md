@@ -1,6 +1,6 @@
 # ACE Hub Context
 - Mode: architect (AI Architect Context)
-- Generated: 2026-06-14T10:57:58.561Z
+- Generated: 2026-06-14T11:40:38.151Z
 - Included files: AGENTS.md, .ai/tech-docs.md, .ai/decisions.md, .ai/product-roadmap.md, .ai/report-brief.md
 - Missing optional files: none
 
@@ -135,9 +135,10 @@ without reading large implementation files.
   `.ai/report-full.md`.
 - `ace:hub` builds focused context payloads in `.ai/generated-context.md`.
   Numeric options remain compatible, and named modes now cover start/coder,
-  architect, handoff, PR, business, and docs contexts. AI Coder Context starts
-  with `.ai/report-brief.md` when available so new chats see the Start Snapshot
-  first, but fresh repos still work before the first report is generated.
+  architect-lite/plan, architect, handoff, PR, business, and docs contexts.
+  AI Coder Context starts with `.ai/report-brief.md` when available so new chats
+  see the Start Snapshot first, but fresh repos still work before the first
+  report is generated.
 - `ace:onboard` performs a bounded local file scan and package/content signal
   scan to recommend conservative repository-specific risk rules. It writes
   `.ai/project-profile.md` and `.ai/memory-config.recommended.json`, and applies
@@ -146,7 +147,18 @@ without reading large implementation files.
   validation, task classification, finish requirements, and shared Markdown
   helpers instead of maintaining a second policy engine. v0.4.1 keeps strict
   Quality Review enforcement for large or high-risk changes, but lets standard
-  low-risk changes pass without review ceremony.
+  low-risk changes pass without review ceremony. v1.1 keeps `ace:gate`
+  consistent with `ace:finish` so small low-risk changes do not require
+  Business Value, Quality Review, or Verification ceremony.
+- `ace:finish` can auto-close small low-risk changes by writing compact
+  handoff, changed-files, work-log, and brief report updates from deterministic
+  local git/classification data. It does not change `.ai/current-task.md`
+  lifecycle and still keeps stricter closeout for standard, large, high-risk,
+  and design-review-required work.
+- `ace-pack init` creates optional IDE rule bridges for `.cursorrules`,
+  `.windsurfrules`, and `.github/copilot-instructions.md` when missing. These
+  files are package-manager-aware pointers back to `AGENTS.md` and local
+  `ace:*` scripts; existing project-owned IDE rule files are not overwritten.
 - `ace-mcp-server.mjs` is the optional read-only MCP stdio adapter. It exposes
   selected ACE Markdown files through `resources/list` and `resources/read`,
   with no tools, writes, SDK dependency, network listener, or npm-script wrapper.
@@ -182,6 +194,8 @@ without reading large implementation files.
   diff stat, degrading to `unknown` when git is unavailable.
 - Gate output is ephemeral CLI output or optional JSON. No new persistent config
   or memory schema fields were added for `0.4.0` or `0.4.1`.
+- v1.1 IDE bridges and `architect-lite` are additive optional behavior, not new
+  required schema fields or validation requirements.
 - MCP output is ephemeral JSON-RPC over stdio. No new persistent config,
   schema fields, or generated memory files were added for `0.5.0`.
 - v0.6 growth-kit output is static documentation and demo fixtures only. No
@@ -574,6 +588,26 @@ Impact:
 - Future schema v2 work must document the reason, add deterministic migration
   behavior, and include old-repo fixture tests.
 
+## 2026-06-14 14:34
+
+Decision:
+- Implement v1.1 daily DevEx polish as additive runtime behavior: small
+  low-risk auto-closeout, finish/gate consistency, optional IDE bridges,
+  `architect-lite` planning context, and warning-only freshness hints.
+
+Reason:
+- v1.0.1 solved adoption documentation, but daily use still had unnecessary
+  ceremony for trivial edits and weak native IDE-agent onboarding. These issues
+  can be solved without schema v2, dependencies, AI calls, or breaking CLI
+  changes.
+
+Impact:
+- `ace:finish` and `ace:gate` now share the same small low-risk boundary.
+- `ace-pack init` may create missing IDE bridge files but must not overwrite
+  project-owned rule files.
+- Memory consolidation, docs-only classify tuning, offline adoption docs, and
+  mechanical classify-before-code enforcement remain deferred.
+
 # --- FILE: .ai/product-roadmap.md ---
 
 # Product Roadmap
@@ -636,6 +670,11 @@ handoff and browser-context workflows.
 - **v1.0.1 Adoption Hardening.** ACE now has GitHub-only adoption checklist and
   FAQ docs linked from README surfaces, helping teams roll out ACE without new
   runtime behavior or npm payload bloat.
+- **v1.1 Daily DevEx Runtime Polish.** ACE now reduces daily friction with
+  small low-risk auto-closeout in `ace:finish`, matching `ace:gate` behavior,
+  optional IDE rule bridges for Cursor, Windsurf, and GitHub Copilot, an
+  `architect-lite` / `plan` hub mode, and warning-only freshness hints in
+  `ace:check`.
 
 ## Planned Features
 
@@ -644,6 +683,10 @@ handoff and browser-context workflows.
 
 ## Long-Term Research and Development (v2.0+)
 
+- **Memory Consolidation and Schema v2 Research.** Research merging high-churn
+  `.ai` files such as `current-task`, `session-handoff`, and `changed-files`
+  into fewer state files to reduce token load and LLM desync, with deterministic
+  migration rules before any schema change.
 - **Standalone ACE Engine.** Research native binaries for macOS, Linux, and
   Windows so teams can use ACE without Node.js/npm on developer machines.
 - **Automated PR/CI Reviewer.** Research GitHub Action and GitLab CI templates
@@ -678,100 +721,106 @@ handoff and browser-context workflows.
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 13:49
+- Generated: 2026-06-14 14:40
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 13:48
-- Source session-handoff: 2026-06-14 13:49
-- Verification level: test-backed
+- Source current-task: 2026-06-14 14:38
+- Source session-handoff: 2026-06-14 14:40
+- Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (17 changed files)
-- Last commit: 24a3f8d Promote ACE to v1.0 by documenting the stability contract, including command names, installed file expectations, and migration policy. Bump package version to 1.0.0 and add regression tests for backward compatibility. Update README and npm README with links to the v1.0 stability documentation.
+- Worktree: dirty (36 changed files)
+- Last commit: f368325 Finalize v1.0.1 by confirming publication of `ace-pack@1.0.1` on npm and updating project documentation. Added future DevEx roadmap tracks for IDE rule bridging, zero-ceremony small tasks, and memory consolidation/schema v2 research. Closed the current product milestone, with no active implementation tasks remaining.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
-- Next command: No command detected
+- Next command: `npm.cmd run release:npm`
 - Release decision: NPM publish: required before final release; deferred by maintainer.
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
 
 ## Current Task
-v1.0.1 Final Adoption Hardening
+v1.1.0 Daily DevEx Runtime Polish
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 13:52
+Started: 2026-06-14 14:20
 Ready For Archive: yes
 
 ## Goal
-Add final adoption guidance for teams evaluating ACE after v1.0, while batching
-the next npm publish until the maintainer decides the final release is ready.
+Reduce daily ACE friction after the v1.0.1 adoption release by making small
+low-risk closeout lighter, bridging IDE-native agents into ACE rules, and
+adding a lower-token planning context.
 
 ## Business Value
-After v1.0, teams need a concise rollout path and FAQ more than new runtime
-features. This reduces adoption friction without changing ACE's zero-bloat core.
+v1.1.0 makes ACE more comfortable as a daily driver. Teams keep the v1.0 safety
+contract, while trivial edits need less ceremony and IDE agents are more likely
+to start from the same repository protocol.
 
 ## Current Status
-- [x] Confirmed `ace-pack@1.0.0` is published on npm.
-- [x] Confirmed working tree was clean before v1.0.1 work.
-- [x] Bumped package version to `1.0.1`.
-- [x] Added adoption checklist and FAQ docs.
-- [x] Linked adoption docs from README and README.npm.
-- [x] Added tests for adoption docs and payload boundary.
-- [x] Ran release-readiness checks and explicit dogfood self-check.
+- [x] Bumped package version to `1.1.0`.
+- [x] Added small low-risk auto-closeout in `ace:finish`.
+- [x] Aligned `ace:gate` with relaxed small low-risk closeout.
+- [x] Added optional IDE bridge files during `ace-pack init`.
+- [x] Added `architect-lite` / `plan` hub mode.
+- [x] Added warning-only freshness hints to `ace:check`.
+- [x] Updated shipped templates, README surfaces, compatibility docs, roadmap,
+  and tests.
+- [x] Ran targeted and full Vitest suites.
+- [x] Run release-readiness checks.
+- [x] Run explicit dogfood self-check before final publish.
 
 ## Next Steps
-- No terminal command is required right now.
-- Do not publish until the maintainer says the final batch is ready.
-- When the maintainer chooses to publish the final batch, run
-  npm.cmd run release:npm.
+- Run `npm.cmd run release:npm` when the maintainer is ready to publish ace-pack@1.1.0.
+- After publish, verify npm latest with `npm.cmd view ace-pack version`.
 
 ## Risks / Blockers
-- None known for v1.0.1.
+- None known for v1.1.0 at this stage.
 
 ## Verification
-- `npm.cmd run ace:classify` passed and classified v1.0.1 as large.
-- `npm.cmd test` passed: 13 files, 96 tests.
-- `npm.cmd run check:npm-payload` passed and checked 29 packed files.
-- `npm.cmd run release:ready` passed for `ace-pack@1.0.1`.
+- `npm.cmd test -- tests/ai-task-finish.test.ts tests/ace-quality-gate.test.ts tests/install-agent-memory-pack.test.ts tests/ace-hub.test.ts tests/agent-memory.test.ts tests/smoke-release.test.ts` passed: 6 files, 58 tests.
+- `npm.cmd test` passed: 13 files, 103 tests.
+- `npm.cmd run release:ready` passed: 13 files, 104 tests, fake-project smoke,
+`ace:gate`, npm payload guard, and npm publish dry-run.
+- `npm.cmd run dogfood:self-check -- --allow-dirty` passed after adding IDE
+bridge files to the expected dogfood sync allowlist.
 
 ## Recent Decision
-## 2026-06-14 13:37
+## 2026-06-14 14:34
 
 Decision:
-- Promote ACE to v1.0 by documenting and testing the existing compatibility
-  contract instead of adding a migration engine before a real schema migration
-  exists.
+- Implement v1.1 daily DevEx polish as additive runtime behavior: small
+  low-risk auto-closeout, finish/gate consistency, optional IDE bridges,
+  `architect-lite` planning context, and warning-only freshness hints.
 
 Reason:
-- ACE's current stability comes from additive install behavior, project-owned
-  Markdown memory, stable command names, and schema version `1`. A migration
-  platform would add code and ceremony without a concrete schema change to
-  execute.
+- v1.0.1 solved adoption documentation, but daily use still had unnecessary
+  ceremony for trivial edits and weak native IDE-agent onboarding. These issues
+  can be solved without schema v2, dependencies, AI calls, or breaking CLI
+  changes.
 
 Impact:
-- `docs/schema-compatibility.md` defines stable commands, file expectations,
-  Markdown sections, memory-config v1 behavior, and future migration policy.
-- Regression tests protect installed-repo compatibility and legacy aliases.
-- Future schema v2 work must document the reason, add deterministic migration
-  behavior, and include old-repo fixture tests.
+- `ace:finish` and `ace:gate` now share the same small low-risk boundary.
+- `ace-pack init` may create missing IDE bridge files but must not overwrite
+  project-owned rule files.
+- Memory consolidation, docs-only classify tuning, offline adoption docs, and
+  mechanical classify-before-code enforcement remain deferred.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.
 
 ## Changed Areas
 - `package.json`
-- `docs/adoption-checklist.md`
-- `docs/faq.md`
-- `README.md`
-- `README.npm.md`
-- `tests/adoption-docs.test.ts`
+- `install-ace-pack.mjs`
+- `.cursorrules`
+- `.windsurfrules`
+- `.github/copilot-instructions.md`
+- `scripts/ai-task-finish.mjs`
 
 ## Overall Progress
-- Completion checklist: 8/8
+- Completion checklist: 9/9
 - Source of truth: `.ai/*` files remain authoritative.

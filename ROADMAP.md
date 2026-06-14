@@ -128,21 +128,15 @@ names, installed file expectations, `.ai/memory-config.json` schema version `1`,
 AGENTS workflow markers, and the migration policy for future template/schema
 changes.
 
-### v1.1: IDE Rule Bridging (planned)
+### v1.1: Daily DevEx Runtime Polish (shipped)
 
-Bridge native IDE agents into ACE without vendor lock-in. Future `ace-pack init`
-may scaffold thin `.cursorrules`, `.windsurfrules`, and
-`.github/copilot-instructions.md` adapters that instruct IDE-native agents to
-obey `AGENTS.md` and use the local `ace:*` scripts. This must remain
-idempotent, project-owned, and compatible with repositories that already manage
-their own IDE rule files.
-
-### v1.1: Zero-Ceremony Small Tasks (planned)
-
-Reduce closeout friction for trivial work. Future `ace:finish` may automatically
-close `small` tier tasks by generating compact handoff, changed-files, and
-verification notes when the change is low-risk. Standard, large, high-risk, and
-design-review-required changes must keep stricter manual review expectations.
+Reduce daily friction after the stable v1.0 adoption release. `ace-pack init`
+now creates thin `.cursorrules`, `.windsurfrules`, and
+`.github/copilot-instructions.md` adapters when missing, without overwriting
+project-owned IDE rules. `ace:finish` can auto-close small low-risk tasks with
+compact handoff, changed-files, work-log, and brief report updates while leaving
+current-task lifecycle untouched. `ace:hub` adds `architect-lite` / `plan` for
+lower-token planning context, and `ace:check` adds warning-only freshness hints.
 
 ## Long-Term Research and Development (v2.0+)
 

@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process'
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { promisify } from 'node:util'
@@ -77,6 +77,9 @@ describe('installAcePack', () => {
     expect(result.createdFiles).toContain('scripts/ai-task-finish.mjs')
     expect(result.createdFiles).toContain('scripts/ai-report.mjs')
     expect(result.createdFiles).toContain('scripts/ai-update.mjs')
+    expect(result.createdFiles).toContain('.cursorrules')
+    expect(result.createdFiles).toContain('.windsurfrules')
+    expect(result.createdFiles).toContain('.github/copilot-instructions.md')
     expect(result.updatedFiles).toContain('package.json')
     expect(packageJson.scripts['ace:init']).toBe('node ./scripts/bootstrap-agent-memory.mjs')
     expect(packageJson.scripts['ace:check']).toBe('node ./scripts/check-agent-memory.mjs')
@@ -99,6 +102,59 @@ describe('installAcePack', () => {
     expect(packageJson.scripts['ai:task:finish']).toBe('node ./scripts/ai-task-finish.mjs')
     expect(packageJson.scripts['ai:update:task']).toBe('node ./scripts/ai-update.mjs task')
     await expect(validateAgentMemory(rootDir)).resolves.toEqual([])
+  })
+
+  it('creates package-manager-aware IDE bridge files', async () => {
+    const rootDir = await createTargetRepo()
+    const packageJsonPath = path.join(rootDir, 'package.json')
+    const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'))
+    packageJson.packageManager = 'pnpm@10.0.0'
+    await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`, 'utf8')
+
+    await installAcePack(rootDir)
+
+    const cursorRules = await readFile(path.join(rootDir, '.cursorrules'), 'utf8')
+    const windsurfRules = await readFile(path.join(rootDir, '.windsurfrules'), 'utf8')
+    const copilotInstructions = await readFile(
+      path.join(rootDir, '.github/copilot-instructions.md'),
+      'utf8',
+    )
+
+    for (const content of [cursorRules, windsurfRules, copilotInstructions]) {
+      expect(content).toContain('Follow AGENTS.md')
+      expect(content).toContain('Read .ai/report-brief.md')
+      expect(content).toContain('pnpm ace:hub start')
+      expect(content).toContain('pnpm ace:classify')
+      expect(content).toContain('pnpm ace:finish')
+    }
+  })
+
+  it('does not overwrite existing project-owned IDE bridge files', async () => {
+    const rootDir = await createTargetRepo()
+
+    await mkdir(path.join(rootDir, '.github'), { recursive: true })
+    await writeFile(path.join(rootDir, '.cursorrules'), 'custom cursor rules\n', 'utf8')
+    await writeFile(path.join(rootDir, '.windsurfrules'), 'custom windsurf rules\n', 'utf8')
+    await writeFile(
+      path.join(rootDir, '.github/copilot-instructions.md'),
+      '# Custom Copilot\n',
+      'utf8',
+    )
+
+    const result = await installAcePack(rootDir)
+
+    expect(result.createdFiles).not.toContain('.cursorrules')
+    expect(result.createdFiles).not.toContain('.windsurfrules')
+    expect(result.createdFiles).not.toContain('.github/copilot-instructions.md')
+    await expect(readFile(path.join(rootDir, '.cursorrules'), 'utf8')).resolves.toBe(
+      'custom cursor rules\n',
+    )
+    await expect(readFile(path.join(rootDir, '.windsurfrules'), 'utf8')).resolves.toBe(
+      'custom windsurf rules\n',
+    )
+    await expect(
+      readFile(path.join(rootDir, '.github/copilot-instructions.md'), 'utf8'),
+    ).resolves.toBe('# Custom Copilot\n')
   })
 
   it('does not overwrite a project-owned ace:validate script', async () => {

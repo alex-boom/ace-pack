@@ -187,6 +187,8 @@ describe('release readiness smoke routines', () => {
     expect(results.map((result) => result.caseName)).toEqual(['js', 'non-js'])
     expect(results.every((result) => result.verification.profileStatus === 'profiled')).toBe(true)
     expect(results.every((result) => result.verification.generatedContext)).toBe(true)
+    expect(results.every((result) => result.verification.bridges.length === 3)).toBe(true)
+    expect(results.every((result) => result.verification.smallAutoCloseout)).toBe(true)
   })
 
   it('applies the candidate ACE package to an installed repo and reruns core workflow checks', async () => {
@@ -215,5 +217,23 @@ describe('release readiness smoke routines', () => {
     expect(result.passed).toBe(true)
     expect(result.beforeStatus.map((entry) => entry.path)).toContain('dirty.txt')
     expect(result.afterStatus.map((entry) => entry.path)).toContain('dirty.txt')
+  })
+
+  it('allows expected IDE bridge creation during dogfood sync', async () => {
+    const rootDir = await createInstalledDogfoodRepo('ace-dogfood-bridges-')
+
+    await rm(path.join(rootDir, '.cursorrules'), { force: true })
+    await rm(path.join(rootDir, '.windsurfrules'), { force: true })
+    await rm(path.join(rootDir, '.github/copilot-instructions.md'), { force: true })
+    await git(rootDir, ['add', '-u'])
+    await git(rootDir, ['commit', '-m', 'Remove IDE bridges from older install'])
+
+    const result = await runDogfoodSelfCheck({ rootDir })
+    const changedPaths = result.afterStatus.map((entry) => entry.path)
+
+    expect(result.passed).toBe(true)
+    expect(changedPaths).toContain('.cursorrules')
+    expect(changedPaths).toContain('.windsurfrules')
+    expect(changedPaths).toContain('.github/copilot-instructions.md')
   })
 })

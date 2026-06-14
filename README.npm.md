@@ -132,7 +132,8 @@ With ACE, the repository carries the discipline:
 - Large and high-risk work starts with a shift-left design review before code.
 - `ace:hub` generates focused context instead of manual copy/paste bundles.
 - `ace:finish` commits decisions, changed files, validation notes, and
-  reflection back into project memory.
+  reflection back into project memory; small low-risk changes can auto-close
+  with compact notes.
 
 ACE is not a prompt library. It is a local AgentOps control layer for managing
 AI coding agents inside real repositories.
@@ -298,6 +299,8 @@ Available modes:
 
 - `start` / `coder` - startup context with `.ai/report-brief.md` first.
 - `architect` - repo rules, technical docs, decisions, roadmap, and brief.
+- `architect-lite` / `plan` - lower-token planning context without full
+  decisions history.
 - `handoff` - compact agent handoff context.
 - `pr` - PR summary context with local git status and diff stat.
 - `business` - roadmap and work log.
@@ -307,6 +310,7 @@ By default ACE writes `.ai/generated-context.md`. For automation:
 
 ```bash
 pnpm ace:hub -- --mode start --stdout
+pnpm ace:hub -- --mode architect-lite --stdout
 pnpm ace:hub -- --mode architect --output .ai/architect-context.md
 pnpm ace:hub -- --mode pr --json
 ```
@@ -316,6 +320,11 @@ pnpm ace:hub -- --mode pr --json
 `ace:gate` is an optional pre-merge check for teams using AI-generated changes.
 It reuses ACE memory validation, task classification, and closeout rules, then
 prints actionable failures for CI logs.
+
+Small low-risk changes stay low-ceremony: `ace:finish` can write compact
+closeout notes, and `ace:gate` does not demand design or quality-review
+sections for those changes. Standard, large, high-risk, and
+design-review-required work keeps stricter review expectations.
 
 ```bash
 pnpm ace:gate
@@ -431,9 +440,9 @@ then stops if unexpected files changed.
 | `ace:onboard -- --check` | Fails if the repository is still unprofiled. |
 | `ace:classify` | Git diff risk analysis for small, standard, and large tasks. |
 | `ace:validate` | Default mechanical quality gate alias for `ace:check`. Projects may replace it with a stricter local gate. |
-| `ace:finish` | Adaptive closeout, memory documentation, reports, and reflection. |
+| `ace:finish` | Adaptive closeout, small low-risk auto-closeout, memory documentation, reports, and reflection. |
 | `ace:gate` | Optional PR/CI quality gate with actionable failures, PR refs, JSON output, explicit human override, and opt-in hook/workflow generation. |
-| `ace:hub` | Interactive and named-mode context generator for start, architect, handoff, PR, business, and docs payloads. |
+| `ace:hub` | Interactive and named-mode context generator for start, architect-lite, architect, handoff, PR, business, and docs payloads. |
 
 ## Installed Project Files
 
@@ -453,9 +462,13 @@ ACE installs or updates:
 - `.ai/archive/.gitkeep`
 - `.ai/archive/tasks/.gitkeep`
 - `scripts/*` managed ACE automation
+- optional IDE bridge files: `.cursorrules`, `.windsurfrules`, and
+  `.github/copilot-instructions.md`
 
 Existing memory files are not overwritten. Existing `package.json` files are
-preserved and updated idempotently.
+preserved and updated idempotently. Existing IDE rule files are not overwritten;
+ACE-created bridge files only point native IDE agents back to `AGENTS.md` and
+the local `ace:*` scripts.
 
 ## Development
 

@@ -159,6 +159,23 @@ describe('generateContextPayload', () => {
     expect(docs.missingOptionalFiles).toEqual(['DEVOPS.md'])
   })
 
+  it('generates architect-lite planning context without full decisions history', async () => {
+    const rootDir = await createHubRepo()
+
+    const result = await generateContextPayload(rootDir, 'plan')
+    const generatedContent = await readFile(path.join(rootDir, GENERATED_CONTEXT_PATH), 'utf8')
+
+    expect(result.mode.id).toBe('architect-lite')
+    expect(result.includedFiles).toEqual([
+      '.ai/report-brief.md',
+      'AGENTS.md',
+      '.ai/product-roadmap.md',
+      '.ai/tech-docs.md',
+    ])
+    expect(generatedContent).toContain('- Mode: architect-lite (AI Architect Lite Context)')
+    expect(generatedContent).not.toContain('# --- FILE: .ai/decisions.md ---')
+  })
+
   it('generates named handoff and PR modes', async () => {
     const rootDir = await createHubRepo()
 
@@ -212,8 +229,10 @@ describe('ace hub CLI', () => {
     const list = listHubModes()
 
     expect(list).toContain('1, start, coder')
+    expect(list).toContain('architect-lite, plan')
     expect(list).toContain('handoff')
     expect(list).toContain('pr')
+    expect(HUB_MENU).toContain('[architect-lite] AI Architect Lite Context')
     expect(HUB_MENU).toContain('[handoff] Agent Handoff Context')
     expect(HUB_MENU).toContain('[pr] PR Summary Context')
   })
@@ -222,6 +241,7 @@ describe('ace hub CLI', () => {
     const { stdout } = await execFileAsync(process.execPath, [hubScriptPath, '--list'])
 
     expect(stdout).toContain('1, start, coder')
+    expect(stdout).toContain('architect-lite, plan')
     expect(stdout).toContain('pr')
   })
 

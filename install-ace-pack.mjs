@@ -70,6 +70,11 @@ const currentScriptDir = path.join(path.dirname(currentFilePath), 'scripts')
 const RUNNER_PACKAGE_DESCRIPTION =
   'Auto-generated lightweight runner for ACE (Agentic Context Engine) scripts. No node_modules required.'
 const KNOWN_PACKAGE_MANAGERS = new Set(['npm', 'pnpm', 'yarn', 'bun'])
+const IDE_BRIDGE_FILES = [
+  '.cursorrules',
+  '.windsurfrules',
+  '.github/copilot-instructions.md',
+]
 
 function normalizeTrailingNewline(content) {
   return content.endsWith('\n') ? content : `${content}\n`
@@ -179,6 +184,69 @@ async function ensurePackageScripts(rootDir) {
   return true
 }
 
+async function ensureIdeRuleBridges(rootDir, packageManager) {
+  const createdFiles = []
+
+  for (const relativePath of IDE_BRIDGE_FILES) {
+    const filePath = path.join(rootDir, relativePath)
+    const existingContent = await readTextIfExists(filePath)
+
+    if (existingContent !== null) {
+      continue
+    }
+
+    await mkdir(path.dirname(filePath), { recursive: true })
+    await writeFile(
+      filePath,
+      normalizeTrailingNewline(formatIdeBridgeContent(packageManager, relativePath)),
+      'utf8',
+    )
+    createdFiles.push(relativePath)
+  }
+
+  return { createdFiles }
+}
+
+function formatIdeBridgeContent(packageManager, relativePath) {
+  const hubCommand = formatHubModeCommand(packageManager, 'start')
+  const classifyCommand = formatScriptCommand(packageManager, 'ace:classify')
+  const finishCommand = formatScriptCommand(packageManager, 'ace:finish')
+  const checkCommand = formatScriptCommand(packageManager, 'ace:check')
+  const heading =
+    relativePath.endsWith('.md') ? '# ACE IDE Agent Instructions' : '# ACE IDE Agent Bridge'
+
+  return `${heading}
+
+Follow AGENTS.md as the authoritative repository instruction file.
+
+For new work:
+- Read .ai/report-brief.md first when it exists.
+- Generate startup context with ${hubCommand}.
+- Classify the task with ${classifyCommand} before implementation.
+- Validate ACE memory with ${checkCommand} when context may be stale.
+- Close the task with ${finishCommand} before handoff.
+
+Do not replace AGENTS.md or .ai/* workflow rules with IDE-specific policy. This
+file is only a thin bridge from the IDE agent to ACE.
+`
+}
+
+function formatHubModeCommand(packageManager, mode) {
+  if (packageManager === 'npm') {
+    return `npm run ace:hub -- ${mode}`
+  }
+
+  if (packageManager === 'yarn') {
+    return `yarn ace:hub ${mode}`
+  }
+
+  if (packageManager === 'bun') {
+    return `bun run ace:hub ${mode}`
+  }
+
+  return `pnpm ace:hub ${mode}`
+}
+
 function buildPackageName(rootDir) {
   const folderName = path.basename(rootDir).toLowerCase()
   const packageName = folderName
@@ -244,6 +312,10 @@ export async function installAcePack(targetDir) {
   if (await ensurePackageScripts(normalizedTargetDir)) {
     updatedFiles.push('package.json')
   }
+
+  const packageManager = await detectPackageManager(normalizedTargetDir)
+  const bridgeResult = await ensureIdeRuleBridges(normalizedTargetDir, packageManager)
+  createdFiles.push(...bridgeResult.createdFiles)
 
   const memoryResult = await ensureAgentMemory(normalizedTargetDir)
   createdFiles.push(...memoryResult.createdFiles)

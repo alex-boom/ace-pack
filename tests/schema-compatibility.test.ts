@@ -194,6 +194,9 @@ Keep this too.
 
     expect(schemaDocs).toContain('ACE v1.0 Schema and Compatibility')
     expect(schemaDocs).toContain('`.ai/memory-config.json` Schema Version 1')
+    expect(schemaDocs).toContain('optional IDE bridge files')
+    expect(schemaDocs).toContain('not required by `ace:check`')
+    expect(schemaDocs).toContain('`architect-lite`')
     expect(schemaDocs).toContain('Migration Policy')
     expect(readme).toContain('./docs/schema-compatibility.md')
     expect(npmReadme).toContain(

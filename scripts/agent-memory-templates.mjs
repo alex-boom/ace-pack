@@ -56,6 +56,7 @@ Chosen Approach:
 - [ ] Always: summarize what changed in \`.ai/session-handoff.md\`
 - [ ] Always: update \`.ai/changed-files.md\`, record verification, and run \`ace:validate\`
 - [ ] Always: state publish/deploy decision when relevant, including deferred release wording
+- [ ] If small/low-risk: let \`ace:finish\` auto-close compact handoff when manual notes add no value
 - [ ] If standard/large: add product, architecture, security, and code-quality review notes
 - [ ] If large/high-risk: confirm design approach, add useful reflection, and let \`ace:finish\` archive the snapshot
 - [ ] If release-bound shipped behavior changed: run local smoke and dogfood/self-check routines when available
@@ -190,13 +191,16 @@ safety:
 1. Always summarize what changed, update changed files, record verification,
    run \`pnpm ace:validate\`, and state publish/deploy decision when relevant.
    If release is deferred, say so explicitly.
-2. For standard or large tasks, add product, architecture, security, and
+2. For small low-risk tasks, \`pnpm ace:finish\` may auto-close compact
+   handoff, changed-files, work-log, and brief report notes without changing
+   current-task lifecycle.
+3. For standard or large tasks, add product, architecture, security, and
    code-quality review notes.
-3. For large or high-risk tasks, confirm the design approach, add reflection
+4. For large or high-risk tasks, confirm the design approach, add reflection
    only when useful, and let \`pnpm ace:finish\` archive the snapshot.
-4. Update tech docs, product roadmap, durable decisions, or release notes only
+5. Update tech docs, product roadmap, durable decisions, or release notes only
    when those facts actually changed.
-5. For release-bound shipped changes, run the project's local smoke and
+6. For release-bound shipped changes, run the project's local smoke and
    dogfood/self-check routines before final publish or deploy when available.
 `
 
@@ -234,6 +238,10 @@ the \`pnpm\` shim is blocked by execution policy.
 Legacy commands such as \`pnpm ai:task:classify\`, \`pnpm ai:task:finish\`,
 and \`pnpm agent-memory:init\` remain supported for compatibility.
 
+IDE rule files such as \`.cursorrules\`, \`.windsurfrules\`, and
+\`.github/copilot-instructions.md\` are thin bridges into this workflow.
+\`AGENTS.md\` remains authoritative.
+
 While working:
 
 - Prefer minimal, safe diffs that preserve existing UI and API contracts.
@@ -265,13 +273,16 @@ safety:
 1. Always summarize what changed, update changed files, record verification,
    run \`pnpm ace:validate\`, and state publish/deploy decision when relevant.
    If release is deferred, say so explicitly.
-2. For standard or large tasks, add product, architecture, security, and
+2. For small low-risk tasks, \`pnpm ace:finish\` may auto-close compact
+   handoff, changed-files, work-log, and brief report notes without changing
+   current-task lifecycle.
+3. For standard or large tasks, add product, architecture, security, and
    code-quality review notes.
-3. For large or high-risk tasks, confirm the design approach, add reflection
+4. For large or high-risk tasks, confirm the design approach, add reflection
    only when useful, and let \`pnpm ace:finish\` archive the snapshot.
-4. Update \`.ai/tech-docs.md\`, \`.ai/product-roadmap.md\`, durable decisions,
+5. Update \`.ai/tech-docs.md\`, \`.ai/product-roadmap.md\`, durable decisions,
    or release notes only when those facts actually changed.
-5. For release-bound shipped changes, run the project's local smoke and
+6. For release-bound shipped changes, run the project's local smoke and
    dogfood/self-check routines before final publish or deploy when available.
 <!-- agent-memory-workflow:end -->
 `

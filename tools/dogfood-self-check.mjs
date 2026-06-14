@@ -8,11 +8,14 @@ const sourceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '.
 const stagingDir = path.join(sourceRoot, '.npm-publish')
 
 const EXPECTED_DOGFOOD_PATHS = [
+  '.cursorrules',
+  '.github/copilot-instructions.md',
   '.ai/',
   'AGENTS.md',
   'CLAUDE.md',
   'package.json',
   'scripts/',
+  '.windsurfrules',
 ]
 
 export async function runDogfoodSelfCheck(options = {}) {

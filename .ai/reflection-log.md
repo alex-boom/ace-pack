@@ -14,6 +14,17 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-14 14:34 External agent feedback exposed daily DevEx friction
+Status: resolved
+- Stuck Point: After v1.0.1 adoption hardening, fast low-risk edits still paid
+  too much closeout ceremony and IDE-native agents had no automatic bridge into
+  ACE rules.
+- Likely Cause: v1.0 focused on stability and rollout documentation, leaving
+  daily-loop polish as planned but not shipped behavior.
+- Proposed Improvement: Ship v1.1 with small low-risk auto-closeout,
+  finish/gate consistency, optional IDE rule bridges, slim planning context,
+  and warning-only freshness hints.
+
 ### 2026-06-14 13:37 Stability docs before migration machinery
 Status: resolved
 - Stuck Point: A v1.0 stability milestone can tempt agents to build a migration

@@ -23,6 +23,10 @@ These command names are stable in v1.x:
 - `ace:report`
 - `ace:report:brief`
 
+Hub modes may grow additively in v1.x. For example, `architect-lite` is an
+optional lower-token planning mode; repositories created before that mode remain
+compatible without migration.
+
 Legacy aliases remain supported in v1.x:
 
 - `agent-memory:init`
@@ -58,6 +62,12 @@ ACE installs or updates these files in consumer repositories:
 
 Existing `.ai/*` memory files are project-owned after creation. The installer
 may create missing files, but it must not overwrite existing memory content.
+
+ACE may also create optional IDE bridge files such as `.cursorrules`,
+`.windsurfrules`, and `.github/copilot-instructions.md` when they are missing.
+These are thin adapters back to `AGENTS.md` and local `ace:*` scripts. They are
+not required by `ace:check`, and existing project-owned IDE rule files must not
+be overwritten.
 
 `AGENTS.md` is updated only inside this marked section:
 

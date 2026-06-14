@@ -58,17 +58,16 @@ handoff and browser-context workflows.
 - **v1.0.1 Adoption Hardening.** ACE now has GitHub-only adoption checklist and
   FAQ docs linked from README surfaces, helping teams roll out ACE without new
   runtime behavior or npm payload bloat.
+- **v1.1 Daily DevEx Runtime Polish.** ACE now reduces daily friction with
+  small low-risk auto-closeout in `ace:finish`, matching `ace:gate` behavior,
+  optional IDE rule bridges for Cursor, Windsurf, and GitHub Copilot, an
+  `architect-lite` / `plan` hub mode, and warning-only freshness hints in
+  `ace:check`.
 
 ## Planned Features
 
-- **v1.1 IDE Rule Bridging.** Future `ace-pack init` may scaffold thin
-  `.cursorrules`, `.windsurfrules`, and `.github/copilot-instructions.md`
-  adapters that point IDE-native agents back to `AGENTS.md` and local `ace:*`
-  scripts without creating vendor lock-in.
-- **v1.1 Zero-Ceremony Small Tasks.** Future `ace:finish` may auto-close
-  low-risk `small` tasks with compact handoff, changed-files, and verification
-  notes while preserving stricter review for standard, large, high-risk, and
-  design-review-required changes.
+- No next v1.x feature is selected yet. Future work should preserve the v1.0
+  compatibility contract unless a deliberate major-version migration is planned.
 
 ## Long-Term Research and Development (v2.0+)
 

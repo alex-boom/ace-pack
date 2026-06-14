@@ -224,3 +224,22 @@
 - Added future DevEx roadmap tracks for IDE rule bridging, zero-ceremony small
   tasks, and memory consolidation / schema v2 research.
 - Closed the current product milestone. No active implementation task remains.
+
+## 2026-06-14 14:34
+
+- Started `ace-pack@1.1.0` Daily DevEx Runtime Polish.
+- Added deterministic small low-risk auto-closeout to `ace:finish` and aligned
+  `ace:gate` with the same relaxed boundary.
+- Added optional package-manager-aware IDE bridges for Cursor, Windsurf, and
+  GitHub Copilot during `ace-pack init`.
+- Added `architect-lite` / `plan` hub context and warning-only freshness hints
+  in `ace:check`.
+- Updated shipped templates, README surfaces, compatibility docs, roadmap,
+  fake-project smoke, and tests.
+- Verified full Vitest: 13 files, 103 tests.
+- Fixed dogfood self-check allowlist so v1.1 IDE bridge files are accepted as
+  expected ACE-managed sync output.
+- Verified `npm.cmd run release:ready`: 13 files, 104 tests, fake-project
+  smoke, `ace:gate`, payload guard, and npm publish dry-run passed.
+- Verified `npm.cmd run dogfood:self-check -- --allow-dirty` passed for this
+  repository with local `ace-pack@1.1.0`.

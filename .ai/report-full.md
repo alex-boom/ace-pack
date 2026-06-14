@@ -3,21 +3,21 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 14:11
+- Generated: 2026-06-14 14:40
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 14:10
-- Source session-handoff: 2026-06-14 14:11
-- Verification level: test-backed
+- Source current-task: 2026-06-14 14:38
+- Source session-handoff: 2026-06-14 14:40
+- Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (8 changed files)
-- Last commit: ae61d73 Enhance ROADMAP.md with planned features for v1.1, including IDE Rule Bridging and Zero-Ceremony Small Tasks. Introduce Memory Consolidation and Schema v2 research for improved efficiency. Update generated context in .ai/generated-context.md to reflect new architecture and project rules. Revise product-roadmap.md to align with the latest feature plans and maintain compatibility with v1.0.
+- Worktree: dirty (36 changed files)
+- Last commit: f368325 Finalize v1.0.1 by confirming publication of `ace-pack@1.0.1` on npm and updating project documentation. Added future DevEx roadmap tracks for IDE rule bridging, zero-ceremony small tasks, and memory consolidation/schema v2 research. Closed the current product milestone, with no active implementation tasks remaining.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
-- Next command: No command detected
-- Release decision: NPM publish: not required. ace-pack@1.0.1 is already published; this closeout changes only repo-local ACE memory and roadmap state.
+- Next command: `npm.cmd run release:npm`
+- Release decision: NPM publish: required before final release; deferred by maintainer.
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
@@ -26,131 +26,144 @@ Detected ecosystems: Generic repository | Package manager: pnpm
 
 
 ## Current Task
-v1.0.1 Final Adoption Hardening
+v1.1.0 Daily DevEx Runtime Polish
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 13:52
+Started: 2026-06-14 14:20
 Ready For Archive: yes
 
 ## Goal
-Add final adoption guidance for teams evaluating ACE after v1.0, while batching
-the next npm publish until the maintainer decides the final release is ready.
+Reduce daily ACE friction after the v1.0.1 adoption release by making small
+low-risk closeout lighter, bridging IDE-native agents into ACE rules, and
+adding a lower-token planning context.
 
 ## Business Value
-After v1.0, teams need a concise rollout path and FAQ more than new runtime
-features. This reduces adoption friction without changing ACE's zero-bloat core.
+v1.1.0 makes ACE more comfortable as a daily driver. Teams keep the v1.0 safety
+contract, while trivial edits need less ceremony and IDE agents are more likely
+to start from the same repository protocol.
 
 ## Technical Approach
 Option 1:
-- Add new CLI onboarding prompts or interactive adoption commands. This would
-  surface guidance in terminal, but adds behavior and maintenance for a docs
-  problem.
+- Treat the feedback as documentation only. This keeps runtime stable, but
+  leaves the highest-friction daily loop issues unresolved.
 
 Option 2:
-- Add GitHub-only adoption docs and concise README/npm README links, backed by
-  tests that keep the docs discoverable and out of the npm runtime payload.
+- Ship focused runtime polish: deterministic small-task auto-closeout,
+  finish/gate consistency, optional IDE bridge files, `architect-lite` hub
+  context, and warning-only freshness hints.
 
 Chosen Approach:
-- Use Option 2. Keep this as documentation hardening only: no new commands,
-  dependencies, schemas, hooks, network calls, or installer behavior.
+- Use Option 2. The changes are backward-compatible, local, deterministic, and
+  zero-dependency. Schema v2 consolidation, offline adoption docs, classify
+  heuristics, and stricter workflow enforcement remain deferred.
 
 ## Current Status
-- [x] Confirmed `ace-pack@1.0.0` is published on npm.
-- [x] Confirmed working tree was clean before v1.0.1 work.
-- [x] Bumped package version to `1.0.1`.
-- [x] Added adoption checklist and FAQ docs.
-- [x] Linked adoption docs from README and README.npm.
-- [x] Added tests for adoption docs and payload boundary.
-- [x] Ran release-readiness checks and explicit dogfood self-check.
-- [x] Published `ace-pack@1.0.1` to npm and confirmed npm latest.
-- [x] Recorded future DevEx roadmap tracks without starting new product work.
+- [x] Bumped package version to `1.1.0`.
+- [x] Added small low-risk auto-closeout in `ace:finish`.
+- [x] Aligned `ace:gate` with relaxed small low-risk closeout.
+- [x] Added optional IDE bridge files during `ace-pack init`.
+- [x] Added `architect-lite` / `plan` hub mode.
+- [x] Added warning-only freshness hints to `ace:check`.
+- [x] Updated shipped templates, README surfaces, compatibility docs, roadmap,
+  and tests.
+- [x] Ran targeted and full Vitest suites.
+- [x] Run release-readiness checks.
+- [x] Run explicit dogfood self-check before final publish.
 
 ## What Was Done
-- Confirmed `ace-pack@1.0.1` is published on npm and matches local
-  `package.json`.
-- Confirmed release-readiness passed for `1.0.1` before publication.
-- Confirmed this repository's ACE dogfood install is already up to date.
-- Added future DevEx feedback to the roadmap: IDE rule bridging, zero-ceremony
-  small tasks, and memory consolidation / schema v2 research.
-- Closed the current product batch. ACE is complete for the current milestone;
-  future work should start as a new planned task.
+- Started `ace-pack@1.1.0` as a backward-compatible daily DevEx runtime polish
+  release after `1.0.1`.
+- Added deterministic small low-risk auto-closeout to `ace:finish`.
+- Kept `ace:gate` consistent with relaxed small-task closeout while preserving
+  strict checks for standard, large, high-risk, and design-review-required work.
+- Added package-manager-aware IDE bridge files for Cursor, Windsurf, and GitHub
+  Copilot during `ace-pack init`, without overwriting existing project-owned
+  rule files.
+- Added `architect-lite` / `plan` hub mode for lower-token planning context.
+- Added warning-only freshness hints to `ace:check`.
+- Updated shipped templates, README surfaces, schema compatibility docs,
+  roadmap files, smoke routine, and tests.
 
 ## Current State
-- npm latest is `ace-pack@1.0.1`.
-- Local package version is `ace-pack@1.0.1`.
-- Current product milestone is complete.
-- No active implementation task is open.
+- Local package version is `ace-pack@1.1.0`.
+- npm latest is still `ace-pack@1.0.1`.
+- v1.1.0 implementation is complete and passed release-readiness verification.
+- This repository has been dogfooded with the local `1.1.0` candidate.
+- npm latest is still `ace-pack@1.0.1`; publish is required when the maintainer
+  is ready to release `1.1.0`.
 
 ## Next Steps
-- No terminal command is required right now.
-- Start a new task only when the maintainer chooses the next product direction.
-- Candidate future tracks are documented in ROADMAP.md and
-  .ai/product-roadmap.md.
+- Run `npm.cmd run release:npm` when the maintainer is ready to publish ace-pack@1.1.0.
+- After publish, verify npm latest with `npm.cmd view ace-pack version`.
 
 ## Known Issues
-- None known for `ace-pack@1.0.1`.
+- None known for v1.1.0 at this stage.
 
 ## Quality Review
 Product Alignment:
-- v1.0.1 is the final current adoption-hardening release. Roadmap updates keep
-  future DevEx ideas visible without starting new implementation work.
+- v1.1.0 directly targets daily friction identified after v1.0.1 adoption:
+  small task ceremony, IDE-agent adoption, planning-token load, and stale-context
+  hints.
 
 Architecture:
-- The final closeout changed only repo-local ACE memory and roadmap strategy.
-  No package scripts, installer behavior, runtime code, or package version were
-  changed.
+- `ace:finish` and `ace:gate` share the same low-risk classification boundary,
+  avoiding policy drift. IDE bridges are installer-created optional files, not a
+  new source of truth. `architect-lite` is additive and keeps numeric hub modes
+  compatible.
 
 Security:
-- No AI calls, network calls, hooks, credentials, migrations, or automatic
-  runtime behavior were added during closeout.
+- No dependencies, AI calls, network calls, automatic hooks, credentials, or
+  schema migrations were added. Existing IDE rule files are not overwritten.
 
 Code Quality:
-- Release-readiness and ACE validation were used for the shipped `1.0.1`
-  candidate. This closeout only synchronizes project memory after publish.
+- Tests cover small auto-closeout, gate consistency, bridge creation and
+  non-overwrite behavior, package-manager-aware bridge content, hub lite mode,
+  freshness warnings, schema docs, and fake-project smoke.
 
 ## Verification
-- `npm.cmd run ace:classify` passed and classified v1.0.1 as large.
-- `npm.cmd test` passed: 13 files, 96 tests.
-- `npm.cmd run check:npm-payload` passed and checked 29 packed files.
-- `npm.cmd run release:ready` passed for `ace-pack@1.0.1`.
-- `npm.cmd run dogfood:self-check -- --allow-dirty` passed and reported no
-created or updated installed files.
-- `npm.cmd view ace-pack version` returned `1.0.1` after publish.
+- `npm.cmd test -- tests/ai-task-finish.test.ts tests/ace-quality-gate.test.ts tests/install-agent-memory-pack.test.ts tests/ace-hub.test.ts tests/agent-memory.test.ts tests/smoke-release.test.ts` passed: 6 files, 58 tests.
+- `npm.cmd test` passed: 13 files, 103 tests.
+- `npm.cmd run release:ready` passed: 13 files, 104 tests, fake-project smoke,
+`ace:gate`, npm payload guard, and npm publish dry-run.
+- `npm.cmd run dogfood:self-check -- --allow-dirty` passed after adding IDE
+bridge files to the expected dogfood sync allowlist.
+- `npm.cmd run ace:finish` passed and archived the v1.1.0 task snapshot.
+- `npm.cmd run ace:validate` passed after report regeneration.
 
 ## Recent Decisions
-## 2026-06-14 13:37
+## 2026-06-14 14:34
 
 Decision:
-- Promote ACE to v1.0 by documenting and testing the existing compatibility
-  contract instead of adding a migration engine before a real schema migration
-  exists.
+- Implement v1.1 daily DevEx polish as additive runtime behavior: small
+  low-risk auto-closeout, finish/gate consistency, optional IDE bridges,
+  `architect-lite` planning context, and warning-only freshness hints.
 
 Reason:
-- ACE's current stability comes from additive install behavior, project-owned
-  Markdown memory, stable command names, and schema version `1`. A migration
-  platform would add code and ceremony without a concrete schema change to
-  execute.
+- v1.0.1 solved adoption documentation, but daily use still had unnecessary
+  ceremony for trivial edits and weak native IDE-agent onboarding. These issues
+  can be solved without schema v2, dependencies, AI calls, or breaking CLI
+  changes.
 
 Impact:
-- `docs/schema-compatibility.md` defines stable commands, file expectations,
-  Markdown sections, memory-config v1 behavior, and future migration policy.
-- Regression tests protect installed-repo compatibility and legacy aliases.
-- Future schema v2 work must document the reason, add deterministic migration
-  behavior, and include old-repo fixture tests.
+- `ace:finish` and `ace:gate` now share the same small low-risk boundary.
+- `ace-pack init` may create missing IDE bridge files but must not overwrite
+  project-owned rule files.
+- Memory consolidation, docs-only classify tuning, offline adoption docs, and
+  mechanical classify-before-code enforcement remain deferred.
 
 ## Changed Areas
 - `package.json`
-- `docs/adoption-checklist.md`
-- `docs/faq.md`
-- `README.md`
-- `README.npm.md`
-- `tests/adoption-docs.test.ts`
-- `ROADMAP.md`
-- `.ai/product-roadmap.md`
+- `install-ace-pack.mjs`
+- `.cursorrules`
+- `.windsurfrules`
+- `.github/copilot-instructions.md`
+- `scripts/ai-task-finish.mjs`
+- `scripts/ace-quality-gate.mjs`
+- `scripts/ace-hub.mjs`
 
 ## Latest Work Log
 # Work Log
@@ -380,10 +393,29 @@ Impact:
   tasks, and memory consolidation / schema v2 research.
 - Closed the current product milestone. No active implementation task remains.
 
+## 2026-06-14 14:34
+
+- Started `ace-pack@1.1.0` Daily DevEx Runtime Polish.
+- Added deterministic small low-risk auto-closeout to `ace:finish` and aligned
+  `ace:gate` with the same relaxed boundary.
+- Added optional package-manager-aware IDE bridges for Cursor, Windsurf, and
+  GitHub Copilot during `ace-pack init`.
+- Added `architect-lite` / `plan` hub context and warning-only freshness hints
+  in `ace:check`.
+- Updated shipped templates, README surfaces, compatibility docs, roadmap,
+  fake-project smoke, and tests.
+- Verified full Vitest: 13 files, 103 tests.
+- Fixed dogfood self-check allowlist so v1.1 IDE bridge files are accepted as
+  expected ACE-managed sync output.
+- Verified `npm.cmd run release:ready`: 13 files, 104 tests, fake-project
+  smoke, `ace:gate`, payload guard, and npm publish dry-run passed.
+- Verified `npm.cmd run dogfood:self-check -- --allow-dirty` passed for this
+  repository with local `ace-pack@1.1.0`.
+
 ## Unresolved Reflections
 - No unresolved reflections recorded.
 
 ## Overall Progress
-- Completion checklist: 8/8
+- Completion checklist: 9/9
 - Canonical context lives in `.ai/*`.
 - XML bundle generated at `.ai/report-full.xml` for parsable handoff.
