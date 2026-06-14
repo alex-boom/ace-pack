@@ -3,21 +3,21 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 14:40
+- Generated: 2026-06-14 15:14
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 14:38
-- Source session-handoff: 2026-06-14 14:40
+- Source current-task: 2026-06-14 15:13
+- Source session-handoff: 2026-06-14 15:13
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (36 changed files)
-- Last commit: f368325 Finalize v1.0.1 by confirming publication of `ace-pack@1.0.1` on npm and updating project documentation. Added future DevEx roadmap tracks for IDE rule bridging, zero-ceremony small tasks, and memory consolidation/schema v2 research. Closed the current product milestone, with no active implementation tasks remaining.
+- Worktree: dirty (4 changed files)
+- Last commit: f3d71a3 Implement v1.1.0 Daily DevEx Runtime Polish, introducing small low-risk auto-closeout in `ace:finish`, aligning `ace:gate` behavior, and adding optional IDE bridge files during `ace-pack init`. Introduced `architect-lite` hub mode for lower-token planning context and warning-only freshness hints in `ace:check`. Updated documentation and tests to reflect these changes while preserving existing project-owned rule files.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
-- Next command: `npm.cmd run release:npm`
-- Release decision: NPM publish: required before final release; deferred by maintainer.
+- Next command: No command detected
+- Release decision: NPM publish: not required. `ace-pack@1.1.0` is already published; this closeout changes only repo-local ACE memory and reports.
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
@@ -55,10 +55,11 @@ to start from the same repository protocol.
 - [x] Ran targeted and full Vitest suites.
 - [x] Run release-readiness checks.
 - [x] Run explicit dogfood self-check before final publish.
+- [x] Published `ace-pack@1.1.0` to npm and confirmed npm latest.
 
 ## Next Steps
-- Run `npm.cmd run release:npm` when the maintainer is ready to publish ace-pack@1.1.0.
-- After publish, verify npm latest with `npm.cmd view ace-pack version`.
+- No terminal command is required right now.
+- Start a new task only when the maintainer chooses the next product direction.
 
 ## Risks / Blockers
 - None known for v1.1.0 at this stage.

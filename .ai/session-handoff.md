@@ -1,7 +1,7 @@
 # Session Handoff
 
 ## Last Update
-2026-06-14 14:34
+2026-06-14 15:13
 
 ## What Was Done
 - Started `ace-pack@1.1.0` as a backward-compatible daily DevEx runtime polish
@@ -16,14 +16,15 @@
 - Added warning-only freshness hints to `ace:check`.
 - Updated shipped templates, README surfaces, schema compatibility docs,
   roadmap files, smoke routine, and tests.
+- Published `ace-pack@1.1.0` to npm and confirmed npm latest.
 
 ## Current State
 - Local package version is `ace-pack@1.1.0`.
-- npm latest is still `ace-pack@1.0.1`.
+- npm latest is `ace-pack@1.1.0`.
 - v1.1.0 implementation is complete and passed release-readiness verification.
 - This repository has been dogfooded with the local `1.1.0` candidate.
-- npm latest is still `ace-pack@1.0.1`; publish is required when the maintainer
-  is ready to release `1.1.0`.
+- Current product milestone is complete.
+- No active implementation task is open.
 
 ## Quality Review
 Product Alignment:
@@ -47,8 +48,8 @@ Code Quality:
   freshness warnings, schema docs, and fake-project smoke.
 
 ## Next Steps
-- Run `npm.cmd run release:npm` when the maintainer is ready to publish ace-pack@1.1.0.
-- After publish, verify npm latest with `npm.cmd view ace-pack version`.
+- No terminal command is required right now.
+- Start a new task only when the maintainer chooses the next product direction.
 
 ## Known Issues
 - None known for v1.1.0 at this stage.
@@ -63,7 +64,7 @@ Code Quality:
 - `npm.cmd run ace:finish` passed and archived the v1.1.0 task snapshot.
 - `npm.cmd run ace:validate` passed after report regeneration.
 - `npm.cmd run ace:gate` passed after report regeneration.
-- `npm.cmd view ace-pack version` returned `1.0.1`; v1.1.0 is not published yet.
+- `npm.cmd view ace-pack version` returned `1.1.0` after publish.
 
 ## Notes
-- NPM publish: required before final release; deferred by maintainer.
+- NPM publish: not required. `ace-pack@1.1.0` is already published; this closeout changes only repo-local ACE memory and reports.

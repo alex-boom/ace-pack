@@ -63,3 +63,4 @@
 [.ai/**]
 - Updated product roadmap, technical docs, reflection log, current task,
   handoff, and changed-files memory for v1.1.0.
+- Recorded post-release state after `ace-pack@1.1.0` was published to npm.

@@ -3,21 +3,21 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 14:40
+- Generated: 2026-06-14 15:14
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 14:38
-- Source session-handoff: 2026-06-14 14:40
+- Source current-task: 2026-06-14 15:13
+- Source session-handoff: 2026-06-14 15:13
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (36 changed files)
-- Last commit: f368325 Finalize v1.0.1 by confirming publication of `ace-pack@1.0.1` on npm and updating project documentation. Added future DevEx roadmap tracks for IDE rule bridging, zero-ceremony small tasks, and memory consolidation/schema v2 research. Closed the current product milestone, with no active implementation tasks remaining.
+- Worktree: dirty (5 changed files)
+- Last commit: f3d71a3 Implement v1.1.0 Daily DevEx Runtime Polish, introducing small low-risk auto-closeout in `ace:finish`, aligning `ace:gate` behavior, and adding optional IDE bridge files during `ace-pack init`. Introduced `architect-lite` hub mode for lower-token planning context and warning-only freshness hints in `ace:check`. Updated documentation and tests to reflect these changes while preserving existing project-owned rule files.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
-- Next command: `npm.cmd run release:npm`
-- Release decision: NPM publish: required before final release; deferred by maintainer.
+- Next command: No command detected
+- Release decision: NPM publish: not required. `ace-pack@1.1.0` is already published; this closeout changes only repo-local ACE memory and reports.
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
@@ -73,6 +73,7 @@ Chosen Approach:
 - [x] Ran targeted and full Vitest suites.
 - [x] Run release-readiness checks.
 - [x] Run explicit dogfood self-check before final publish.
+- [x] Published `ace-pack@1.1.0` to npm and confirmed npm latest.
 
 ## What Was Done
 - Started `ace-pack@1.1.0` as a backward-compatible daily DevEx runtime polish
@@ -87,18 +88,19 @@ Chosen Approach:
 - Added warning-only freshness hints to `ace:check`.
 - Updated shipped templates, README surfaces, schema compatibility docs,
   roadmap files, smoke routine, and tests.
+- Published `ace-pack@1.1.0` to npm and confirmed npm latest.
 
 ## Current State
 - Local package version is `ace-pack@1.1.0`.
-- npm latest is still `ace-pack@1.0.1`.
+- npm latest is `ace-pack@1.1.0`.
 - v1.1.0 implementation is complete and passed release-readiness verification.
 - This repository has been dogfooded with the local `1.1.0` candidate.
-- npm latest is still `ace-pack@1.0.1`; publish is required when the maintainer
-  is ready to release `1.1.0`.
+- Current product milestone is complete.
+- No active implementation task is open.
 
 ## Next Steps
-- Run `npm.cmd run release:npm` when the maintainer is ready to publish ace-pack@1.1.0.
-- After publish, verify npm latest with `npm.cmd view ace-pack version`.
+- No terminal command is required right now.
+- Start a new task only when the maintainer chooses the next product direction.
 
 ## Known Issues
 - None known for v1.1.0 at this stage.
@@ -411,6 +413,15 @@ Impact:
   smoke, `ace:gate`, payload guard, and npm publish dry-run passed.
 - Verified `npm.cmd run dogfood:self-check -- --allow-dirty` passed for this
   repository with local `ace-pack@1.1.0`.
+
+## 2026-06-14 15:13
+
+- Confirmed `ace-pack@1.1.0` is published on npm and matches local
+  `package.json`.
+- Updated ACE handoff/current-task memory so future agents do not attempt to
+  republish v1.1.0.
+- Current product milestone is complete and no active implementation task is
+  open.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.

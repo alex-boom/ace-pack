@@ -48,6 +48,7 @@ Chosen Approach:
 - [x] Ran targeted and full Vitest suites.
 - [x] Run release-readiness checks.
 - [x] Run explicit dogfood self-check before final publish.
+- [x] Published `ace-pack@1.1.0` to npm and confirmed npm latest.
 
 ## Affected Areas
 - `package.json`
@@ -84,6 +85,7 @@ Chosen Approach:
 - `ace:check` prints freshness warnings separately from hard validation errors
   and exits successfully when memory is valid.
 - Fake-project smoke covers fresh bridge creation and small auto-closeout.
+- npm latest is `ace-pack@1.1.0`.
 
 ## Completion Checklist
 - [x] Goal completed
