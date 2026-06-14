@@ -1,6 +1,6 @@
 # ACE Hub Context
 - Mode: start (Start / AI Coder Context)
-- Generated: 2026-06-14T10:42:37.126Z
+- Generated: 2026-06-14T10:49:50.955Z
 - Included files: .ai/report-brief.md, .ai/current-task.md, .ai/session-handoff.md, .ai/changed-files.md, .ai/reflection-log.md
 - Missing optional files: none
 
@@ -11,68 +11,67 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 13:42
+- Generated: 2026-06-14 13:49
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 13:42
-- Source session-handoff: 2026-06-14 13:40
+- Source current-task: 2026-06-14 13:48
+- Source session-handoff: 2026-06-14 13:49
 - Verification level: test-backed
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (19 changed files)
-- Last commit: f382abb Implement v0.6.0 Product Growth Kit, enhancing ACE's onboarding experience with a 60-second demo section in README and GitHub-only demo materials. Bump package version to 0.6.0, add demo script, launch copy, and context-loss fixture while ensuring `docs/**` and `examples/**` are excluded from the npm payload. Strengthen tests to verify demo links and payload boundaries.
+- Worktree: dirty (17 changed files)
+- Last commit: 24a3f8d Promote ACE to v1.0 by documenting the stability contract, including command names, installed file expectations, and migration policy. Bump package version to 1.0.0 and add regression tests for backward compatibility. Update README and npm README with links to the v1.0 stability documentation.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
-- Next command: `npm.cmd run release:npm`
+- Next command: No command detected
 - Release decision: NPM publish: required before final release; deferred by maintainer.
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
 
 ## Current Task
-v1.0.0 Stable Schema and Compatibility
+v1.0.1 Final Adoption Hardening
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 13:31
+Started: 2026-06-14 13:52
 Ready For Archive: yes
 
 ## Goal
-Promote ACE to a stable v1.0 contract by documenting file/schema expectations,
-CLI compatibility rules, and migration policy while adding regression tests for
-older installed repositories.
+Add final adoption guidance for teams evaluating ACE after v1.0, while batching
+the next npm publish until the maintainer decides the final release is ready.
 
 ## Business Value
-v1.0 gives teams confidence that adopting ACE will not silently rewrite their
-local memory, break existing commands, or make future template changes
-unpredictable.
+After v1.0, teams need a concise rollout path and FAQ more than new runtime
+features. This reduces adoption friction without changing ACE's zero-bloat core.
 
 ## Current Status
-- [x] Confirmed `ace-pack@0.6.0` is published on npm.
-- [x] Confirmed working tree was clean before v1.0 work.
-- [x] Bumped package version to `1.0.0`.
-- [x] Added stable schema and compatibility documentation.
-- [x] Updated README/npm README with v1.0 stability links.
-- [x] Added backward-compatibility regression tests.
+- [x] Confirmed `ace-pack@1.0.0` is published on npm.
+- [x] Confirmed working tree was clean before v1.0.1 work.
+- [x] Bumped package version to `1.0.1`.
+- [x] Added adoption checklist and FAQ docs.
+- [x] Linked adoption docs from README and README.npm.
+- [x] Added tests for adoption docs and payload boundary.
 - [x] Ran release-readiness checks and explicit dogfood self-check.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when the maintainer wants v1.0.0 live.
-- After publish, run `npm.cmd view ace-pack version` and update repo-local ACE
-  memory so future agents see npm latest as `1.0.0`.
+- No terminal command is required right now.
+- Do not publish until the maintainer says the final batch is ready.
+- When the maintainer chooses to publish the final batch, run
+  npm.cmd run release:npm.
 
 ## Risks / Blockers
-- None known for v1.0.0.
+- None known for v1.0.1.
 
 ## Verification
-- `npm.cmd run ace:classify` passed and classified v1.0 as large.
-- `npm.cmd test` passed: 12 files, 92 tests.
+- `npm.cmd run ace:classify` passed and classified v1.0.1 as large.
+- `npm.cmd test` passed: 13 files, 96 tests.
 - `npm.cmd run check:npm-payload` passed and checked 29 packed files.
-- `npm.cmd run release:ready` passed for `ace-pack@1.0.0`.
+- `npm.cmd run release:ready` passed for `ace-pack@1.0.1`.
 
 ## Recent Decision
 ## 2026-06-14 13:37
@@ -100,11 +99,11 @@ Impact:
 
 ## Changed Areas
 - `package.json`
-- `docs/schema-compatibility.md`
+- `docs/adoption-checklist.md`
+- `docs/faq.md`
 - `README.md`
 - `README.npm.md`
-- `tests/schema-compatibility.test.ts`
-- `ROADMAP.md`
+- `tests/adoption-docs.test.ts`
 
 ## Overall Progress
 - Completion checklist: 8/8
@@ -115,50 +114,45 @@ Impact:
 # Current Task
 
 ## Feature Name
-v1.0.0 Stable Schema and Compatibility
+v1.0.1 Final Adoption Hardening
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 13:31
+Started: 2026-06-14 13:52
 Ready For Archive: yes
 
 ## Goal
-Promote ACE to a stable v1.0 contract by documenting file/schema expectations,
-CLI compatibility rules, and migration policy while adding regression tests for
-older installed repositories.
+Add final adoption guidance for teams evaluating ACE after v1.0, while batching
+the next npm publish until the maintainer decides the final release is ready.
 
 ## Business Value / Product Alignment
-v1.0 gives teams confidence that adopting ACE will not silently rewrite their
-local memory, break existing commands, or make future template changes
-unpredictable.
+After v1.0, teams need a concise rollout path and FAQ more than new runtime
+features. This reduces adoption friction without changing ACE's zero-bloat core.
 
 ## Technical Approach
 Option 1:
-- Add a formal migration engine and schema registry now. This creates strong
-  machinery, but adds code and process before ACE has a real schema migration
+- Add new CLI onboarding prompts or interactive adoption commands. This would
+  surface guidance in terminal, but adds behavior and maintenance for a docs
   problem.
 
 Option 2:
-- Document the stable v1.0 contract and add focused regression tests around the
-  guarantees ACE already has: idempotent install, no `.ai/*` overwrites, stable
-  workflow markers, schema version `1`, tolerated unknown config fields, and
-  legacy command compatibility.
+- Add GitHub-only adoption docs and concise README/npm README links, backed by
+  tests that keep the docs discoverable and out of the npm runtime payload.
 
 Chosen Approach:
-- Use Option 2. v1.0 should stabilize the existing lightweight contract without
-  inventing a migration platform. Future schema v2 work can add a migrator only
-  when a real breaking schema change exists.
+- Use Option 2. Keep this as documentation hardening only: no new commands,
+  dependencies, schemas, hooks, network calls, or installer behavior.
 
 ## Current Status
-- [x] Confirmed `ace-pack@0.6.0` is published on npm.
-- [x] Confirmed working tree was clean before v1.0 work.
-- [x] Bumped package version to `1.0.0`.
-- [x] Added stable schema and compatibility documentation.
-- [x] Updated README/npm README with v1.0 stability links.
-- [x] Added backward-compatibility regression tests.
+- [x] Confirmed `ace-pack@1.0.0` is published on npm.
+- [x] Confirmed working tree was clean before v1.0.1 work.
+- [x] Bumped package version to `1.0.1`.
+- [x] Added adoption checklist and FAQ docs.
+- [x] Linked adoption docs from README and README.npm.
+- [x] Added tests for adoption docs and payload boundary.
 - [x] Ran release-readiness checks and explicit dogfood self-check.
 
 ## Affected Areas
@@ -170,19 +164,19 @@ Chosen Approach:
 - `.ai/**` closeout notes
 
 ## Constraints
-- No runtime dependencies, AI calls, network calls, hooks, config schema bump, or
-  CLI command removals.
-- Do not add a migration engine until there is a real schema migration to run.
-- Keep v1.0 docs precise and enforceable; avoid broad promises ACE cannot test.
+- No runtime dependencies, AI calls, network calls, hooks, schemas, CLI command
+  changes, or installer behavior changes.
+- Keep adoption docs GitHub-only; npm README may link to them but docs must stay
+  out of the npm package payload.
+- Do not publish intermediate npm versions until the maintainer explicitly
+  decides the final batch is ready.
 
 ## Acceptance Criteria
-- Stable `.ai/*` file expectations and `.ai/memory-config.json` schema version
-  `1` are documented.
-- Migration policy explains additive changes, compatibility tests, and future
-  schema bump rules.
-- README and npm README link users to the v1.0 compatibility contract.
-- Tests cover legacy installed repositories, custom memory preservation,
-  unknown config fields, legacy commands, and AGENTS marker stability.
+- Teams have a clear adoption checklist from first repo to CI gate.
+- FAQ answers common adoption objections: privacy, dependencies, non-JS repos,
+  strict gates, MCP, upgrades, and when not to use ACE.
+- README and npm README link to adoption docs without bloating the package.
+- Tests verify adoption docs remain discoverable and excluded from npm payload.
 
 ## Completion Checklist
 - [x] Goal completed
@@ -199,57 +193,59 @@ Chosen Approach:
 # Session Handoff
 
 ## Last Update
-2026-06-14 13:37
+2026-06-14 13:47
 
 ## What Was Done
-- Confirmed `ace-pack@0.6.0` is published on npm and the working tree was clean
-  before v1.0 work.
-- Bumped local package version to `1.0.0`.
-- Added `docs/schema-compatibility.md` with the v1.0 stable contract:
-  command names, installed files, Markdown section expectations,
-  `.ai/memory-config.json` schema version `1`, migration policy, and payload
-  boundary.
-- Added README and npm README links to the v1.0 stability contract.
-- Added schema compatibility tests for project-owned memory preservation,
-  AGENTS marker stability, memory-config v1 normalization, legacy command
-  aliases, docs links, and fresh install validation.
+- Confirmed `ace-pack@1.0.0` is published on npm and the working tree was clean
+  before v1.0.1 work.
+- Started the next final-release batch as `ace-pack@1.0.1`; npm publish is
+  intentionally deferred until the maintainer decides the final batch is ready.
+- Added `docs/adoption-checklist.md` with a gradual rollout path from first
+  repository to optional PR/CI gates.
+- Added `docs/faq.md` covering common adoption objections around AI calls,
+  dependencies, non-JS repositories, strict gates, MCP, upgrades, and when not
+  to use ACE.
+- Added README and npm README links to the adoption docs.
+- Added tests for adoption doc links, content focus, and npm payload boundary.
 
 ## Current State
-- npm latest is `ace-pack@0.6.0`.
-- Local candidate is `ace-pack@1.0.0`.
-- v1.0.0 is implemented locally and passed release-readiness verification.
+- npm latest is `ace-pack@1.0.0`.
+- Local candidate is `ace-pack@1.0.1`.
+- v1.0.1 is implemented locally and passed release-readiness verification.
+- No intermediate npm publish should happen until the maintainer explicitly
+  decides this final batch is ready.
 
 ## Quality Review
 Product Alignment:
-- v1.0 gives teams a stable adoption contract for installed ACE repositories and
-  makes future changes easier to evaluate.
+- v1.0.1 improves team adoption after the stable v1.0 contract without adding
+  new runtime concepts or commands.
 
 Architecture:
-- The release documents and tests existing behavior rather than introducing a
-  schema registry or migration engine without a real schema v2 problem.
+- The change is documentation hardening only. Adoption docs are GitHub-only,
+  while README.npm links to them without adding docs to the npm payload.
 
 Security:
-- No AI calls, network calls, hooks, credentials, or automatic migration writes
-  were added. Existing `.ai/*` memory remains project-owned.
+- No AI calls, network calls, hooks, credentials, migrations, or automatic
+  runtime behavior were added.
 
 Code Quality:
-- Regression tests protect compatibility promises around installer behavior,
-  config normalization, AGENTS workflow markers, command names, legacy aliases,
-  and documentation links.
+- Tests verify adoption docs are linked from both README surfaces, answer common
+  objections, and remain outside the package file list.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when the maintainer wants v1.0.0 live.
-- After publish, run `npm.cmd view ace-pack version` and update repo-local ACE
-  memory so future agents see npm latest as `1.0.0`.
+- No terminal command is required right now.
+- Do not publish until the maintainer says the final batch is ready.
+- When the maintainer chooses to publish the final batch, run
+  npm.cmd run release:npm.
 
 ## Known Issues
-- None known for v1.0.0.
+- None known for v1.0.1.
 
 ## Verification
-- `npm.cmd run ace:classify` passed and classified v1.0 as large.
-- `npm.cmd test` passed: 12 files, 92 tests.
+- `npm.cmd run ace:classify` passed and classified v1.0.1 as large.
+- `npm.cmd test` passed: 13 files, 96 tests.
 - `npm.cmd run check:npm-payload` passed and checked 29 packed files.
-- `npm.cmd run release:ready` passed for `ace-pack@1.0.0`.
+- `npm.cmd run release:ready` passed for `ace-pack@1.0.1`.
 - `npm.cmd run dogfood:self-check -- --allow-dirty` passed and reported no
   created or updated installed files.
 
@@ -261,32 +257,30 @@ Code Quality:
 # Changed Files
 
 [package.json]
-- Bumped package version to `1.0.0`.
+- Bumped package version to `1.0.1` for the final adoption-hardening candidate.
 
-[docs/schema-compatibility.md]
-- Added the v1.0 stable compatibility contract for commands, installed files,
-  Markdown sections, memory-config schema version `1`, migration policy, and
-  npm payload boundary.
+[docs/adoption-checklist.md]
+- Added a gradual team rollout checklist from first repository to optional CI
+  gate adoption and safe upgrades.
+
+[docs/faq.md]
+- Added answers for common adoption questions about AI calls, dependencies,
+  non-JS repos, memory preservation, gates, MCP, upgrades, and when not to use
+  ACE.
 
 [README.md]
-- Added a v1.0 stability-contract section linking to the full schema and
-  compatibility document.
+- Added Adoption Guides links to the GitHub README.
 
 [README.npm.md]
-- Added npm-facing v1.0 stability-contract copy with a GitHub link to the full
-  document.
+- Added npm-facing Adoption Guides links to GitHub docs.
 
-[tests/schema-compatibility.test.ts]
-- Added regression coverage for project-owned memory preservation, AGENTS
-  marker stability, memory-config v1 normalization, stable commands, legacy
-  aliases, docs links, and fresh install validation.
-
-[ROADMAP.md]
-- Marked v1.0 Stable Schema and Compatibility as shipped locally.
+[tests/adoption-docs.test.ts]
+- Added coverage for README links, adoption checklist focus, FAQ coverage, and
+  npm payload boundary expectations.
 
 [.ai/**]
-- Updated current task, handoff, changed-files, work-log, decisions, roadmap,
-  technical docs, and reports for v1.0 closeout.
+- Updated current task, handoff, changed-files, work-log, roadmap, technical
+  docs, and reports for v1.0.1 closeout.
 
 # --- FILE: .ai/reflection-log.md ---
 

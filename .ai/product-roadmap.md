@@ -55,6 +55,9 @@ handoff and browser-context workflows.
   names, installed file expectations, `.ai/memory-config.json` schema version
   `1`, AGENTS workflow markers, and migration policy, with regression tests for
   older installed repositories.
+- **v1.0.1 Adoption Hardening.** ACE now has GitHub-only adoption checklist and
+  FAQ docs linked from README surfaces, helping teams roll out ACE without new
+  runtime behavior or npm payload bloat.
 
 ## Planned Features
 

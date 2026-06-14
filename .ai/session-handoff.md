@@ -1,57 +1,59 @@
 # Session Handoff
 
 ## Last Update
-2026-06-14 13:37
+2026-06-14 13:47
 
 ## What Was Done
-- Confirmed `ace-pack@0.6.0` is published on npm and the working tree was clean
-  before v1.0 work.
-- Bumped local package version to `1.0.0`.
-- Added `docs/schema-compatibility.md` with the v1.0 stable contract:
-  command names, installed files, Markdown section expectations,
-  `.ai/memory-config.json` schema version `1`, migration policy, and payload
-  boundary.
-- Added README and npm README links to the v1.0 stability contract.
-- Added schema compatibility tests for project-owned memory preservation,
-  AGENTS marker stability, memory-config v1 normalization, legacy command
-  aliases, docs links, and fresh install validation.
+- Confirmed `ace-pack@1.0.0` is published on npm and the working tree was clean
+  before v1.0.1 work.
+- Started the next final-release batch as `ace-pack@1.0.1`; npm publish is
+  intentionally deferred until the maintainer decides the final batch is ready.
+- Added `docs/adoption-checklist.md` with a gradual rollout path from first
+  repository to optional PR/CI gates.
+- Added `docs/faq.md` covering common adoption objections around AI calls,
+  dependencies, non-JS repositories, strict gates, MCP, upgrades, and when not
+  to use ACE.
+- Added README and npm README links to the adoption docs.
+- Added tests for adoption doc links, content focus, and npm payload boundary.
 
 ## Current State
-- npm latest is `ace-pack@0.6.0`.
-- Local candidate is `ace-pack@1.0.0`.
-- v1.0.0 is implemented locally and passed release-readiness verification.
+- npm latest is `ace-pack@1.0.0`.
+- Local candidate is `ace-pack@1.0.1`.
+- v1.0.1 is implemented locally and passed release-readiness verification.
+- No intermediate npm publish should happen until the maintainer explicitly
+  decides this final batch is ready.
 
 ## Quality Review
 Product Alignment:
-- v1.0 gives teams a stable adoption contract for installed ACE repositories and
-  makes future changes easier to evaluate.
+- v1.0.1 improves team adoption after the stable v1.0 contract without adding
+  new runtime concepts or commands.
 
 Architecture:
-- The release documents and tests existing behavior rather than introducing a
-  schema registry or migration engine without a real schema v2 problem.
+- The change is documentation hardening only. Adoption docs are GitHub-only,
+  while README.npm links to them without adding docs to the npm payload.
 
 Security:
-- No AI calls, network calls, hooks, credentials, or automatic migration writes
-  were added. Existing `.ai/*` memory remains project-owned.
+- No AI calls, network calls, hooks, credentials, migrations, or automatic
+  runtime behavior were added.
 
 Code Quality:
-- Regression tests protect compatibility promises around installer behavior,
-  config normalization, AGENTS workflow markers, command names, legacy aliases,
-  and documentation links.
+- Tests verify adoption docs are linked from both README surfaces, answer common
+  objections, and remain outside the package file list.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when the maintainer wants v1.0.0 live.
-- After publish, run `npm.cmd view ace-pack version` and update repo-local ACE
-  memory so future agents see npm latest as `1.0.0`.
+- No terminal command is required right now.
+- Do not publish until the maintainer says the final batch is ready.
+- When the maintainer chooses to publish the final batch, run
+  npm.cmd run release:npm.
 
 ## Known Issues
-- None known for v1.0.0.
+- None known for v1.0.1.
 
 ## Verification
-- `npm.cmd run ace:classify` passed and classified v1.0 as large.
-- `npm.cmd test` passed: 12 files, 92 tests.
+- `npm.cmd run ace:classify` passed and classified v1.0.1 as large.
+- `npm.cmd test` passed: 13 files, 96 tests.
 - `npm.cmd run check:npm-payload` passed and checked 29 packed files.
-- `npm.cmd run release:ready` passed for `ace-pack@1.0.0`.
+- `npm.cmd run release:ready` passed for `ace-pack@1.0.1`.
 - `npm.cmd run dogfood:self-check -- --allow-dirty` passed and reported no
   created or updated installed files.
 

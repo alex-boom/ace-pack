@@ -377,6 +377,15 @@ installer must stay additive and idempotent.
 Read the full contract:
 [ACE v1.0 Schema and Compatibility](./docs/schema-compatibility.md).
 
+## Adoption Guides
+
+Rolling ACE into a team should start small: install it in one repository,
+profile risk, connect the real validation command, and add CI gates only after
+the workflow proves useful.
+
+- [ACE Adoption Checklist](./docs/adoption-checklist.md)
+- [ACE FAQ](./docs/faq.md)
+
 ## Release Readiness for ACE Maintainers
 
 ACE maintainers can batch shipped changes and publish only a final release. For

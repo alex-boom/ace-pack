@@ -39,6 +39,9 @@ without reading large implementation files.
   defines stable command names, installed file expectations, Markdown section
   expectations, `.ai/memory-config.json` schema version `1`, and migration
   policy.
+- v1.0.1 adoption documentation lives in `docs/adoption-checklist.md` and
+  `docs/faq.md`. These are GitHub-only rollout aids linked from README surfaces,
+  not installed workflow or runtime behavior.
 - Release-readiness tooling lives in `tools/`. `smoke:fake-project` builds the
   local staged package and validates ACE inside disposable JS and non-JS
   projects. `dogfood:self-check` explicitly reapplies the local candidate to
@@ -88,6 +91,8 @@ without reading large implementation files.
 - `1.0.0` compatibility guarantees are documentation and tests around existing
   behavior; no migration engine, network behavior, or automatic writes were
   added.
+- `1.0.1` adoption docs add no runtime behavior and remain outside the npm
+  payload except for README links.
 - Dogfood self-check refuses dirty git worktrees by default and stops when
   unexpected files change after candidate self-apply.
 - Publish-secret handling is outside ACE scripts; release commands delegate to

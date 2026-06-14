@@ -1,29 +1,27 @@
 # Changed Files
 
 [package.json]
-- Bumped package version to `1.0.0`.
+- Bumped package version to `1.0.1` for the final adoption-hardening candidate.
 
-[docs/schema-compatibility.md]
-- Added the v1.0 stable compatibility contract for commands, installed files,
-  Markdown sections, memory-config schema version `1`, migration policy, and
-  npm payload boundary.
+[docs/adoption-checklist.md]
+- Added a gradual team rollout checklist from first repository to optional CI
+  gate adoption and safe upgrades.
+
+[docs/faq.md]
+- Added answers for common adoption questions about AI calls, dependencies,
+  non-JS repos, memory preservation, gates, MCP, upgrades, and when not to use
+  ACE.
 
 [README.md]
-- Added a v1.0 stability-contract section linking to the full schema and
-  compatibility document.
+- Added Adoption Guides links to the GitHub README.
 
 [README.npm.md]
-- Added npm-facing v1.0 stability-contract copy with a GitHub link to the full
-  document.
+- Added npm-facing Adoption Guides links to GitHub docs.
 
-[tests/schema-compatibility.test.ts]
-- Added regression coverage for project-owned memory preservation, AGENTS
-  marker stability, memory-config v1 normalization, stable commands, legacy
-  aliases, docs links, and fresh install validation.
-
-[ROADMAP.md]
-- Marked v1.0 Stable Schema and Compatibility as shipped locally.
+[tests/adoption-docs.test.ts]
+- Added coverage for README links, adoption checklist focus, FAQ coverage, and
+  npm payload boundary expectations.
 
 [.ai/**]
-- Updated current task, handoff, changed-files, work-log, decisions, roadmap,
-  technical docs, and reports for v1.0 closeout.
+- Updated current task, handoff, changed-files, work-log, roadmap, technical
+  docs, and reports for v1.0.1 closeout.

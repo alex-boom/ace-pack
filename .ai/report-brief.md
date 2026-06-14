@@ -3,68 +3,67 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 13:42
+- Generated: 2026-06-14 13:49
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 13:42
-- Source session-handoff: 2026-06-14 13:40
+- Source current-task: 2026-06-14 13:48
+- Source session-handoff: 2026-06-14 13:49
 - Verification level: test-backed
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (19 changed files)
-- Last commit: f382abb Implement v0.6.0 Product Growth Kit, enhancing ACE's onboarding experience with a 60-second demo section in README and GitHub-only demo materials. Bump package version to 0.6.0, add demo script, launch copy, and context-loss fixture while ensuring `docs/**` and `examples/**` are excluded from the npm payload. Strengthen tests to verify demo links and payload boundaries.
+- Worktree: dirty (17 changed files)
+- Last commit: 24a3f8d Promote ACE to v1.0 by documenting the stability contract, including command names, installed file expectations, and migration policy. Bump package version to 1.0.0 and add regression tests for backward compatibility. Update README and npm README with links to the v1.0 stability documentation.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
-- Next command: `npm.cmd run release:npm`
+- Next command: No command detected
 - Release decision: NPM publish: required before final release; deferred by maintainer.
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
 
 ## Current Task
-v1.0.0 Stable Schema and Compatibility
+v1.0.1 Final Adoption Hardening
 
 ## Lifecycle
 Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 13:31
+Started: 2026-06-14 13:52
 Ready For Archive: yes
 
 ## Goal
-Promote ACE to a stable v1.0 contract by documenting file/schema expectations,
-CLI compatibility rules, and migration policy while adding regression tests for
-older installed repositories.
+Add final adoption guidance for teams evaluating ACE after v1.0, while batching
+the next npm publish until the maintainer decides the final release is ready.
 
 ## Business Value
-v1.0 gives teams confidence that adopting ACE will not silently rewrite their
-local memory, break existing commands, or make future template changes
-unpredictable.
+After v1.0, teams need a concise rollout path and FAQ more than new runtime
+features. This reduces adoption friction without changing ACE's zero-bloat core.
 
 ## Current Status
-- [x] Confirmed `ace-pack@0.6.0` is published on npm.
-- [x] Confirmed working tree was clean before v1.0 work.
-- [x] Bumped package version to `1.0.0`.
-- [x] Added stable schema and compatibility documentation.
-- [x] Updated README/npm README with v1.0 stability links.
-- [x] Added backward-compatibility regression tests.
+- [x] Confirmed `ace-pack@1.0.0` is published on npm.
+- [x] Confirmed working tree was clean before v1.0.1 work.
+- [x] Bumped package version to `1.0.1`.
+- [x] Added adoption checklist and FAQ docs.
+- [x] Linked adoption docs from README and README.npm.
+- [x] Added tests for adoption docs and payload boundary.
 - [x] Ran release-readiness checks and explicit dogfood self-check.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when the maintainer wants v1.0.0 live.
-- After publish, run `npm.cmd view ace-pack version` and update repo-local ACE
-  memory so future agents see npm latest as `1.0.0`.
+- No terminal command is required right now.
+- Do not publish until the maintainer says the final batch is ready.
+- When the maintainer chooses to publish the final batch, run
+  npm.cmd run release:npm.
 
 ## Risks / Blockers
-- None known for v1.0.0.
+- None known for v1.0.1.
 
 ## Verification
-- `npm.cmd run ace:classify` passed and classified v1.0 as large.
-- `npm.cmd test` passed: 12 files, 92 tests.
+- `npm.cmd run ace:classify` passed and classified v1.0.1 as large.
+- `npm.cmd test` passed: 13 files, 96 tests.
 - `npm.cmd run check:npm-payload` passed and checked 29 packed files.
-- `npm.cmd run release:ready` passed for `ace-pack@1.0.0`.
+- `npm.cmd run release:ready` passed for `ace-pack@1.0.1`.
 
 ## Recent Decision
 ## 2026-06-14 13:37
@@ -92,11 +91,11 @@ Impact:
 
 ## Changed Areas
 - `package.json`
-- `docs/schema-compatibility.md`
+- `docs/adoption-checklist.md`
+- `docs/faq.md`
 - `README.md`
 - `README.npm.md`
-- `tests/schema-compatibility.test.ts`
-- `ROADMAP.md`
+- `tests/adoption-docs.test.ts`
 
 ## Overall Progress
 - Completion checklist: 8/8

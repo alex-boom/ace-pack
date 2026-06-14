@@ -205,3 +205,13 @@
   AGENTS marker stability, memory-config v1 normalization, stable commands,
   legacy aliases, docs links, and fresh install validation.
 - Verified Vitest and npm payload guard for the v1.0.0 candidate.
+
+## 2026-06-14 13:47
+
+- Confirmed `ace-pack@1.0.0` is published on npm before starting v1.0.1 work.
+- Bumped package version to `1.0.1` for a final adoption-hardening candidate.
+- Added GitHub-only adoption checklist and FAQ docs.
+- Linked adoption docs from README and README.npm.
+- Added tests for adoption doc discoverability, FAQ/checklist coverage, and npm
+  payload boundary.
+- Verified Vitest and npm payload guard for the v1.0.1 candidate.

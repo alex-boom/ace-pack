@@ -382,6 +382,15 @@ installer stays additive and idempotent.
 Read the full contract on GitHub:
 [ACE v1.0 Schema and Compatibility](https://github.com/alex-boom/ace-pack/blob/main/docs/schema-compatibility.md).
 
+## Adoption Guides
+
+Rolling ACE into a team should start small: install it in one repository,
+profile risk, connect the real validation command, and add CI gates only after
+the workflow proves useful.
+
+- [ACE Adoption Checklist](https://github.com/alex-boom/ace-pack/blob/main/docs/adoption-checklist.md)
+- [ACE FAQ](https://github.com/alex-boom/ace-pack/blob/main/docs/faq.md)
+
 ## Release Readiness for ACE Maintainers
 
 ACE maintainers can batch shipped changes and publish only a final release. For
