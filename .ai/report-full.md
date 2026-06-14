@@ -3,21 +3,21 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 11:13
+- Generated: 2026-06-14 11:22
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: standard
-- Source current-task: 2026-06-14 11:13
-- Source session-handoff: 2026-06-14 11:13
+- Source current-task: 2026-06-14 11:21
+- Source session-handoff: 2026-06-14 11:21
 - Verification level: test-backed
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (17 changed files)
-- Last commit: 094cb5a Expand onboarding capabilities in `ace:onboard` to detect broader ecosystems including JS/TS, Python, Go, Rust, and generic monorepos. Bump package version to `0.2.0` and enhance documentation with new examples and CLI summary outputs. Mark v0.2 onboarding as shipped in the roadmap.
+- Worktree: dirty (5 changed files)
+- Last commit: 798023e Implement v0.3 ACE Hub as the primary UX, introducing named modes for context generation including start, architect, handoff, PR, business, and docs. Bump package version to 0.3.0 and enhance CLI with new flags for output control and metadata headers. Update documentation to reflect changes and mark v0.3 as shipped in the roadmap.
 - Task: complete (tier: standard, version: v1, ready for archive: yes)
-- Next command: `npm.cmd run release:npm`
-- Release decision: NPM publish: required
+- Next command: No command detected
+- Release decision: NPM publish: not required
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
@@ -70,6 +70,7 @@ Chosen Approach:
 - [x] Added hub tests for numeric compatibility, named modes, CLI flags,
   missing files, and PR git summary behavior.
 - [x] Ran release verification.
+- [x] Published `ace-pack@0.3.0` to npm and committed the v0.3 release.
 
 ## What Was Done
 - Bumped package version from `0.2.0` to `0.3.0`.
@@ -89,14 +90,13 @@ Chosen Approach:
 - Existing numeric menu selections remain compatible.
 - No clipboard automation, MCP, CI gates, network calls, AI calls, schema
   changes, or `.ai/*` file merging were added.
-- The staged npm payload carries `ace-pack@0.3.0`.
+- `ace-pack@0.3.0` is published on npm and committed in git.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when ready.
+- v0.3 is released. Next planning target: v0.4 PR and CI Quality Gates.
 
 ## Known Issues
-- npm registry still showed `ace-pack@0.1.7` before this task, so v0.2 was not
-  separately published. If publishing now, publish the current `0.3.0` payload.
+- None for the v0.3 release closeout.
 
 ## Quality Review
 Product Alignment:
@@ -145,13 +145,11 @@ Impact:
   usage proves which flows deserve first-class routing.
 
 ## Changed Areas
-- `package.json`
-- `scripts/ace-hub.mjs`
-- `tests/ace-hub.test.ts`
-- `README.md`
-- `README.npm.md`
-- `ROADMAP.md`
-- `.ai/**`
+- `.ai/session-handoff.md`
+- `.ai/current-task.md`
+- `.ai/report-brief.md`
+- `.ai/report-full.md`
+- `.ai/report-full.xml`
 
 ## Latest Work Log
 # Work Log
@@ -281,6 +279,14 @@ Impact:
   clipboard automation, MCP, CI gates, network calls, or AI calls.
 - Verified Vitest, ACE memory check, npm payload guard, and full npm release
   dry-run for `ace-pack@0.3.0`.
+
+## 2026-06-14 11:20
+
+- Confirmed `ace-pack@0.3.0` is published on npm and the v0.3 release commit is
+  in git.
+- Updated repo-local ACE handoff/current-task state so future sessions do not
+  keep recommending another `0.3.0` publish.
+- Marked the next planning target as v0.4 PR and CI Quality Gates.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.

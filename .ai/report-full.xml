@@ -597,33 +597,22 @@ Impact:
 - Future command consolidation can build on the stable hub modes after real
   usage proves which flows deserve first-class routing.</file><file path=".ai/changed-files.md"># Changed Files
 
-[package.json]
-- Bumped package version from `0.2.0` to `0.3.0`.
+[.ai/session-handoff.md]
+- Replaced the v0.3 publish next step with the v0.4 planning target.
+- Recorded that `ace-pack@0.3.0` is already published on npm.
+- Changed the current post-release publish decision to `NPM publish: not required`.
 
-[scripts/ace-hub.mjs]
-- Added named hub modes and aliases while preserving numeric selections.
-- Added `--list`, `--mode`, `--stdout`, `--output`, and `--json` CLI handling.
-- Added generated context metadata headers with included/missing file lists.
-- Added PR-only local git status/stat summary with graceful fallback.
-- Kept runtime zero-dependency and local-only.
+[.ai/current-task.md]
+- Added confirmation that `ace-pack@0.3.0` was published and committed.
 
-[tests/ace-hub.test.ts]
-- Added coverage for numeric compatibility, named modes, report-brief ordering,
-  optional and required file behavior, CLI list/stdout/output/json behavior,
-  and PR git summary fallback.
+[.ai/report-brief.md]
+- Regenerated after post-release closeout.
 
-[README.md]
-- Documented ACE Hub modes and automation flags.
+[.ai/report-full.md]
+- Regenerated after post-release closeout.
 
-[README.npm.md]
-- Mirrored npm-facing ACE Hub mode and flag documentation.
-
-[ROADMAP.md]
-- Marked v0.3 ACE Hub as shipped.
-
-[.ai/**]
-- Updated current task, handoff, changed-files, work-log, decisions, and report
-  state for v0.3 closeout.</file><file path=".ai/current-task.md"># Current Task
+[.ai/report-full.xml]
+- Regenerated after post-release closeout.</file><file path=".ai/current-task.md"># Current Task
 
 ## Feature Name
 v0.3 ACE Hub Primary UX
@@ -670,6 +659,7 @@ Chosen Approach:
 - [x] Added hub tests for numeric compatibility, named modes, CLI flags,
   missing files, and PR git summary behavior.
 - [x] Ran release verification.
+- [x] Published `ace-pack@0.3.0` to npm and committed the v0.3 release.
 
 ## Affected Areas
 - `package.json`
@@ -705,7 +695,7 @@ Chosen Approach:
 - [x] `ace:validate` and `ace:finish` passed</file><file path=".ai/session-handoff.md"># Session Handoff
 
 ## Last Update
-2026-06-14 11:13
+2026-06-14 11:20
 
 ## What Was Done
 - Bumped package version from `0.2.0` to `0.3.0`.
@@ -725,7 +715,7 @@ Chosen Approach:
 - Existing numeric menu selections remain compatible.
 - No clipboard automation, MCP, CI gates, network calls, AI calls, schema
   changes, or `.ai/*` file merging were added.
-- The staged npm payload carries `ace-pack@0.3.0`.
+- `ace-pack@0.3.0` is published on npm and committed in git.
 
 ## Quality Review
 Product Alignment:
@@ -747,11 +737,10 @@ Code Quality:
   stdout payloads, and git fallback behavior.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when ready.
+- v0.3 is released. Next planning target: v0.4 PR and CI Quality Gates.
 
 ## Known Issues
-- npm registry still showed `ace-pack@0.1.7` before this task, so v0.2 was not
-  separately published. If publishing now, publish the current `0.3.0` payload.
+- None for the v0.3 release closeout.
 
 ## Verification
 - `npm.cmd run ace:classify` passed before implementation.
@@ -761,10 +750,12 @@ Code Quality:
 - `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.3.0`.
 - `npm.cmd run ace:validate` passed.
 - `npm.cmd run ace:finish` passed and archived the v0.3 task snapshot.
+- `npm.cmd view ace-pack version` returned `0.3.0` after publish.
 
 ## Notes
-- NPM publish: required, because `package.json`, `README.npm.md`, and shipped
-  `scripts/ace-hub.mjs` changed the npm payload and installed behavior.</file><file path=".ai/work-log.md"># Work Log
+- NPM publish: not required for this post-release closeout, because only
+  repo-local ACE memory/report state is being synchronized after `0.3.0` was
+  already published.</file><file path=".ai/work-log.md"># Work Log
 
 ## 2026-06-13 20:59
 
@@ -890,4 +881,12 @@ Code Quality:
 - Kept numeric options compatible and avoided new dependencies, schemas,
   clipboard automation, MCP, CI gates, network calls, or AI calls.
 - Verified Vitest, ACE memory check, npm payload guard, and full npm release
-  dry-run for `ace-pack@0.3.0`.</file></files></repomix>
+  dry-run for `ace-pack@0.3.0`.
+
+## 2026-06-14 11:20
+
+- Confirmed `ace-pack@0.3.0` is published on npm and the v0.3 release commit is
+  in git.
+- Updated repo-local ACE handoff/current-task state so future sessions do not
+  keep recommending another `0.3.0` publish.
+- Marked the next planning target as v0.4 PR and CI Quality Gates.</file></files></repomix>

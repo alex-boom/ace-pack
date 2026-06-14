@@ -3,21 +3,21 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 11:13
+- Generated: 2026-06-14 11:22
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: standard
-- Source current-task: 2026-06-14 11:13
-- Source session-handoff: 2026-06-14 11:13
+- Source current-task: 2026-06-14 11:21
+- Source session-handoff: 2026-06-14 11:21
 - Verification level: test-backed
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (17 changed files)
-- Last commit: 094cb5a Expand onboarding capabilities in `ace:onboard` to detect broader ecosystems including JS/TS, Python, Go, Rust, and generic monorepos. Bump package version to `0.2.0` and enhance documentation with new examples and CLI summary outputs. Mark v0.2 onboarding as shipped in the roadmap.
+- Worktree: dirty (4 changed files)
+- Last commit: 798023e Implement v0.3 ACE Hub as the primary UX, introducing named modes for context generation including start, architect, handoff, PR, business, and docs. Bump package version to 0.3.0 and enhance CLI with new flags for output control and metadata headers. Update documentation to reflect changes and mark v0.3 as shipped in the roadmap.
 - Task: complete (tier: standard, version: v1, ready for archive: yes)
-- Next command: `npm.cmd run release:npm`
-- Release decision: NPM publish: required
+- Next command: No command detected
+- Release decision: NPM publish: not required
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
@@ -53,13 +53,13 @@ copying multiple `.ai/*` files.
 - [x] Added hub tests for numeric compatibility, named modes, CLI flags,
   missing files, and PR git summary behavior.
 - [x] Ran release verification.
+- [x] Published `ace-pack@0.3.0` to npm and committed the v0.3 release.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when ready.
+- v0.3 is released. Next planning target: v0.4 PR and CI Quality Gates.
 
 ## Risks / Blockers
-- npm registry still showed `ace-pack@0.1.7` before this task, so v0.2 was not
-  separately published. If publishing now, publish the current `0.3.0` payload.
+- None for the v0.3 release closeout.
 
 ## Verification
 - `npm.cmd run ace:classify` passed before implementation.
@@ -90,12 +90,11 @@ Impact:
 - No unresolved reflections recorded.
 
 ## Changed Areas
-- `package.json`
-- `scripts/ace-hub.mjs`
-- `tests/ace-hub.test.ts`
-- `README.md`
-- `README.npm.md`
-- `ROADMAP.md`
+- `.ai/session-handoff.md`
+- `.ai/current-task.md`
+- `.ai/report-brief.md`
+- `.ai/report-full.md`
+- `.ai/report-full.xml`
 
 ## Overall Progress
 - Completion checklist: 6/6

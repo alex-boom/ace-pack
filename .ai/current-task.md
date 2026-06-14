@@ -45,6 +45,7 @@ Chosen Approach:
 - [x] Added hub tests for numeric compatibility, named modes, CLI flags,
   missing files, and PR git summary behavior.
 - [x] Ran release verification.
+- [x] Published `ace-pack@0.3.0` to npm and committed the v0.3 release.
 
 ## Affected Areas
 - `package.json`

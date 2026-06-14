@@ -1,7 +1,7 @@
 # Session Handoff
 
 ## Last Update
-2026-06-14 11:13
+2026-06-14 11:20
 
 ## What Was Done
 - Bumped package version from `0.2.0` to `0.3.0`.
@@ -21,7 +21,7 @@
 - Existing numeric menu selections remain compatible.
 - No clipboard automation, MCP, CI gates, network calls, AI calls, schema
   changes, or `.ai/*` file merging were added.
-- The staged npm payload carries `ace-pack@0.3.0`.
+- `ace-pack@0.3.0` is published on npm and committed in git.
 
 ## Quality Review
 Product Alignment:
@@ -43,11 +43,10 @@ Code Quality:
   stdout payloads, and git fallback behavior.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when ready.
+- v0.3 is released. Next planning target: v0.4 PR and CI Quality Gates.
 
 ## Known Issues
-- npm registry still showed `ace-pack@0.1.7` before this task, so v0.2 was not
-  separately published. If publishing now, publish the current `0.3.0` payload.
+- None for the v0.3 release closeout.
 
 ## Verification
 - `npm.cmd run ace:classify` passed before implementation.
@@ -57,7 +56,9 @@ Code Quality:
 - `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.3.0`.
 - `npm.cmd run ace:validate` passed.
 - `npm.cmd run ace:finish` passed and archived the v0.3 task snapshot.
+- `npm.cmd view ace-pack version` returned `0.3.0` after publish.
 
 ## Notes
-- NPM publish: required, because `package.json`, `README.npm.md`, and shipped
-  `scripts/ace-hub.mjs` changed the npm payload and installed behavior.
+- NPM publish: not required for this post-release closeout, because only
+  repo-local ACE memory/report state is being synchronized after `0.3.0` was
+  already published.

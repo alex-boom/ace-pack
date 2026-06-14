@@ -125,3 +125,11 @@
   clipboard automation, MCP, CI gates, network calls, or AI calls.
 - Verified Vitest, ACE memory check, npm payload guard, and full npm release
   dry-run for `ace-pack@0.3.0`.
+
+## 2026-06-14 11:20
+
+- Confirmed `ace-pack@0.3.0` is published on npm and the v0.3 release commit is
+  in git.
+- Updated repo-local ACE handoff/current-task state so future sessions do not
+  keep recommending another `0.3.0` publish.
+- Marked the next planning target as v0.4 PR and CI Quality Gates.
