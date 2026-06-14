@@ -258,6 +258,35 @@ pnpm ace:onboard -- --apply
 pnpm ace:classify
 ```
 
+## ACE Hub
+
+`ace:hub` is the daily context launcher. Use the interactive menu, or generate a
+specific payload directly:
+
+```bash
+pnpm ace:hub
+pnpm ace:hub start
+pnpm ace:hub -- --mode pr
+pnpm ace:hub -- --list
+```
+
+Available modes:
+
+- `start` / `coder` - startup context with `.ai/report-brief.md` first.
+- `architect` - repo rules, technical docs, decisions, roadmap, and brief.
+- `handoff` - compact agent handoff context.
+- `pr` - PR summary context with local git status and diff stat.
+- `business` - roadmap and work log.
+- `docs` - technical docs and optional setup/devops notes.
+
+By default ACE writes `.ai/generated-context.md`. For automation:
+
+```bash
+pnpm ace:hub -- --mode start --stdout
+pnpm ace:hub -- --mode architect --output .ai/architect-context.md
+pnpm ace:hub -- --mode pr --json
+```
+
 ## CLI Reference
 
 | Command | Purpose |
@@ -269,7 +298,7 @@ pnpm ace:classify
 | `ace:classify` | Git diff risk analysis for small, standard, and large tasks. |
 | `ace:validate` | Default mechanical quality gate alias for `ace:check`. Projects may replace it with a stricter local gate. |
 | `ace:finish` | Adaptive closeout, memory documentation, reports, and reflection. |
-| `ace:hub` | Interactive context generator for copying focused project context into AI tools. |
+| `ace:hub` | Interactive and named-mode context generator for start, architect, handoff, PR, business, and docs payloads. |
 
 ## Installed Project Files
 

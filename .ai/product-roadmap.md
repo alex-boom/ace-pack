@@ -34,11 +34,12 @@ handoff and browser-context workflows.
 - **v0.2 onboarding scanner.** `ace:onboard` now recognizes broader JS/TS,
   Python, Go, Rust, .NET, and monorepo signals, explains why each ecosystem was
   detected, and prints a concise terminal summary.
+- **v0.3 ACE Hub primary UX.** `ace:hub` now provides focused start/coder,
+  architect, handoff, PR, business, and docs context modes with metadata
+  headers and local PR git summaries.
 
 ## Planned Features
 
-- **v0.3: ACE Hub as Primary UX.** Focused context modes for start context,
-  architect review, PR summary, and agent handoff.
 - **v0.4: PR and CI Quality Gates.** Verify `.ai/**` state, design reviews,
   risk classification, and handoffs before merge. Prefer native hooks and CI
   templates over Husky-style stacks.
@@ -73,5 +74,4 @@ handoff and browser-context workflows.
 
 - Which project presets should be prioritized after the existing SaaS monorepo
   preset work?
-- Which `ace:hub` context modes provide the fastest daily value for developers?
 - Which CI providers should receive official templates first?

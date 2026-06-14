@@ -3,19 +3,19 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 11:01
+- Generated: 2026-06-14 11:13
 - Freshness: Fresh
 - Current task version: v1
-- Current task tier: large
-- Source current-task: 2026-06-14 11:01
-- Source session-handoff: 2026-06-14 10:59
+- Current task tier: standard
+- Source current-task: 2026-06-14 11:13
+- Source session-handoff: 2026-06-14 11:13
 - Verification level: test-backed
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (16 changed files)
-- Last commit: 81a6158 Refactor ACE closeout guidance to prioritize task completion by introducing a priority ladder in templates. Updated AGENTS and CLAUDE workflows to emphasize minimal closeout actions that maintain future context and project safety. Enhanced documentation and tests to reflect these changes, ensuring clarity and consistency across the system.
-- Task: complete (tier: large, version: v1, ready for archive: yes)
+- Worktree: dirty (17 changed files)
+- Last commit: 094cb5a Expand onboarding capabilities in `ace:onboard` to detect broader ecosystems including JS/TS, Python, Go, Rust, and generic monorepos. Bump package version to `0.2.0` and enhance documentation with new examples and CLI summary outputs. Mark v0.2 onboarding as shipped in the roadmap.
+- Task: complete (tier: standard, version: v1, ready for archive: yes)
 - Next command: `npm.cmd run release:npm`
 - Release decision: NPM publish: required
 
@@ -26,119 +26,128 @@ Detected ecosystems: Generic repository | Package manager: pnpm
 
 
 ## Current Task
-v0.2 Preset Platform and Onboarding
+v0.3 ACE Hub Primary UX
 
 ## Lifecycle
 Status: complete
 Version: v1
-Task Tier: large
-Design Review Required: yes
-Started: 2026-06-14 10:54
+Task Tier: standard
+Design Review Required: no
+Started: 2026-06-14 11:03
 Ready For Archive: yes
 
 ## Goal
-Strengthen `ace:onboard` so first-time users get useful project-specific risk
-rules for common stacks in one local scan, without dependencies or new workflow
-ceremony.
+Make `ace:hub` the primary daily context launcher for agents and humans while
+preserving the existing numeric menu options and zero-dependency local design.
 
 ## Business Value
-The first onboarding experience should feel immediately useful: ACE should
-recognize common JS/TS, Python, Go, Rust, and monorepo shapes and recommend
-conservative risk rules that protect auth, middleware, migrations, schemas, and
-deployment surfaces.
+v0.3 reduces prompt fatigue by letting developers generate focused start,
+architect, handoff, PR, business, and docs context without manually opening and
+copying multiple `.ai/*` files.
 
 ## Technical Approach
 Option 1:
-- Add a new preset system beside the current scanner. This risks duplicate
-  logic and more CLI surface.
+- Add a new top-level `ace` router or clipboard automation. This would improve
+  discoverability but introduces new command and platform behavior too early.
 
 Option 2:
-- Extend the existing `ace:onboard` detection rules, profile output, and tests
-  while keeping CLI names and config schema stable.
+- Extend the existing `ace:hub` script with named modes, output controls,
+  metadata headers, and PR git summaries while keeping numeric options
+  compatible.
 
 Chosen Approach:
-- Use Option 2. It is incremental, zero-dependency, and preserves the current
-  local Markdown workflow while making v0.2 onboarding more valuable.
+- Use Option 2. It delivers the v0.3 roadmap value without new dependencies,
+  config, schemas, network calls, AI calls, MCP, or command-name churn.
 
 ## Current Status
-- [x] Plan approved for v0.2 onboarding expansion.
-- [x] Ran `ace:classify` with large override before implementation.
-- [x] Extend scanner coverage and profile output.
-- [x] Bump package version to `0.2.0`.
-- [x] Update docs and tests.
-- [x] Run release verification and closeout.
+- [x] Plan approved for v0.3 ACE Hub Primary UX.
+- [x] Bumped package version to `0.3.0`.
+- [x] Added named hub modes: `start`, `coder`, `architect`, `handoff`, `pr`,
+  `business`, and `docs`.
+- [x] Added `--list`, `--mode`, `--stdout`, `--output`, and `--json` CLI UX.
+- [x] Added metadata headers and PR git summary fallback behavior.
+- [x] Updated GitHub/npm README hub documentation.
+- [x] Added hub tests for numeric compatibility, named modes, CLI flags,
+  missing files, and PR git summary behavior.
+- [x] Ran release verification.
 
 ## What Was Done
-- Bumped package version from `0.1.7` to `0.2.0`.
-- Expanded `ace:onboard` detection for JS/TS API backends, Python web/database
-  tooling, Go services, Rust services, .NET services, and generic monorepos.
-- Added `## Why Detected` to `.ai/project-profile.md` so users can see the
-  signals behind each detected ecosystem.
-- Added concise CLI summary output for `ace:onboard` dry-run/apply flows.
-- Kept CLI names, config schema, runtime dependencies, network behavior, and
-  AI behavior unchanged.
-- Updated GitHub/npm README onboarding docs and added test fixtures for the new
-  scanner coverage.
+- Bumped package version from `0.2.0` to `0.3.0`.
+- Reworked `ace:hub` around named modes while preserving numeric options:
+  `1`/`start`/`coder`, `2`/`architect`, `3`/`business`, `4`/`docs`,
+  plus new `handoff` and `pr` modes.
+- Added CLI flags: `--list`, `--mode <mode>`, `--stdout`, `--output <path>`,
+  and `--json`.
+- Added generated context metadata headers with mode, timestamp, included
+  files, missing optional files, and PR-only git summary.
+- Added PR mode local git status/stat summary with graceful `unknown` fallback.
+- Updated GitHub/npm README hub documentation and marked v0.3 shipped in
+  `ROADMAP.md`.
 
 ## Current State
-- `ace:onboard` remains deterministic, local, and zero-dependency.
-- `.ai/memory-config.json` schema remains version `1`.
-- Rules stay conservative: sensitive workspace paths are marked, but generic
-  `apps/**` and `packages/**` are not blindly high-risk.
-- The staged npm payload carries `ace-pack@0.2.0`.
+- `ace:hub` remains deterministic, local, and zero-dependency.
+- Existing numeric menu selections remain compatible.
+- No clipboard automation, MCP, CI gates, network calls, AI calls, schema
+  changes, or `.ai/*` file merging were added.
+- The staged npm payload carries `ace-pack@0.3.0`.
 
 ## Next Steps
 - Publish with `npm.cmd run release:npm` when ready.
 
 ## Known Issues
-- None for this v0.2 onboarding expansion.
+- npm registry still showed `ace-pack@0.1.7` before this task, so v0.2 was not
+  separately published. If publishing now, publish the current `0.3.0` payload.
 
 ## Quality Review
 Product Alignment:
-- v0.2 improves first-install value by making ACE recognize common repository
-  shapes and explain what it found immediately in terminal and profile output.
+- v0.3 turns Hub into the daily context surface promised in the roadmap and
+  reduces manual context gathering for new agent sessions, architecture review,
+  PR summaries, and handoffs.
 
 Architecture:
-- The implementation extends the existing scanner rather than adding a second
-  preset system or new CLI surface, preserving the local Markdown architecture.
+- The implementation extends the existing hub script instead of adding a new
+  top-level router or dependency-backed clipboard feature.
 
 Security:
-- No auth, credential, token, external network, SaaS, or hidden AI behavior
-  changed. Risk rules remain conservative and local.
+- PR summaries use local `git status --short` and `git diff --stat HEAD` only.
+  No file contents beyond selected local Markdown context are sent anywhere.
 
 Code Quality:
-- New fixtures cover JS/TS backend, Python web/database, Go, Rust, monorepo,
-  conservative rule behavior, profile explanation, and CLI summary output.
+- Hub tests now cover numeric compatibility, named modes, metadata headers,
+  optional/required file handling, CLI flags, custom output, JSON metadata,
+  stdout payloads, and git fallback behavior.
 
 ## Verification
-- `npm.cmd run ace:classify -- --tier large --reason "v0.2 onboarding scanner expands shipped repository profiling behavior"` passed before implementation.
-- `npm.cmd test` passed: 7 files, 52 tests.
+- `npm.cmd run ace:classify` passed before implementation.
+- `npm.cmd test` passed: 7 files, 58 tests.
 - `npm.cmd run ace:check` passed.
 - `npm.cmd run check:npm-payload` passed and checked 27 packed files.
-- `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.2.0`.
+- `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.3.0`.
+- `npm.cmd run ace:validate` passed.
 
 ## Recent Decisions
-## 2026-06-14 10:59
+## 2026-06-14 11:13
 
 Decision:
-- Implement v0.2 onboarding by extending the existing `ace:onboard` scanner
-  instead of adding a second preset engine or new CLI flow.
+- Implement v0.3 Hub UX by extending `ace:hub` with named modes and output
+  controls instead of adding a new top-level `ace` router, clipboard
+  integration, MCP adapter, or dependency-backed UX layer.
 
 Reason:
-- The current scanner already has the right zero-dependency shape. Extending its
-  rules, signal explanation, and terminal summary gives users the first-run
-  value without adding runtime bloat or command complexity.
+- The roadmap goal is daily context generation, not a broader command platform.
+  Extending the existing local script gives agents focused payloads while
+  preserving zero-dependency, Markdown-first behavior.
 
 Impact:
-- `ace:onboard` now detects broader JS/TS, Python, Go, Rust, .NET, and monorepo
-  signals while keeping `.ai/memory-config.json` schema version `1`.
-- Future onboarding improvements should continue using conservative path rules
-  and explicit signal summaries before considering new config or preset layers.
+- `ace:hub` now supports start/coder, architect, handoff, PR, business, and
+  docs contexts with metadata headers and PR git summaries.
+- Future command consolidation can build on the stable hub modes after real
+  usage proves which flows deserve first-class routing.
 
 ## Changed Areas
 - `package.json`
-- `scripts/ace-onboard.mjs`
-- `tests/ace-onboard.test.ts`
+- `scripts/ace-hub.mjs`
+- `tests/ace-hub.test.ts`
 - `README.md`
 - `README.npm.md`
 - `ROADMAP.md`
@@ -262,6 +271,16 @@ Impact:
   for the first-run “aha” moment.
 - Verified Vitest, ACE memory check, npm payload guard, and full npm release
   dry-run for `ace-pack@0.2.0`.
+
+## 2026-06-14 11:13
+
+- Implemented v0.3 ACE Hub Primary UX and bumped package version to `0.3.0`.
+- Added named hub modes, direct mode selection, stdout/custom-output/JSON
+  output controls, metadata headers, and PR git summary context.
+- Kept numeric options compatible and avoided new dependencies, schemas,
+  clipboard automation, MCP, CI gates, network calls, or AI calls.
+- Verified Vitest, ACE memory check, npm payload guard, and full npm release
+  dry-run for `ace-pack@0.3.0`.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.

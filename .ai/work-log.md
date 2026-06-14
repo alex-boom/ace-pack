@@ -115,3 +115,13 @@
   for the first-run “aha” moment.
 - Verified Vitest, ACE memory check, npm payload guard, and full npm release
   dry-run for `ace-pack@0.2.0`.
+
+## 2026-06-14 11:13
+
+- Implemented v0.3 ACE Hub Primary UX and bumped package version to `0.3.0`.
+- Added named hub modes, direct mode selection, stdout/custom-output/JSON
+  output controls, metadata headers, and PR git summary context.
+- Kept numeric options compatible and avoided new dependencies, schemas,
+  clipboard automation, MCP, CI gates, network calls, or AI calls.
+- Verified Vitest, ACE memory check, npm payload guard, and full npm release
+  dry-run for `ace-pack@0.3.0`.

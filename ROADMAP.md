@@ -92,7 +92,7 @@ Make project profiling immediately useful across common stacks. Ship smart,
 inspectable risk rules for Next.js, FastAPI, Go, .NET, Rust, and generic
 monorepos.
 
-### v0.3: ACE Hub as Primary UX
+### v0.3: ACE Hub as Primary UX (shipped)
 
 Turn `ace:hub` into the daily context surface for AI work. Add focused modes for
 start context, architect review, PR summary, and agent handoff.

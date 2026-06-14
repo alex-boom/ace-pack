@@ -16,9 +16,10 @@ without reading large implementation files.
   `ai-memory-utils.mjs`, and write `.ai/report-brief.md` /
   `.ai/report-full.md`.
 - `ace:hub` builds focused context payloads in `.ai/generated-context.md`.
-  AI Coder Context starts with `.ai/report-brief.md` when available so new
-  chats see the Start Snapshot first, but fresh repos still work before the
-  first report is generated.
+  Numeric options remain compatible, and named modes now cover start/coder,
+  architect, handoff, PR, business, and docs contexts. AI Coder Context starts
+  with `.ai/report-brief.md` when available so new chats see the Start Snapshot
+  first, but fresh repos still work before the first report is generated.
 - `ace:onboard` performs a bounded local file scan and package/content signal
   scan to recommend conservative repository-specific risk rules. It writes
   `.ai/project-profile.md` and `.ai/memory-config.recommended.json`, and applies
@@ -36,6 +37,9 @@ without reading large implementation files.
   `Why Detected` signal summary, repository shape, recommended high-risk paths,
   and recommended high-risk keywords. The memory config schema remains version
   `1` for `0.2.0`.
+- Hub output includes a generated metadata header with mode, timestamp, included
+  files, and missing optional files. PR mode also includes local git status and
+  diff stat, degrading to `unknown` when git is unavailable.
 
 ## Auth, RBAC, and Security
 - ACE has no authentication layer and does not manage user credentials.

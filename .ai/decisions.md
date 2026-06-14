@@ -196,3 +196,21 @@ Impact:
   signals while keeping `.ai/memory-config.json` schema version `1`.
 - Future onboarding improvements should continue using conservative path rules
   and explicit signal summaries before considering new config or preset layers.
+
+## 2026-06-14 11:13
+
+Decision:
+- Implement v0.3 Hub UX by extending `ace:hub` with named modes and output
+  controls instead of adding a new top-level `ace` router, clipboard
+  integration, MCP adapter, or dependency-backed UX layer.
+
+Reason:
+- The roadmap goal is daily context generation, not a broader command platform.
+  Extending the existing local script gives agents focused payloads while
+  preserving zero-dependency, Markdown-first behavior.
+
+Impact:
+- `ace:hub` now supports start/coder, architect, handoff, PR, business, and
+  docs contexts with metadata headers and PR git summaries.
+- Future command consolidation can build on the stable hub modes after real
+  usage proves which flows deserve first-class routing.

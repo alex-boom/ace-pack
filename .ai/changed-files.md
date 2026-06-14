@@ -1,28 +1,29 @@
 # Changed Files
 
 [package.json]
-- Bumped package version from `0.1.7` to `0.2.0`.
+- Bumped package version from `0.2.0` to `0.3.0`.
 
-[scripts/ace-onboard.mjs]
-- Added broader JS/TS, Python, Go, Rust, and generic monorepo detection rules.
-- Added detected signal tracking for profile output.
-- Added CLI summary output for detected ecosystems and project-specific
-  high-risk path rule count.
-- Kept config schema and CLI names unchanged.
+[scripts/ace-hub.mjs]
+- Added named hub modes and aliases while preserving numeric selections.
+- Added `--list`, `--mode`, `--stdout`, `--output`, and `--json` CLI handling.
+- Added generated context metadata headers with included/missing file lists.
+- Added PR-only local git status/stat summary with graceful fallback.
+- Kept runtime zero-dependency and local-only.
 
-[tests/ace-onboard.test.ts]
-- Added fixture coverage for Node API, Python web/database, Rust, generic
-  monorepo, conservative rules, profile explanation, and CLI summary output.
+[tests/ace-hub.test.ts]
+- Added coverage for numeric compatibility, named modes, report-brief ordering,
+  optional and required file behavior, CLI list/stdout/output/json behavior,
+  and PR git summary fallback.
 
 [README.md]
-- Documented v0.2 onboarding scanner coverage and added Rust/monorepo examples.
+- Documented ACE Hub modes and automation flags.
 
 [README.npm.md]
-- Mirrored npm-facing v0.2 onboarding documentation and examples.
+- Mirrored npm-facing ACE Hub mode and flag documentation.
 
 [ROADMAP.md]
-- Marked v0.2 onboarding as shipped and moved the forward roadmap to v0.3+.
+- Marked v0.3 ACE Hub as shipped.
 
 [.ai/**]
-- Updated task, handoff, changed-files, work-log, decisions, tech docs,
-  product roadmap, reflection, and generated report state for v0.2.
+- Updated current task, handoff, changed-files, work-log, decisions, and report
+  state for v0.3 closeout.
