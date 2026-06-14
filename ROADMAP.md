@@ -120,10 +120,13 @@ a small scripted demo scenario while keeping marketing artifacts out of runtime
 behavior. Growth assets live in GitHub-only `docs/**` and `examples/**`, while
 the npm payload keeps only the concise README entry point.
 
-### v1.0: Stable Schema and Compatibility
+### v1.0: Stable Schema and Compatibility (shipped)
 
 Document stable file formats, config expectations, migration rules, and backward
-compatibility guarantees for installed repositories.
+compatibility guarantees for installed repositories. v1.0 stabilizes command
+names, installed file expectations, `.ai/memory-config.json` schema version `1`,
+AGENTS workflow markers, and the migration policy for future template/schema
+changes.
 
 ## Long-Term Research and Development (v2.0+)
 

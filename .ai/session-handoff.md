@@ -1,58 +1,57 @@
 # Session Handoff
 
 ## Last Update
-2026-06-14 13:17
+2026-06-14 13:37
 
 ## What Was Done
-- Confirmed `ace-pack@0.5.0` is published on npm and local `package.json`
-  started from `0.5.0`.
-- Started v0.6 Product Growth Kit and bumped local package version to `0.6.0`.
-- Added a 60-second demo entry point to README and README.npm.
-- Added GitHub-only demo materials:
-  - `docs/demo-script.md`
-  - `docs/launch-copy.md`
-  - `examples/context-loss-demo/**`
-- Strengthened npm payload guard so `docs/**` and `examples/**` cannot enter
-  the runtime package by accident.
-- Added tests that verify README demo links, demo fixture focus, and payload
-  boundary expectations.
+- Confirmed `ace-pack@0.6.0` is published on npm and the working tree was clean
+  before v1.0 work.
+- Bumped local package version to `1.0.0`.
+- Added `docs/schema-compatibility.md` with the v1.0 stable contract:
+  command names, installed files, Markdown section expectations,
+  `.ai/memory-config.json` schema version `1`, migration policy, and payload
+  boundary.
+- Added README and npm README links to the v1.0 stability contract.
+- Added schema compatibility tests for project-owned memory preservation,
+  AGENTS marker stability, memory-config v1 normalization, legacy command
+  aliases, docs links, and fresh install validation.
 
 ## Current State
-- npm latest is `ace-pack@0.5.0`.
-- Local candidate is `ace-pack@0.6.0`.
-- v0.6.0 is implemented locally and passed release-readiness verification.
+- npm latest is `ace-pack@0.6.0`.
+- Local candidate is `ace-pack@1.0.0`.
+- v1.0.0 is implemented locally and passed release-readiness verification.
 
 ## Quality Review
 Product Alignment:
-- v0.6 improves the first impression and launch readiness without changing ACE's
-  core workflow or asking users to learn a new command.
+- v1.0 gives teams a stable adoption contract for installed ACE repositories and
+  makes future changes easier to evaluate.
 
 Architecture:
-- Growth material is static documentation and a tiny fixture. It stays outside
-  runtime scripts, schemas, installers, and MCP/CI behavior.
+- The release documents and tests existing behavior rather than introducing a
+  schema registry or migration engine without a real schema v2 problem.
 
 Security:
-- No AI calls, network calls, hooks, credentials, or executable package runtime
-  behavior were added. The demo fixture is deliberately local and disposable.
+- No AI calls, network calls, hooks, credentials, or automatic migration writes
+  were added. Existing `.ai/*` memory remains project-owned.
 
 Code Quality:
-- Tests cover the README entry points, docs/example presence, fixture focus, and
-  package payload boundary. The payload guard also rejects accidental docs or
-  examples inclusion.
+- Regression tests protect compatibility promises around installer behavior,
+  config normalization, AGENTS workflow markers, command names, legacy aliases,
+  and documentation links.
 
 ## Next Steps
-- Publish with `npm.cmd run release:npm` when the maintainer wants v0.6.0 live.
+- Publish with `npm.cmd run release:npm` when the maintainer wants v1.0.0 live.
 - After publish, run `npm.cmd view ace-pack version` and update repo-local ACE
-  memory so future agents see npm latest as `0.6.0`.
+  memory so future agents see npm latest as `1.0.0`.
 
 ## Known Issues
-- None known for v0.6.0.
+- None known for v1.0.0.
 
 ## Verification
-- `npm.cmd run ace:classify` passed and classified v0.6 as large.
-- `npm.cmd test` passed: 11 files, 86 tests.
+- `npm.cmd run ace:classify` passed and classified v1.0 as large.
+- `npm.cmd test` passed: 12 files, 92 tests.
 - `npm.cmd run check:npm-payload` passed and checked 29 packed files.
-- `npm.cmd run release:ready` passed for `ace-pack@0.6.0`.
+- `npm.cmd run release:ready` passed for `ace-pack@1.0.0`.
 - `npm.cmd run dogfood:self-check -- --allow-dirty` passed and reported no
   created or updated installed files.
 

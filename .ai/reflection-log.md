@@ -14,6 +14,15 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-14 13:37 Stability docs before migration machinery
+Status: resolved
+- Stuck Point: A v1.0 stability milestone can tempt agents to build a migration
+  framework before ACE has a concrete breaking schema change.
+- Likely Cause: "Stable schema" sounds like an engine requirement, but the
+  current product already has a lightweight compatibility contract.
+- Proposed Improvement: Document and test the existing contract first; add a
+  deterministic migrator only when a future schema version actually needs it.
+
 ### 2026-06-14 13:17 Growth assets must not become runtime bloat
 Status: resolved
 - Stuck Point: Product launch material can accidentally creep into package

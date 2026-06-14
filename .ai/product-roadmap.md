@@ -51,11 +51,15 @@ handoff and browser-context workflows.
   GitHub-only docs and examples provide a scriptable demo, launch copy, and a
   tiny context-loss fixture without adding runtime behavior or npm payload
   bloat.
+- **v1.0 Stable Schema and Compatibility.** ACE now documents stable command
+  names, installed file expectations, `.ai/memory-config.json` schema version
+  `1`, AGENTS workflow markers, and migration policy, with regression tests for
+  older installed repositories.
 
 ## Planned Features
 
-- **v1.0: Stable Schema and Compatibility.** Document stable file formats,
-  migration rules, and backward compatibility guarantees.
+- No next v1.x feature is selected yet. Future work should preserve the v1.0
+  compatibility contract unless a deliberate major-version migration is planned.
 
 ## Long-Term Research and Development (v2.0+)
 

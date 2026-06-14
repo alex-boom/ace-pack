@@ -307,3 +307,23 @@ Impact:
 - GitHub-only docs contain the demo script and launch copy.
 - A tiny context-loss fixture demonstrates auth/session risk for demos.
 - Payload guard now rejects accidental `docs/**` or `examples/**` inclusion.
+
+## 2026-06-14 13:37
+
+Decision:
+- Promote ACE to v1.0 by documenting and testing the existing compatibility
+  contract instead of adding a migration engine before a real schema migration
+  exists.
+
+Reason:
+- ACE's current stability comes from additive install behavior, project-owned
+  Markdown memory, stable command names, and schema version `1`. A migration
+  platform would add code and ceremony without a concrete schema change to
+  execute.
+
+Impact:
+- `docs/schema-compatibility.md` defines stable commands, file expectations,
+  Markdown sections, memory-config v1 behavior, and future migration policy.
+- Regression tests protect installed-repo compatibility and legacy aliases.
+- Future schema v2 work must document the reason, add deterministic migration
+  behavior, and include old-repo fixture tests.

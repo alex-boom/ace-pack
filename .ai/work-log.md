@@ -192,3 +192,16 @@
   `examples/**` inclusion.
 - Added growth-kit tests and verified `npm.cmd run release:ready` plus explicit
   `npm.cmd run dogfood:self-check -- --allow-dirty` for the v0.6.0 candidate.
+
+## 2026-06-14 13:37
+
+- Confirmed `ace-pack@0.6.0` is published on npm before starting v1.0 work.
+- Bumped package version to `1.0.0`.
+- Added `docs/schema-compatibility.md` to define the stable v1.0 contract for
+  commands, installed files, Markdown sections, memory-config schema version
+  `1`, migration policy, and npm payload boundary.
+- Added README and npm README stability-contract entry points.
+- Added compatibility regression tests for project-owned memory preservation,
+  AGENTS marker stability, memory-config v1 normalization, stable commands,
+  legacy aliases, docs links, and fresh install validation.
+- Verified Vitest and npm payload guard for the v1.0.0 candidate.

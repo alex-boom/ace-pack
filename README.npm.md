@@ -372,6 +372,16 @@ to stdout, which breaks stdio MCP framing.
 Exposed resources include the brief report, current task, handoff, decisions,
 roadmap, technical docs, and generated hub context when those files exist.
 
+## v1.0 Stability Contract
+
+ACE v1.0 stabilizes installed file expectations, command names,
+`.ai/memory-config.json` schema version `1`, and migration rules for future
+template changes. Existing `.ai/*` memory remains project-owned, and the
+installer stays additive and idempotent.
+
+Read the full contract on GitHub:
+[ACE v1.0 Schema and Compatibility](https://github.com/alex-boom/ace-pack/blob/main/docs/schema-compatibility.md).
+
 ## Release Readiness for ACE Maintainers
 
 ACE maintainers can batch shipped changes and publish only a final release. For

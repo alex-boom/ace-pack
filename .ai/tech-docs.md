@@ -35,6 +35,10 @@ without reading large implementation files.
 - Product growth materials live outside runtime code. `docs/demo-script.md`,
   `docs/launch-copy.md`, and `examples/context-loss-demo/**` support demos and
   launch work, while README/README.npm provide only the concise entry point.
+- v1.0 stability documentation lives in `docs/schema-compatibility.md`. It
+  defines stable command names, installed file expectations, Markdown section
+  expectations, `.ai/memory-config.json` schema version `1`, and migration
+  policy.
 - Release-readiness tooling lives in `tools/`. `smoke:fake-project` builds the
   local staged package and validates ACE inside disposable JS and non-JS
   projects. `dogfood:self-check` explicitly reapplies the local candidate to
@@ -62,6 +66,9 @@ without reading large implementation files.
 - v0.6 growth-kit output is static documentation and demo fixtures only. No
   persistent ACE schema, config fields, generated files, or installed workflow
   files were added.
+- v1.0 keeps `.ai/memory-config.json` at schema version `1`. Unknown config
+  fields are tolerated by readers, string rules remain compatible, and missing
+  thresholds fall back to defaults.
 - Smoke and dogfood readiness output is ephemeral. The tools do not add config
   files or schema fields.
 
@@ -78,6 +85,9 @@ without reading large implementation files.
   files from resource discovery and performs no repository writes.
 - `0.6.0` marketing/demo materials are excluded from the npm payload through the
   package file list and payload guard; they do not run automatically.
+- `1.0.0` compatibility guarantees are documentation and tests around existing
+  behavior; no migration engine, network behavior, or automatic writes were
+  added.
 - Dogfood self-check refuses dirty git worktrees by default and stops when
   unexpected files change after candidate self-apply.
 - Publish-secret handling is outside ACE scripts; release commands delegate to
