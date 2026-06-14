@@ -97,7 +97,7 @@ monorepos.
 Turn `ace:hub` into the daily context surface for AI work. Add focused modes for
 start context, architect review, PR summary, and agent handoff.
 
-### v0.4: PR and CI Quality Gates
+### v0.4: PR and CI Quality Gates (shipped)
 
 Add governance for teams using AI-generated code. Verify `.ai/**` state, design
 reviews, risk classification, and handoffs before merge. Prefer native Git hooks

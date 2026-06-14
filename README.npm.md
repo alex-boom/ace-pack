@@ -294,6 +294,33 @@ pnpm ace:hub -- --mode architect --output .ai/architect-context.md
 pnpm ace:hub -- --mode pr --json
 ```
 
+## PR and CI Quality Gates
+
+`ace:gate` is an optional pre-merge check for teams using AI-generated changes.
+It reuses ACE memory validation, task classification, and closeout rules, then
+prints actionable failures for CI logs.
+
+```bash
+pnpm ace:gate
+pnpm ace:gate -- --base origin/main --head HEAD
+pnpm ace:gate -- --json
+```
+
+Generate an opt-in GitHub Actions workflow:
+
+```bash
+pnpm ace:gate -- --write-github-action
+```
+
+Install a native pre-push hook when you want local protection before pushing:
+
+```bash
+pnpm ace:gate -- --install-pre-push
+```
+
+ACE never installs hooks automatically. If a non-ACE pre-push hook already
+exists, ACE writes `.git/hooks/pre-push.ace.sample` instead of overwriting it.
+
 ## CLI Reference
 
 | Command | Purpose |
@@ -305,6 +332,7 @@ pnpm ace:hub -- --mode pr --json
 | `ace:classify` | Git diff risk analysis for small, standard, and large tasks. |
 | `ace:validate` | Default mechanical quality gate alias for `ace:check`. Projects may replace it with a stricter local gate. |
 | `ace:finish` | Adaptive closeout, memory documentation, reports, and reflection. |
+| `ace:gate` | Optional PR/CI quality gate with actionable failures, PR refs, JSON output, and opt-in hook/workflow generation. |
 | `ace:hub` | Interactive and named-mode context generator for start, architect, handoff, PR, business, and docs payloads. |
 
 ## Installed Project Files

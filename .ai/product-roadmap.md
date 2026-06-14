@@ -37,12 +37,12 @@ handoff and browser-context workflows.
 - **v0.3 ACE Hub primary UX.** `ace:hub` now provides focused start/coder,
   architect, handoff, PR, business, and docs context modes with metadata
   headers and local PR git summaries.
+- **v0.4 PR and CI Quality Gates.** `ace:gate` now verifies ACE memory,
+  risk classification, design/quality closeout, PR refs, and handoff
+  verification, with opt-in GitHub Actions and native pre-push helpers.
 
 ## Planned Features
 
-- **v0.4: PR and CI Quality Gates.** Verify `.ai/**` state, design reviews,
-  risk classification, and handoffs before merge. Prefer native hooks and CI
-  templates over Husky-style stacks.
 - **v0.5: Read-Only MCP Adapter.** Expose ACE memory to tools without moving
   the core away from Markdown and local scripts.
 - **v1.0: Stable Schema and Compatibility.** Document stable file formats,
@@ -74,4 +74,5 @@ handoff and browser-context workflows.
 
 - Which project presets should be prioritized after the existing SaaS monorepo
   preset work?
-- Which CI providers should receive official templates first?
+- Which CI provider should receive the next official template after GitHub
+  Actions?

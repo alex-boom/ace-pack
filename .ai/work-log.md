@@ -133,3 +133,14 @@
 - Updated repo-local ACE handoff/current-task state so future sessions do not
   keep recommending another `0.3.0` publish.
 - Marked the next planning target as v0.4 PR and CI Quality Gates.
+
+## 2026-06-14 11:40
+
+- Implemented v0.4.0 PR and CI Quality Gates and bumped package version to
+  `0.4.0`.
+- Added `ace:gate` with reusable ACE validation/classification/finish checks,
+  actionable CI failures, JSON output, PR refs, opt-in GitHub Actions workflow
+  generation, and safe native pre-push hook installation.
+- Updated install flow, README surfaces, roadmap, and tests.
+- Verified Vitest, ACE memory check, npm payload guard, and full npm release
+  dry-run for `ace-pack@0.4.0`.

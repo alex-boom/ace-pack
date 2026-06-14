@@ -9,6 +9,7 @@ import {
   extractUnresolvedReflections,
   formatTimestamp,
   getArgValue,
+  hasMeaningfulContent,
   parseCliArgs,
   readTextIfExists,
   writeAceBanner,
@@ -17,7 +18,6 @@ import {
 import { classifyRepositoryTask } from './ai-task-classify.mjs'
 
 const execFileAsync = promisify(execFile)
-const PLACEHOLDER_PATTERN = /\[[^\]]+\]|\bTODO\b|\bTBD\b|No .* recorded/i
 
 export function validateFinishRequirements({
   classification,
@@ -181,12 +181,6 @@ function hasMeaningfulReflection(content) {
   return (
     extractUnresolvedReflections(content, 1).length > 0 || /## Resolved[\s\S]*^### /m.test(content)
   )
-}
-
-function hasMeaningfulContent(content) {
-  const normalizedContent = content.replace(/\s+/g, ' ').trim()
-
-  return normalizedContent.length > 0 && !PLACEHOLDER_PATTERN.test(normalizedContent)
 }
 
 function slugify(value) {

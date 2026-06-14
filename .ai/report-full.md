@@ -3,21 +3,21 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 11:22
+- Generated: 2026-06-14 11:40
 - Freshness: Fresh
 - Current task version: v1
-- Current task tier: standard
-- Source current-task: 2026-06-14 11:21
-- Source session-handoff: 2026-06-14 11:21
+- Current task tier: large
+- Source current-task: 2026-06-14 11:40
+- Source session-handoff: 2026-06-14 11:40
 - Verification level: test-backed
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (5 changed files)
-- Last commit: 798023e Implement v0.3 ACE Hub as the primary UX, introducing named modes for context generation including start, architect, handoff, PR, business, and docs. Bump package version to 0.3.0 and enhance CLI with new flags for output control and metadata headers. Update documentation to reflect changes and mark v0.3 as shipped in the roadmap.
-- Task: complete (tier: standard, version: v1, ready for archive: yes)
-- Next command: No command detected
-- Release decision: NPM publish: not required
+- Worktree: dirty (24 changed files)
+- Last commit: 85d03f0 Finalize v0.3 release of `ace-pack` by confirming publication on npm and updating project documentation. Adjusted session handoff and current task states to reflect the completed release and planned next steps for v0.4. Regenerated reports to align with post-release closeout.
+- Task: complete (tier: large, version: v1, ready for archive: yes)
+- Next command: `npm.cmd run release:npm`
+- Release decision: NPM publish: required
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
@@ -26,130 +26,136 @@ Detected ecosystems: Generic repository | Package manager: pnpm
 
 
 ## Current Task
-v0.3 ACE Hub Primary UX
+v0.4.0 PR and CI Quality Gates
 
 ## Lifecycle
 Status: complete
 Version: v1
-Task Tier: standard
-Design Review Required: no
-Started: 2026-06-14 11:03
+Task Tier: large
+Design Review Required: yes
+Started: 2026-06-14 11:30
 Ready For Archive: yes
 
 ## Goal
-Make `ace:hub` the primary daily context launcher for agents and humans while
-preserving the existing numeric menu options and zero-dependency local design.
+Ship a lightweight `ace:gate` quality gate for PR/CI workflows that verifies
+ACE memory, risk classification, design-review readiness, handoff quality, and
+closeout state before merge.
 
 ## Business Value
-v0.3 reduces prompt fatigue by letting developers generate focused start,
-architect, handoff, PR, business, and docs context without manually opening and
-copying multiple `.ai/*` files.
+v0.4 gives teams a practical governance layer for AI-generated changes without
+requiring SaaS, hidden network calls, Husky, or heavyweight CI tooling. It
+turns ACE memory discipline into an optional pre-merge safety check.
 
 ## Technical Approach
 Option 1:
-- Add a new top-level `ace` router or clipboard automation. This would improve
-  discoverability but introduces new command and platform behavior too early.
+- Build a standalone gate script with its own Markdown parsing and risk
+  heuristics. This would be quick but duplicates existing classification,
+  finish-validation, and memory-check logic.
 
 Option 2:
-- Extend the existing `ace:hub` script with named modes, output controls,
-  metadata headers, and PR git summaries while keeping numeric options
-  compatible.
+- Add `ace-quality-gate.mjs` as a thin orchestration layer that reuses
+  `validateAgentMemory`, `classifyRepositoryTask`, `validateFinishRequirements`,
+  and shared Markdown helpers. Add only the missing PR diff and output helpers
+  needed for CI-quality messages.
 
 Chosen Approach:
-- Use Option 2. It delivers the v0.3 roadmap value without new dependencies,
-  config, schemas, network calls, AI calls, MCP, or command-name churn.
+- Use Option 2. It keeps v0.4 zero-dependency and DRY, makes failures
+  actionable in CI logs, and avoids creating a second policy engine.
 
 ## Current Status
-- [x] Plan approved for v0.3 ACE Hub Primary UX.
-- [x] Bumped package version to `0.3.0`.
-- [x] Added named hub modes: `start`, `coder`, `architect`, `handoff`, `pr`,
-  `business`, and `docs`.
-- [x] Added `--list`, `--mode`, `--stdout`, `--output`, and `--json` CLI UX.
-- [x] Added metadata headers and PR git summary fallback behavior.
-- [x] Updated GitHub/npm README hub documentation.
-- [x] Added hub tests for numeric compatibility, named modes, CLI flags,
-  missing files, and PR git summary behavior.
-- [x] Ran release verification.
-- [x] Published `ace-pack@0.3.0` to npm and committed the v0.3 release.
+- [x] Plan approved for v0.4 quality gate MVP.
+- [x] Ran `ace:classify` before implementation.
+- [x] Add `ace:gate` command and shipped gate script.
+- [x] Add PR diff support for `--base` and `--head`.
+- [x] Add opt-in GitHub Actions and pre-push hook generation.
+- [x] Update install flow, docs, tests, and package version.
+- [x] Run full verification and closeout.
 
 ## What Was Done
-- Bumped package version from `0.2.0` to `0.3.0`.
-- Reworked `ace:hub` around named modes while preserving numeric options:
-  `1`/`start`/`coder`, `2`/`architect`, `3`/`business`, `4`/`docs`,
-  plus new `handoff` and `pr` modes.
-- Added CLI flags: `--list`, `--mode <mode>`, `--stdout`, `--output <path>`,
-  and `--json`.
-- Added generated context metadata headers with mode, timestamp, included
-  files, missing optional files, and PR-only git summary.
-- Added PR mode local git status/stat summary with graceful `unknown` fallback.
-- Updated GitHub/npm README hub documentation and marked v0.3 shipped in
-  `ROADMAP.md`.
+- Bumped package version from `0.3.0` to `0.4.0`.
+- Added shipped `ace:gate` command via `scripts/ace-quality-gate.mjs`.
+- Reused existing ACE validation layers: `validateAgentMemory`,
+  `classifyRepositoryTask`, `validateFinishRequirements`, and shared Markdown
+  helpers.
+- Added PR diff support through `--base <ref>` and `--head <ref>`.
+- Added actionable `[ACE GATE] Failed:` messages for CI logs and parseable
+  `--json` output.
+- Added opt-in `--write-github-action` and `--install-pre-push` helpers.
+- Updated install flow so target repos receive `scripts/ace-quality-gate.mjs`
+  and `ace:gate`.
+- Updated README/README.npm and marked v0.4 shipped in `ROADMAP.md`.
 
 ## Current State
-- `ace:hub` remains deterministic, local, and zero-dependency.
-- Existing numeric menu selections remain compatible.
-- No clipboard automation, MCP, CI gates, network calls, AI calls, schema
-  changes, or `.ai/*` file merging were added.
-- `ace-pack@0.3.0` is published on npm and committed in git.
+- `ace:gate` remains local, deterministic, zero-dependency, and opt-in.
+- Git hooks are never installed automatically; existing non-ACE pre-push hooks
+  are preserved by writing `.git/hooks/pre-push.ace.sample`.
+- GitHub Actions is the only official CI template in v0.4.0.
+- `.ai/memory-config.json` schema remains version `1`.
+- The staged npm payload carries `ace-pack@0.4.0`.
 
 ## Next Steps
-- v0.3 is released. Next planning target: v0.4 PR and CI Quality Gates.
+- Publish with `npm.cmd run release:npm` when ready.
 
 ## Known Issues
-- None for the v0.3 release closeout.
+- `.ai/generated-context.md` was already dirty before v0.4 implementation and
+  was not modified as part of the product change.
 
 ## Quality Review
 Product Alignment:
-- v0.3 turns Hub into the daily context surface promised in the roadmap and
-  reduces manual context gathering for new agent sessions, architecture review,
-  PR summaries, and handoffs.
+- v0.4 delivers the roadmap's PR/CI governance layer for AI-assisted changes
+  without adding SaaS, hidden network calls, or dependency-heavy tooling.
 
 Architecture:
-- The implementation extends the existing hub script instead of adding a new
-  top-level router or dependency-backed clipboard feature.
+- The gate is a thin orchestration script that reuses existing ACE memory,
+  classification, and finish-validation logic instead of duplicating Markdown
+  parsers or risk policy.
 
 Security:
-- PR summaries use local `git status --short` and `git diff --stat HEAD` only.
-  No file contents beyond selected local Markdown context are sent anywhere.
+- Gate checks run locally and inspect only repository files and local git state.
+  Hook/workflow generation is explicit opt-in and does not call external
+  services by itself.
 
 Code Quality:
-- Hub tests now cover numeric compatibility, named modes, metadata headers,
-  optional/required file handling, CLI flags, custom output, JSON metadata,
-  stdout payloads, and git fallback behavior.
+- Tests cover gate pass/fail behavior, actionable errors, PR refs, JSON output,
+  hook safety, GitHub workflow generation, and install flow wiring.
 
 ## Verification
 - `npm.cmd run ace:classify` passed before implementation.
-- `npm.cmd test` passed: 7 files, 58 tests.
+- `npm.cmd test` passed: 8 files, 69 tests.
 - `npm.cmd run ace:check` passed.
-- `npm.cmd run check:npm-payload` passed and checked 27 packed files.
-- `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.3.0`.
-- `npm.cmd run ace:validate` passed.
+- `npm.cmd run check:npm-payload` passed and checked 28 packed files.
+- `npm.cmd run release:npm:dry` passed and dry-ran `ace-pack@0.4.0`.
+- `npm.cmd run ace:gate` passed.
 
 ## Recent Decisions
-## 2026-06-14 11:13
+## 2026-06-14 11:40
 
 Decision:
-- Implement v0.3 Hub UX by extending `ace:hub` with named modes and output
-  controls instead of adding a new top-level `ace` router, clipboard
-  integration, MCP adapter, or dependency-backed UX layer.
+- Implement v0.4 quality gates as a thin `ace:gate` orchestration layer that
+  reuses existing ACE memory validation, task classification, finish
+  requirements, and shared Markdown helpers.
 
 Reason:
-- The roadmap goal is daily context generation, not a broader command platform.
-  Extending the existing local script gives agents focused payloads while
-  preserving zero-dependency, Markdown-first behavior.
+- PR/CI gates must stay consistent with local ACE workflow. Duplicating
+  Markdown parsing or risk policy would create drift and make CI failures less
+  trustworthy.
 
 Impact:
-- `ace:hub` now supports start/coder, architect, handoff, PR, business, and
-  docs contexts with metadata headers and PR git summaries.
-- Future command consolidation can build on the stable hub modes after real
-  usage proves which flows deserve first-class routing.
+- `ace:gate` now provides optional local/CI governance with actionable failure
+  messages, PR refs, JSON output, GitHub Actions workflow generation, and safe
+  pre-push hook installation.
+- Future CI providers should build on the same gate command instead of adding
+  provider-specific policy engines.
 
 ## Changed Areas
-- `.ai/session-handoff.md`
-- `.ai/current-task.md`
-- `.ai/report-brief.md`
-- `.ai/report-full.md`
-- `.ai/report-full.xml`
+- `package.json`
+- `install-ace-pack.mjs`
+- `scripts/ace-quality-gate.mjs`
+- `scripts/ai-task-classify.mjs`
+- `scripts/ai-memory-utils.mjs`
+- `scripts/ai-task-finish.mjs`
+- `tests/ace-quality-gate.test.ts`
+- `tests/install-agent-memory-pack.test.ts`
 
 ## Latest Work Log
 # Work Log
@@ -287,6 +293,17 @@ Impact:
 - Updated repo-local ACE handoff/current-task state so future sessions do not
   keep recommending another `0.3.0` publish.
 - Marked the next planning target as v0.4 PR and CI Quality Gates.
+
+## 2026-06-14 11:40
+
+- Implemented v0.4.0 PR and CI Quality Gates and bumped package version to
+  `0.4.0`.
+- Added `ace:gate` with reusable ACE validation/classification/finish checks,
+  actionable CI failures, JSON output, PR refs, opt-in GitHub Actions workflow
+  generation, and safe native pre-push hook installation.
+- Updated install flow, README surfaces, roadmap, and tests.
+- Verified Vitest, ACE memory check, npm payload guard, and full npm release
+  dry-run for `ace-pack@0.4.0`.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.

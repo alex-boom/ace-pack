@@ -70,6 +70,7 @@ describe('installAcePack', () => {
     expect(result.createdFiles).toContain('scripts/ace-hub.mjs')
     expect(result.createdFiles).toContain('scripts/ace-onboard.mjs')
     expect(result.createdFiles).toContain('scripts/ace-project-presets.mjs')
+    expect(result.createdFiles).toContain('scripts/ace-quality-gate.mjs')
     expect(result.createdFiles).toContain('scripts/agent-memory-lib.mjs')
     expect(result.createdFiles).toContain('scripts/ai-task-classify.mjs')
     expect(result.createdFiles).toContain('scripts/ai-task-finish.mjs')
@@ -80,6 +81,7 @@ describe('installAcePack', () => {
     expect(packageJson.scripts['ace:check']).toBe('node ./scripts/check-agent-memory.mjs')
     expect(packageJson.scripts['ace:classify']).toBe('node ./scripts/ai-task-classify.mjs')
     expect(packageJson.scripts['ace:finish']).toBe('node ./scripts/ai-task-finish.mjs')
+    expect(packageJson.scripts['ace:gate']).toBe('node ./scripts/ace-quality-gate.mjs')
     expect(packageJson.scripts['ace:hub']).toBe('node ./scripts/ace-hub.mjs')
     expect(packageJson.scripts['ace:onboard']).toBe('node ./scripts/ace-onboard.mjs')
     expect(packageJson.scripts['ace:report']).toBe('node ./scripts/ai-report.mjs')
@@ -142,6 +144,7 @@ describe('installAcePack', () => {
       private: true,
     })
     expect(packageJson.scripts['ace:onboard']).toBe('node ./scripts/ace-onboard.mjs')
+    expect(packageJson.scripts['ace:gate']).toBe('node ./scripts/ace-quality-gate.mjs')
     expect(packageJson.scripts['ace:validate']).toBe('node ./scripts/check-agent-memory.mjs')
   })
 

@@ -214,3 +214,22 @@ Impact:
   docs contexts with metadata headers and PR git summaries.
 - Future command consolidation can build on the stable hub modes after real
   usage proves which flows deserve first-class routing.
+
+## 2026-06-14 11:40
+
+Decision:
+- Implement v0.4 quality gates as a thin `ace:gate` orchestration layer that
+  reuses existing ACE memory validation, task classification, finish
+  requirements, and shared Markdown helpers.
+
+Reason:
+- PR/CI gates must stay consistent with local ACE workflow. Duplicating
+  Markdown parsing or risk policy would create drift and make CI failures less
+  trustworthy.
+
+Impact:
+- `ace:gate` now provides optional local/CI governance with actionable failure
+  messages, PR refs, JSON output, GitHub Actions workflow generation, and safe
+  pre-push hook installation.
+- Future CI providers should build on the same gate command instead of adding
+  provider-specific policy engines.

@@ -1,6 +1,6 @@
 {
   "name": "ace-pack",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Local AgentOps for AI coding agents: durable memory, guardrails, and quality gates for vibe coding in real repositories.",
   "type": "module",
   "license": "MIT",
@@ -62,6 +62,7 @@
     "ace:check": "node ./scripts/check-agent-memory.mjs",
     "ace:classify": "node ./scripts/ai-task-classify.mjs",
     "ace:finish": "node ./scripts/ai-task-finish.mjs",
+    "ace:gate": "node ./scripts/ace-quality-gate.mjs",
     "ace:hub": "node ./scripts/ace-hub.mjs",
     "ace:onboard": "node ./scripts/ace-onboard.mjs",
     "ace:report": "node ./scripts/ai-report.mjs",

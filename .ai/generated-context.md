@@ -1,3 +1,9 @@
+# ACE Hub Context
+- Mode: architect (AI Architect Context)
+- Generated: 2026-06-14T08:24:51.939Z
+- Included files: AGENTS.md, .ai/tech-docs.md, .ai/decisions.md, .ai/product-roadmap.md, .ai/report-brief.md
+- Missing optional files: none
+
 # --- FILE: AGENTS.md ---
 
 > [!WARNING]
@@ -128,9 +134,14 @@ without reading large implementation files.
   `ai-memory-utils.mjs`, and write `.ai/report-brief.md` /
   `.ai/report-full.md`.
 - `ace:hub` builds focused context payloads in `.ai/generated-context.md`.
-  AI Coder Context starts with `.ai/report-brief.md` when available so new
-  chats see the Start Snapshot first, but fresh repos still work before the
-  first report is generated.
+  Numeric options remain compatible, and named modes now cover start/coder,
+  architect, handoff, PR, business, and docs contexts. AI Coder Context starts
+  with `.ai/report-brief.md` when available so new chats see the Start Snapshot
+  first, but fresh repos still work before the first report is generated.
+- `ace:onboard` performs a bounded local file scan and package/content signal
+  scan to recommend conservative repository-specific risk rules. It writes
+  `.ai/project-profile.md` and `.ai/memory-config.recommended.json`, and applies
+  those rules to `.ai/memory-config.json` only when invoked with `--apply`.
 
 ## Data Model / DB Schema
 - Durable state is plain Markdown under `.ai/**` plus JSON configuration in
@@ -140,6 +151,13 @@ without reading large implementation files.
   `.ai/session-handoff.md`.
 - Report Start Snapshot values are generated from local git state and existing
   Markdown sections; no new persistent schema fields were added for `0.1.7`.
+- Onboarding profile output includes detected ecosystems, a concise
+  `Why Detected` signal summary, repository shape, recommended high-risk paths,
+  and recommended high-risk keywords. The memory config schema remains version
+  `1` for `0.2.0`.
+- Hub output includes a generated metadata header with mode, timestamp, included
+  files, and missing optional files. PR mode also includes local git status and
+  diff stat, degrading to `unknown` when git is unavailable.
 
 ## Auth, RBAC, and Security
 - ACE has no authentication layer and does not manage user credentials.
@@ -349,6 +367,41 @@ Impact:
 - Future changes should add stricter closeout gates only when there is a real
   safety or handoff failure that template guidance cannot solve.
 
+## 2026-06-14 10:59
+
+Decision:
+- Implement v0.2 onboarding by extending the existing `ace:onboard` scanner
+  instead of adding a second preset engine or new CLI flow.
+
+Reason:
+- The current scanner already has the right zero-dependency shape. Extending its
+  rules, signal explanation, and terminal summary gives users the first-run
+  value without adding runtime bloat or command complexity.
+
+Impact:
+- `ace:onboard` now detects broader JS/TS, Python, Go, Rust, .NET, and monorepo
+  signals while keeping `.ai/memory-config.json` schema version `1`.
+- Future onboarding improvements should continue using conservative path rules
+  and explicit signal summaries before considering new config or preset layers.
+
+## 2026-06-14 11:13
+
+Decision:
+- Implement v0.3 Hub UX by extending `ace:hub` with named modes and output
+  controls instead of adding a new top-level `ace` router, clipboard
+  integration, MCP adapter, or dependency-backed UX layer.
+
+Reason:
+- The roadmap goal is daily context generation, not a broader command platform.
+  Extending the existing local script gives agents focused payloads while
+  preserving zero-dependency, Markdown-first behavior.
+
+Impact:
+- `ace:hub` now supports start/coder, architect, handoff, PR, business, and
+  docs contexts with metadata headers and PR git summaries.
+- Future command consolidation can build on the stable hub modes after real
+  usage proves which flows deserve first-class routing.
+
 # --- FILE: .ai/product-roadmap.md ---
 
 # Product Roadmap
@@ -384,13 +437,15 @@ handoff and browser-context workflows.
 - **Closeout priority ladder.** Installed workflow templates now tell agents to
   close tasks by priority, preserving future context and safety without
   ceremony.
+- **v0.2 onboarding scanner.** `ace:onboard` now recognizes broader JS/TS,
+  Python, Go, Rust, .NET, and monorepo signals, explains why each ecosystem was
+  detected, and prints a concise terminal summary.
+- **v0.3 ACE Hub primary UX.** `ace:hub` now provides focused start/coder,
+  architect, handoff, PR, business, and docs context modes with metadata
+  headers and local PR git summaries.
 
 ## Planned Features
 
-- **v0.2: Preset Platform and Onboarding.** Smart risk profiles for Next.js,
-  FastAPI, Go, .NET, Rust, and generic monorepos.
-- **v0.3: ACE Hub as Primary UX.** Focused context modes for start context,
-  architect review, PR summary, and agent handoff.
 - **v0.4: PR and CI Quality Gates.** Verify `.ai/**` state, design reviews,
   risk classification, and handoffs before merge. Prefer native hooks and CI
   templates over Husky-style stacks.
@@ -425,5 +480,108 @@ handoff and browser-context workflows.
 
 - Which project presets should be prioritized after the existing SaaS monorepo
   preset work?
-- Which `ace:hub` context modes provide the fastest daily value for developers?
 - Which CI providers should receive official templates first?
+
+# --- FILE: .ai/report-brief.md ---
+
+# AI Brief Report
+
+Project: `ace-pack`
+
+## Report Metadata
+- Generated: 2026-06-14 11:22
+- Freshness: Fresh
+- Current task version: v1
+- Current task tier: standard
+- Source current-task: 2026-06-14 11:21
+- Source session-handoff: 2026-06-14 11:21
+- Verification level: test-backed
+
+## Start Snapshot
+- Branch: main
+- Worktree: dirty (4 changed files)
+- Last commit: 798023e Implement v0.3 ACE Hub as the primary UX, introducing named modes for context generation including start, architect, handoff, PR, business, and docs. Bump package version to 0.3.0 and enhance CLI with new flags for output control and metadata headers. Update documentation to reflect changes and mark v0.3 as shipped in the roadmap.
+- Task: complete (tier: standard, version: v1, ready for archive: yes)
+- Next command: No command detected
+- Release decision: NPM publish: not required
+
+## Stack
+Detected ecosystems: Generic repository | Package manager: pnpm
+
+## Current Task
+v0.3 ACE Hub Primary UX
+
+## Lifecycle
+Status: complete
+Version: v1
+Task Tier: standard
+Design Review Required: no
+Started: 2026-06-14 11:03
+Ready For Archive: yes
+
+## Goal
+Make `ace:hub` the primary daily context launcher for agents and humans while
+preserving the existing numeric menu options and zero-dependency local design.
+
+## Business Value
+v0.3 reduces prompt fatigue by letting developers generate focused start,
+architect, handoff, PR, business, and docs context without manually opening and
+copying multiple `.ai/*` files.
+
+## Current Status
+- [x] Plan approved for v0.3 ACE Hub Primary UX.
+- [x] Bumped package version to `0.3.0`.
+- [x] Added named hub modes: `start`, `coder`, `architect`, `handoff`, `pr`,
+  `business`, and `docs`.
+- [x] Added `--list`, `--mode`, `--stdout`, `--output`, and `--json` CLI UX.
+- [x] Added metadata headers and PR git summary fallback behavior.
+- [x] Updated GitHub/npm README hub documentation.
+- [x] Added hub tests for numeric compatibility, named modes, CLI flags,
+  missing files, and PR git summary behavior.
+- [x] Ran release verification.
+- [x] Published `ace-pack@0.3.0` to npm and committed the v0.3 release.
+
+## Next Steps
+- v0.3 is released. Next planning target: v0.4 PR and CI Quality Gates.
+
+## Risks / Blockers
+- None for the v0.3 release closeout.
+
+## Verification
+- `npm.cmd run ace:classify` passed before implementation.
+- `npm.cmd test` passed: 7 files, 58 tests.
+- `npm.cmd run ace:check` passed.
+- `npm.cmd run check:npm-payload` passed and checked 27 packed files.
+
+## Recent Decision
+## 2026-06-14 11:13
+
+Decision:
+- Implement v0.3 Hub UX by extending `ace:hub` with named modes and output
+  controls instead of adding a new top-level `ace` router, clipboard
+  integration, MCP adapter, or dependency-backed UX layer.
+
+Reason:
+- The roadmap goal is daily context generation, not a broader command platform.
+  Extending the existing local script gives agents focused payloads while
+  preserving zero-dependency, Markdown-first behavior.
+
+Impact:
+- `ace:hub` now supports start/coder, architect, handoff, PR, business, and
+  docs contexts with metadata headers and PR git summaries.
+- Future command consolidation can build on the stable hub modes after real
+  usage proves which flows deserve first-class routing.
+
+## Unresolved Reflections
+- No unresolved reflections recorded.
+
+## Changed Areas
+- `.ai/session-handoff.md`
+- `.ai/current-task.md`
+- `.ai/report-brief.md`
+- `.ai/report-full.md`
+- `.ai/report-full.xml`
+
+## Overall Progress
+- Completion checklist: 6/6
+- Source of truth: `.ai/*` files remain authoritative.

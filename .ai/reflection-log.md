@@ -14,6 +14,15 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-14 11:40 CI gates need actionable failures
+Status: resolved
+- Stuck Point: A failing PR gate is only useful if the developer can fix it
+  from plain CI logs.
+- Likely Cause: Generic gate failures hide which ACE memory section needs
+  attention.
+- Proposed Improvement: Keep gate failures file-specific and include the exact
+  next fix, while reusing existing ACE validation logic.
+
 ### 2026-06-14 10:59 First-run onboarding needs terminal feedback
 Status: resolved
 - Stuck Point: A useful `.ai/project-profile.md` can still hide the onboarding

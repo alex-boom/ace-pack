@@ -14,6 +14,7 @@ const timestampFormatter = new Intl.DateTimeFormat('sv-SE', {
   year: 'numeric',
 })
 const execFileAsync = promisify(execFile)
+const PLACEHOLDER_PATTERN = /\[[^\]]+\]|\bTODO\b|\bTBD\b|No .* recorded/i
 
 export function normalizeTrailingNewline(content) {
   return content.endsWith('\n') ? content : `${content}\n`
@@ -460,6 +461,12 @@ export function getFreshnessStatus(generatedAt, ...sourceDates) {
 export function extractLabeledValue(content, label) {
   const pattern = new RegExp(`^${escapeRegExp(label)}:\\s*(.+)$`, 'm')
   return content.match(pattern)?.[1]?.trim() ?? ''
+}
+
+export function hasMeaningfulContent(content) {
+  const normalizedContent = content.replace(/\s+/g, ' ').trim()
+
+  return normalizedContent.length > 0 && !PLACEHOLDER_PATTERN.test(normalizedContent)
 }
 
 function isChangedPathHeading(heading) {
