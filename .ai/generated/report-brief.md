@@ -3,21 +3,21 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 19:43
+- Generated: 2026-06-15 12:32
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
 - Source current-task: 2026-06-14 19:43
-- Source session-handoff: 2026-06-14 19:42
-- Verification level: smoke-tested
+- Source session-handoff: 2026-06-15 12:31
+- Verification level: test-backed
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (27 changed files)
-- Last commit: dca94cd Refactor ACE command structure to unify under a single `ace` router, replacing legacy command scripts with router arguments. Update documentation to reflect changes in command usage and memory validation processes. Bump version to 2.0.1, ensuring compatibility with existing repositories while streamlining the user experience.
+- Worktree: dirty (6 changed files)
+- Last commit: 8dba050 Implement v2.1.0 with Safe Eject and Uninstall features, introducing `ace eject` for exporting active memory and `ace destroy` for guarded cleanup of ACE-owned files. Centralize managed script definitions and update documentation to reflect the new uninstall flow, ensuring zero-lock-in and preserving project-owned artifacts. Bump version to 2.1.0 for compatibility with existing repositories.
 - Task: complete (tier: large, version: v1, ready for archive: yes)
 - Next command: `npm.cmd run release:npm`
-- Release decision: NPM publish: required before final release; deferred by maintainer.
+- Release decision: NPM publish: not required. Reason: documentation-only; no npm payload change.
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
@@ -50,20 +50,18 @@ destructive cleanup of project-owned files.
 
 ## Next Steps
 - Publish when ready with `npm.cmd run release:npm`.
-- After publish, verify `npm.cmd view ace-pack version` and update repo-local
-  ACE memory to mark npm latest as `2.1.0`.
+- After publishing the already completed v2.1.0 candidate, verify
+  `npm.cmd view ace-pack version` and update repo-local ACE memory to mark npm
+  latest as `2.1.0`.
 
 ## Risks / Blockers
 - None known for the v2.1.0 candidate.
 
 ## Verification
-- `pnpm.cmd ace classify` passed before implementation; it detected `small`
-because the working tree was clean, but the shipped product scope was treated
-as large.
-- Focused Vitest passed for uninstall, router, installer, and schema docs:
-4 files, 31 tests.
-- `npm.cmd test` passed: 15 files, 116 tests.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
+- `npm.cmd run ace -- classify` passed and classified this as `small`.
+- `npm.cmd run ace:validate` passed.
+- `npm.cmd run ace -- check` passed.
+- `npm.cmd run ace -- brief` regenerated `.ai/generated/report-brief.md`.
 
 ## Recent Decision
 ## 2026-06-14 17:10
@@ -90,12 +88,12 @@ Impact:
 - No unresolved reflections recorded.
 
 ## Changed Areas
-- `package.json`
-- `scripts/ace-eject.mjs`
-- `scripts/ace-destroy.mjs`
-- `scripts/ace-uninstall-utils.mjs`
-- `install-ace-pack.mjs`
-- `scripts/ace-cli.mjs`
+- `ROADMAP.md`
+- `.ai/knowledge/product-roadmap.md`
+- `.ai/state/session-handoff.md`
+- `.ai/state/changed-files.md`
+- `.ai/knowledge/work-log.md`
+- `.ai/generated/report-brief.md`
 
 ## Overall Progress
 - Completion checklist: 9/9

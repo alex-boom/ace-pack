@@ -84,6 +84,11 @@ handoff and browser-context workflows.
   such as current task, handoff, and changed-files into fewer files beyond the
   v2 categorized layout. Any implementation must follow compatibility and
   migration rules before another schema change.
+- **Project Conventions and Pattern Discovery.** Research an explicit opt-in,
+  stack-agnostic `ace discover` workflow that records repository conventions in
+  `.ai/knowledge/project-conventions.md` so `ace hub` can help agents reuse
+  existing UI, routing, logging, error-handling, package-layout, persistence,
+  and styling patterns instead of inventing parallel ones.
 - **Standalone ACE Engine.** Research native binaries for macOS, Linux, and
   Windows so teams can use ACE without Node.js/npm on developer machines.
 - **Automated PR/CI Reviewer.** Research GitHub Action and GitLab CI templates

@@ -269,3 +269,10 @@
 - Verified focused Vitest, full Vitest, fake-project smoke, npm payload guard,
   project-owned `ace:validate`, and dogfood self-check.
 - NPM publish: required before final release; deferred by maintainer.
+
+## 2026-06-15 12:30
+
+- Added Project Conventions and Pattern Discovery to long-term roadmap research.
+- Mirrored the item in canonical `.ai/knowledge/product-roadmap.md`.
+- Kept the task documentation-only with no package version or CLI behavior
+  changes.

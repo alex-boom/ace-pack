@@ -169,6 +169,26 @@ simplify future agent context. Any implementation must follow the v2
 compatibility contract and include deterministic migration behavior before
 changing schema shape again.
 
+### Project Conventions and Pattern Discovery
+
+Research an explicit opt-in, agent-assisted `ace discover` workflow that scans
+an established repository and documents its local conventions in
+`.ai/knowledge/project-conventions.md`, with `.ai/project-conventions.md` as a
+possible legacy alias. The compatibility alias `ace:discover` may remain
+available through the router if this becomes a shipped command.
+
+The discovery model must stay stack-agnostic. Frontend projects should surface
+existing UI components, styling systems, and design primitives so agents do not
+create duplicates. Backend and CLI projects should surface routing, logging,
+error-handling, package layout, persistence, and similar architectural patterns
+so generated changes match the surrounding codebase.
+
+If integrated into `ace hub`, the conventions file should be included in
+context payloads so agents reuse existing project tools and idioms instead of
+inventing parallel patterns. Any automated AI-assisted discovery must follow
+the explicit AI opt-in policy: no hidden network calls, cloud providers, local
+LLMs, or model execution by default.
+
 ### Standalone ACE Engine
 
 Research single-file native binaries for macOS, Linux, and Windows so teams can
