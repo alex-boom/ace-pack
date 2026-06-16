@@ -312,3 +312,11 @@
   `npm.cmd run smoke:fake-project`, `npm.cmd run release:ready`, and
   `npm.cmd run release:npm:dry`.
 - NPM publish: required before final release; deferred by maintainer.
+
+## 2026-06-16 14:02
+
+- Confirmed `ace-pack@3.0.0` is published on npm and tagged `latest`.
+- Registry check: `npm.cmd view ace-pack version dist-tags time --json`
+  returned version `3.0.0` and publish time `2026-06-16T11:01:40.740Z`.
+- Updated local ACE task-state for the final closeout.
+- NPM publish: completed.

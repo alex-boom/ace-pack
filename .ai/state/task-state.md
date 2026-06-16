@@ -23,6 +23,7 @@ publishing intermediate package versions.
 - [x] Added managed IDE bridge blocks and safe destroy cleanup.
 - [x] Made small low-risk finish zero-ceremony from task-state plus current git state.
 - [x] Updated docs, package version, tests, smoke, and release dry-run.
+- [x] Published `ace-pack@3.0.0` to npm and confirmed `latest`.
 
 ### Affected Areas
 - `package.json`
@@ -120,7 +121,7 @@ Chosen Approach:
 ## Handoff & Next Steps
 
 ### Last Update
-2026-06-16 13:51
+2026-06-16 14:02
 
 ### What Was Done
 - Implemented ACE Pack v3.0.0 as one major release candidate with Memory Schema
@@ -133,6 +134,7 @@ Chosen Approach:
   current git diff/status.
 - Updated docs, package version, tests, smoke fixtures, payload checks, and npm
   dry-run release path.
+- Confirmed `ace-pack@3.0.0` is published on npm and tagged `latest`.
 
 ### Current State
 - `npm.cmd run release:ready` passes for `ace-pack@3.0.0`.
@@ -140,6 +142,7 @@ Chosen Approach:
 - This repo's local `.ai` dogfood memory was migrated to `.ai/state/task-state.md`
   during release checks with a backup under `.ai/archive/migrations/`.
 - No intermediate npm versions were published.
+- npm registry latest is `3.0.0`; the v3.0.0 release task is complete.
 
 ### Quality Review
 Product Alignment:
@@ -161,8 +164,7 @@ Code Quality:
   release smoke paths.
 
 ### Next Steps
-- Maintainer can review the diff and run `npm.cmd run publish:npm` to publish
-  `ace-pack@3.0.0` when ready.
+- Commit the completed v3.0.0 release work when ready.
 
 ### Known Issues
 - None known after release-readiness checks.
@@ -174,6 +176,9 @@ Code Quality:
 - `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
 - `npm.cmd run release:ready` passed.
 - `npm.cmd run release:npm:dry` passed.
+- `npm.cmd view ace-pack version dist-tags time --json` confirmed npm latest is
+  `3.0.0`, published at `2026-06-16T11:01:40.740Z`.
 
 ### Notes
-- NPM publish: required before final release; deferred by maintainer.
+- NPM publish: not required; `ace-pack@3.0.0` is already published on npm and
+  tagged `latest`.

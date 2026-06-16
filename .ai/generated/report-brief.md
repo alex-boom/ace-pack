@@ -3,20 +3,20 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-16 13:58
+- Generated: 2026-06-16 14:04
 - Freshness: Fresh
 - Current task version: v3.0.0
 - Current task tier: large
-- Source task-state: 2026-06-16 13:54
+- Source task-state: 2026-06-16 14:04
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (55 changed files)
-- Last commit: 642a27d Finalize v2.2.0 release for Project Conventions Discovery. Implemented `ace discover` to generate a concise project conventions registry, enhancing agent context. Updated documentation and confirmed successful publication to npm. Marked task as complete and ready for archive.
+- Worktree: dirty (3 changed files)
+- Last commit: 772aa31 Implement ACE Pack v3.0.0, consolidating active task memory into `.ai/state/task-state.md` with automatic legacy migration and timestamped backups. Introduced managed IDE rule blocks for Cursor, Windsurf, and Copilot, enabling surgical cleanup. Updated small-task finish to utilize task-state without manual handoff prompts. Enhanced documentation and confirmed successful release readiness checks. This major release addresses previous friction points in daily development experience.
 - Task: complete (tier: large, version: v3.0.0, ready for archive: yes)
-- Next command: `npm.cmd run publish:npm`
-- Release decision: NPM publish: required before final release; deferred by maintainer.
+- Next command: No command detected
+- Release decision: NPM publish: not required; `ace-pack@3.0.0` is already published on npm and
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
@@ -48,10 +48,10 @@ handoff ceremony.
 - [x] Added managed IDE bridge blocks and safe destroy cleanup.
 - [x] Made small low-risk finish zero-ceremony from task-state plus current git state.
 - [x] Updated docs, package version, tests, smoke, and release dry-run.
+- [x] Published `ace-pack@3.0.0` to npm and confirmed `latest`.
 
 ## Next Steps
-- Maintainer can review the diff and run `npm.cmd run publish:npm` to publish
-  `ace-pack@3.0.0` when ready.
+- Commit the completed v3.0.0 release work when ready.
 
 ## Risks / Blockers
 - None known after release-readiness checks.
