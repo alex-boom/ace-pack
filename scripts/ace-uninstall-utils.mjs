@@ -194,6 +194,16 @@ export function upsertAceIdeRulesBlock(relativePath, content) {
   const endIndex = content.indexOf(IDE_RULES_END_MARKER, startIndex)
   if (startIndex !== -1 && endIndex !== -1) {
     const afterEndIndex = endIndex + IDE_RULES_END_MARKER.length
+    const prefix = content.slice(0, startIndex)
+    const suffix = content.slice(afterEndIndex)
+
+    if (isExactAceIdeBridge(relativePath, prefix) && normalizeComparableText(suffix) === '') {
+      return {
+        changed: normalizeComparableText(content) !== normalizeComparableText(managedBlock),
+        content: `${managedBlock}\n`,
+      }
+    }
+
     const nextContent = `${content.slice(0, startIndex)}${managedBlock}${content.slice(afterEndIndex)}`
     return {
       changed: nextContent !== content,
@@ -319,7 +329,13 @@ function isIgnoredMemoryPath(relativePath) {
   )
 }
 function normalizeComparableText(content) {
-  return content.replace(/\r\n/g, '\n').trim()
+  return content
+    .replace(/\r\n/g, '\n')
+    .split('\n')
+    .map((line) => line.trimEnd())
+    .filter((line) => line.trim() !== '')
+    .join('\n')
+    .trim()
 }
 function normalizeContentSpacing(content) {
   const nextContent = content.replace(/\n{3,}/g, '\n\n').trimEnd()

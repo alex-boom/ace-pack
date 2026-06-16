@@ -1,6 +1,6 @@
 {
   "name": "ace-pack",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Local AgentOps for AI coding agents: durable memory, guardrails, and quality gates for vibe coding in real repositories.",
   "type": "module",
   "license": "MIT",
@@ -27,6 +27,10 @@
     "guardrails",
     "cursor",
     "claude-code",
+    "codex",
+    "mcp",
+    "mcp-server",
+    "mcp-client",
     "aider",
     "github-copilot",
     "chatgpt",

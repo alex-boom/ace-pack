@@ -180,6 +180,66 @@ describe('installAcePack', () => {
     ).resolves.toContain('# Custom Copilot')
   })
 
+  it('upgrades old ACE-only IDE bridge files to managed-block form', async () => {
+    const rootDir = await createTargetRepo()
+    const oldBridge = `# ACE IDE Agent Bridge
+
+Follow AGENTS.md as the authoritative repository instruction file.
+
+For new work:
+- Read .ai/generated/report-brief.md first when it exists.
+- Generate startup context with pnpm ace hub start.
+- Classify the task with pnpm ace classify before implementation.
+- Validate ACE memory with pnpm ace check when context may be stale.
+- Close the task with pnpm ace finish before handoff.
+
+Do not replace AGENTS.md or .ai/* workflow rules with IDE-specific policy. This
+file is only a thin bridge from the IDE agent to ACE.
+`
+
+    await writeFile(path.join(rootDir, '.cursorrules'), oldBridge, 'utf8')
+
+    const result = await installAcePack(rootDir)
+    const cursorRules = await readFile(path.join(rootDir, '.cursorrules'), 'utf8')
+
+    expect(result.updatedFiles).toContain('.cursorrules')
+    expect(cursorRules).toContain('ace-managed-ide-rules:start')
+    expect(cursorRules).not.toContain('Follow AGENTS.md as the authoritative')
+    expect(cursorRules.match(/ace-managed-ide-rules:start/gm)).toHaveLength(1)
+  })
+
+  it('cleans old ACE bridge text when a managed block was previously appended', async () => {
+    const rootDir = await createTargetRepo()
+    const mixedBridge = `# ACE IDE Agent Bridge
+
+Follow AGENTS.md as the authoritative repository instruction file.
+
+For new work:
+- Read .ai/generated/report-brief.md first when it exists.
+- Generate startup context with pnpm ace hub start.
+- Classify the task with pnpm ace classify before implementation.
+- Validate ACE memory with pnpm ace check when context may be stale.
+- Close the task with pnpm ace finish before handoff.
+
+Do not replace AGENTS.md or .ai/* workflow rules with IDE-specific policy. This
+file is only a thin bridge from the IDE agent to ACE.
+
+<!-- ace-managed-ide-rules:start -->
+stale block
+<!-- ace-managed-ide-rules:end -->
+`
+
+    await writeFile(path.join(rootDir, '.cursorrules'), mixedBridge, 'utf8')
+
+    await installAcePack(rootDir)
+    const cursorRules = await readFile(path.join(rootDir, '.cursorrules'), 'utf8')
+
+    expect(cursorRules).toContain('ALWAYS read `AGENTS.md`')
+    expect(cursorRules).not.toContain('Follow AGENTS.md as the authoritative')
+    expect(cursorRules).not.toContain('stale block')
+    expect(cursorRules.match(/ace-managed-ide-rules:start/gm)).toHaveLength(1)
+  })
+
   it('does not overwrite a project-owned ace:validate script', async () => {
     const rootDir = await createTargetRepo()
 

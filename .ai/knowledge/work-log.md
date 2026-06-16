@@ -320,3 +320,17 @@
   returned version `3.0.0` and publish time `2026-06-16T11:01:40.740Z`.
 - Updated local ACE task-state for the final closeout.
 - NPM publish: completed.
+
+## 2026-06-16 14:29
+
+- Found dogfood gap after v3.0.0 publish: old ACE-only IDE bridge files were
+  getting a managed block appended instead of being replaced.
+- Fixed exact-template comparison to ignore blank lines and added cleanup for
+  mixed old+managed ACE bridge files.
+- Added regression coverage for old bridge upgrade and mixed bridge cleanup.
+- Cleaned dogfood `.cursorrules`, `.windsurfrules`, and
+  `.github/copilot-instructions.md` to managed-block-only form.
+- Bumped local package version to `3.0.1` for the patch candidate.
+- Verified typecheck, lint, full Vitest, fake-project smoke, and
+  `npm.cmd run release:ready` for `ace-pack@3.0.1`.
+- NPM publish: required before final patch release.

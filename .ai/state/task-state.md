@@ -3,19 +3,19 @@
 ## Lifecycle & Meta
 
 ### Feature Name
-ACE Pack v3.0.0 DevEx Overhaul
+ACE Pack v3.0.1 IDE Bridge Upgrade Fix
 
 ### Lifecycle
 Status: complete
-Version: v3.0.0
-Task Tier: large
-Design Review Required: yes
+Version: v3.0.1
+Task Tier: small
+Design Review Required: no
 Started: 2026-06-16 13:00
 Ready For Archive: yes
 
 ### Goal
-Ship the v3 memory schema and DevEx overhaul as one npm major release without
-publishing intermediate package versions.
+Patch the v3 IDE bridge upgrader so old ACE-only rule files are replaced by the
+managed-block form instead of keeping duplicated legacy text.
 
 ### Current Status
 - [x] Consolidated active task memory into `.ai/state/task-state.md`.
@@ -24,6 +24,9 @@ publishing intermediate package versions.
 - [x] Made small low-risk finish zero-ceremony from task-state plus current git state.
 - [x] Updated docs, package version, tests, smoke, and release dry-run.
 - [x] Published `ace-pack@3.0.0` to npm and confirmed `latest`.
+- [x] Fixed legacy IDE bridge exact-match normalization and cleaned dogfood IDE
+  rule files to managed-block-only form.
+- [x] Bumped package version to `3.0.1` for the patch candidate.
 
 ### Affected Areas
 - `package.json`
@@ -33,6 +36,7 @@ publishing intermediate package versions.
 - `AGENTS.md`, `CLAUDE.md`, `DEVELOPING.md`
 - `tests/**`, `tools/**`
 - repo-local `.ai/**` dogfooding memory
+- `.cursorrules`, `.windsurfrules`, `.github/copilot-instructions.md`
 
 ### Constraints
 - Keep ACE local-first and zero hidden AI/network calls for migration.
@@ -40,7 +44,8 @@ publishing intermediate package versions.
 - Preserve existing installed-repo compatibility through deterministic aliases
   and migration.
 - Keep touched scripts within the 400 non-empty-line limit.
-- Publish only the final `ace-pack@3.0.0` release when the maintainer is ready.
+- Publish only a patch release if the maintainer decides the IDE bridge upgrade
+  fix should go to npm.
 
 ### Acceptance Criteria
 - Fresh installs create `task-state.md`, not `current-task.md`,
@@ -53,6 +58,8 @@ publishing intermediate package versions.
   reading latest commits.
 - Reports, hub, gate, MCP, update helpers, smoke fixtures, docs, and tests all
   use task-state behavior.
+- Existing old ACE-only IDE bridge files are upgraded to one managed block, and
+  mixed old+managed files are cleaned on repeat init/install.
 
 ### Completion Checklist
 - [x] Goal completed
@@ -65,10 +72,9 @@ publishing intermediate package versions.
 ## Business Value & Approach
 
 ### Business Value / Product Alignment
-This release removes ACE's highest-friction daily DevEx issues: active task
-state no longer sprawls across three files, IDE agents get native startup
-bridges without clobbering user rules, and small tasks can close without manual
-handoff ceremony.
+This patch completes the v3 IDE bridge promise for already dogfooded or older
+ACE repos: old ACE-owned bridge text is removed, while custom user-owned IDE
+rules remain preserved.
 
 ### Technical Approach
 Option 1:
@@ -83,6 +89,12 @@ Option 2:
 Chosen Approach:
 - Use Option 2. It is a clean major-version schema change while preserving local
   recovery, no-network migration, and compatibility for older installed repos.
+
+Patch Note:
+- The v3.0.0 upgrader appended managed blocks to some old ACE-only bridge files
+  because exact comparison treated blank lines as meaningful. v3.0.1 ignores
+  blank lines for template comparison and also cleans already mixed old+managed
+  ACE bridge files.
 
 ## Changed Files / Diff
 
@@ -118,10 +130,13 @@ Chosen Approach:
 - Added and updated migration, install, schema, hub, report, gate, finish, MCP,
   uninstall, smoke, syntax, and line-limit coverage.
 
+[.cursorrules, .windsurfrules, .github/copilot-instructions.md]
+- Cleaned dogfood IDE bridge files to the v3 managed-block-only form.
+
 ## Handoff & Next Steps
 
 ### Last Update
-2026-06-16 14:02
+2026-06-16 14:29
 
 ### What Was Done
 - Implemented ACE Pack v3.0.0 as one major release candidate with Memory Schema
@@ -135,6 +150,7 @@ Chosen Approach:
 - Updated docs, package version, tests, smoke fixtures, payload checks, and npm
   dry-run release path.
 - Confirmed `ace-pack@3.0.0` is published on npm and tagged `latest`.
+- Fixed the v3 IDE bridge upgrade bug found in dogfood after publication.
 
 ### Current State
 - `npm.cmd run release:ready` passes for `ace-pack@3.0.0`.
@@ -142,7 +158,8 @@ Chosen Approach:
 - This repo's local `.ai` dogfood memory was migrated to `.ai/state/task-state.md`
   during release checks with a backup under `.ai/archive/migrations/`.
 - No intermediate npm versions were published.
-- npm registry latest is `3.0.0`; the v3.0.0 release task is complete.
+- npm registry latest is `3.0.0`; package version is now `3.0.1` locally for
+  the IDE bridge upgrade patch candidate.
 
 ### Quality Review
 Product Alignment:
@@ -164,7 +181,8 @@ Code Quality:
   release smoke paths.
 
 ### Next Steps
-- Commit the completed v3.0.0 release work when ready.
+- Run `npm.cmd run publish:npm` only if the maintainer wants to publish the
+  `ace-pack@3.0.1` IDE bridge fix to npm immediately.
 
 ### Known Issues
 - None known after release-readiness checks.
@@ -178,7 +196,13 @@ Code Quality:
 - `npm.cmd run release:npm:dry` passed.
 - `npm.cmd view ace-pack version dist-tags time --json` confirmed npm latest is
   `3.0.0`, published at `2026-06-16T11:01:40.740Z`.
+- Focused install test passed after the IDE bridge fix: 1 file, 17 tests.
+- `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd test` passed after the
+  patch fix: 16 files, 125 tests.
+- `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
+- `npm.cmd run release:ready` passed for `ace-pack@3.0.1`, including npm
+  payload guard and publish dry-run.
 
 ### Notes
-- NPM publish: not required; `ace-pack@3.0.0` is already published on npm and
-  tagged `latest`.
+- NPM publish: required before final patch release; local package version is
+  `3.0.1`, while npm latest remains `3.0.0`.

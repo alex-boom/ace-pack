@@ -3,44 +3,43 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-16 14:04
+- Generated: 2026-06-16 14:35
 - Freshness: Fresh
-- Current task version: v3.0.0
-- Current task tier: large
-- Source task-state: 2026-06-16 14:04
+- Current task version: v3.0.1
+- Current task tier: small
+- Source task-state: 2026-06-16 14:35
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (3 changed files)
-- Last commit: 772aa31 Implement ACE Pack v3.0.0, consolidating active task memory into `.ai/state/task-state.md` with automatic legacy migration and timestamped backups. Introduced managed IDE rule blocks for Cursor, Windsurf, and Copilot, enabling surgical cleanup. Updated small-task finish to utilize task-state without manual handoff prompts. Enhanced documentation and confirmed successful release readiness checks. This major release addresses previous friction points in daily development experience.
-- Task: complete (tier: large, version: v3.0.0, ready for archive: yes)
-- Next command: No command detected
-- Release decision: NPM publish: not required; `ace-pack@3.0.0` is already published on npm and
+- Worktree: dirty (10 changed files)
+- Last commit: 3bb4458 Finalize release of `ace-pack@3.0.0`, confirming successful publication to npm and tagging as `latest`. Updated task-state and documentation to reflect completion of major release, addressing previous development friction points and enhancing IDE integration. No further NPM publish required.
+- Task: complete (tier: small, version: v3.0.1, ready for archive: yes)
+- Next command: `npm.cmd run publish:npm`
+- Release decision: NPM publish: required before final patch release; local package version is
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
 
 ## Current Task
-ACE Pack v3.0.0 DevEx Overhaul
+ACE Pack v3.0.1 IDE Bridge Upgrade Fix
 
 ## Lifecycle
 Status: complete
-Version: v3.0.0
-Task Tier: large
-Design Review Required: yes
+Version: v3.0.1
+Task Tier: small
+Design Review Required: no
 Started: 2026-06-16 13:00
 Ready For Archive: yes
 
 ## Goal
-Ship the v3 memory schema and DevEx overhaul as one npm major release without
-publishing intermediate package versions.
+Patch the v3 IDE bridge upgrader so old ACE-only rule files are replaced by the
+managed-block form instead of keeping duplicated legacy text.
 
 ## Business Value
-This release removes ACE's highest-friction daily DevEx issues: active task
-state no longer sprawls across three files, IDE agents get native startup
-bridges without clobbering user rules, and small tasks can close without manual
-handoff ceremony.
+This patch completes the v3 IDE bridge promise for already dogfooded or older
+ACE repos: old ACE-owned bridge text is removed, while custom user-owned IDE
+rules remain preserved.
 
 ## Current Status
 - [x] Consolidated active task memory into `.ai/state/task-state.md`.
@@ -49,9 +48,13 @@ handoff ceremony.
 - [x] Made small low-risk finish zero-ceremony from task-state plus current git state.
 - [x] Updated docs, package version, tests, smoke, and release dry-run.
 - [x] Published `ace-pack@3.0.0` to npm and confirmed `latest`.
+- [x] Fixed legacy IDE bridge exact-match normalization and cleaned dogfood IDE
+  rule files to managed-block-only form.
+- [x] Bumped package version to `3.0.1` for the patch candidate.
 
 ## Next Steps
-- Commit the completed v3.0.0 release work when ready.
+- Run `npm.cmd run publish:npm` only if the maintainer wants to publish the
+  `ace-pack@3.0.1` IDE bridge fix to npm immediately.
 
 ## Risks / Blockers
 - None known after release-readiness checks.

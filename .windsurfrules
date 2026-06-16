@@ -1,13 +1,7 @@
-# ACE IDE Agent Bridge
-
-Follow AGENTS.md as the authoritative repository instruction file.
-
-For new work:
-- Read .ai/generated/report-brief.md first when it exists.
-- Generate startup context with pnpm ace hub start.
-- Classify the task with pnpm ace classify before implementation.
-- Validate ACE memory with pnpm ace check when context may be stale.
-- Close the task with pnpm ace finish before handoff.
-
-Do not replace AGENTS.md or .ai/* workflow rules with IDE-specific policy. This
-file is only a thin bridge from the IDE agent to ACE.
+<!-- ace-managed-ide-rules:start -->
+You are managed by ACE (Agentic Context Engine).
+1. ALWAYS read `AGENTS.md` before starting work.
+2. Read `.ai/generated/report-brief.md` to understand the current repo state.
+3. All project context is located in the `.ai/` directory.
+4. When finishing a task, you MUST run `pnpm ace finish` (or `npm run ace -- finish`).
+<!-- ace-managed-ide-rules:end -->

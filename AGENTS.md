@@ -43,8 +43,8 @@ and decision history. Use this workflow on top of the repo rules above;
 quality constraints.
 
 ACE v3 canonical memory is organized under `.ai/config`, `.ai/state`,
-`.ai/knowledge`, and `.ai/generated`. Legacy root `.ai/*.md` paths remain
-compatible migration aliases for older agents and scripts.
+`.ai/knowledge`, and `.ai/generated`. Active task context lives in
+`.ai/state/task-state.md`.
 
 Before starting work:
 
@@ -60,9 +60,8 @@ Before starting work:
    `pnpm ace onboard` and apply an approved profile
    before implementation.
 6. For large tasks, and standard tasks with high-risk signals, complete the
-   `.ai/state/task-state.md` Business Value and Technical Approach sections
-   before writing code. Compare at least two viable patterns and choose
-   explicitly.
+   `.ai/state/task-state.md` Business Value & Approach section before writing
+   code. Compare at least two viable patterns and choose explicitly.
 7. Read `.ai/knowledge/work-log.md` only when you need extra historical
    context.
 8. If the memory files are missing, run `pnpm ace init`.
@@ -95,10 +94,10 @@ While working:
 - Use `pnpm ace onboard` to generate
   `.ai/config/project-profile.md` and recommended project-specific risk rules
   when ACE is installed into an unfamiliar repo.
-- When updating `.ai/state/task-state.md`, `.ai/knowledge/work-log.md`,
-  `.ai/knowledge/reflection-log.md`, or `.ai/knowledge/decisions.md`, use timestamps in
-  `YYYY-MM-DD HH:mm` format.
-- Keep `.ai/state/task-state.md` and `.ai/knowledge/reflection-log.md` compact.
+- When updating task state, work-log, reflection-log, or decisions, use
+  timestamps in `YYYY-MM-DD HH:mm` format.
+- Keep `.ai/state/task-state.md` and `.ai/knowledge/reflection-log.md`
+  compact.
 - Archive only `.ai/knowledge/work-log.md`,
   `.ai/knowledge/reflection-log.md`, and `.ai/knowledge/decisions.md` into
   `.ai/archive/` when they grow past the documented thresholds.
@@ -115,8 +114,8 @@ safety:
 1. Always summarize what changed, update changed files, record verification,
    run project-owned `pnpm ace:validate`, and state publish/deploy decision when relevant.
    If release is deferred, say so explicitly.
-2. For small low-risk tasks, `pnpm ace finish` may auto-close compact
-   task-state, work-log, and brief report notes without manual handoff prompts.
+2. For small low-risk tasks, `pnpm ace finish` auto-closes compact
+   task-state, work-log, and brief report notes without manual ceremony.
 3. For standard or large tasks, add product, architecture, security, and
    code-quality review notes.
 4. For large or high-risk tasks, confirm the design approach, add reflection
