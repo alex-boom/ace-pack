@@ -35,18 +35,49 @@ async function createHubRepo() {
   )
   await writeRepoFile(
     rootDir,
-    '.ai/current-task.md',
-    '# Current Task\n\n## Goal\nTask notes.\n',
-  )
-  await writeRepoFile(
-    rootDir,
-    '.ai/session-handoff.md',
-    '# Session Handoff\n\n## Next Steps\n- Continue.\n\n## Verification\n- `npm.cmd test`\n',
-  )
-  await writeRepoFile(
-    rootDir,
-    '.ai/changed-files.md',
-    '# Changed Files\n\n[README.md]\n- Updated docs.\n',
+    '.ai/task-state.md',
+    `# Task State
+
+## Lifecycle & Meta
+
+### Feature Name
+Hub fixture
+
+### Lifecycle
+Status: active
+Version: v1
+Task Tier: small
+Design Review Required: no
+Started: 2026-06-14 12:00
+Ready For Archive: no
+
+### Goal
+Task notes.
+
+### Completion Checklist
+- [ ] Finish hub fixture.
+
+## Business Value & Approach
+
+### Business Value / Product Alignment
+Hub tests need context.
+
+### Technical Approach
+Fixture.
+
+## Changed Files / Diff
+
+[README.md]
+- Updated docs.
+
+## Handoff & Next Steps
+
+### Next Steps
+- Continue.
+
+### Verification
+- \`npm.cmd test\`
+`,
   )
   await writeRepoFile(
     rootDir,
@@ -110,15 +141,13 @@ describe('generateContextPayload', () => {
     expect(result.includedFiles).toEqual([
       '.ai/generated/report-brief.md',
       '.ai/knowledge/project-conventions.md',
-      '.ai/state/current-task.md',
-      '.ai/state/session-handoff.md',
-      '.ai/state/changed-files.md',
+      '.ai/state/task-state.md',
       '.ai/knowledge/reflection-log.md',
     ])
     expect(generatedContent).toContain('# ACE Hub Context')
     expect(generatedContent).toContain('- Mode: start (Start / AI Coder Context)')
     expect(generatedContent.indexOf('# --- FILE: .ai/generated/report-brief.md ---')).toBeLessThan(
-      generatedContent.indexOf('# --- FILE: .ai/state/current-task.md ---'),
+      generatedContent.indexOf('# --- FILE: .ai/state/task-state.md ---'),
     )
   })
 
@@ -133,15 +162,13 @@ describe('generateContextPayload', () => {
     expect(result.mode.id).toBe('start')
     expect(result.includedFiles).toEqual([
       '.ai/knowledge/project-conventions.md',
-      '.ai/state/current-task.md',
-      '.ai/state/session-handoff.md',
-      '.ai/state/changed-files.md',
+      '.ai/state/task-state.md',
       '.ai/knowledge/reflection-log.md',
     ])
     expect(result.missingOptionalFiles).toEqual(['.ai/generated/report-brief.md'])
     expect(generatedContent).toContain('- Missing optional files: .ai/generated/report-brief.md')
     expect(generatedContent).not.toContain('# --- FILE: .ai/generated/report-brief.md ---')
-    expect(generatedContent).toContain('# --- FILE: .ai/state/current-task.md ---')
+    expect(generatedContent).toContain('# --- FILE: .ai/state/task-state.md ---')
   })
 
   it('keeps numeric architect, business, and docs modes compatible', async () => {
@@ -197,9 +224,7 @@ describe('generateContextPayload', () => {
 
     expect(handoff.includedFiles).toEqual([
       '.ai/generated/report-brief.md',
-      '.ai/state/session-handoff.md',
-      '.ai/state/changed-files.md',
-      '.ai/state/current-task.md',
+      '.ai/state/task-state.md',
       '.ai/knowledge/decisions.md',
     ])
     expect(pr.mode.id).toBe('pr')
@@ -211,10 +236,10 @@ describe('generateContextPayload', () => {
   it('fails clearly when required files are missing', async () => {
     const rootDir = await createHubRepo()
 
-    await unlink(path.join(rootDir, '.ai', 'current-task.md'))
+    await unlink(path.join(rootDir, '.ai', 'task-state.md'))
 
     await expect(generateContextPayload(rootDir, 'start')).rejects.toThrow(
-      'Missing required context file: .ai/state/current-task.md',
+      'Missing required context file: .ai/state/task-state.md',
     )
   })
 
@@ -222,7 +247,7 @@ describe('generateContextPayload', () => {
     const rootDir = await createHubRepo()
 
     await initGitRepo(rootDir)
-    await writeRepoFile(rootDir, '.ai/current-task.md', '# Current Task\n\n## Goal\nChanged.\n')
+    await writeRepoFile(rootDir, '.ai/task-state.md', '# Task State\n\n### Goal\nChanged.\n')
 
     const result = await generateContextPayload(rootDir, 'pr')
     const generatedContent = await readFile(path.join(rootDir, GENERATED_CONTEXT_PATH), 'utf8')
@@ -230,9 +255,9 @@ describe('generateContextPayload', () => {
     expect(result.gitSummary?.status).toBe('available')
     expect(generatedContent).toContain('- Git summary: available')
     expect(generatedContent).toContain('Status:')
-    expect(generatedContent).toContain('M .ai/current-task.md')
+    expect(generatedContent).toContain('M .ai/task-state.md')
     expect(generatedContent).toContain('Diff stat:')
-    expect(generatedContent).toContain('.ai/current-task.md')
+    expect(generatedContent).toContain('.ai/task-state.md')
   })
 })
 

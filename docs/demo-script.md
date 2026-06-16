@@ -68,7 +68,7 @@ as risky before the model writes code.
 
 ## Scene 3: Guarded AI Work
 
-Open `.ai/state/current-task.md` and show the design fields:
+Open `.ai/state/task-state.md` and show the design fields:
 
 - Business Value / Product Alignment
 - Technical Approach
@@ -95,7 +95,7 @@ npm run ace -- hub start
 Show:
 
 - `.ai/generated/report-brief.md` Start Snapshot
-- `.ai/state/session-handoff.md` verification and next steps
+- `.ai/state/task-state.md` verification and next steps
 - `.ai/generated/context.md` with the brief report first
 
 Narration:

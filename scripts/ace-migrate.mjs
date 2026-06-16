@@ -2,15 +2,31 @@
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
+import { autoMigrateLegacyTaskState } from './ace-task-state.mjs'
 import {
   getArgValue,
-  migrateMemorySchemaV2,
+  migrateMemorySchemaV3,
   parseCliArgs,
   writeAceBanner,
 } from './ai-memory-utils.mjs'
 
 export async function runAceMigration(rootDir, options = {}) {
-  return migrateMemorySchemaV2(rootDir, options)
+  const taskMigration = await autoMigrateLegacyTaskState(rootDir, { stderr: options.stderr })
+  const schemaMigration = await migrateMemorySchemaV3(rootDir, options)
+
+  return {
+    ...schemaMigration,
+    createdFiles: [
+      ...schemaMigration.createdFiles,
+      ...(taskMigration.migrated === true ? ['.ai/state/task-state.md'] : []),
+    ],
+    backupDir: taskMigration.backupDir ?? null,
+    taskStateMigrated: taskMigration.migrated === true,
+    removedFiles: [
+      ...(schemaMigration.removedFiles ?? []),
+      ...(taskMigration.removedFiles ?? []),
+    ],
+  }
 }
 
 async function main() {
@@ -24,6 +40,7 @@ async function main() {
   const result = await runAceMigration(rootDir, {
     mirrorLegacy: args['mirror-legacy'] === 'true',
     pruneLegacy: args['prune-legacy'] === 'true',
+    stderr: process.stderr,
   })
 
   if (
@@ -31,7 +48,7 @@ async function main() {
     result.updatedFiles.length === 0 &&
     result.removedFiles.length === 0
   ) {
-    process.stderr.write(`ACE memory schema v2 is already up to date in ${rootDir}\n`)
+    process.stderr.write(`ACE memory schema v3 is already up to date in ${rootDir}\n`)
     return
   }
 

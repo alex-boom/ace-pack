@@ -18,6 +18,7 @@ import {
   isProductRepository,
   pathExists,
   readJsonIfExists,
+  removeAceIdeRulesBlock,
   removeAceWorkflowSection,
 } from './ace-uninstall-utils.mjs'
 import {
@@ -54,12 +55,7 @@ export async function runAceDestroy(rootDir, options = {}) {
   await removeExactFile(rootDir, 'CLAUDE.md', isExactClaudeTemplate, result)
 
   for (const relativePath of IDE_BRIDGE_FILES) {
-    await removeExactFile(
-      rootDir,
-      relativePath,
-      (content) => isExactAceIdeBridge(relativePath, content),
-      result,
-    )
+    await removeIdeRulesFile(rootDir, relativePath, result)
   }
 
   await removeManagedScripts(rootDir, result)
@@ -132,6 +128,39 @@ async function removeExactFile(rootDir, relativePath, predicate, result) {
   result.removedFiles.push(relativePath)
 
   await removeEmptyParentDirectories(rootDir, relativePath)
+}
+
+async function removeIdeRulesFile(rootDir, relativePath, result) {
+  const filePath = path.join(rootDir, relativePath)
+  const content = await readTextIfExists(filePath)
+
+  if (content === null) {
+    return
+  }
+
+  if (isExactAceIdeBridge(relativePath, content)) {
+    await rm(filePath, { force: true })
+    result.removedFiles.push(relativePath)
+    await removeEmptyParentDirectories(rootDir, relativePath)
+    return
+  }
+
+  const nextResult = removeAceIdeRulesBlock(content)
+
+  if (!nextResult.changed) {
+    result.preservedFiles.push(relativePath)
+    return
+  }
+
+  if (nextResult.content.trim().length === 0) {
+    await rm(filePath, { force: true })
+    result.removedFiles.push(relativePath)
+    await removeEmptyParentDirectories(rootDir, relativePath)
+    return
+  }
+
+  await writeFile(filePath, nextResult.content, 'utf8')
+  result.updatedFiles.push(relativePath)
 }
 
 async function removeManagedScripts(rootDir, result) {

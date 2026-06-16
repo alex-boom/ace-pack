@@ -121,13 +121,15 @@ async function createFakeProject(rootDir, caseName) {
 async function writeCompleteTaskState(rootDir) {
   await writeProjectFile(
     rootDir,
-    '.ai/state/current-task.md',
-    `# Current Task
+    '.ai/state/task-state.md',
+    `# Task State
 
-## Feature Name
+## Lifecycle & Meta
+
+### Feature Name
 ACE smoke fixture
 
-## Lifecycle
+### Lifecycle
 Status: complete
 Version: v1
 Task Tier: small
@@ -135,13 +137,37 @@ Design Review Required: no
 Started: 2026-06-14 12:00
 Ready For Archive: yes
 
-## Goal
+### Goal
 Verify that the ACE candidate package works inside a disposable project.
 
-## Business Value / Product Alignment
+### Current Status
+- [x] Fake project created.
+- [x] ACE installed.
+
+### Affected Areas
+- .ai
+- scripts
+
+### Constraints
+- Keep smoke local and disposable.
+
+### Acceptance Criteria
+- ACE check, hub, onboard, and gate pass.
+
+### Completion Checklist
+- [x] Goal completed
+- [x] Future agent context preserved
+- [x] Verification recorded
+- [x] Publish/deploy decision recorded when relevant
+- [x] Extra docs updated only where changed
+- [x] \`ace:validate\` and \`ace finish\` passed
+
+## Business Value & Approach
+
+### Business Value / Product Alignment
 This smoke test protects release quality by validating the installed ACE workflow outside the source repository.
 
-## Technical Approach
+### Technical Approach
 Option 1:
 - Trust unit tests only.
 
@@ -151,44 +177,23 @@ Option 2:
 Chosen Approach:
 - Use the fake project workflow because it catches packaging and installation regressions.
 
-## Current Status
-- [x] Fake project created.
-- [x] ACE installed.
+## Changed Files / Diff
 
-## Affected Areas
-- .ai
-- scripts
+[fake-project]
+- Smoke fixture files generated for local release validation.
 
-## Constraints
-- Keep smoke local and disposable.
+## Handoff & Next Steps
 
-## Acceptance Criteria
-- ACE check, hub, onboard, and gate pass.
-
-## Completion Checklist
-- [x] Goal completed
-- [x] Future agent context preserved
-- [x] Verification recorded
-- [x] Publish/deploy decision recorded when relevant
-- [x] Extra docs updated only where changed
-- [x] \`ace:validate\` and \`ace finish\` passed
-`,
-  )
-  await writeProjectFile(
-    rootDir,
-    '.ai/state/session-handoff.md',
-    `# Session Handoff
-
-## Last Update
+### Last Update
 2026-06-14 12:00
 
-## What Was Done
+### What Was Done
 - Installed ACE into a fake project and prepared smoke-test memory.
 
-## Current State
+### Current State
 - Fake project is ready for local ACE commands.
 
-## Quality Review
+### Quality Review
 Product Alignment:
 - Smoke testing validates the release workflow.
 
@@ -201,29 +206,20 @@ Security:
 Code Quality:
 - The smoke checks cover install, onboard, check, hub, and gate commands.
 
-## Next Steps
+### Next Steps
 - Remove the disposable project after smoke completes.
 
-## Known Issues
+### Known Issues
 - None.
 
-## Verification
+### Verification
 - \`ace onboard --apply\` passed.
 - \`ace check\` passed.
 - \`ace hub start\` passed.
 - \`ace gate\` passed.
 
-## Notes
+### Notes
 - NPM publish: required before final release; deferred by maintainer.
-`,
-  )
-  await writeProjectFile(
-    rootDir,
-    '.ai/state/changed-files.md',
-    `# Changed Files
-
-[fake-project]
-- Smoke fixture files generated for local release validation.
 `,
   )
   await writeProjectFile(
@@ -255,7 +251,7 @@ async function verifySmokeProject(rootDir) {
     path.join(rootDir, '.ai/knowledge/project-conventions.md'),
     'utf8',
   )
-  const handoff = await readFile(path.join(rootDir, '.ai/state/session-handoff.md'), 'utf8')
+  const taskState = await readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')
   const cursorRules = await readFile(path.join(rootDir, '.cursorrules'), 'utf8')
   const windsurfRules = await readFile(path.join(rootDir, '.windsurfrules'), 'utf8')
   const copilotInstructions = await readFile(
@@ -285,10 +281,10 @@ async function verifySmokeProject(rootDir) {
     generatedContext.includes('# --- FILE: .ai/knowledge/project-conventions.md ---'),
     'ace:hub did not include project conventions',
   )
-  assert(handoff.includes('ACE small-task auto-closeout'), 'ace:finish did not auto-close small smoke diff')
-  assert(cursorRules.includes('AGENTS.md'), '.cursorrules missing ACE bridge')
-  assert(windsurfRules.includes('AGENTS.md'), '.windsurfrules missing ACE bridge')
-  assert(copilotInstructions.includes('AGENTS.md'), 'Copilot instructions missing ACE bridge')
+  assert(taskState.includes('ACE auto-closed a small low-risk task'), 'ace:finish did not auto-close small smoke diff')
+  assert(cursorRules.includes('ace-managed-ide-rules:start'), '.cursorrules missing ACE bridge')
+  assert(windsurfRules.includes('ace-managed-ide-rules:start'), '.windsurfrules missing ACE bridge')
+  assert(copilotInstructions.includes('ace-managed-ide-rules:start'), 'Copilot instructions missing ACE bridge')
   assert(qualityGateScript.includes('runQualityGate'), 'ace-quality-gate script missing gate export')
 
   return {
@@ -297,7 +293,7 @@ async function verifySmokeProject(rootDir) {
     packageManager: memoryConfig._profile?.packageManager ?? 'unknown',
     profileStatus: memoryConfig._profile?.status,
     projectConventions: '.ai/knowledge/project-conventions.md',
-    smallAutoCloseout: handoff.includes('ACE small-task auto-closeout'),
+    smallAutoCloseout: taskState.includes('ACE auto-closed a small low-risk task'),
   }
 }
 

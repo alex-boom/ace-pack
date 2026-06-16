@@ -1,125 +1,31 @@
-# ACE v2.0 Schema and Compatibility
+# ACE v3.0 Schema and Compatibility
 
 This document defines the compatibility contract for installed ACE repositories
-starting with `ace-pack@2.0.0`.
+starting with `ace-pack@3.0.0`.
 
-ACE remains Markdown-first and zero-dependency. v2 changes the canonical memory
-layout, but it keeps v1 paths readable as deterministic migration aliases so
-existing repositories can upgrade without losing local memory.
+ACE remains Markdown-first, local-first, and zero-dependency. v3 consolidates
+active task memory into one task-state file and keeps migration deterministic.
 
 ## Stable CLI Surface
-
-v2 adds a single command router:
-
-- `ace` -> `node ./scripts/ace-cli.mjs`
-
-Use it as:
-
-```bash
-npm run ace -- finish
-pnpm ace finish
-```
-
-The router supports modern commands:
-
-- `init`
-- `check`
-- `classify`
-- `discover`
-- `eject`
-- `destroy`
-- `finish`
-- `gate`
-- `hub`
-- `migrate`
-- `onboard`
-- `report`
-- `report brief`
-- `current-task-code`
 
 Installed repositories expose only:
 
 - `ace`
 - `ace:validate`
 
-`ace check` validates ACE memory. `ace:validate` is a project-owned mechanical
-gate for lint, typecheck, tests, or equivalent project checks. Fresh installs
-add a placeholder `ace:validate` only when the script is absent, and the
-installer must not overwrite a project-owned `ace:validate` script.
-
-Previous ACE package script names remain supported only as router arguments:
-
-- `ace:init`
-- `ace:check`
-- `ace:onboard`
-- `ace:classify`
-- `ace:discover`
-- `ace:finish`
-- `ace:eject`
-- `ace:destroy`
-- `ace:purge`
-- `ace:gate`
-- `ace:hub`
-- `ace:report`
-- `ace:report:brief`
-
-Legacy aliases remain supported:
-
-- `agent-memory:init`
-- `agent-memory:check`
-- `ai:project:onboard`
-- `ai:report`
-- `ai:report:brief`
-- `ai:task:classify`
-- `ai:task:finish`
-- `ai:update:*`
-
-The generic `ace` router script is added only when the project does not already
-own an `ace` script. During upgrades, the installer removes old ACE-managed
-script aliases only when their values exactly match known ACE defaults; custom
-project scripts are preserved.
-
-## Safe Eject and Destroy
-
-ACE supports a two-step uninstall flow:
+Use the router as:
 
 ```bash
-pnpm ace eject
-pnpm ace destroy
+npm run ace -- finish
+pnpm ace finish
 ```
 
-`ace eject` inspects canonical v2 memory paths and legacy aliases. If the ACE
-memory is template-only, it reports that ACE is safe to remove. If active memory
-exists, it creates a searchable `ace-export-YYYYMMDD-HHMMSS/` folder containing
-`.ai/`, agent rule files, IDE bridge files, and `RESTORE.md`.
+The router supports `init`, `check`, `classify`, `discover`, `eject`,
+`destroy`, `finish`, `gate`, `hub`, `migrate`, `onboard`, and reports. Legacy
+router names such as `ace:finish`, `agent-memory:init`, and `ai:task:finish`
+remain accepted only as router arguments.
 
-`ace destroy` refuses to remove active memory unless an `ace-export-*` backup is
-present. It removes only ACE-owned artifacts: `.ai/`, exact ACE-generated files,
-managed ACE scripts, and ACE-owned package scripts. It preserves custom
-`AGENTS.md`, custom `CLAUDE.md`, custom `ace:validate`, project-owned scripts,
-`DEVELOPING.md`, and `ROADMAP.md`.
-
-## Project Conventions Discovery
-
-`ace discover` scans the local repository with deterministic path, dependency,
-and import-string heuristics. It does not parse ASTs, call AI providers, make
-network requests, or install dependencies.
-
-The command writes a concise generated registry to
-`.ai/knowledge/project-conventions.md`. Legacy `.ai/project-conventions.md` is
-readable as an alias. The generated file includes an
-`<!-- ace-discover:managed -->` marker so ACE can regenerate it safely. If a
-project-owned conventions file exists without that marker, `ace discover`
-refuses to overwrite it unless `--force` is passed.
-
-The registry is intentionally aggregated for `ace hub` context. It summarizes
-top folders and detected tools such as UI libraries, routing frameworks,
-logging packages, error wrappers, and persistence patterns instead of listing
-every source file.
-
-## Canonical v2 Memory Layout
-
-v2 organizes ACE memory by category:
+## Canonical v3 Memory Layout
 
 ```text
 .ai/
@@ -129,9 +35,7 @@ v2 organizes ACE memory by category:
     project-profile.md
 
   state/
-    current-task.md
-    session-handoff.md
-    changed-files.md
+    task-state.md
 
   knowledge/
     decisions.md
@@ -150,99 +54,80 @@ v2 organizes ACE memory by category:
     report-current-task-code.xml
 
   archive/
+    migrations/
     tasks/
 ```
 
-For v1 compatibility, ACE reads legacy root `.ai/*` paths as migration aliases
-where those paths existed:
+The legacy root alias for task state is `.ai/task-state.md`. Fresh installs do
+not create `.ai/current-task.md`, `.ai/session-handoff.md`, or
+`.ai/changed-files.md`.
 
-The legacy root `.ai/*` paths remain compatible read aliases, not the canonical
-v2 layout. v2 writes canonical paths by default so fresh installs keep `.ai/`
-visibly organized.
+## Task State Expectations
 
-| Canonical v2 path | Legacy compatible path |
+`task-state.md` is the active task source of truth. ACE tools expect these
+sections or signals:
+
+| Section | Required signals |
 | --- | --- |
-| `.ai/config/memory-config.json` | `.ai/memory-config.json` |
-| `.ai/config/memory-config.recommended.json` | `.ai/memory-config.recommended.json` |
-| `.ai/config/project-profile.md` | `.ai/project-profile.md` |
-| `.ai/state/current-task.md` | `.ai/current-task.md` |
-| `.ai/state/session-handoff.md` | `.ai/session-handoff.md` |
-| `.ai/state/changed-files.md` | `.ai/changed-files.md` |
-| `.ai/knowledge/decisions.md` | `.ai/decisions.md` |
-| `.ai/knowledge/project-conventions.md` | `.ai/project-conventions.md` |
-| `.ai/knowledge/tech-docs.md` | `.ai/tech-docs.md` |
-| `.ai/knowledge/product-roadmap.md` | `.ai/product-roadmap.md` |
-| `.ai/knowledge/reflection-log.md` | `.ai/reflection-log.md` |
-| `.ai/knowledge/work-log.md` | `.ai/work-log.md` |
-| `.ai/generated/context.md` | `.ai/generated-context.md` |
-| `.ai/generated/report-brief.md` | `.ai/report-brief.md` |
-| `.ai/generated/report-full.md` | `.ai/report-full.md` |
-| `.ai/generated/report-full.xml` | `.ai/report-full.xml` |
+| `## Lifecycle & Meta` | `### Feature Name`, `### Lifecycle`, `Task Tier:`, `Design Review Required:`, `### Goal`, `### Completion Checklist` |
+| `## Business Value & Approach` | `### Business Value / Product Alignment`, `### Technical Approach` |
+| `## Changed Files / Diff` | path headings such as `[README.md]` when changes are recorded |
+| `## Handoff & Next Steps` | `### Quality Review`, `### Next Steps`, `### Verification`, `### Notes` |
 
-When both canonical and legacy files exist, ACE reads the newest copy. If a
-canonical file is still a template placeholder but the legacy file contains
-meaningful project memory, migration promotes the legacy content into the
-canonical file. Legacy aliases can be removed after canonical files exist with
-`npm run ace -- migrate --prune-legacy`.
+ACE tools rely on headings and labeled values, not exact prose.
 
-## Installed Files
+## v2 Legacy Auto-Migration
 
-ACE installs or updates:
+When `ace init`, `ace check`, `ace migrate`, or the `ace` router detects legacy
+task files and no meaningful `task-state.md` exists, ACE automatically:
 
-- `AGENTS.md`
-- `CLAUDE.md`
-- canonical v2 `.ai/**` files listed above
-- `.ai/archive/.gitkeep`
-- `.ai/archive/tasks/.gitkeep`
-- `scripts/*.mjs`
+- reads legacy canonical and root files for current task, handoff, and changed
+  files;
+- writes `.ai/state/task-state.md`;
+- copies originals into `.ai/archive/migrations/v3-task-state-YYYYMMDD-HHMMSS/`;
+- removes the migrated legacy files;
+- prints one concise success message.
 
-Existing memory files are project-owned after creation. The installer may create
-missing canonical files and deterministic migration copies, but it must not
-overwrite meaningful project memory. It does not create legacy root mirrors by
-default.
+If meaningful `task-state.md` already exists, ACE does not overwrite it. Legacy
+files are preserved and reported so a maintainer can review or prune them.
 
-ACE may also create optional IDE bridge files such as `.cursorrules`,
-`.windsurfrules`, and `.github/copilot-instructions.md` when they are missing.
-These are thin adapters back to `AGENTS.md` and local ACE commands. They are not
-required by `ace check`, and existing project-owned IDE rule files must not be
-overwritten.
-IDE bridge files are optional and not required by `ace check`.
+Migration never calls AI providers, package registries, network services, or
+external tools.
 
-`AGENTS.md` is updated only inside this marked section:
+## IDE Managed Blocks
+
+ACE creates or updates these IDE bridge files during install/init:
+
+- `.cursorrules`
+- `.windsurfrules`
+- `.github/copilot-instructions.md`
+
+ACE owns only the marked block:
 
 ```md
-<!-- agent-memory-workflow:start -->
+<!-- ace-managed-ide-rules:start -->
 ...
-<!-- agent-memory-workflow:end -->
+<!-- ace-managed-ide-rules:end -->
 ```
 
-The marker names are stable. Future releases may replace the marked ACE
-workflow body, but they must preserve content outside the markers.
+Existing custom IDE rules are preserved. `ace destroy` removes only the managed
+block and deletes an IDE file only when it becomes empty.
 
-## Markdown Section Expectations
+## Small Task Finish
 
-ACE tools rely on headings, not exact prose. v2 tools expect these sections to
-exist in either canonical or legacy paths:
+For small low-risk tasks, `ace finish` is zero-ceremony. It reads the task title
+from `task-state.md`, records current uncommitted/staged git state with
+`git diff HEAD --stat` or `git status --short`, appends a compact `work-log.md`
+entry, resets `task-state.md` to a complete empty state, and regenerates the
+brief report.
 
-| File | Required sections or signals |
-| --- | --- |
-| current task | `## Lifecycle`, `## Goal`, `## Business Value / Product Alignment`, `## Technical Approach`, `## Acceptance Criteria`, `## Completion Checklist` |
-| session handoff | `## What Was Done`, `## Quality Review`, `## Next Steps` |
-| decisions | `Decision:`, `Impact:` |
-| project conventions | `# Project Conventions and Pattern Registry`, `## Summary` |
-| product roadmap | `## Business Goals`, `## Completed Epics`, `## Planned Features` |
-| technical docs | `## Architecture`, `## Data Model / DB Schema`, `## Auth, RBAC, and Security`, `## External APIs and Integrations` |
-| changed files | `# Changed Files` |
-| work log | `# Work Log` |
-| reflection log | `## Unresolved`, `## Resolved` |
-
-The wording inside sections may evolve. Agents and scripts should avoid
-depending on entire paragraphs when a heading or labeled value is enough.
+Standard and large tasks still require meaningful approach, review,
+verification, and handoff sections in `task-state.md`.
 
 ## `.ai/config/memory-config.json` Schema Version 1
 
-The active config schema remains version `1` in v2.0. The memory layout changed;
-the risk-rule config did not.
+The active config schema remains version `1`. The memory layout changed in
+ACE v3; risk-rule config did not.
 
 Stable fields:
 
@@ -259,66 +144,19 @@ Stable fields:
       "minDiffLines": 300
     }
   },
-  "highRiskPaths": [
-    {
-      "pattern": "scripts/**",
-      "label": "ACE automation",
-      "tier": "large",
-      "requiresDesignReview": true
-    }
-  ],
-  "highRiskKeywords": [
-    {
-      "keyword": "auth",
-      "label": "Authentication",
-      "tier": "large",
-      "requiresDesignReview": true
-    }
-  ]
+  "highRiskPaths": [],
+  "highRiskKeywords": []
 }
 ```
 
-Compatibility rules:
-
-- Unknown top-level fields are allowed and must not break readers.
-- Missing threshold fields fall back to ACE defaults.
-- `highRiskPaths` may contain strings or objects.
-- `highRiskKeywords` may contain strings or objects.
-- Unknown `tier` values fall back to `large`.
-- `requiresDesignReview` defaults to `true`.
-
-ACE scripts may normalize config in memory, but they should not rewrite
-project-owned config unless the user explicitly runs a command that applies
-changes, such as `ace onboard --apply`.
-
-## Migration Policy
-
-The v2 migration is deterministic and local:
-
-- `ace-pack init`, `ace init`, and `npm run ace -- migrate` create canonical v2
-  files from existing v1 legacy files when canonical files are missing.
-- Generated reports and hub context write canonical `.ai/generated/**` files.
-- Readers accept both canonical and legacy paths.
-- `npm run ace -- migrate --prune-legacy` removes legacy root aliases after
-  canonical files exist.
-- `npm run ace -- migrate --mirror-legacy` can recreate legacy root aliases for
-  teams that still depend on old path conventions.
-- Migration never calls AI, network services, or package registries.
-- If both paths contain meaningful but different content, ACE preserves them and
-  reads the newest copy instead of guessing intent.
-
-For future schema versions:
-
-- Document the reason for the schema bump before implementation.
-- Provide deterministic local migration behavior.
-- Keep a dry-run or reviewable migration path when changes are destructive.
-- Add fixture tests for repositories created by older ACE releases.
-- Fail clearly with actionable instructions if automatic migration is unsafe.
+Unknown top-level fields are allowed. Missing threshold fields fall back to ACE
+defaults. Unknown `tier` values fall back to `large`, and
+`requiresDesignReview` defaults to `true`.
 
 ## Package Payload Boundary
 
-Repo-local memory and GitHub-only growth materials are not part of the npm
-runtime payload:
+Repo-local memory and GitHub-only materials are not part of the npm runtime
+payload:
 
 - `.ai/**`
 - `AGENTS.md`

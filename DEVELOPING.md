@@ -129,7 +129,7 @@ Publishing is not required for GitHub-only or repo-local changes by themselves:
 
 Intermediate versions may remain unpublished while a final release is still
 being assembled. In that case, use the deferred publish wording above and keep
-the next release-readiness checks in `.ai/session-handoff.md`.
+the next release-readiness checks in `.ai/state/task-state.md`.
 
 ## Release Readiness Checks
 

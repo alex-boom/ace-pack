@@ -87,8 +87,7 @@ export function classifyTask({
 
 export function getRequiredWorkflow(tier, designReviewRequired) {
   const workflow = [
-    'Update .ai/session-handoff.md with latest state.',
-    'Update .ai/changed-files.md for touched areas.',
+    'Update .ai/state/task-state.md with latest state and touched areas.',
     'Append a compact .ai/work-log.md entry.',
     'Generate pnpm ace report brief.',
   ]
@@ -98,7 +97,7 @@ export function getRequiredWorkflow(tier, designReviewRequired) {
   }
 
   if (designReviewRequired) {
-    workflow.unshift('Complete .ai/current-task.md Technical Approach before coding.')
+    workflow.unshift('Complete .ai/state/task-state.md Technical Approach before coding.')
   }
 
   if (tier === 'large') {
@@ -328,6 +327,6 @@ async function main() {
   process.stdout.write(`${formatClassification(classification)}\n`)
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   await main()
 }

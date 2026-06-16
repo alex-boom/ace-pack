@@ -34,8 +34,7 @@ async function createCompleteGateRepo(prefix = 'ace-gate-') {
   const rootDir = await createRepo(prefix)
 
   await ensureAgentMemory(rootDir)
-  await writeRepoFile(rootDir, '.ai/current-task.md', currentTaskContent())
-  await writeRepoFile(rootDir, '.ai/session-handoff.md', handoffContent())
+  await writeRepoFile(rootDir, '.ai/task-state.md', taskStateContent())
   await writeRepoFile(rootDir, '.ai/reflection-log.md', reflectionLogContent())
 
   return rootDir
@@ -152,6 +151,52 @@ ${overrides.verification ?? '- `npm.cmd test` passed.'}
 `
 }
 
+function taskStateContent(
+  overrides: {
+    qualityReview?: string
+    technicalApproach?: string
+    verification?: string
+  } = {},
+) {
+  return `# Task State
+
+## Lifecycle & Meta
+
+${currentTaskContent({ technicalApproach: overrides.technicalApproach })
+  .replace(/^# Current Task\r?\n\r?\n/u, '')
+  .replace(/^## /gmu, '### ')}
+
+## Business Value & Approach
+
+### Business Value / Product Alignment
+This protects PR merges by ensuring AI-assisted work leaves useful project memory.
+
+### Technical Approach
+${overrides.technicalApproach ?? `Option 1:
+- Skip PR validation.
+
+Option 2:
+- Reuse ACE memory validation and classification.
+
+Chosen Approach:
+- Reuse ACE checks because it keeps gate behavior consistent.`}
+
+## Changed Files / Diff
+
+[src]
+- Fixture.
+
+## Handoff & Next Steps
+
+${handoffContent({
+  qualityReview: overrides.qualityReview,
+  verification: overrides.verification,
+})
+  .replace(/^# Session Handoff\r?\n\r?\n/u, '')
+  .replace(/^## /gmu, '### ')}
+`
+}
+
 function reflectionLogContent() {
   return `# Reflection Log
 
@@ -195,8 +240,8 @@ describe('ace quality gate', () => {
 
     await writeRepoFile(
       rootDir,
-      '.ai/session-handoff.md',
-      handoffContent({ verification: '- [List checks that passed or could not be run]' }),
+      '.ai/task-state.md',
+      taskStateContent({ verification: '- [List checks that passed or could not be run]' }),
     )
     await initGitRepo(rootDir)
     await writeRepoFile(rootDir, 'a.ts', 'export const a = true\n')
@@ -220,19 +265,14 @@ describe('ace quality gate', () => {
 
     await writeRepoFile(
       rootDir,
-      '.ai/current-task.md',
-      currentTaskContent().replace(
+      '.ai/task-state.md',
+      taskStateContent({
+        qualityReview: 'TODO',
+        verification: '- [List checks that passed or could not be run]',
+      }).replace(
         'This protects PR merges by ensuring AI-assisted work leaves useful project memory.',
         'TODO',
       ),
-    )
-    await writeRepoFile(
-      rootDir,
-      '.ai/session-handoff.md',
-      handoffContent({
-        qualityReview: 'TODO',
-        verification: '- [List checks that passed or could not be run]',
-      }),
     )
 
     const result = await runQualityGate(rootDir)
@@ -261,7 +301,7 @@ describe('ace quality gate', () => {
       '.ai/config/memory-config.json',
       `${JSON.stringify(memoryConfig, null, 2)}\n`,
     )
-    await writeRepoFile(rootDir, '.ai/current-task.md', currentTaskContent({ technicalApproach: 'TODO' }))
+    await writeRepoFile(rootDir, '.ai/task-state.md', taskStateContent({ technicalApproach: 'TODO' }))
     await writeRepoFile(rootDir, 'src/auth/token.ts', 'export const token = "initial"\n')
     await initGitRepo(rootDir)
     await writeRepoFile(rootDir, 'src/auth/token.ts', 'export const token = "changed"\n')
@@ -281,7 +321,7 @@ describe('ace quality gate', () => {
   it('does not require quality review notes for standard low-risk changes', async () => {
     const rootDir = await createCompleteGateRepo('ace-gate-standard-')
 
-    await writeRepoFile(rootDir, '.ai/session-handoff.md', handoffContent({ qualityReview: 'TODO' }))
+    await writeRepoFile(rootDir, '.ai/task-state.md', taskStateContent({ qualityReview: 'TODO' }))
     await initGitRepo(rootDir)
     await writeRepoFile(rootDir, 'a.ts', 'export const a = true\n')
     await writeRepoFile(rootDir, 'b.ts', 'export const b = true\n')
@@ -301,7 +341,7 @@ describe('ace quality gate', () => {
   it('requires quality review notes for large changes', async () => {
     const rootDir = await createCompleteGateRepo('ace-gate-large-')
 
-    await writeRepoFile(rootDir, '.ai/session-handoff.md', handoffContent({ qualityReview: 'TODO' }))
+    await writeRepoFile(rootDir, '.ai/task-state.md', taskStateContent({ qualityReview: 'TODO' }))
     await initGitRepo(rootDir)
 
     for (let index = 0; index < 8; index += 1) {
@@ -327,8 +367,8 @@ describe('ace quality gate', () => {
 
     await writeRepoFile(
       rootDir,
-      '.ai/session-handoff.md',
-      handoffContent({ verification: '- [List checks that passed or could not be run]' }),
+      '.ai/task-state.md',
+      taskStateContent({ verification: '- [List checks that passed or could not be run]' }),
     )
     await initGitRepo(rootDir)
     await writeRepoFile(rootDir, 'a.ts', 'export const a = true\n')
@@ -419,8 +459,8 @@ describe('ace quality gate', () => {
 
     await writeRepoFile(
       rootDir,
-      '.ai/session-handoff.md',
-      handoffContent({ verification: '- [List checks that passed or could not be run]' }),
+      '.ai/task-state.md',
+      taskStateContent({ verification: '- [List checks that passed or could not be run]' }),
     )
     await initGitRepo(rootDir)
     await writeRepoFile(rootDir, 'a.ts', 'export const a = true\n')

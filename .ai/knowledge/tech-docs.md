@@ -44,14 +44,14 @@ without reading large implementation files.
   consistent with `ace finish` so small low-risk changes do not require
   Business Value, Quality Review, or Verification ceremony.
 - `ace finish` can auto-close small low-risk changes by writing compact
-  handoff, changed-files, work-log, and brief report updates from deterministic
-  local git/classification data. It does not change `.ai/current-task.md`
-  lifecycle and still keeps stricter closeout for standard, large, high-risk,
-  and design-review-required work.
+  task-state, work-log, and brief report updates from deterministic local
+  git/classification data. It reads the task title from task-state and records
+  current diff/status, not latest commits. It still keeps stricter closeout for
+  standard, large, high-risk, and design-review-required work.
 - `ace-pack init` creates optional IDE rule bridges for `.cursorrules`,
-  `.windsurfrules`, and `.github/copilot-instructions.md` when missing. These
-  files are package-manager-aware pointers back to `AGENTS.md` and the local
-  `ace` router; existing project-owned IDE rule files are not overwritten.
+  `.windsurfrules`, and `.github/copilot-instructions.md`. These files use
+  `ace-managed-ide-rules` blocks that are appended or updated without
+  overwriting project-owned rules.
 - `ace eject` and `ace destroy` provide the safe uninstall path. Shared
   uninstall utilities define the same managed script list, package script
   defaults, IDE bridge templates, and memory activity checks used by the
@@ -62,10 +62,10 @@ without reading large implementation files.
 - Product growth materials live outside runtime code. `docs/demo-script.md`,
   `docs/launch-copy.md`, and `examples/context-loss-demo/**` support demos and
   launch work, while README/README.npm provide only the concise entry point.
-- v2 schema documentation lives in `docs/schema-compatibility.md`. It defines
+- v3 schema documentation lives in `docs/schema-compatibility.md`. It defines
   the single-router command surface, project-owned `ace:validate` gate,
-  canonical categorized `.ai/**` paths, legacy read aliases, Markdown section
-  expectations, `.ai/config/memory-config.json` schema version `1`, and
+  canonical categorized `.ai/**` paths, task-state memory, legacy migration,
+  managed IDE blocks, `.ai/config/memory-config.json` schema version `1`, and
   deterministic migration policy.
 - v1.0.1 adoption documentation lives in `docs/adoption-checklist.md` and
   `docs/faq.md`. These are GitHub-only rollout aids linked from README surfaces,
@@ -78,14 +78,15 @@ without reading large implementation files.
 ## Data Model / DB Schema
 - Durable state is plain Markdown under `.ai/**` plus JSON configuration in
   `.ai/config/memory-config.json`.
-- v2 canonical memory is categorized under `.ai/config`, `.ai/state`,
+- v3 canonical memory is categorized under `.ai/config`, `.ai/state`,
   `.ai/knowledge`, and `.ai/generated`.
-- Legacy root paths such as `.ai/current-task.md`, `.ai/session-handoff.md`,
-  and `.ai/report-brief.md` remain compatible read aliases. Readers accept both
-  canonical and legacy paths and prefer the newest meaningful copy.
-- Task lifecycle state is stored in `.ai/state/current-task.md`.
-- Handoff state, next steps, verification, and publish decisions are stored in
-  `.ai/state/session-handoff.md`.
+- Active task lifecycle, business value, changed files, handoff, verification,
+  and publish decisions are stored in `.ai/state/task-state.md`, with
+  `.ai/task-state.md` as a legacy root alias.
+- Legacy task files such as `.ai/state/current-task.md`,
+  `.ai/state/session-handoff.md`, and `.ai/state/changed-files.md` are
+  auto-migrated with timestamped backups when safe. Existing generated/report
+  aliases remain compatible read paths.
 - Report Start Snapshot values are generated from local git state and existing
   Markdown sections; no new persistent schema fields were added for `0.1.7`.
 - Onboarding profile output includes detected ecosystems, a concise

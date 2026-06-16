@@ -57,6 +57,7 @@ describe('ace MCP read-only server', () => {
     expect(resources.map((resource) => resource.uri)).toEqual(
       expect.arrayContaining([
         'ace://memory/report-brief',
+        'ace://memory/task-state',
         'ace://memory/current-task',
         'ace://memory/session-handoff',
         'ace://memory/decisions',
@@ -160,7 +161,7 @@ describe('ace MCP read-only server', () => {
     expect(messages).toHaveLength(3)
     expect(messages[0].result.capabilities).toEqual({ resources: {} })
     expect(messages[1].result.resources.length).toBeGreaterThan(0)
-    expect(messages[2].result.contents[0].text).toContain('# Current Task')
+    expect(messages[2].result.contents[0].text).toContain('# Task State')
   })
 
   it('returns JSON-RPC errors for unknown resources and methods', async () => {

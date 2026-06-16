@@ -26,10 +26,12 @@ async function createReportFixture(
 ) {
   const rootDir = await mkdtemp(path.join(os.tmpdir(), 'ai-report-fixture-'))
   const aiDir = path.join(rootDir, '.ai')
+  const stateDir = path.join(aiDir, 'state')
 
   tempDirs.push(rootDir)
 
   await mkdir(aiDir, { recursive: true })
+  await mkdir(stateDir, { recursive: true })
   await writeFile(
     path.join(rootDir, 'package.json'),
     JSON.stringify({ name: 'fixture-repo' }, null, 2),
@@ -65,16 +67,15 @@ Next.js 16 • TypeScript strict • Vitest
     'utf8',
   )
   await writeFile(
-    path.join(aiDir, 'current-task.md'),
-    `# Current Task
+    path.join(stateDir, 'task-state.md'),
+    `# Task State
 
-## Feature Name
+## Lifecycle & Meta
+
+### Feature Name
 Compact reports
 
-## Goal
-Keep reports short and reliable.
-
-## Lifecycle
+### Lifecycle
 Status: in_progress
 Version: v99
 Task Tier: standard
@@ -82,10 +83,22 @@ Design Review Required: no
 Started: 2026-04-24 12:00
 Ready For Archive: no
 
-## Business Value / Product Alignment
+### Goal
+Keep reports short and reliable.
+
+### Current Status
+- [x] Report scripts exist.
+
+### Completion Checklist
+- [x] Reports generated
+- [ ] Final approval
+
+## Business Value & Approach
+
+### Business Value / Product Alignment
 This keeps agent handoffs fast without losing important context.
 
-## Technical Approach
+### Technical Approach
 Option 1:
 - Keep reports unchanged.
 
@@ -95,29 +108,32 @@ Option 2:
 Chosen Approach:
 - Add compact metadata because it improves startup context.
 
-## Current Status
-- [x] Report scripts exist.
+## Changed Files / Diff
 
-## Completion Checklist
-- [x] Reports generated
-- [ ] Final approval
-`,
-    'utf8',
-  )
-  await writeFile(
-    path.join(aiDir, 'session-handoff.md'),
-    `# Session Handoff
+[Historical task - 2026-04-24 10:00]
+- Old summary heading.
 
-## Last Update
-2026-04-24 12:05
+[README.md]
+- Updated docs.
 
-## What Was Done
+[scripts/ai-report.mjs]
 - Tightened report output.
 
-## Current State
+[D:\\All\\alex-work\\tools\\agent-memory-pack\\scripts\\ai-report.mjs]
+- Synced toolkit copy.
+
+## Handoff & Next Steps
+
+### Last Update
+2026-04-24 12:05
+
+### What Was Done
+- Tightened report output.
+
+### Current State
 - Report scripts are available.
 
-## Quality Review
+### Quality Review
 Product Alignment:
 - Reports preserve the stated handoff goal.
 
@@ -130,20 +146,20 @@ Security:
 Code Quality:
 - Output remains compact and covered by tests.
 
-## Next Steps
+### Next Steps
 ${options.nextSteps ?? '- Keep changes minimal.'}
 
-## Known Issues
+### Known Issues
 - XML generation depends on repomix.
 
-## Verification
+### Verification
 - \`pnpm.cmd lint\` passed.
 - \`pnpm.cmd test\` passed.
 - \`pnpm.cmd agent-memory:check\` passed in
   \`D:\\All\\alex-work\\tmp\\starter-smoke\`.
 - Loaded \`/dashboard\` in the browser.
 
-## Notes
+### Notes
 ${options.handoffNotes ?? '- NPM publish: not required'}
 `,
     'utf8',
@@ -173,24 +189,6 @@ Reason:
 
 Impact:
 - Brief and full reports should not pin old decisions.
-`,
-    'utf8',
-  )
-  await writeFile(
-    path.join(aiDir, 'changed-files.md'),
-    `# Changed Files
-
-[Historical task - 2026-04-24 10:00]
-- Old summary heading.
-
-[README.md]
-- Updated docs.
-
-[scripts/ai-report.mjs]
-- Tightened report output.
-
-[D:\\All\\alex-work\\tools\\agent-memory-pack\\scripts\\ai-report.mjs]
-- Synced toolkit copy.
 `,
     'utf8',
   )
@@ -236,6 +234,10 @@ async function git(rootDir: string, args: string[]) {
   await execFileAsync('git', args, {
     cwd: rootDir,
   })
+}
+
+async function readTaskState(rootDir: string) {
+  return readFile(path.join(rootDir, '.ai', 'state', 'task-state.md'), 'utf8')
 }
 
 afterEach(async () => {
@@ -344,15 +346,14 @@ describe('ai report scripts', () => {
 
   it('records dirty git state from porcelain status and caps large changed counts', async () => {
     const rootDir = await createReportFixture()
-    const currentTaskContent = await readFile(path.join(rootDir, '.ai', 'current-task.md'), 'utf8')
-    const handoffContent = await readFile(path.join(rootDir, '.ai', 'session-handoff.md'), 'utf8')
+    const taskStateContent = await readTaskState(rootDir)
 
     await initGitRepo(rootDir)
     await writeFile(path.join(rootDir, 'dirty-one.txt'), 'changed\n', 'utf8')
 
     const dirtySnapshot = await buildStartSnapshot({
-      currentTaskContent,
-      handoffContent,
+      currentTaskContent: taskStateContent,
+      handoffContent: taskStateContent,
       rootDir,
     })
 
@@ -364,8 +365,8 @@ describe('ai report scripts', () => {
     }
 
     const cappedSnapshot = await buildStartSnapshot({
-      currentTaskContent,
-      handoffContent,
+      currentTaskContent: taskStateContent,
+      handoffContent: taskStateContent,
       rootDir,
     })
 
@@ -375,12 +376,11 @@ describe('ai report scripts', () => {
 
   it('degrades git snapshot values gracefully outside a git repository', async () => {
     const rootDir = await createReportFixture()
-    const currentTaskContent = await readFile(path.join(rootDir, '.ai', 'current-task.md'), 'utf8')
-    const handoffContent = await readFile(path.join(rootDir, '.ai', 'session-handoff.md'), 'utf8')
+    const taskStateContent = await readTaskState(rootDir)
 
     const snapshot = await buildStartSnapshot({
-      currentTaskContent,
-      handoffContent,
+      currentTaskContent: taskStateContent,
+      handoffContent: taskStateContent,
       rootDir,
     })
 
@@ -402,11 +402,11 @@ describe('ai report scripts', () => {
 
   it('handles missing Next Steps through the no-command snapshot fallback', async () => {
     const rootDir = await createReportFixture()
-    const currentTaskContent = await readFile(path.join(rootDir, '.ai', 'current-task.md'), 'utf8')
+    const taskStateContent = await readTaskState(rootDir)
 
     const snapshot = await buildStartSnapshot({
-      currentTaskContent,
-      handoffContent: '# Session Handoff\n\n## Notes\n- NPM publish: not required\n',
+      currentTaskContent: taskStateContent,
+      handoffContent: '# Task State\n\n## Handoff & Next Steps\n\n### Notes\n- NPM publish: not required\n',
       rootDir,
     })
 

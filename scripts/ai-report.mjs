@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process'
 import path from 'node:path'
 
+import { autoMigrateLegacyTaskState } from './ace-task-state.mjs'
 import {
   buildStartSnapshot,
   countCheckboxes,
@@ -24,63 +25,57 @@ import {
 const rootDir = process.argv[2] ? path.resolve(process.cwd(), process.argv[2]) : process.cwd()
 const shouldSkipXml = process.env.AI_REPORT_SKIP_XML === '1'
 
+await autoMigrateLegacyTaskState(rootDir, { stderr: process.stderr })
+
 const [
   packageJsonContent,
   agentsContent,
-  currentTaskContent,
-  handoffContent,
+  taskStateContent,
   decisionsContent,
-  changedFilesContent,
   workLogContent,
   reflectionLogContent,
   projectProfileContent,
-  currentTaskTimestamp,
-  handoffTimestamp,
+  taskStateTimestamp,
 ] = await Promise.all([
   readTextIfExists(path.join(rootDir, 'package.json')),
   readTextIfExists(path.join(rootDir, 'AGENTS.md')),
-  readMemoryFile(rootDir, 'currentTask'),
-  readMemoryFile(rootDir, 'sessionHandoff'),
+  readMemoryFile(rootDir, 'taskState'),
   readMemoryFile(rootDir, 'decisions'),
-  readMemoryFile(rootDir, 'changedFiles'),
   readMemoryFile(rootDir, 'workLog'),
   readMemoryFile(rootDir, 'reflectionLog'),
   readMemoryFile(rootDir, 'projectProfile'),
-  readMemoryFileTimestamp(rootDir, 'currentTask'),
-  readMemoryFileTimestamp(rootDir, 'sessionHandoff'),
+  readMemoryFileTimestamp(rootDir, 'taskState'),
 ])
 
 if (
   packageJsonContent === null ||
   agentsContent === null ||
-  currentTaskContent === null ||
-  handoffContent === null ||
+  taskStateContent === null ||
   decisionsContent === null ||
-  changedFilesContent === null ||
   workLogContent === null
 ) {
   throw new Error('Missing package, AGENTS.md, or required .ai/* files for ai:report.')
 }
 
 const packageJson = JSON.parse(packageJsonContent)
-const lifecycle = extractMarkdownSection(currentTaskContent, 'Lifecycle')
+const lifecycle = extractMarkdownSection(taskStateContent, 'Lifecycle')
 const generatedAt = new Date()
 const checklist = countCheckboxes(
-  extractMarkdownSection(currentTaskContent, 'Completion Checklist'),
+  extractMarkdownSection(taskStateContent, 'Completion Checklist'),
 )
-const changedAreas = extractChangedFileTitles(changedFilesContent, 8)
+const changedAreas = extractChangedFileTitles(taskStateContent, 8)
 const verification = summarizeVerification(
-  extractMarkdownSection(handoffContent, 'Verification'),
+  extractMarkdownSection(taskStateContent, 'Verification'),
   6,
 )
-const freshness = getFreshnessStatus(generatedAt, currentTaskTimestamp, handoffTimestamp)
+const freshness = getFreshnessStatus(generatedAt, taskStateTimestamp)
 const currentTaskVersion = extractLabeledValue(lifecycle, 'Version') || 'unknown'
 const currentTaskTier = extractLabeledValue(lifecycle, 'Task Tier') || 'unknown'
 const unresolvedReflections = extractUnresolvedReflections(reflectionLogContent ?? '', 5)
 const stack = resolveStackSummary(agentsContent, projectProfileContent ?? '')
 const startSnapshot = await buildStartSnapshot({
-  currentTaskContent,
-  handoffContent,
+  currentTaskContent: taskStateContent,
+  handoffContent: taskStateContent,
   rootDir,
 })
 let xmlReportStatus = '- XML bundle skipped because `AI_REPORT_SKIP_XML=1`.'
@@ -104,8 +99,7 @@ Project: \`${packageJson.name}\`
 - Freshness: ${freshness}
 - Current task version: ${currentTaskVersion}
 - Current task tier: ${currentTaskTier}
-- Source current-task: ${currentTaskTimestamp ? formatTimestamp(currentTaskTimestamp) : 'Unknown'}
-- Source session-handoff: ${handoffTimestamp ? formatTimestamp(handoffTimestamp) : 'Unknown'}
+- Source task-state: ${taskStateTimestamp ? formatTimestamp(taskStateTimestamp) : 'Unknown'}
 - Verification level: ${verification.level}
 
 ## Start Snapshot
@@ -118,37 +112,37 @@ ${stack}
 ${extractMarkdownSection(agentsContent, 'Architecture rules').trim()}
 
 ## Current Task
-${extractMarkdownSection(currentTaskContent, 'Feature Name')}
+${extractMarkdownSection(taskStateContent, 'Feature Name')}
 
 ## Lifecycle
 ${lifecycle}
 
 ## Goal
-${extractMarkdownSection(currentTaskContent, 'Goal')}
+${extractMarkdownSection(taskStateContent, 'Goal')}
 
 ## Business Value
-${extractMarkdownSection(currentTaskContent, 'Business Value / Product Alignment') || '- Not recorded.'}
+${extractMarkdownSection(taskStateContent, 'Business Value / Product Alignment') || '- Not recorded.'}
 
 ## Technical Approach
-${extractMarkdownSection(currentTaskContent, 'Technical Approach') || '- Not recorded.'}
+${extractMarkdownSection(taskStateContent, 'Technical Approach') || '- Not recorded.'}
 
 ## Current Status
-${extractMarkdownSection(currentTaskContent, 'Current Status')}
+${extractMarkdownSection(taskStateContent, 'Current Status')}
 
 ## What Was Done
-${extractMarkdownSection(handoffContent, 'What Was Done')}
+${extractMarkdownSection(taskStateContent, 'What Was Done')}
 
 ## Current State
-${extractMarkdownSection(handoffContent, 'Current State')}
+${extractMarkdownSection(taskStateContent, 'Current State')}
 
 ## Next Steps
-${extractMarkdownSection(handoffContent, 'Next Steps')}
+${extractMarkdownSection(taskStateContent, 'Next Steps')}
 
 ## Known Issues
-${extractMarkdownSection(handoffContent, 'Known Issues')}
+${extractMarkdownSection(taskStateContent, 'Known Issues')}
 
 ## Quality Review
-${extractMarkdownSection(handoffContent, 'Quality Review') || '- Not recorded.'}
+${extractMarkdownSection(taskStateContent, 'Quality Review') || '- Not recorded.'}
 
 ## Verification
 ${verification.checks.length > 0 ? verification.checks.map((item) => `- ${item}`).join('\n') : '- No verification recorded.'}
@@ -167,7 +161,7 @@ ${unresolvedReflections.length > 0 ? unresolvedReflections.map((item) => `- ${it
 
 ## Overall Progress
 - Completion checklist: ${checklist.complete}/${checklist.total}
-- Canonical context lives in \`.ai/*\`.
+- Canonical task context lives in \`.ai/state/task-state.md\`.
 ${xmlReportStatus}
 `
 
@@ -181,8 +175,8 @@ if (!shouldSkipXml && xmlReportStatus.includes('generated at')) {
 async function runRepomix(cwd) {
   const command =
     process.platform === 'win32'
-      ? 'pnpm.cmd dlx repomix --include ".ai/state/current-task.md,.ai/state/session-handoff.md,.ai/knowledge/work-log.md,.ai/state/changed-files.md,.ai/knowledge/decisions.md,.ai/knowledge/reflection-log.md,.ai/config/memory-config.json,AGENTS.md" --output .ai/generated/report-full.xml --style xml --parsable-style --no-default-patterns'
-      : 'pnpm dlx repomix --include ".ai/state/current-task.md,.ai/state/session-handoff.md,.ai/knowledge/work-log.md,.ai/state/changed-files.md,.ai/knowledge/decisions.md,.ai/knowledge/reflection-log.md,.ai/config/memory-config.json,AGENTS.md" --output .ai/generated/report-full.xml --style xml --parsable-style --no-default-patterns'
+      ? 'pnpm.cmd dlx repomix --include ".ai/state/task-state.md,.ai/knowledge/work-log.md,.ai/knowledge/decisions.md,.ai/knowledge/reflection-log.md,.ai/config/memory-config.json,AGENTS.md" --output .ai/generated/report-full.xml --style xml --parsable-style --no-default-patterns'
+      : 'pnpm dlx repomix --include ".ai/state/task-state.md,.ai/knowledge/work-log.md,.ai/knowledge/decisions.md,.ai/knowledge/reflection-log.md,.ai/config/memory-config.json,AGENTS.md" --output .ai/generated/report-full.xml --style xml --parsable-style --no-default-patterns'
 
   await new Promise((resolve, reject) => {
     const child = spawn(command, [], {

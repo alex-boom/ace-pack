@@ -6,7 +6,7 @@ import { promisify } from 'node:util'
 
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { installAcePack } from '../install-ace-pack.mjs'
+import { installAcePack } from '../scripts/ace-install-lib.mjs'
 import { runDogfoodSelfCheck } from '../tools/dogfood-self-check.mjs'
 import { runSmokeFakeProjects } from '../tools/smoke-fake-project.mjs'
 
@@ -59,13 +59,15 @@ async function git(rootDir: string, args: string[]) {
 async function writeCompleteTaskState(rootDir: string) {
   await writeRepoFile(
     rootDir,
-    '.ai/state/current-task.md',
-    `# Current Task
+    '.ai/state/task-state.md',
+    `# Task State
 
-## Feature Name
+## Lifecycle & Meta
+
+### Feature Name
 Dogfood fixture
 
-## Lifecycle
+### Lifecycle
 Status: complete
 Version: v1
 Task Tier: small
@@ -73,13 +75,36 @@ Design Review Required: no
 Started: 2026-06-14 12:00
 Ready For Archive: yes
 
-## Goal
+### Goal
 Verify that ACE can be applied to a repository that already uses ACE.
 
-## Business Value / Product Alignment
+### Current Status
+- [x] Fixture prepared.
+
+### Affected Areas
+- .ai
+- scripts
+
+### Constraints
+- Keep checks local and deterministic.
+
+### Acceptance Criteria
+- ACE check, gate, and hub pass after self-apply.
+
+### Completion Checklist
+- [x] Goal completed
+- [x] Future agent context preserved
+- [x] Verification recorded
+- [x] Publish/deploy decision recorded when relevant
+- [x] Extra docs updated only where changed
+- [x] \`ace:validate\` and \`ace finish\` passed
+
+## Business Value & Approach
+
+### Business Value / Product Alignment
 Dogfood self-check protects release readiness before maintainers publish ACE.
 
-## Technical Approach
+### Technical Approach
 Option 1:
 - Trust package unit tests only.
 
@@ -89,43 +114,23 @@ Option 2:
 Chosen Approach:
 - Use candidate self-apply because it validates packaging, install, gate, and hub behavior together.
 
-## Current Status
-- [x] Fixture prepared.
+## Changed Files / Diff
 
-## Affected Areas
-- .ai
-- scripts
+[dogfood-fixture]
+- Fixture files for release-readiness testing.
 
-## Constraints
-- Keep checks local and deterministic.
+## Handoff & Next Steps
 
-## Acceptance Criteria
-- ACE check, gate, and hub pass after self-apply.
-
-## Completion Checklist
-- [x] Goal completed
-- [x] Future agent context preserved
-- [x] Verification recorded
-- [x] Publish/deploy decision recorded when relevant
-- [x] Extra docs updated only where changed
-- [x] \`ace:validate\` and \`ace finish\` passed
-`,
-  )
-  await writeRepoFile(
-    rootDir,
-    '.ai/state/session-handoff.md',
-    `# Session Handoff
-
-## Last Update
+### Last Update
 2026-06-14 12:00
 
-## What Was Done
+### What Was Done
 - Prepared an installed ACE repo for dogfood self-check.
 
-## Current State
+### Current State
 - Candidate self-apply can run.
 
-## Quality Review
+### Quality Review
 Product Alignment:
 - Dogfood validation protects release quality.
 
@@ -138,26 +143,17 @@ Security:
 Code Quality:
 - The check covers install sync, memory validation, gate, and hub output.
 
-## Next Steps
+### Next Steps
 - Run dogfood self-check.
 
-## Known Issues
+### Known Issues
 - None.
 
-## Verification
+### Verification
 - \`ace check\` passed.
 
-## Notes
+### Notes
 - NPM publish: required before final release; deferred by maintainer.
-`,
-  )
-  await writeRepoFile(
-    rootDir,
-    '.ai/state/changed-files.md',
-    `# Changed Files
-
-[dogfood-fixture]
-- Fixture files for release-readiness testing.
 `,
   )
   await writeRepoFile(

@@ -429,3 +429,25 @@ Impact:
   when it exists.
 - Future AI-assisted convention discovery remains a separate explicit opt-in
   feature, not part of the default v2.2 workflow.
+
+## 2026-06-16 13:51
+
+Decision:
+- Implement ACE Pack v3.0.0 as a consolidated task-state memory schema with
+  deterministic legacy auto-migration, managed IDE rule blocks, and
+  zero-ceremony small-task finish.
+
+Reason:
+- The old current-task, session-handoff, and changed-files split created
+  avoidable file sprawl and agent desynchronization. IDE rule bridging must be
+  native but must never overwrite user-owned editor instructions.
+
+Impact:
+- `.ai/state/task-state.md` is the canonical active task file, with
+  `.ai/task-state.md` as a legacy alias.
+- Legacy task files are backed up under `.ai/archive/migrations/` before safe
+  cleanup.
+- `.cursorrules`, `.windsurfrules`, and Copilot instructions use
+  `ace-managed-ide-rules` blocks that `ace destroy` can remove surgically.
+- `ace-pack@3.0.0` is a major release; npm publish is required only for the
+  final reviewed release.

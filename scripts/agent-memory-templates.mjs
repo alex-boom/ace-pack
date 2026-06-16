@@ -1,4 +1,5 @@
 import { NEUTRAL_MEMORY_CONFIG } from './ace-project-presets.mjs'
+import { taskStateTemplate } from './ace-task-state.mjs'
 import { productRoadmapTemplate, techDocsTemplate } from './ace-universal-doc-templates.mjs'
 
 export const AGENTS_WORKFLOW_HEADER = '## ACE (Agentic Context Engine) Workflow'
@@ -8,98 +9,6 @@ export const CLAUDE_REQUIRED_SNIPPETS = ['AGENTS.md', '.ai/']
 
 export const memoryConfigTemplate = JSON.stringify(NEUTRAL_MEMORY_CONFIG, null, 2)
 
-export const currentTaskTemplate = `# Current Task
-
-## Feature Name
-[Set the active feature or task name]
-
-## Lifecycle
-Status: active
-Version: v1
-Task Tier: standard
-Design Review Required: no
-Started: [YYYY-MM-DD HH:mm]
-Ready For Archive: no
-
-## Goal
-[Describe what is being built or changed]
-
-## Business Value / Product Alignment
-[Explain in 1-2 sentences why this matters to users or the business]
-
-## Technical Approach
-Option 1:
-- [Describe one viable approach and tradeoffs]
-
-Option 2:
-- [Describe another viable approach and tradeoffs]
-
-Chosen Approach:
-- [Explain why the selected approach best fits security, flexibility, architecture, and business value]
-
-## Current Status
-- [ ] Step 1
-- [ ] Step 2
-- [ ] Step 3
-
-## Affected Areas
-- [List the apps, packages, or files in scope]
-
-## Constraints
-- [List must-not-break rules or important boundaries]
-
-## Acceptance Criteria
-- [Describe the expected final behavior]
-
-## Completion Checklist
-- [ ] Goal completed
-- [ ] Always: summarize what changed in \`.ai/session-handoff.md\`
-- [ ] Always: update \`.ai/changed-files.md\`, record verification, and run project-owned \`ace:validate\`
-- [ ] Always: state publish/deploy decision when relevant, including deferred release wording
-- [ ] If small/low-risk: let \`ace finish\` auto-close compact handoff when manual notes add no value
-- [ ] If standard/large: add product, architecture, security, and code-quality review notes
-- [ ] If large/high-risk: confirm design approach, add useful reflection, and let \`ace finish\` archive the snapshot
-- [ ] If release-bound shipped behavior changed: run local smoke and dogfood/self-check routines when available
-- [ ] Only if changed: update tech docs, product roadmap, durable decisions, or release notes
-- [ ] \`ace finish\` passed and generated reports
-`
-
-export const handoffTemplate = `# Session Handoff
-
-## Last Update
-[YYYY-MM-DD HH:mm]
-
-## What Was Done
-- [Summarize the latest completed work]
-
-## Current State
-- [Describe the current project or feature state]
-
-## Quality Review
-Product Alignment:
-- [Confirm the work still serves the stated business value]
-
-Architecture:
-- [Note the pattern used and why it fits the repo]
-
-Security:
-- [Note relevant auth, RBAC, tenancy, token, or data exposure risks]
-
-Code Quality:
-- [Note file size, duplication, strict typing, and test coverage risks]
-
-## Next Steps
-- [List the next concrete steps]
-
-## Known Issues
-- [List known gaps, risks, or blockers]
-
-## Verification
-- [List checks that passed or could not be run]
-
-## Notes
-- [Add publish/deploy decision when relevant. If batching releases, use "NPM publish: required before final release; deferred by maintainer."]
-`
 
 export const decisionsTemplate = `# Decisions
 
@@ -113,12 +22,6 @@ Reason:
 
 Impact:
 - [Explain what this changes]
-`
-
-export const changedFilesTemplate = `# Changed Files
-
-[path/to/file]
-- [Short reason for the change]
 `
 
 export const workLogTemplate = `# Work Log
@@ -157,11 +60,9 @@ choices, architecture rules, and quality gates. Read it first in every session.
 After reading \`AGENTS.md\`, read:
 
 1. \`.ai/generated/report-brief.md\` if available for compact context.
-2. \`.ai/state/current-task.md\`
-3. \`.ai/state/session-handoff.md\`
-4. \`.ai/knowledge/decisions.md\`
-5. \`.ai/state/changed-files.md\`
-6. Recent unresolved entries in \`.ai/knowledge/reflection-log.md\`
+2. \`.ai/state/task-state.md\`
+3. \`.ai/knowledge/decisions.md\`
+4. Recent unresolved entries in \`.ai/knowledge/reflection-log.md\`
 
 Legacy root \`.ai/*.md\` files remain readable as migration aliases. Read
 \`.ai/knowledge/work-log.md\` only when you need additional history for the
@@ -179,12 +80,12 @@ current task.
 - On Windows PowerShell, use \`pnpm.cmd ace classify\`,
   \`pnpm.cmd ace check\`, and project-owned \`pnpm.cmd ace:validate\` if script
   execution policy blocks the \`pnpm\` shim.
-- For large or high-risk standard tasks, complete
-  \`.ai/state/current-task.md\` Business Value and Technical Approach before
-  writing code.
+- For large or high-risk standard tasks, complete the
+  \`.ai/state/task-state.md\` Business Value & Approach section before writing
+  code.
 - Treat \`.ai/*\` as the current source of task context and handoff state.
-- Use \`YYYY-MM-DD HH:mm\` timestamps in \`.ai/session-handoff.md\`,
-  \`.ai/work-log.md\`, \`.ai/reflection-log.md\`, and \`.ai/decisions.md\`.
+- Use \`YYYY-MM-DD HH:mm\` timestamps in task state, work-log, reflection-log,
+  and decisions entries.
 
 ## End-of-Task Routine
 
@@ -194,9 +95,8 @@ safety:
 1. Always summarize what changed, update changed files, record verification,
    run project-owned \`pnpm ace:validate\`, and state publish/deploy decision when relevant.
    If release is deferred, say so explicitly.
-2. For small low-risk tasks, \`pnpm ace finish\` may auto-close compact
-   handoff, changed-files, work-log, and brief report notes without changing
-   current-task lifecycle.
+2. For small low-risk tasks, \`pnpm ace finish\` auto-closes compact
+   task-state, work-log, and brief report notes without manual ceremony.
 3. For standard or large tasks, add product, architecture, security, and
    code-quality review notes.
 4. For large or high-risk tasks, confirm the design approach, add reflection
@@ -215,18 +115,17 @@ and decision history. Use this workflow on top of the repo rules above;
 \`AGENTS.md\` remains the authoritative source for stack, architecture, and
 quality constraints.
 
-ACE v2 canonical memory is organized under \`.ai/config\`, \`.ai/state\`,
-\`.ai/knowledge\`, and \`.ai/generated\`. Legacy root \`.ai/*.md\` paths remain
-compatible mirrors for older agents and scripts.
+ACE v3 canonical memory is organized under \`.ai/config\`, \`.ai/state\`,
+\`.ai/knowledge\`, and \`.ai/generated\`. Active task context lives in
+\`.ai/state/task-state.md\`.
 
 Before starting work:
 
 1. Read \`AGENTS.md\` first.
 2. If available, read \`.ai/generated/report-brief.md\` first for a compact
    summary, including recent unresolved reflections.
-3. Treat \`.ai/*\` as authoritative and read \`.ai/state/current-task.md\`,
-   \`.ai/state/session-handoff.md\`, \`.ai/knowledge/decisions.md\`, and
-   \`.ai/state/changed-files.md\` when you need detail or verification.
+3. Treat \`.ai/*\` as authoritative and read \`.ai/state/task-state.md\` and
+   \`.ai/knowledge/decisions.md\` when you need detail or verification.
 4. Run \`pnpm ace classify\` before implementation to
    identify whether the task is small, standard, or large.
 5. If this is a newly installed or unknown project and
@@ -234,9 +133,8 @@ Before starting work:
    \`pnpm ace onboard\` and apply an approved profile
    before implementation.
 6. For large tasks, and standard tasks with high-risk signals, complete the
-   \`.ai/state/current-task.md\` Business Value and Technical Approach sections
-   before writing code. Compare at least two viable patterns and choose
-   explicitly.
+   \`.ai/state/task-state.md\` Business Value & Approach section before writing
+   code. Compare at least two viable patterns and choose explicitly.
 7. Read \`.ai/knowledge/work-log.md\` only when you need extra historical
    context.
 8. If the memory files are missing, run \`pnpm ace init\`.
@@ -261,7 +159,7 @@ While working:
 
 - Prefer minimal, safe diffs that preserve existing UI and API contracts.
 - Do not rewrite large components or architecture unless the task requires it.
-- Keep \`.ai/state/current-task.md\` aligned with the active task when scope
+- Keep \`.ai/state/task-state.md\` aligned with the active task when scope
   changes.
 - Keep project-specific tier and risk rules in
   \`.ai/config/memory-config.json\`, the canonical ACE config, not inside the
@@ -269,16 +167,14 @@ While working:
 - Use \`pnpm ace onboard\` to generate
   \`.ai/config/project-profile.md\` and recommended project-specific risk rules
   when ACE is installed into an unfamiliar repo.
-- When updating \`.ai/session-handoff.md\`, \`.ai/work-log.md\`,
-  \`.ai/reflection-log.md\`, or \`.ai/decisions.md\`, use timestamps in
-  \`YYYY-MM-DD HH:mm\` format.
-- Keep \`.ai/state/current-task.md\`, \`.ai/state/session-handoff.md\`,
-  \`.ai/knowledge/reflection-log.md\`, and \`.ai/state/changed-files.md\`
+- When updating task state, work-log, reflection-log, or decisions, use
+  timestamps in \`YYYY-MM-DD HH:mm\` format.
+- Keep \`.ai/state/task-state.md\` and \`.ai/knowledge/reflection-log.md\`
   compact.
 - Archive only \`.ai/knowledge/work-log.md\`,
   \`.ai/knowledge/reflection-log.md\`, and \`.ai/knowledge/decisions.md\` into
   \`.ai/archive/\` when they grow past the documented thresholds.
-- Use \`.ai/state/current-task.md\` lifecycle fields for task/version
+- Use \`.ai/state/task-state.md\` lifecycle fields for task/version
   transitions.
   When a large task version is complete, mark its completion checklist and let
   \`pnpm ace finish\` archive a final snapshot.
@@ -291,9 +187,8 @@ safety:
 1. Always summarize what changed, update changed files, record verification,
    run project-owned \`pnpm ace:validate\`, and state publish/deploy decision when relevant.
    If release is deferred, say so explicitly.
-2. For small low-risk tasks, \`pnpm ace finish\` may auto-close compact
-   handoff, changed-files, work-log, and brief report notes without changing
-   current-task lifecycle.
+2. For small low-risk tasks, \`pnpm ace finish\` auto-closes compact
+   task-state, work-log, and brief report notes without manual ceremony.
 3. For standard or large tasks, add product, architecture, security, and
    code-quality review notes.
 4. For large or high-risk tasks, confirm the design approach, add reflection
@@ -317,29 +212,24 @@ export const AI_FILE_SPECS = [
     template: memoryConfigTemplate,
   },
   {
-    path: '.ai/state/current-task.md',
+    path: '.ai/state/task-state.md',
     requiredSnippets: [
-      '# Current Task',
-      '## Lifecycle',
+      '# Task State',
+      '## Lifecycle & Meta',
+      '## Business Value & Approach',
+      '## Changed Files / Diff',
+      '## Handoff & Next Steps',
       'Task Tier:',
       'Design Review Required:',
-      '## Goal',
-      '## Business Value / Product Alignment',
-      '## Technical Approach',
-      '## Acceptance Criteria',
-      '## Completion Checklist',
+      '### Goal',
+      '### Business Value / Product Alignment',
+      '### Technical Approach',
+      '### Acceptance Criteria',
+      '### Completion Checklist',
+      '### Quality Review',
+      '### Next Steps',
     ],
-    template: currentTaskTemplate,
-  },
-  {
-    path: '.ai/state/session-handoff.md',
-    requiredSnippets: [
-      '# Session Handoff',
-      '## What Was Done',
-      '## Quality Review',
-      '## Next Steps',
-    ],
-    template: handoffTemplate,
+    template: taskStateTemplate,
   },
   {
     path: '.ai/knowledge/decisions.md',
@@ -366,11 +256,6 @@ export const AI_FILE_SPECS = [
       '## External APIs and Integrations',
     ],
     template: techDocsTemplate,
-  },
-  {
-    path: '.ai/state/changed-files.md',
-    requiredSnippets: ['# Changed Files'],
-    template: changedFilesTemplate,
   },
   {
     path: '.ai/knowledge/work-log.md',

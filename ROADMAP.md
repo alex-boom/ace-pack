@@ -158,7 +158,7 @@ removes only ACE-owned files and package scripts after a backup exists. The
 cleanup preserves custom project files, custom validation scripts, project docs,
 and shared script folders.
 
-### v2.2: Project Conventions Discovery (candidate)
+### v2.2: Project Conventions Discovery (shipped)
 
 Help agents reuse established repository patterns. `ace discover` scans a
 project locally with deterministic path, dependency, and import-string
@@ -167,16 +167,17 @@ registry for `ace hub` context. The first release stays zero-dependency,
 zero-AI, and aggregated by design so large projects do not flood the LLM
 context window.
 
-## Long-Term Research and Development (v2.3+)
+### v3.0: DevEx Overhaul and Memory Schema v3 (candidate)
 
-### Deeper Memory Consolidation Research
+Reduce daily context friction by consolidating active task memory into
+`.ai/state/task-state.md`, auto-migrating legacy task files with a local backup,
+and keeping old MCP task/handoff URIs as deprecated aliases. Fresh installs add
+managed IDE rule blocks for Cursor, Windsurf, and Copilot without overwriting
+custom rules, and `ace destroy` removes only ACE-owned blocks. Small low-risk
+finish now closes from task-state plus the current git diff/status without
+requiring handoff prompts or reading latest commits.
 
-Research whether high-churn state such as `current-task`, `session-handoff`,
-and `changed-files` should eventually be consolidated into fewer files instead
-of only categorized. The goal is to reduce token load, prevent LLM desync, and
-simplify future agent context. Any implementation must follow the v2
-compatibility contract and include deterministic migration behavior before
-changing schema shape again.
+## Long-Term Research and Development (v3.1+)
 
 ### Standalone ACE Engine
 

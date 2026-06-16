@@ -15,11 +15,9 @@ product files from repo-local dogfooding memory.
 After reading `AGENTS.md`, read:
 
 1. `.ai/generated/report-brief.md` if available for compact context.
-2. `.ai/state/current-task.md`
-3. `.ai/state/session-handoff.md`
-4. `.ai/knowledge/decisions.md`
-5. `.ai/state/changed-files.md`
-6. Recent unresolved entries in `.ai/knowledge/reflection-log.md`
+2. `.ai/state/task-state.md`
+3. `.ai/knowledge/decisions.md`
+4. Recent unresolved entries in `.ai/knowledge/reflection-log.md`
 
 Read `.ai/knowledge/work-log.md` only when you need additional history for the
 current task.
@@ -37,12 +35,12 @@ current task.
 - On Windows PowerShell in this repository, use `pnpm.cmd ace classify`,
   `pnpm.cmd ace check`, or project-owned `pnpm.cmd ace:validate` if script
   execution policy blocks the regular `pnpm` shim.
-- For large or high-risk standard tasks, complete `.ai/state/current-task.md`
+- For large or high-risk standard tasks, complete `.ai/state/task-state.md`
   Business Value and Technical Approach before writing code.
 - Treat `.ai/*` as the current source of task context and handoff state.
 - Before publishing shipped package changes, bump `package.json` version with
   semver. Do not bump solely for repo-local dogfooding files excluded from npm.
-- Use `YYYY-MM-DD HH:mm` timestamps in `.ai/state/session-handoff.md`,
+- Use `YYYY-MM-DD HH:mm` timestamps in `.ai/state/task-state.md`,
   `.ai/knowledge/work-log.md`, `.ai/knowledge/reflection-log.md`, and
   `.ai/knowledge/decisions.md`.
 

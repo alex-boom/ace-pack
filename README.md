@@ -110,7 +110,7 @@ Legacy command names remain supported only as router arguments, such as
 `pnpm ace ai:task:finish` or `npm run ace -- ai:task:finish`.
 
 The key behavior is **Shift-Left Design Review**. For large or high-risk tasks,
-the agent must stop before implementation, fill `.ai/state/current-task.md` with the
+the agent must stop before implementation, fill `.ai/state/task-state.md` with the
 business value and technical approach, compare viable patterns, and choose one
 explicitly. The code comes after the architectural decision, not before it.
 
@@ -433,20 +433,23 @@ contains only JSON-RPC messages:
 Do not configure MCP clients through `npm run`; npm may print lifecycle output
 to stdout, which breaks stdio MCP framing.
 
-Exposed resources include the brief report, current task, handoff, decisions,
-roadmap, technical docs, project conventions, and generated hub context when
-those files exist.
+Exposed resources include the brief report, task state, decisions, roadmap,
+technical docs, project conventions, and generated hub context when those files
+exist. Legacy current-task and handoff MCP URIs remain deprecated aliases for
+the consolidated task state.
 
-## v2.0 Schema and Compatibility
+## v3.0 Schema and Compatibility
 
-ACE v2.0 introduces categorized canonical memory paths under `.ai/config`,
-`.ai/state`, `.ai/knowledge`, and `.ai/generated`. The config schema remains
-version `1`, and legacy `.ai/*` paths remain readable as migration aliases.
-Fresh v2 installs keep `.ai/` folder-structured by default. Existing memory
-remains project-owned, and the installer stays additive and idempotent.
+ACE v3.0 keeps categorized canonical memory paths under `.ai/config`,
+`.ai/state`, `.ai/knowledge`, and `.ai/generated`, and consolidates active task
+memory into `.ai/state/task-state.md`. The config schema remains version `1`.
+Fresh v3 installs create only the consolidated task-state file. Existing v2
+task files are auto-migrated locally with a timestamped backup before cleanup.
+Existing memory remains project-owned, and the installer stays additive and
+idempotent.
 
 Read the full contract:
-[ACE v2.0 Schema and Compatibility](./docs/schema-compatibility.md).
+[ACE v3.0 Schema and Compatibility](./docs/schema-compatibility.md).
 
 ## Adoption Guides
 

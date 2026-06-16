@@ -3,6 +3,8 @@ import { spawn } from 'node:child_process'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { autoMigrateLegacyTaskState } from './ace-task-state.mjs'
+
 const COMMANDS = new Map([
   ['init', ['bootstrap-agent-memory.mjs']],
   ['check', ['check-agent-memory.mjs']],
@@ -108,7 +110,7 @@ Commands:
   purge                Alias for destroy.
   gate                 Run PR/CI quality gate.
   hub [mode]           Generate focused context payload.
-  migrate              Create schema v2 canonical memory mirrors.
+  migrate              Create schema v3 canonical memory files.
   onboard              Scan project and recommend risk rules.
   report               Generate full report.
   report brief         Generate brief report.
@@ -126,6 +128,10 @@ export async function runAceCommand(argv, options = {}) {
     ;(options.stdout ?? process.stdout).write(getAceHelpText())
     return 0
   }
+
+  await autoMigrateLegacyTaskState(options.cwd ?? process.cwd(), {
+    stderr: options.stderr ?? process.stderr,
+  })
 
   const scriptPath = path.join(options.scriptsDir ?? scriptsDir, resolved.scriptName)
   const child = spawn(process.execPath, [scriptPath, ...resolved.rest], {

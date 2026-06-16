@@ -11,8 +11,8 @@ import {
   validateAgentMemory,
 } from '../scripts/agent-memory-lib.mjs'
 import { readMemoryConfig } from '../scripts/ai-memory-config.mjs'
-import { migrateMemorySchemaV2 } from '../scripts/ai-memory-utils.mjs'
-import { installAcePack } from '../install-ace-pack.mjs'
+import { runAceMigration } from '../scripts/ace-migrate.mjs'
+import { installAcePack } from '../scripts/ace-install-lib.mjs'
 
 const tempDirs: string[] = []
 const aceValidatePlaceholder = 'echo "Add project mechanical checks here: lint, typecheck, test"'
@@ -36,12 +36,17 @@ async function writeRepoFile(rootDir: string, relativePath: string, content: str
   await writeFile(filePath, content, 'utf8')
 }
 
-describe('v2 schema and compatibility contract', () => {
+describe('v3 schema and compatibility contract', () => {
   it('preserves existing project-owned ACE memory files during install', async () => {
     const rootDir = await createRepo()
-    const customTask = `# Current Task
+    const customTask = `# Task State
 
-## Lifecycle
+## Lifecycle & Meta
+
+### Feature Name
+Custom task
+
+### Lifecycle
 Status: active
 Version: v7
 Task Tier: small
@@ -49,13 +54,15 @@ Design Review Required: no
 Started: 2026-06-14 13:30
 Ready For Archive: no
 
-## Goal
+### Goal
 Keep a custom historical task.
 
-## Business Value / Product Alignment
+## Business Value & Approach
+
+### Business Value / Product Alignment
 The project owns this memory.
 
-## Technical Approach
+### Technical Approach
 Option 1:
 - Keep it.
 
@@ -65,23 +72,30 @@ Option 2:
 Chosen Approach:
 - Keep it.
 
-## Acceptance Criteria
+## Changed Files / Diff
+
+[custom]
+- Keep it.
+
+## Handoff & Next Steps
+
+### Acceptance Criteria
 - Custom content survives install.
 
-## Completion Checklist
+### Completion Checklist
 - [ ] Custom checklist survives.
 `
 
-    await writeRepoFile(rootDir, '.ai/current-task.md', customTask)
+    await writeRepoFile(rootDir, '.ai/task-state.md', customTask)
 
     await installAcePack(rootDir)
 
-    await expect(readFile(path.join(rootDir, '.ai/current-task.md'), 'utf8')).resolves.toBe(
+    await expect(readFile(path.join(rootDir, '.ai/task-state.md'), 'utf8')).resolves.toBe(
       customTask,
     )
   })
 
-  it('migrates legacy v1 memory into schema v2 canonical paths without deleting legacy files', async () => {
+  it('auto-migrates legacy task memory into schema v3 task-state and backs up old files', async () => {
     const rootDir = await createRepo()
     const legacyTask = `# Current Task
 
@@ -104,13 +118,13 @@ Option 1:
 - Drop old files.
 
 Option 2:
-- Mirror old files into v2 canonical paths.
+- Merge old files into v3 task state.
 
 Chosen Approach:
-- Mirror because it preserves compatibility.
+- Migrate because it preserves compatibility.
 
 ## Acceptance Criteria
-- Legacy and canonical files both exist.
+- Legacy memory is preserved in task-state with a backup.
 
 ## Completion Checklist
 - [ ] Migration checked.
@@ -118,14 +132,20 @@ Chosen Approach:
 
     await writeRepoFile(rootDir, '.ai/current-task.md', legacyTask)
 
-    const result = await migrateMemorySchemaV2(rootDir)
+    const result = await runAceMigration(rootDir)
 
-    expect(result.createdFiles).toContain('.ai/state/current-task.md')
-    await expect(readFile(path.join(rootDir, '.ai/current-task.md'), 'utf8')).resolves.toBe(
-      legacyTask,
+    expect(result.createdFiles).toContain('.ai/state/task-state.md')
+    expect(result.removedFiles).toContain('.ai/current-task.md')
+    expect(result.backupDir).toMatch(/^.ai\/archive\/migrations\/v3-task-state-/u)
+    await expect(readFile(path.join(rootDir, '.ai/current-task.md'), 'utf8')).rejects.toThrow()
+    await expect(
+      readFile(path.join(rootDir, result.backupDir ?? '', '.ai/current-task.md'), 'utf8'),
+    ).resolves.toContain('Preserve legacy task memory.')
+    await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
+      'Preserve legacy task memory.',
     )
-    await expect(readFile(path.join(rootDir, '.ai/state/current-task.md'), 'utf8')).resolves.toBe(
-      legacyTask,
+    await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
+      '## Handoff & Next Steps',
     )
   })
 
@@ -220,7 +240,7 @@ Keep this too.
     expect(Object.keys(packageJson.scripts).sort()).toEqual(['ace', 'ace:validate'])
   })
 
-  it('documents the v2 contract and keeps docs out of the npm package file list', async () => {
+  it('documents the v3 contract and keeps docs out of the npm package file list', async () => {
     const schemaDocs = await readFile('docs/schema-compatibility.md', 'utf8')
     const readme = await readFile('README.md', 'utf8')
     const npmReadme = await readFile('README.npm.md', 'utf8')
@@ -228,22 +248,17 @@ Keep this too.
       files?: string[]
     }
 
-    expect(schemaDocs).toContain('ACE v2.0 Schema and Compatibility')
+    expect(schemaDocs).toContain('ACE v3.0 Schema and Compatibility')
     expect(schemaDocs).toContain('Installed repositories expose only:')
-    expect(schemaDocs).toContain('project-owned mechanical')
-    expect(schemaDocs).toContain('Safe Eject and Destroy')
-    expect(schemaDocs).toContain('Project Conventions Discovery')
-    expect(schemaDocs).toContain('ace discover')
-    expect(schemaDocs).toContain('pnpm ace eject')
-    expect(schemaDocs).toContain('pnpm ace destroy')
-    expect(schemaDocs).toContain('supported only as router arguments')
-    expect(schemaDocs).toContain('Canonical v2 Memory Layout')
-    expect(schemaDocs).toContain('.ai/knowledge/project-conventions.md')
+    expect(schemaDocs).toContain('remain accepted only as router arguments')
+    expect(schemaDocs).toContain('Canonical v3 Memory Layout')
+    expect(schemaDocs).toContain('project-conventions.md')
     expect(schemaDocs).toContain('`.ai/config/memory-config.json` Schema Version 1')
-    expect(schemaDocs).toContain('legacy root `.ai/*` paths')
-    expect(schemaDocs).toContain('optional IDE bridge files')
-    expect(schemaDocs).toContain('not required by `ace check`')
-    expect(schemaDocs).toContain('Migration Policy')
+    expect(schemaDocs).toContain('.ai/state/task-state.md')
+    expect(schemaDocs).toContain('v2 Legacy Auto-Migration')
+    expect(schemaDocs).toContain('IDE Managed Blocks')
+    expect(schemaDocs).toContain('Small Task Finish')
+    expect(schemaDocs).toContain('Package Payload Boundary')
     expect(readme).toContain('./docs/schema-compatibility.md')
     expect(npmReadme).toContain(
       'https://github.com/alex-boom/ace-pack/blob/main/docs/schema-compatibility.md',
@@ -252,7 +267,7 @@ Keep this too.
     expect(packageJson.files).not.toContain('docs/**')
   })
 
-  it('validates a freshly installed v2 repository', async () => {
+  it('validates a freshly installed v3 repository', async () => {
     const rootDir = await createRepo()
 
     await installAcePack(rootDir)

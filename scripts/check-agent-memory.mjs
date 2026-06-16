@@ -38,20 +38,19 @@ if (warnings.length > 0) {
 }
 
 async function collectMemoryWarnings(rootDir) {
-  const [currentTaskContent, handoffContent, reportBriefContent] = await Promise.all([
-    readMemoryFile(rootDir, 'currentTask'),
-    readMemoryFile(rootDir, 'sessionHandoff'),
+  const [taskStateContent, reportBriefContent] = await Promise.all([
+    readMemoryFile(rootDir, 'taskState'),
     readMemoryFile(rootDir, 'reportBrief'),
   ])
   const warnings = []
 
-  if (handoffContent !== null) {
-    const lastUpdate = extractMarkdownSection(handoffContent, 'Last Update')
+  if (taskStateContent !== null) {
+    const lastUpdate = extractMarkdownSection(taskStateContent, 'Last Update')
     const handoffAgeDays = getAgeInDays(lastUpdate)
 
     if (handoffAgeDays !== null && handoffAgeDays > 7) {
       warnings.push(
-        `.ai/session-handoff.md Last Update is ${handoffAgeDays} day(s) old; refresh handoff if work is active.`,
+        `.ai/state/task-state.md Last Update is ${handoffAgeDays} day(s) old; refresh task state if work is active.`,
       )
     }
   }
@@ -66,14 +65,14 @@ async function collectMemoryWarnings(rootDir) {
     }
   }
 
-  if (currentTaskContent !== null && handoffContent !== null) {
-    const lifecycle = extractMarkdownSection(currentTaskContent, 'Lifecycle')
+  if (taskStateContent !== null) {
+    const lifecycle = extractMarkdownSection(taskStateContent, 'Lifecycle')
     const taskStatus = extractLabeledValue(lifecycle, 'Status')
-    const nextSteps = extractMarkdownSection(handoffContent, 'Next Steps')
+    const nextSteps = extractMarkdownSection(taskStateContent, 'Next Steps')
 
     if (taskStatus.toLowerCase() === 'complete' && !hasMeaningfulContent(nextSteps)) {
       warnings.push(
-        'Current task is complete but .ai/session-handoff.md Next Steps is empty or placeholder text.',
+        'Current task is complete but .ai/state/task-state.md Next Steps is empty or placeholder text.',
       )
     }
   }

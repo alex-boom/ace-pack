@@ -2,7 +2,7 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { installAcePack, runInstallCli } from './install-ace-pack.mjs'
+import { installAcePack, runInstallCli } from './scripts/ace-install-lib.mjs'
 
 export const installAgentMemoryPack = installAcePack
 

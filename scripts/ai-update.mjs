@@ -6,6 +6,7 @@ import {
   nowTimestamp,
   parseCliArgs,
   readMemoryFile,
+  extractMarkdownSection,
   replaceLabeledValue,
   replaceMarkdownSection,
   writeMemoryFile,
@@ -42,7 +43,7 @@ switch (command) {
 }
 
 async function updateTask() {
-  const existingContent = await requireFile('currentTask')
+  const existingContent = await requireFile('taskState')
   let nextContent = existingContent
 
   const feature = getArgValue(args, 'feature')
@@ -114,12 +115,12 @@ async function updateTask() {
     )
   }
 
-  await writeMemoryFile(rootDir, 'currentTask', nextContent)
-  process.stderr.write('Updated .ai/state/current-task.md\n')
+  await writeMemoryFile(rootDir, 'taskState', nextContent)
+  process.stderr.write('Updated .ai/state/task-state.md\n')
 }
 
 async function updateHandoff() {
-  const existingContent = await requireFile('sessionHandoff')
+  const existingContent = await requireFile('taskState')
   let nextContent = existingContent
 
   const updated = getArgValue(args, 'updated')
@@ -158,8 +159,8 @@ async function updateHandoff() {
     nextContent = replaceMarkdownSection(nextContent, 'Notes', formatBullets(notes))
   }
 
-  await writeMemoryFile(rootDir, 'sessionHandoff', nextContent)
-  process.stderr.write('Updated .ai/state/session-handoff.md\n')
+  await writeMemoryFile(rootDir, 'taskState', nextContent)
+  process.stderr.write('Updated .ai/state/task-state.md\n')
 }
 
 async function appendWorkLog() {
@@ -202,7 +203,7 @@ async function appendDecision() {
 }
 
 async function appendChangedFile() {
-  const existingContent = await requireFile('changedFiles')
+  const existingContent = await requireFile('taskState')
   const changedFile = getArgValue(args, 'file')
   const notes = getArgList(args, 'note')
 
@@ -211,10 +212,15 @@ async function appendChangedFile() {
   }
 
   const block = `\n[${changedFile}]\n${formatBullets(notes)}\n`
-  const nextContent = `${existingContent.trimEnd()}${block}`
+  const changedSection = extractMarkdownSection(existingContent, 'Changed Files / Diff')
+  const nextContent = replaceMarkdownSection(
+    existingContent,
+    'Changed Files / Diff',
+    `${changedSection.trimEnd()}${block}`,
+  )
 
-  await writeMemoryFile(rootDir, 'changedFiles', nextContent)
-  process.stderr.write('Updated .ai/state/changed-files.md\n')
+  await writeMemoryFile(rootDir, 'taskState', nextContent)
+  process.stderr.write('Updated .ai/state/task-state.md\n')
 }
 
 async function requireFile(memoryKey) {

@@ -40,8 +40,8 @@ describe('ensureAgentMemory', () => {
     const secondRun = await ensureAgentMemory(rootDir)
     const agentsContent = await readFile(path.join(rootDir, 'AGENTS.md'), 'utf8')
     const claudeContent = await readFile(path.join(rootDir, 'CLAUDE.md'), 'utf8')
-    const currentTaskContent = await readFile(
-      path.join(rootDir, '.ai', 'state', 'current-task.md'),
+    const taskStateContent = await readFile(
+      path.join(rootDir, '.ai', 'state', 'task-state.md'),
       'utf8',
     )
     const memoryConfigContent = await readFile(
@@ -52,7 +52,7 @@ describe('ensureAgentMemory', () => {
     expect(firstRun.updatedFiles).toEqual(['AGENTS.md'])
     expect(firstRun.createdFiles).toContain('CLAUDE.md')
     expect(firstRun.createdFiles).toContain('.ai/config/memory-config.json')
-    expect(firstRun.createdFiles).toContain('.ai/state/current-task.md')
+    expect(firstRun.createdFiles).toContain('.ai/state/task-state.md')
     expect(firstRun.createdFiles).toContain('.ai/knowledge/product-roadmap.md')
     expect(firstRun.createdFiles).toContain('.ai/knowledge/tech-docs.md')
     expect(firstRun.createdFiles).toContain('.ai/knowledge/reflection-log.md')
@@ -72,7 +72,7 @@ describe('ensureAgentMemory', () => {
     expect(agentsContent).toContain('state publish/deploy decision when relevant')
     expect(agentsContent).toContain('If release is deferred, say so explicitly.')
     expect(agentsContent).toContain('For small low-risk tasks')
-    expect(agentsContent).toContain('current-task lifecycle')
+    expect(agentsContent).toContain('task-state')
     expect(agentsContent).toContain('.cursorrules')
     expect(agentsContent).toContain('dogfood/self-check routines before final publish')
     expect(memoryConfigContent).toContain('"ACE (Agentic Context Engine) Configuration"')
@@ -100,15 +100,15 @@ describe('ensureAgentMemory', () => {
       'Do the smallest closeout that preserves future agent context and project',
     )
     expect(claudeContent).toContain('If release is deferred, say so explicitly.')
-    expect(currentTaskContent).toContain(
-      'Always: update `.ai/changed-files.md`, record verification, and run project-owned `ace:validate`',
+    expect(taskStateContent).toContain(
+      'Always: update changed files, record verification, and run project-owned `ace:validate`',
     )
-    expect(currentTaskContent).toContain(
+    expect(taskStateContent).toContain(
       'Only if changed: update tech docs, product roadmap, durable decisions, or release notes',
     )
-    expect(currentTaskContent).toContain('deferred release wording')
-    expect(currentTaskContent).toContain('If small/low-risk')
-    expect(currentTaskContent).toContain('run local smoke and dogfood/self-check routines')
+    expect(taskStateContent).toContain('deferred release wording')
+    expect(taskStateContent).toContain('If small/low-risk')
+    expect(taskStateContent).toContain('run local smoke and dogfood/self-check routines')
   })
 
   it('does not overwrite existing memory files', async () => {
@@ -116,15 +116,15 @@ describe('ensureAgentMemory', () => {
 
     await mkdir(path.join(rootDir, '.ai'), { recursive: true })
     await writeFile(path.join(rootDir, 'CLAUDE.md'), '# Custom Claude\n', 'utf8')
-    await writeFile(path.join(rootDir, '.ai/current-task.md'), '# Custom Task\n', 'utf8')
+    await writeFile(path.join(rootDir, '.ai/task-state.md'), '# Custom Task State\n', 'utf8')
 
     await ensureAgentMemory(rootDir)
 
     await expect(readFile(path.join(rootDir, 'CLAUDE.md'), 'utf8')).resolves.toBe(
       '# Custom Claude\n',
     )
-    await expect(readFile(path.join(rootDir, '.ai/current-task.md'), 'utf8')).resolves.toBe(
-      '# Custom Task\n',
+    await expect(readFile(path.join(rootDir, '.ai/task-state.md'), 'utf8')).resolves.toBe(
+      '# Custom Task State\n',
     )
   })
 
@@ -172,7 +172,7 @@ describe('validateAgentMemory', () => {
     )
     expect(issues).toContain('Missing CLAUDE.md')
     expect(issues).toContain('Missing .ai/config/memory-config.json')
-    expect(issues).toContain('Missing .ai/state/current-task.md')
+    expect(issues).toContain('Missing .ai/state/task-state.md')
     expect(issues).toContain('Missing .ai/knowledge/product-roadmap.md')
     expect(issues).toContain('Missing .ai/knowledge/tech-docs.md')
     expect(issues).toContain('Missing .ai/knowledge/reflection-log.md')
@@ -185,13 +185,15 @@ describe('validateAgentMemory', () => {
 
     await ensureAgentMemory(rootDir)
     await writeFile(
-      path.join(rootDir, '.ai/state/current-task.md'),
-      `# Current Task
+      path.join(rootDir, '.ai/state/task-state.md'),
+      `# Task State
 
-## Feature Name
+## Lifecycle & Meta
+
+### Feature Name
 Complete fixture
 
-## Lifecycle
+### Lifecycle
 Status: complete
 Version: v1
 Task Tier: small
@@ -199,33 +201,40 @@ Design Review Required: no
 Started: 2026-06-01 10:00
 Ready For Archive: yes
 
-## Goal
+### Goal
 Fixture.
 
-## Business Value / Product Alignment
-Fixture value.
+### Current Status
+- [x] Fixture.
 
-## Technical Approach
-Fixture approach.
-
-## Acceptance Criteria
+### Acceptance Criteria
 - Fixture passes.
 
-## Completion Checklist
+### Completion Checklist
 - [x] Goal completed
-`,
-    )
-    await writeFile(
-      path.join(rootDir, '.ai/state/session-handoff.md'),
-      `# Session Handoff
 
-## Last Update
-2026-01-01 10:00
+## Business Value & Approach
 
-## What Was Done
+### Business Value / Product Alignment
+Fixture value.
+
+### Technical Approach
+Fixture approach.
+
+## Changed Files / Diff
+
+[fixture]
 - Fixture.
 
-## Quality Review
+## Handoff & Next Steps
+
+### Last Update
+2026-01-01 10:00
+
+### What Was Done
+- Fixture.
+
+### Quality Review
 Product Alignment:
 - Fixture.
 
@@ -238,7 +247,7 @@ Security:
 Code Quality:
 - Fixture.
 
-## Next Steps
+### Next Steps
 TODO
 `,
     )

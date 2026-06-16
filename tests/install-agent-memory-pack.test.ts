@@ -12,11 +12,11 @@ import {
   formatScriptCommand,
   installAcePack,
   parseInstallArgs,
-} from '../install-ace-pack.mjs'
-import { installAgentMemoryPack } from '../install-agent-memory-pack.mjs'
+} from '../scripts/ace-install-lib.mjs'
 
 const tempDirs: string[] = []
 const execFileAsync = promisify(execFile)
+const installAgentMemoryPack = installAcePack
 const runnerPackageDescription =
   'Auto-generated lightweight runner for ACE (Agentic Context Engine) scripts. No node_modules required.'
 const aceValidatePlaceholder = 'echo "Add project mechanical checks here: lint, typecheck, test"'
@@ -78,6 +78,7 @@ describe('installAcePack', () => {
     expect(result.createdFiles).toContain('scripts/ace-onboard.mjs')
     expect(result.createdFiles).toContain('scripts/ace-project-presets.mjs')
     expect(result.createdFiles).toContain('scripts/ace-quality-gate.mjs')
+    expect(result.createdFiles).toContain('scripts/ace-task-state.mjs')
     expect(result.createdFiles).toContain('scripts/ace-uninstall-utils.mjs')
     expect(result.createdFiles).toContain('scripts/agent-memory-lib.mjs')
     expect(result.createdFiles).toContain('scripts/ai-task-classify.mjs')
@@ -112,8 +113,8 @@ describe('installAcePack', () => {
     ]) {
       expect(packageJson.scripts).not.toHaveProperty(removedScript)
     }
-    await expect(readFile(path.join(rootDir, '.ai/state/current-task.md'), 'utf8')).resolves.toContain(
-      '# Current Task',
+    await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
+      '# Task State',
     )
     await expect(
       readFile(path.join(rootDir, '.ai/config/memory-config.json'), 'utf8'),
@@ -141,15 +142,14 @@ describe('installAcePack', () => {
     )
 
     for (const content of [cursorRules, windsurfRules, copilotInstructions]) {
-      expect(content).toContain('Follow AGENTS.md')
-      expect(content).toContain('Read .ai/generated/report-brief.md')
-      expect(content).toContain('pnpm ace hub start')
-      expect(content).toContain('pnpm ace classify')
+      expect(content).toContain('ace-managed-ide-rules:start')
+      expect(content).toContain('ALWAYS read `AGENTS.md`')
+      expect(content).toContain('Read `.ai/generated/report-brief.md`')
       expect(content).toContain('pnpm ace finish')
     }
   })
 
-  it('does not overwrite existing project-owned IDE bridge files', async () => {
+  it('appends managed blocks to existing project-owned IDE bridge files', async () => {
     const rootDir = await createTargetRepo()
 
     await mkdir(path.join(rootDir, '.github'), { recursive: true })
@@ -163,18 +163,21 @@ describe('installAcePack', () => {
 
     const result = await installAcePack(rootDir)
 
-    expect(result.createdFiles).not.toContain('.cursorrules')
-    expect(result.createdFiles).not.toContain('.windsurfrules')
-    expect(result.createdFiles).not.toContain('.github/copilot-instructions.md')
-    await expect(readFile(path.join(rootDir, '.cursorrules'), 'utf8')).resolves.toBe(
-      'custom cursor rules\n',
+    expect(result.updatedFiles).toEqual(
+      expect.arrayContaining(['.cursorrules', '.windsurfrules', '.github/copilot-instructions.md']),
     )
-    await expect(readFile(path.join(rootDir, '.windsurfrules'), 'utf8')).resolves.toBe(
-      'custom windsurf rules\n',
+    await expect(readFile(path.join(rootDir, '.cursorrules'), 'utf8')).resolves.toContain(
+      'custom cursor rules',
+    )
+    await expect(readFile(path.join(rootDir, '.cursorrules'), 'utf8')).resolves.toContain(
+      'ace-managed-ide-rules:start',
+    )
+    await expect(readFile(path.join(rootDir, '.windsurfrules'), 'utf8')).resolves.toContain(
+      'custom windsurf rules',
     )
     await expect(
       readFile(path.join(rootDir, '.github/copilot-instructions.md'), 'utf8'),
-    ).resolves.toBe('# Custom Copilot\n')
+    ).resolves.toContain('# Custom Copilot')
   })
 
   it('does not overwrite a project-owned ace:validate script', async () => {
@@ -311,7 +314,7 @@ describe('installAcePack', () => {
     expect(memoryConfig._profile.status).toBe('profiled')
     expect(projectProfile).toContain('# ACE Project Profile')
     expect(stderr).toContain('Onboarded:')
-    expect(stderr).toContain('npm run ace -- check')
+    expect(stderr).toMatch(/(?:npm run ace -- check|pnpm ace check)/u)
   })
 
   it('accepts existing package.json files with a UTF-8 byte order mark', async () => {

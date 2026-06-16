@@ -296,3 +296,19 @@
 - Updated repo-local ACE state so future sessions do not retry the v2.2.0
   publish.
 - NPM publish: completed.
+
+## 2026-06-16 13:51
+
+- Implemented the `ace-pack@3.0.0` DevEx overhaul and Memory Schema v3.
+- Consolidated active task state into `.ai/state/task-state.md` with automatic
+  legacy migration, timestamped backups, and compatibility aliases.
+- Added safe managed IDE rule blocks for Cursor, Windsurf, and Copilot plus
+  surgical destroy cleanup.
+- Updated small-task finish to use task-state and current git diff/status
+  without latest commit reads or manual handoff prompts.
+- Updated shipped docs, generated templates, MCP, reports, hub, gate, update
+  helpers, smoke fixtures, tests, package version, and release tooling.
+- Verified `pnpm.cmd typecheck`, `pnpm.cmd lint`, `pnpm.cmd test`,
+  `npm.cmd run smoke:fake-project`, `npm.cmd run release:ready`, and
+  `npm.cmd run release:npm:dry`.
+- NPM publish: required before final release; deferred by maintainer.

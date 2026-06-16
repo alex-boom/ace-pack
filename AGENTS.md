@@ -42,18 +42,17 @@ and decision history. Use this workflow on top of the repo rules above;
 `AGENTS.md` remains the authoritative source for stack, architecture, and
 quality constraints.
 
-ACE v2 canonical memory is organized under `.ai/config`, `.ai/state`,
+ACE v3 canonical memory is organized under `.ai/config`, `.ai/state`,
 `.ai/knowledge`, and `.ai/generated`. Legacy root `.ai/*.md` paths remain
-compatible mirrors for older agents and scripts.
+compatible migration aliases for older agents and scripts.
 
 Before starting work:
 
 1. Read `AGENTS.md` first.
 2. If available, read `.ai/generated/report-brief.md` first for a compact
    summary, including recent unresolved reflections.
-3. Treat `.ai/*` as authoritative and read `.ai/state/current-task.md`,
-   `.ai/state/session-handoff.md`, `.ai/knowledge/decisions.md`, and
-   `.ai/state/changed-files.md` when you need detail or verification.
+3. Treat `.ai/*` as authoritative and read `.ai/state/task-state.md` and
+   `.ai/knowledge/decisions.md` when you need detail or verification.
 4. Run `pnpm ace classify` before implementation to
    identify whether the task is small, standard, or large.
 5. If this is a newly installed or unknown project and
@@ -61,7 +60,7 @@ Before starting work:
    `pnpm ace onboard` and apply an approved profile
    before implementation.
 6. For large tasks, and standard tasks with high-risk signals, complete the
-   `.ai/state/current-task.md` Business Value and Technical Approach sections
+   `.ai/state/task-state.md` Business Value and Technical Approach sections
    before writing code. Compare at least two viable patterns and choose
    explicitly.
 7. Read `.ai/knowledge/work-log.md` only when you need extra historical
@@ -88,7 +87,7 @@ While working:
 
 - Prefer minimal, safe diffs that preserve existing UI and API contracts.
 - Do not rewrite large components or architecture unless the task requires it.
-- Keep `.ai/state/current-task.md` aligned with the active task when scope
+- Keep `.ai/state/task-state.md` aligned with the active task when scope
   changes.
 - Keep project-specific tier and risk rules in
   `.ai/config/memory-config.json`, the canonical ACE config, not inside the
@@ -96,16 +95,14 @@ While working:
 - Use `pnpm ace onboard` to generate
   `.ai/config/project-profile.md` and recommended project-specific risk rules
   when ACE is installed into an unfamiliar repo.
-- When updating `.ai/session-handoff.md`, `.ai/work-log.md`,
-  `.ai/reflection-log.md`, or `.ai/decisions.md`, use timestamps in
+- When updating `.ai/state/task-state.md`, `.ai/knowledge/work-log.md`,
+  `.ai/knowledge/reflection-log.md`, or `.ai/knowledge/decisions.md`, use timestamps in
   `YYYY-MM-DD HH:mm` format.
-- Keep `.ai/state/current-task.md`, `.ai/state/session-handoff.md`,
-  `.ai/knowledge/reflection-log.md`, and `.ai/state/changed-files.md`
-  compact.
+- Keep `.ai/state/task-state.md` and `.ai/knowledge/reflection-log.md` compact.
 - Archive only `.ai/knowledge/work-log.md`,
   `.ai/knowledge/reflection-log.md`, and `.ai/knowledge/decisions.md` into
   `.ai/archive/` when they grow past the documented thresholds.
-- Use `.ai/state/current-task.md` lifecycle fields for task/version
+- Use `.ai/state/task-state.md` lifecycle fields for task/version
   transitions.
   When a large task version is complete, mark its completion checklist and let
   `pnpm ace finish` archive a final snapshot.
@@ -119,8 +116,7 @@ safety:
    run project-owned `pnpm ace:validate`, and state publish/deploy decision when relevant.
    If release is deferred, say so explicitly.
 2. For small low-risk tasks, `pnpm ace finish` may auto-close compact
-   handoff, changed-files, work-log, and brief report notes without changing
-   current-task lifecycle.
+   task-state, work-log, and brief report notes without manual handoff prompts.
 3. For standard or large tasks, add product, architecture, security, and
    code-quality review notes.
 4. For large or high-risk tasks, confirm the design approach, add reflection

@@ -4,6 +4,10 @@ import { pathToFileURL } from 'node:url'
 import { promisify } from 'node:util'
 
 import {
+  buildCompletedTaskState,
+  extractTaskTitle,
+} from './ace-task-state.mjs'
+import {
   extractLabeledValue,
   extractMarkdownSection,
   extractUnresolvedReflections,
@@ -13,7 +17,6 @@ import {
   parseCliArgs,
   readMemoryFile,
   readTextIfExists,
-  replaceMarkdownSection,
   writeAceBanner,
   writeMemoryFile,
   writeTextFile,
@@ -21,8 +24,6 @@ import {
 import { classifyRepositoryTask } from './ai-task-classify.mjs'
 
 const execFileAsync = promisify(execFile)
-const SMALL_CLOSEOUT_START = '<!-- ace-small-closeout:start -->'
-const SMALL_CLOSEOUT_END = '<!-- ace-small-closeout:end -->'
 
 export function validateFinishRequirements({
   classification,
@@ -39,12 +40,12 @@ export function validateFinishRequirements({
   const qualityReview = extractMarkdownSection(handoffContent, 'Quality Review')
 
   if (!isSmallLowRiskClassification(classification) && !hasMeaningfulContent(businessValue)) {
-    missing.push('Fill .ai/current-task.md Business Value / Product Alignment.')
+    missing.push('Fill .ai/state/task-state.md Business Value / Product Alignment.')
   }
 
   if (classification.designReviewRequired && !hasDesignReview(technicalApproach)) {
     missing.push(
-      'Fill .ai/current-task.md Technical Approach with Option 1, Option 2, and Chosen Approach.',
+      'Fill .ai/state/task-state.md Technical Approach with Option 1, Option 2, and Chosen Approach.',
     )
   }
 
@@ -53,7 +54,7 @@ export function validateFinishRequirements({
     !hasQualityReview(qualityReview)
   ) {
     missing.push(
-      'Fill .ai/session-handoff.md Quality Review for product, architecture, security, and code quality.',
+      'Fill .ai/state/task-state.md Quality Review for product, architecture, security, and code quality.',
     )
   }
 
@@ -73,10 +74,10 @@ export function isSmallLowRiskClassification(classification) {
 }
 
 export async function archiveCurrentTask(rootDir) {
-  const currentTaskContent = await readMemoryFile(rootDir, 'currentTask')
+  const currentTaskContent = await readMemoryFile(rootDir, 'taskState')
 
   if (currentTaskContent === null) {
-    throw new Error('Cannot archive missing .ai/current-task.md.')
+    throw new Error('Cannot archive missing .ai/state/task-state.md.')
   }
 
   const lifecycle = extractMarkdownSection(currentTaskContent, 'Lifecycle')
@@ -107,9 +108,9 @@ async function main() {
     overrideTier: getArgValue(args, 'tier'),
   })
   const [currentTaskContent, handoffContent, reflectionLogContent] = await Promise.all([
-    requireAiFile(rootDir, 'current-task.md'),
-    requireAiFile(rootDir, 'session-handoff.md'),
-    requireAiFile(rootDir, 'reflection-log.md'),
+    requireAiFile(rootDir, 'taskState', '.ai/state/task-state.md'),
+    requireAiFile(rootDir, 'taskState', '.ai/state/task-state.md'),
+    requireAiFile(rootDir, 'reflectionLog', '.ai/knowledge/reflection-log.md'),
   ])
   const missing = validateFinishRequirements({
     classification,
@@ -130,8 +131,7 @@ async function main() {
 
   if (isSmallLowRiskClassification(classification)) {
     await autoCloseSmallTask(rootDir, {
-      classification,
-      handoffContent,
+      taskStateContent: currentTaskContent,
     })
   }
 
@@ -149,96 +149,35 @@ async function main() {
   process.stderr.write(`Adaptive task finish passed for ${classification.tier} task.\n`)
 }
 
-async function autoCloseSmallTask(rootDir, { classification, handoffContent }) {
+async function autoCloseSmallTask(rootDir, { taskStateContent }) {
   const timestamp = formatTimestamp(new Date())
-  const changedFiles = classification.changedFiles ?? []
-  const changedFileSummary =
-    changedFiles.length > 0 ? changedFiles.join(', ') : 'No working-tree changes detected'
-  const verification = extractMarkdownSection(handoffContent, 'Verification')
+  const taskTitle = extractTaskTitle(taskStateContent)
+  const diffSummary = await readGitDiffSummary(rootDir)
+  const changedSummary = summarizeGitState(diffSummary)
+  const verification = extractMarkdownSection(taskStateContent, 'Verification')
   const verificationLine = hasMeaningfulContent(verification)
     ? 'Existing verification notes were preserved.'
     : 'No explicit verification was recorded for this small low-risk auto-closeout.'
 
   await Promise.all([
-    writeSmallHandoff(rootDir, {
-      changedFileSummary,
-      handoffContent,
-      timestamp,
-      verificationLine,
-    }),
-    writeSmallChangedFiles(rootDir, {
-      changedFiles,
-    }),
     writeSmallWorkLog(rootDir, {
-      changedFileSummary,
+      diffSummary,
+      taskTitle,
       timestamp,
       verificationLine,
     }),
+    writeMemoryFile(rootDir, 'taskState', buildCompletedTaskState({
+      changedSummary,
+      taskTitle,
+      timestamp,
+      verificationLine,
+    })),
   ])
 }
 
-async function writeSmallHandoff(rootDir, {
-  changedFileSummary,
-  handoffContent,
-  timestamp,
-  verificationLine,
-}) {
-  let nextContent = replaceMarkdownSection(handoffContent, 'Last Update', timestamp)
-
-  nextContent = mergeSection(nextContent, 'What Was Done', [
-    'ACE small-task auto-closeout:',
-    '- Classified as small low-risk.',
-    `- Changed files: ${changedFileSummary}.`,
-  ].join('\n'))
-  nextContent = mergeSection(nextContent, 'Current State', [
-    'ACE small-task auto-closeout:',
-    '- Small low-risk closeout artifacts are synchronized.',
-    '- Current task lifecycle was left unchanged.',
-  ].join('\n'))
-  nextContent = mergeSection(nextContent, 'Verification', [
-    'ACE small-task auto-closeout:',
-    `- ${verificationLine}`,
-  ].join('\n'))
-  nextContent = mergeSection(nextContent, 'Next Steps', [
-    'ACE small-task auto-closeout:',
-    '- No terminal command detected for this small low-risk closeout.',
-  ].join('\n'))
-  nextContent = mergeSection(nextContent, 'Notes', [
-    'ACE small-task auto-closeout:',
-    '- NPM publish: not required for this small low-risk closeout unless repository release policy says otherwise.',
-  ].join('\n'))
-
-  await writeMemoryFile(rootDir, 'sessionHandoff', nextContent)
-}
-
-async function writeSmallChangedFiles(rootDir, { changedFiles }) {
-  const currentContent = (await readMemoryFile(rootDir, 'changedFiles')) ?? '# Changed Files\n'
-  const missingEntries =
-    changedFiles.length > 0
-      ? changedFiles.filter((filePath) => !currentContent.includes(`[${filePath}]`))
-      : currentContent.includes('[No working-tree changes]')
-        ? []
-        : ['No working-tree changes']
-
-  if (missingEntries.length === 0) {
-    return
-  }
-
-  const entries = missingEntries
-    .map((filePath) => {
-      if (filePath === 'No working-tree changes') {
-        return `[${filePath}]\n- Small low-risk auto-closeout found no changed files.`
-      }
-
-      return `[${filePath}]\n- Small low-risk auto-closeout recorded this changed path.`
-    })
-    .join('\n\n')
-
-  await writeMemoryFile(rootDir, 'changedFiles', `${currentContent.trimEnd()}\n\n${entries}\n`)
-}
-
 async function writeSmallWorkLog(rootDir, {
-  changedFileSummary,
+  diffSummary,
+  taskTitle,
   timestamp,
   verificationLine,
 }) {
@@ -246,46 +185,60 @@ async function writeSmallWorkLog(rootDir, {
   const entry = [
     `## ${timestamp}`,
     '',
-    '- ACE auto-closed a small low-risk task.',
-    `- Changed files: ${changedFileSummary}.`,
+    `- ACE auto-closed small task: ${taskTitle}.`,
     `- ${verificationLine}`,
     '- NPM publish: not required for this small low-risk closeout unless repository release policy says otherwise.',
+    '',
+    '```text',
+    diffSummary,
+    '```',
   ].join('\n')
 
   await writeMemoryFile(rootDir, 'workLog', `${currentContent.trimEnd()}\n\n${entry}\n`)
 }
 
-function mergeSection(content, heading, generatedBody) {
-  const currentSection = extractMarkdownSection(content, heading)
-  const generatedBlock = formatSmallCloseoutBlock(generatedBody)
-
-  if (!hasMeaningfulContent(currentSection)) {
-    return replaceMarkdownSection(content, heading, generatedBlock)
-  }
-
-  if (currentSection.includes(SMALL_CLOSEOUT_START)) {
-    const pattern = new RegExp(
-      `${escapeRegExp(SMALL_CLOSEOUT_START)}[\\s\\S]*?${escapeRegExp(SMALL_CLOSEOUT_END)}`,
-      'm',
-    )
-    return replaceMarkdownSection(content, heading, currentSection.replace(pattern, generatedBlock))
-  }
-
-  return replaceMarkdownSection(content, heading, `${currentSection}\n\n${generatedBlock}`)
-}
-
-function formatSmallCloseoutBlock(body) {
-  return `${SMALL_CLOSEOUT_START}\n${body}\n${SMALL_CLOSEOUT_END}`
-}
-
-async function requireAiFile(rootDir, fileName) {
-  const content = await readMemoryFile(rootDir, fileName)
+async function requireAiFile(rootDir, memoryKey, displayPath) {
+  const content = await readMemoryFile(rootDir, memoryKey)
 
   if (content === null) {
-    throw new Error(`Missing required file: .ai/${fileName}`)
+    throw new Error(`Missing required file: ${displayPath}`)
   }
 
   return content
+}
+
+async function readGitDiffSummary(rootDir) {
+  const diffStat = await gitOutput(rootDir, ['diff', '--stat', 'HEAD', '--'])
+
+  if (diffStat.trim()) {
+    return diffStat.trim()
+  }
+
+  const status = await gitOutput(rootDir, ['status', '--short'])
+  return status.trim() || 'No working-tree changes detected.'
+}
+
+async function gitOutput(rootDir, args) {
+  try {
+    const result = await execFileAsync('git', args, {
+      cwd: rootDir,
+      encoding: 'utf8',
+      maxBuffer: 1024 * 1024,
+    })
+
+    return result.stdout
+  } catch {
+    return ''
+  }
+}
+
+function summarizeGitState(diffSummary) {
+  return diffSummary
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .slice(0, 4)
+    .join('; ') || 'No working-tree changes detected.'
 }
 
 async function runNodeScript(rootDir, scriptName) {
@@ -342,6 +295,6 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   await main()
 }

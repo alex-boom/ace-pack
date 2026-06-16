@@ -1,5 +1,6 @@
 import path from 'node:path'
 
+import { autoMigrateLegacyTaskState } from './ace-task-state.mjs'
 import {
   countCheckboxes,
   buildStartSnapshot,
@@ -21,61 +22,55 @@ import {
 
 const rootDir = process.argv[2] ? path.resolve(process.cwd(), process.argv[2]) : process.cwd()
 
+await autoMigrateLegacyTaskState(rootDir, { stderr: process.stderr })
+
 const [
   packageJsonContent,
   agentsContent,
-  currentTaskContent,
-  handoffContent,
+  taskStateContent,
   decisionsContent,
-  changedFilesContent,
   reflectionLogContent,
   projectProfileContent,
-  currentTaskTimestamp,
-  handoffTimestamp,
+  taskStateTimestamp,
 ] = await Promise.all([
   readTextIfExists(path.join(rootDir, 'package.json')),
   readTextIfExists(path.join(rootDir, 'AGENTS.md')),
-  readMemoryFile(rootDir, 'currentTask'),
-  readMemoryFile(rootDir, 'sessionHandoff'),
+  readMemoryFile(rootDir, 'taskState'),
   readMemoryFile(rootDir, 'decisions'),
-  readMemoryFile(rootDir, 'changedFiles'),
   readMemoryFile(rootDir, 'reflectionLog'),
   readMemoryFile(rootDir, 'projectProfile'),
-  readMemoryFileTimestamp(rootDir, 'currentTask'),
-  readMemoryFileTimestamp(rootDir, 'sessionHandoff'),
+  readMemoryFileTimestamp(rootDir, 'taskState'),
 ])
 
 if (
   packageJsonContent === null ||
   agentsContent === null ||
-  currentTaskContent === null ||
-  handoffContent === null ||
-  decisionsContent === null ||
-  changedFilesContent === null
+  taskStateContent === null ||
+  decisionsContent === null
 ) {
   throw new Error('Missing package, AGENTS.md, or required .ai/* files for ai:report:brief.')
 }
 
 const packageJson = JSON.parse(packageJsonContent)
-const lifecycle = extractMarkdownSection(currentTaskContent, 'Lifecycle')
-const currentStatus = extractMarkdownSection(currentTaskContent, 'Current Status')
-const nextSteps = extractMarkdownSection(handoffContent, 'Next Steps')
-const knownIssues = extractMarkdownSection(handoffContent, 'Known Issues')
-const verification = summarizeVerification(extractMarkdownSection(handoffContent, 'Verification'))
+const lifecycle = extractMarkdownSection(taskStateContent, 'Lifecycle')
+const currentStatus = extractMarkdownSection(taskStateContent, 'Current Status')
+const nextSteps = extractMarkdownSection(taskStateContent, 'Next Steps')
+const knownIssues = extractMarkdownSection(taskStateContent, 'Known Issues')
+const verification = summarizeVerification(extractMarkdownSection(taskStateContent, 'Verification'))
 const generatedAt = new Date()
 const stack = resolveStackSummary(agentsContent, projectProfileContent ?? '')
 const checklist = countCheckboxes(
-  extractMarkdownSection(currentTaskContent, 'Completion Checklist'),
+  extractMarkdownSection(taskStateContent, 'Completion Checklist'),
 )
-const changedAreas = extractChangedFileTitles(changedFilesContent, 6)
+const changedAreas = extractChangedFileTitles(taskStateContent, 6)
 const topDecision = extractTopDecision(decisionsContent)
 const unresolvedReflections = extractUnresolvedReflections(reflectionLogContent ?? '', 5)
-const freshness = getFreshnessStatus(generatedAt, currentTaskTimestamp, handoffTimestamp)
+const freshness = getFreshnessStatus(generatedAt, taskStateTimestamp)
 const currentTaskVersion = extractLabeledValue(lifecycle, 'Version') || 'unknown'
 const currentTaskTier = extractLabeledValue(lifecycle, 'Task Tier') || 'unknown'
 const startSnapshot = await buildStartSnapshot({
-  currentTaskContent,
-  handoffContent,
+  currentTaskContent: taskStateContent,
+  handoffContent: taskStateContent,
   rootDir,
 })
 
@@ -88,8 +83,7 @@ Project: \`${packageJson.name}\`
 - Freshness: ${freshness}
 - Current task version: ${currentTaskVersion}
 - Current task tier: ${currentTaskTier}
-- Source current-task: ${currentTaskTimestamp ? formatTimestamp(currentTaskTimestamp) : 'Unknown'}
-- Source session-handoff: ${handoffTimestamp ? formatTimestamp(handoffTimestamp) : 'Unknown'}
+- Source task-state: ${taskStateTimestamp ? formatTimestamp(taskStateTimestamp) : 'Unknown'}
 - Verification level: ${verification.level}
 
 ## Start Snapshot
@@ -99,16 +93,16 @@ ${formatStartSnapshot(startSnapshot)}
 ${stack}
 
 ## Current Task
-${extractMarkdownSection(currentTaskContent, 'Feature Name')}
+${extractMarkdownSection(taskStateContent, 'Feature Name')}
 
 ## Lifecycle
 ${lifecycle}
 
 ## Goal
-${extractMarkdownSection(currentTaskContent, 'Goal')}
+${extractMarkdownSection(taskStateContent, 'Goal')}
 
 ## Business Value
-${extractMarkdownSection(currentTaskContent, 'Business Value / Product Alignment') || '- Not recorded.'}
+${extractMarkdownSection(taskStateContent, 'Business Value / Product Alignment') || '- Not recorded.'}
 
 ## Current Status
 ${currentStatus}
@@ -133,7 +127,7 @@ ${changedAreas.length > 0 ? changedAreas.map((item) => `- \`${item}\``).join('\n
 
 ## Overall Progress
 - Completion checklist: ${checklist.complete}/${checklist.total}
-- Source of truth: \`.ai/*\` files remain authoritative.
+- Source of truth: \`.ai/state/task-state.md\` and \`.ai/*\` files remain authoritative.
 `
 
 const [outputPath] = await writeMemoryFile(rootDir, 'reportBrief', briefReport)

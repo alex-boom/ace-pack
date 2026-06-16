@@ -9,8 +9,9 @@ import {
   agentsWorkflowSection,
   claudeTemplate,
 } from './agent-memory-templates.mjs'
+import { autoMigrateLegacyTaskState } from './ace-task-state.mjs'
 import {
-  migrateMemorySchemaV2,
+  migrateMemorySchemaV3,
   readMemoryFile,
   readTextIfExists,
   writeTextFile,
@@ -79,6 +80,11 @@ export async function ensureAgentMemory(rootDir) {
   const updatedFiles = []
   const agentsPath = path.join(rootDir, 'AGENTS.md')
   const claudePath = path.join(rootDir, 'CLAUDE.md')
+  const taskMigration = await autoMigrateLegacyTaskState(rootDir, { stderr: process.stderr })
+
+  if (taskMigration.migrated) {
+    createdFiles.push('.ai/state/task-state.md')
+  }
 
   if (await ensureAgentsWorkflow(agentsPath)) {
     updatedFiles.push('AGENTS.md')
@@ -96,7 +102,7 @@ export async function ensureAgentMemory(rootDir) {
     }
   }
 
-  const migrationResult = await migrateMemorySchemaV2(rootDir)
+  const migrationResult = await migrateMemorySchemaV3(rootDir)
   createdFiles.push(...migrationResult.createdFiles)
   updatedFiles.push(...migrationResult.updatedFiles)
 
@@ -108,6 +114,8 @@ export async function ensureAgentMemory(rootDir) {
 
 export async function validateAgentMemory(rootDir) {
   const issues = []
+  await autoMigrateLegacyTaskState(rootDir, { stderr: process.stderr })
+
   const agentsPath = path.join(rootDir, 'AGENTS.md')
   const claudePath = path.join(rootDir, 'CLAUDE.md')
   const agentsContent = await readTextIfExists(agentsPath)

@@ -4,7 +4,7 @@ import path from 'node:path'
 
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { installAcePack } from '../install-ace-pack.mjs'
+import { installAcePack } from '../scripts/ace-install-lib.mjs'
 import { runAceDestroy } from '../scripts/ace-destroy.mjs'
 import { runAceEject } from '../scripts/ace-eject.mjs'
 
@@ -125,6 +125,7 @@ describe('ACE eject and destroy', () => {
     await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`, 'utf8')
     await writeRepoFile(rootDir, 'AGENTS.md', '# AGENTS.md\n\n## Project Rules\n\nKeep custom rules.\n')
     await writeRepoFile(rootDir, 'CLAUDE.md', '# Custom Claude\n')
+    await writeRepoFile(rootDir, '.cursorrules', 'custom cursor rules\n')
     await writeRepoFile(rootDir, 'DEVELOPING.md', '# Developing\n')
     await writeRepoFile(rootDir, 'ROADMAP.md', '# Roadmap\n')
     await writeRepoFile(rootDir, 'scripts/build.mjs', 'console.log("build")\n')
@@ -143,6 +144,9 @@ describe('ACE eject and destroy', () => {
       '# AGENTS.md\n\n## Project Rules\n\nKeep custom rules.\n',
     )
     await expect(readFile(path.join(rootDir, 'CLAUDE.md'), 'utf8')).resolves.toBe('# Custom Claude\n')
+    await expect(readFile(path.join(rootDir, '.cursorrules'), 'utf8')).resolves.toBe(
+      'custom cursor rules\n',
+    )
     await expect(exists(path.join(rootDir, 'DEVELOPING.md'))).resolves.toBe(true)
     await expect(exists(path.join(rootDir, 'ROADMAP.md'))).resolves.toBe(true)
 

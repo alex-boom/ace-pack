@@ -6,7 +6,7 @@ import { promisify } from 'node:util'
 
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { installAcePack } from '../install-ace-pack.mjs'
+import { installAcePack } from '../scripts/ace-install-lib.mjs'
 import { validateFinishRequirements } from '../scripts/ai-task-finish.mjs'
 
 const tempDirs: string[] = []
@@ -88,7 +88,7 @@ describe('validateFinishRequirements', () => {
     })
 
     expect(missing).toContain(
-      'Fill .ai/current-task.md Technical Approach with Option 1, Option 2, and Chosen Approach.',
+      'Fill .ai/state/task-state.md Technical Approach with Option 1, Option 2, and Chosen Approach.',
     )
   })
 
@@ -101,7 +101,7 @@ describe('validateFinishRequirements', () => {
     })
 
     expect(missing).toContain(
-      'Fill .ai/current-task.md Technical Approach with Option 1, Option 2, and Chosen Approach.',
+      'Fill .ai/state/task-state.md Technical Approach with Option 1, Option 2, and Chosen Approach.',
     )
   })
 
@@ -114,7 +114,7 @@ describe('validateFinishRequirements', () => {
     })
 
     expect(missing).toContain(
-      'Fill .ai/session-handoff.md Quality Review for product, architecture, security, and code quality.',
+      'Fill .ai/state/task-state.md Quality Review for product, architecture, security, and code quality.',
     )
   })
 
@@ -138,13 +138,15 @@ describe('ace:finish small auto-closeout', () => {
     await writeFile(path.join(rootDir, 'AGENTS.md'), '# AGENTS.md\n\n## Project Rules\n\nTest.\n')
     await installAcePack(rootDir)
     await writeFile(
-      path.join(rootDir, '.ai/current-task.md'),
-      `# Current Task
+      path.join(rootDir, '.ai/state/task-state.md'),
+      `# Task State
 
-## Feature Name
+## Lifecycle & Meta
+
+### Feature Name
 Small typo fix
 
-## Lifecycle
+### Lifecycle
 Status: active
 Version: v1
 Task Tier: small
@@ -152,78 +154,85 @@ Design Review Required: no
 Started: 2026-06-14 14:30
 Ready For Archive: no
 
-## Goal
+### Goal
 Fix a small typo.
 
-## Business Value / Product Alignment
-TODO
-
-## Technical Approach
-TODO
-
-## Current Status
+### Current Status
 - [ ] Fix typo.
 
-## Affected Areas
+### Affected Areas
 - README.md
 
-## Constraints
+### Constraints
 - Keep the change small.
 
-## Acceptance Criteria
+### Acceptance Criteria
 - Typo is fixed.
 
-## Completion Checklist
+### Completion Checklist
 - [ ] Goal completed
-`,
-    )
-    await writeFile(
-      path.join(rootDir, '.ai/session-handoff.md'),
-      `# Session Handoff
 
-## Last Update
+## Business Value & Approach
+
+### Business Value / Product Alignment
+TODO
+
+### Technical Approach
+TODO
+
+## Changed Files / Diff
+
+[README.md]
+- Typo fix.
+
+## Handoff & Next Steps
+
+### Last Update
 2026-06-14 14:30
 
-## What Was Done
+### What Was Done
 TODO
 
-## Current State
+### Current State
 TODO
 
-## Quality Review
+### Quality Review
 TODO
 
-## Next Steps
+### Next Steps
 TODO
 
-## Known Issues
+### Known Issues
 None.
 
-## Verification
+### Verification
 TODO
 
-## Notes
+### Notes
 TODO
 `,
     )
+    await execFileAsync('git', ['init'], { cwd: rootDir })
+    await execFileAsync('git', ['config', 'user.email', 'ace@example.com'], { cwd: rootDir })
+    await execFileAsync('git', ['config', 'user.name', 'ACE Test'], { cwd: rootDir })
+    await execFileAsync('git', ['add', '.'], { cwd: rootDir })
+    await execFileAsync('git', ['commit', '-m', 'Initial fixture'], { cwd: rootDir })
+    await writeFile(path.join(rootDir, 'README.md'), 'changed\n', 'utf8')
 
     await execFileAsync(process.execPath, [path.join(rootDir, 'scripts/ai-task-finish.mjs')], {
       cwd: rootDir,
     })
 
-    const currentTask = await readFile(path.join(rootDir, '.ai/state/current-task.md'), 'utf8')
-    const handoff = await readFile(path.join(rootDir, '.ai/state/session-handoff.md'), 'utf8')
-    const changedFiles = await readFile(path.join(rootDir, '.ai/state/changed-files.md'), 'utf8')
+    const taskState = await readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')
     const workLog = await readFile(path.join(rootDir, '.ai/knowledge/work-log.md'), 'utf8')
     const archiveFiles = await readdir(path.join(rootDir, '.ai/archive/tasks'))
 
-    expect(currentTask).toContain('Status: active')
-    expect(currentTask).toContain('Ready For Archive: no')
-    expect(handoff).toContain('ACE small-task auto-closeout')
-    expect(handoff).toContain('No explicit verification was recorded')
-    expect(handoff).toContain('NPM publish: not required')
-    expect(changedFiles).toContain('[No working-tree changes]')
-    expect(workLog).toContain('ACE auto-closed a small low-risk task.')
+    expect(taskState).toContain('Status: complete')
+    expect(taskState).toContain('Ready For Archive: yes')
+    expect(taskState).toContain('Small typo fix')
+    expect(taskState).toContain('NPM publish: not required')
+    expect(workLog).toContain('ACE auto-closed small task: Small typo fix.')
+    expect(workLog).toContain('README.md')
     expect(archiveFiles).toEqual(['.gitkeep'])
   })
 })

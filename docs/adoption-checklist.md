@@ -41,7 +41,7 @@ Review:
 - `.ai/config/project-profile.md`
 - `.ai/config/memory-config.json`
 - `AGENTS.md`
-- `.ai/state/current-task.md`
+- `.ai/state/task-state.md`
 
 The goal is not to make every file high-risk. The goal is to make sensitive
 paths visible before an AI agent edits them.

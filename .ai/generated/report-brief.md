@@ -3,97 +3,99 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-16 12:47
+- Generated: 2026-06-16 13:58
 - Freshness: Fresh
-- Current task version: v1
+- Current task version: v3.0.0
 - Current task tier: large
-- Source current-task: 2026-06-16 12:47
-- Source session-handoff: 2026-06-16 12:47
+- Source task-state: 2026-06-16 13:54
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (5 changed files)
-- Last commit: 770ba13 Bump version to 2.2.0 and implement Project Conventions Discovery feature. Added `ace discover` command to generate a concise project conventions registry, enhancing agent context. Updated documentation across README, ROADMAP, and schema compatibility files to reflect new functionality and integration. Ensured backward compatibility with legacy paths and maintained zero-dependency principles.
-- Task: complete (tier: large, version: v1, ready for archive: yes)
-- Next command: No command detected
-- Release decision: Not recorded
+- Worktree: dirty (55 changed files)
+- Last commit: 642a27d Finalize v2.2.0 release for Project Conventions Discovery. Implemented `ace discover` to generate a concise project conventions registry, enhancing agent context. Updated documentation and confirmed successful publication to npm. Marked task as complete and ready for archive.
+- Task: complete (tier: large, version: v3.0.0, ready for archive: yes)
+- Next command: `npm.cmd run publish:npm`
+- Release decision: NPM publish: required before final release; deferred by maintainer.
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
 
 ## Current Task
-v2.2.0 Project Conventions Discovery
+ACE Pack v3.0.0 DevEx Overhaul
 
 ## Lifecycle
 Status: complete
-Version: v1
+Version: v3.0.0
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-16 12:33
+Started: 2026-06-16 13:00
 Ready For Archive: yes
 
 ## Goal
-Ship `ace discover` so installed repositories can generate a concise local
-Project Conventions and Pattern Registry for AI agents.
+Ship the v3 memory schema and DevEx overhaul as one npm major release without
+publishing intermediate package versions.
 
 ## Business Value
-This directly addresses architectural drift in established codebases. ACE will
-help agents reuse a project's existing UI, routing, logging, error-handling,
-database, and package-layout patterns instead of inventing parallel ones.
+This release removes ACE's highest-friction daily DevEx issues: active task
+state no longer sprawls across three files, IDE agents get native startup
+bridges without clobbering user rules, and small tasks can close without manual
+handoff ceremony.
 
 ## Current Status
-- [x] Implement `ace discover` scanner and overwrite protection.
-- [x] Wire router, install, hub, memory paths, MCP, docs, and version.
-- [x] Add focused tests and release-readiness checks.
-- [x] Publish `ace-pack@2.2.0` to npm.
+- [x] Consolidated active task memory into `.ai/state/task-state.md`.
+- [x] Added deterministic v2 legacy task-file auto-migration with backups.
+- [x] Added managed IDE bridge blocks and safe destroy cleanup.
+- [x] Made small low-risk finish zero-ceremony from task-state plus current git state.
+- [x] Updated docs, package version, tests, smoke, and release dry-run.
 
 ## Next Steps
-- Commit the completed v2.2.0 release work when ready.
+- Maintainer can review the diff and run `npm.cmd run publish:npm` to publish
+  `ace-pack@3.0.0` when ready.
 
 ## Risks / Blockers
-- None known for the published v2.2.0 release.
+- None known after release-readiness checks.
 
 ## Verification
-- `npm.cmd run ace -- classify` passed before implementation; the clean
-worktree detected as `small`, but the shipped command scope is treated as
-large.
-- Focused Vitest passed: 7 files, 54 tests.
-- `npm.cmd run test` passed: 16 files, 123 tests.
+- `pnpm.cmd typecheck` passed.
+- `pnpm.cmd lint` passed.
+- `pnpm.cmd test` passed: 16 files, 123 tests.
 - `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
 
 ## Recent Decision
-## 2026-06-16 12:33
+## 2026-06-16 13:51
 
 Decision:
-- Implement Project Conventions Discovery as deterministic local `ace discover`
-  heuristics instead of AI-provider analysis.
+- Implement ACE Pack v3.0.0 as a consolidated task-state memory schema with
+  deterministic legacy auto-migration, managed IDE rule blocks, and
+  zero-ceremony small-task finish.
 
 Reason:
-- ACE must preserve its local-first, zero-dependency, no-hidden-AI-calls
-  promise while still helping agents reuse established repository patterns.
-  Simple import/dependency/path signals are less brittle than pseudo-AST regex
-  parsing and safer for large private repositories.
+- The old current-task, session-handoff, and changed-files split created
+  avoidable file sprawl and agent desynchronization. IDE rule bridging must be
+  native but must never overwrite user-owned editor instructions.
 
 Impact:
-- `ace discover` writes `.ai/knowledge/project-conventions.md` with a managed
-  marker and protects human-written files unless `--force` is passed.
-- `ace hub` and the read-only MCP adapter can expose the conventions summary
-  when it exists.
-- Future AI-assisted convention discovery remains a separate explicit opt-in
-  feature, not part of the default v2.2 workflow.
+- `.ai/state/task-state.md` is the canonical active task file, with
+  `.ai/task-state.md` as a legacy alias.
+- Legacy task files are backed up under `.ai/archive/migrations/` before safe
+  cleanup.
+- `.cursorrules`, `.windsurfrules`, and Copilot instructions use
+  `ace-managed-ide-rules` blocks that `ace destroy` can remove surgically.
+- `ace-pack@3.0.0` is a major release; npm publish is required only for the
+  final reviewed release.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.
 
 ## Changed Areas
-- `package.json`
-- `scripts/ace-discover.mjs`
-- `scripts/ace-cli.mjs, scripts/ai-memory-utils.mjs, scripts/ace-hub.mjs, scripts/ace-mcp-server.mjs`
-- `scripts/ace-uninstall-utils.mjs, install/tests`
-- `README.md, README.npm.md, docs/schema-compatibility.md, ROADMAP.md`
-- `.ai/**`
+- `scripts/ace-task-state.mjs`
+- `scripts/ai-memory-utils.mjs, scripts/ai-markdown-utils.mjs, scripts/ai-report-utils.mjs`
+- `scripts/agent-memory-templates.mjs, scripts/agent-memory-lib.mjs, scripts/ace-cli.mjs, scripts/ace-migrate.mjs`
+- `scripts/ai-report*.mjs, scripts/ace-hub.mjs, scripts/ace-quality-gate.mjs, scripts/ai-update.mjs, scripts/ace-mcp-server.mjs`
+- `scripts/ai-task-finish.mjs`
+- `scripts/ace-uninstall-utils.mjs, install-ace-pack.mjs, install-agent-memory-pack.mjs, scripts/ace-install-lib.mjs, scripts/bootstrap-agent-memory.mjs, scripts/ace-destroy.mjs`
 
 ## Overall Progress
-- Completion checklist: 9/9
-- Source of truth: `.ai/*` files remain authoritative.
+- Completion checklist: 6/6
+- Source of truth: `.ai/state/task-state.md` and `.ai/*` files remain authoritative.

@@ -1,6 +1,6 @@
 {
   "name": "ace-pack",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "Local AgentOps for AI coding agents: durable memory, guardrails, and quality gates for vibe coding in real repositories.",
   "type": "module",
   "license": "MIT",
@@ -56,12 +56,14 @@
     "publish:npm": "npm run build:npm-package && npm publish ./.npm-publish",
     "release:npm:dry": "npm run check:npm-payload && npm run preview:npm && npm run publish:npm:dry",
     "release:npm": "npm run check:npm-payload && npm run preview:npm && npm run publish:npm",
-    "release:ready": "npm run test && npm run smoke:fake-project && npm run ace -- gate && npm run check:npm-payload && npm run release:npm:dry",
+    "release:ready": "npm run typecheck && npm run lint && npm run test && npm run smoke:fake-project && npm run ace -- gate && npm run check:npm-payload && npm run release:npm:dry",
     "smoke:fake-project": "node ./tools/smoke-fake-project.mjs",
     "dogfood:self-check": "node ./tools/dogfood-self-check.mjs",
     "ace": "node ./scripts/ace-cli.mjs",
-    "ace:validate": "npm run test",
-    "test": "vitest run"
+    "ace:validate": "npm run typecheck && npm run lint && npm run test",
+    "test": "vitest run",
+    "typecheck": "node ./tools/check-js-syntax.mjs",
+    "lint": "node ./tools/check-line-limit.mjs"
   },
   "devDependencies": {
     "@types/node": "^20.19.43",

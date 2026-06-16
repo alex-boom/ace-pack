@@ -19,15 +19,14 @@ const GITHUB_ACTION_PATH = '.github/workflows/ace-quality-gate.yml'
 
 export async function runQualityGate(rootDir, options = {}) {
   const humanOverride = normalizeHumanOverride(options.humanOverride)
-  const [memoryIssues, classification, currentTaskContent, handoffContent, reflectionLogContent] =
+  const [memoryIssues, classification, taskStateContent, reflectionLogContent] =
     await Promise.all([
       validateAgentMemory(rootDir),
       classifyRepositoryTask(rootDir, {
         baseRef: options.baseRef,
         headRef: options.headRef,
       }),
-      readAiFile(rootDir, 'current-task.md'),
-      readAiFile(rootDir, 'session-handoff.md'),
+      readAiFile(rootDir, 'task-state.md'),
       readAiFile(rootDir, 'reflection-log.md'),
     ])
   const issues = []
@@ -44,11 +43,11 @@ export async function runQualityGate(rootDir, options = {}) {
     })
   }
 
-  if (currentTaskContent !== null && handoffContent !== null && reflectionLogContent !== null) {
+  if (taskStateContent !== null && reflectionLogContent !== null) {
     for (const missingRequirement of validateFinishRequirements({
       classification,
-      currentTaskContent,
-      handoffContent,
+      currentTaskContent: taskStateContent,
+      handoffContent: taskStateContent,
       reflectionLogContent,
     })) {
       if (!shouldEnforceFinishRequirement(missingRequirement, classification)) {
@@ -59,14 +58,14 @@ export async function runQualityGate(rootDir, options = {}) {
     }
   }
 
-  if (handoffContent !== null) {
-    const verification = extractMarkdownSection(handoffContent, 'Verification')
+  if (taskStateContent !== null) {
+    const verification = extractMarkdownSection(taskStateContent, 'Verification')
 
     if (!isSmallLowRiskClassification(classification) && !hasMeaningfulContent(verification)) {
       issues.push({
         code: 'handoff-verification-missing',
-        fix: 'Record the checks that passed in .ai/session-handoff.md Verification, or explicitly document why a check could not be run.',
-        message: '.ai/session-handoff.md Verification is missing or still placeholder text.',
+        fix: 'Record the checks that passed in .ai/state/task-state.md Verification, or explicitly document why a check could not be run.',
+        message: '.ai/state/task-state.md Verification is missing or still placeholder text.',
       })
     }
   }
@@ -171,24 +170,24 @@ function createFinishIssue(missingRequirement, classification) {
   if (missingRequirement.includes('Business Value / Product Alignment')) {
     return {
       code: 'business-value-missing',
-      fix: 'Fill .ai/current-task.md Business Value / Product Alignment with the user or business reason for the change.',
-      message: '.ai/current-task.md Business Value / Product Alignment is incomplete.',
+      fix: 'Fill .ai/state/task-state.md Business Value / Product Alignment with the user or business reason for the change.',
+      message: '.ai/state/task-state.md Business Value / Product Alignment is incomplete.',
     }
   }
 
   if (missingRequirement.includes('Technical Approach')) {
     return {
       code: 'technical-approach-missing',
-      fix: 'Add Option 1, Option 2, and Chosen Approach to .ai/current-task.md, then rerun ace gate.',
-      message: `${describeRisk(classification)}, but .ai/current-task.md Technical Approach is incomplete.`,
+      fix: 'Add Option 1, Option 2, and Chosen Approach to .ai/state/task-state.md, then rerun ace gate.',
+      message: `${describeRisk(classification)}, but .ai/state/task-state.md Technical Approach is incomplete.`,
     }
   }
 
   if (missingRequirement.includes('Quality Review')) {
     return {
       code: 'quality-review-missing',
-      fix: 'Fill .ai/session-handoff.md Quality Review with Product Alignment, Architecture, Security, and Code Quality notes.',
-      message: `${classification.tier} task detected, but .ai/session-handoff.md Quality Review is incomplete.`,
+      fix: 'Fill .ai/state/task-state.md Quality Review with Product Alignment, Architecture, Security, and Code Quality notes.',
+      message: `${classification.tier} task detected, but .ai/state/task-state.md Quality Review is incomplete.`,
     }
   }
 
@@ -375,6 +374,6 @@ async function main() {
   }
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   await main()
 }
