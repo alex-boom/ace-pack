@@ -27,6 +27,7 @@ managed-block form instead of keeping duplicated legacy text.
 - [x] Fixed legacy IDE bridge exact-match normalization and cleaned dogfood IDE
   rule files to managed-block-only form.
 - [x] Bumped package version to `3.0.1` for the patch candidate.
+- [x] Published `ace-pack@3.0.1` to npm and confirmed `latest`.
 
 ### Affected Areas
 - `package.json`
@@ -136,7 +137,7 @@ Patch Note:
 ## Handoff & Next Steps
 
 ### Last Update
-2026-06-16 14:29
+2026-06-16 14:38
 
 ### What Was Done
 - Implemented ACE Pack v3.0.0 as one major release candidate with Memory Schema
@@ -151,6 +152,7 @@ Patch Note:
   dry-run release path.
 - Confirmed `ace-pack@3.0.0` is published on npm and tagged `latest`.
 - Fixed the v3 IDE bridge upgrade bug found in dogfood after publication.
+- Confirmed `ace-pack@3.0.1` is published on npm and tagged `latest`.
 
 ### Current State
 - `npm.cmd run release:ready` passes for `ace-pack@3.0.0`.
@@ -158,8 +160,8 @@ Patch Note:
 - This repo's local `.ai` dogfood memory was migrated to `.ai/state/task-state.md`
   during release checks with a backup under `.ai/archive/migrations/`.
 - No intermediate npm versions were published.
-- npm registry latest is `3.0.0`; package version is now `3.0.1` locally for
-  the IDE bridge upgrade patch candidate.
+- npm registry latest is `3.0.1`.
+- GitHub `main` matches `origin/main` at commit `6974eb4`.
 
 ### Quality Review
 Product Alignment:
@@ -181,8 +183,7 @@ Code Quality:
   release smoke paths.
 
 ### Next Steps
-- Run `npm.cmd run publish:npm` only if the maintainer wants to publish the
-  `ace-pack@3.0.1` IDE bridge fix to npm immediately.
+- No release action remains for v3.0.1.
 
 ### Known Issues
 - None known after release-readiness checks.
@@ -202,7 +203,11 @@ Code Quality:
 - `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
 - `npm.cmd run release:ready` passed for `ace-pack@3.0.1`, including npm
   payload guard and publish dry-run.
+- `npm.cmd view ace-pack version dist-tags time --json` confirmed npm latest is
+  `3.0.1`, published at `2026-06-16T11:37:47.243Z`.
+- `git status -sb` showed `main...origin/main` clean before this final local
+  ACE memory closeout update.
 
 ### Notes
-- NPM publish: required before final patch release; local package version is
-  `3.0.1`, while npm latest remains `3.0.0`.
+- NPM publish: not required; `ace-pack@3.0.1` is already published on npm and
+  tagged `latest`.

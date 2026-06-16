@@ -3,20 +3,20 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-16 14:35
+- Generated: 2026-06-16 14:40
 - Freshness: Fresh
 - Current task version: v3.0.1
 - Current task tier: small
-- Source task-state: 2026-06-16 14:35
+- Source task-state: 2026-06-16 14:39
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (10 changed files)
-- Last commit: 3bb4458 Finalize release of `ace-pack@3.0.0`, confirming successful publication to npm and tagging as `latest`. Updated task-state and documentation to reflect completion of major release, addressing previous development friction points and enhancing IDE integration. No further NPM publish required.
+- Worktree: dirty (2 changed files)
+- Last commit: 6974eb4 Upgrade to `ace-pack@3.0.1`, addressing IDE bridge issues by replacing old ACE-only rule files with managed blocks. Cleaned up legacy IDE bridge text and ensured proper normalization during upgrades. Updated documentation and tests to reflect these changes, confirming successful integration and functionality. No further NPM publish required at this time.
 - Task: complete (tier: small, version: v3.0.1, ready for archive: yes)
-- Next command: `npm.cmd run publish:npm`
-- Release decision: NPM publish: required before final patch release; local package version is
+- Next command: No command detected
+- Release decision: NPM publish: not required; `ace-pack@3.0.1` is already published on npm and
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
@@ -51,10 +51,10 @@ rules remain preserved.
 - [x] Fixed legacy IDE bridge exact-match normalization and cleaned dogfood IDE
   rule files to managed-block-only form.
 - [x] Bumped package version to `3.0.1` for the patch candidate.
+- [x] Published `ace-pack@3.0.1` to npm and confirmed `latest`.
 
 ## Next Steps
-- Run `npm.cmd run publish:npm` only if the maintainer wants to publish the
-  `ace-pack@3.0.1` IDE bridge fix to npm immediately.
+- No release action remains for v3.0.1.
 
 ## Risks / Blockers
 - None known after release-readiness checks.

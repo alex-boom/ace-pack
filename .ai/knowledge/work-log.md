@@ -334,3 +334,12 @@
 - Verified typecheck, lint, full Vitest, fake-project smoke, and
   `npm.cmd run release:ready` for `ace-pack@3.0.1`.
 - NPM publish: required before final patch release.
+
+## 2026-06-16 14:38
+
+- Confirmed `ace-pack@3.0.1` is published on npm and tagged `latest`.
+- Registry check returned version `3.0.1` and publish time
+  `2026-06-16T11:37:47.243Z`.
+- Confirmed local `main` matches `origin/main` at commit `6974eb4`.
+- Updated local ACE task-state for final v3.0.1 closeout.
+- NPM publish: not required; v3.0.1 is already published.
