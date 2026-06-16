@@ -289,3 +289,10 @@
 - Attempted `npm.cmd run release:npm`; npm rejected publish with `E404` /
   permission error, and registry latest remains `2.1.0`.
 - NPM publish: required before final release; blocked by npm permission.
+
+## 2026-06-16 12:46
+
+- Confirmed `ace-pack@2.2.0` is published on npm and tagged `latest`.
+- Updated repo-local ACE state so future sessions do not retry the v2.2.0
+  publish.
+- NPM publish: completed.

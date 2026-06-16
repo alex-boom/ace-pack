@@ -1,6 +1,6 @@
 # ACE Hub Context
 - Mode: start (Start / AI Coder Context)
-- Generated: 2026-06-16T09:38:11.668Z
+- Generated: 2026-06-16T09:47:45.520Z
 - Included files: .ai/generated/report-brief.md, .ai/state/current-task.md, .ai/state/session-handoff.md, .ai/state/changed-files.md, .ai/knowledge/reflection-log.md
 - Missing optional files: .ai/knowledge/project-conventions.md
 
@@ -11,21 +11,21 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-16 12:38
+- Generated: 2026-06-16 12:47
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-16 12:36
-- Source session-handoff: 2026-06-16 12:38
+- Source current-task: 2026-06-16 12:47
+- Source session-handoff: 2026-06-16 12:47
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (28 changed files)
-- Last commit: 0cbaa26 Add Project Conventions and Pattern Discovery to ROADMAP.md as a long-term research item. Mirrored the concept in product-roadmap.md, ensuring documentation-only changes with no impact on CLI behavior or package version.
-- Task: active (tier: large, version: v1, ready for archive: no)
-- Next command: `npm.cmd run release:npm`
-- Release decision: NPM publish: required before final release; blocked by npm permission.
+- Worktree: dirty (5 changed files)
+- Last commit: 770ba13 Bump version to 2.2.0 and implement Project Conventions Discovery feature. Added `ace discover` command to generate a concise project conventions registry, enhancing agent context. Updated documentation across README, ROADMAP, and schema compatibility files to reflect new functionality and integration. Ensured backward compatibility with legacy paths and maintained zero-dependency principles.
+- Task: complete (tier: large, version: v1, ready for archive: yes)
+- Next command: No command detected
+- Release decision: Not recorded
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
@@ -34,12 +34,12 @@ Detected ecosystems: Generic repository | Package manager: pnpm
 v2.2.0 Project Conventions Discovery
 
 ## Lifecycle
-Status: active
+Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
 Started: 2026-06-16 12:33
-Ready For Archive: no
+Ready For Archive: yes
 
 ## Goal
 Ship `ace discover` so installed repositories can generate a concise local
@@ -54,15 +54,13 @@ database, and package-layout patterns instead of inventing parallel ones.
 - [x] Implement `ace discover` scanner and overwrite protection.
 - [x] Wire router, install, hub, memory paths, MCP, docs, and version.
 - [x] Add focused tests and release-readiness checks.
-- [ ] Publish `ace-pack@2.2.0` after npm permissions are available.
+- [x] Publish `ace-pack@2.2.0` to npm.
 
 ## Next Steps
-- Fix npm auth/package permissions for ace-pack.
-- Run `npm.cmd run release:npm`.
-- Verify `npm.cmd view ace-pack version` returns `2.2.0`.
+- Commit the completed v2.2.0 release work when ready.
 
 ## Risks / Blockers
-- None known for the v2.2.0 candidate.
+- None known for the published v2.2.0 release.
 
 ## Verification
 - `npm.cmd run ace -- classify` passed before implementation; the clean
@@ -105,7 +103,7 @@ Impact:
 - `.ai/**`
 
 ## Overall Progress
-- Completion checklist: 0/9
+- Completion checklist: 9/9
 - Source of truth: `.ai/*` files remain authoritative.
 
 # --- FILE: .ai/state/current-task.md ---
@@ -116,12 +114,12 @@ Impact:
 v2.2.0 Project Conventions Discovery
 
 ## Lifecycle
-Status: active
+Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
 Started: 2026-06-16 12:33
-Ready For Archive: no
+Ready For Archive: yes
 
 ## Goal
 Ship `ace discover` so installed repositories can generate a concise local
@@ -151,7 +149,7 @@ Chosen Approach:
 - [x] Implement `ace discover` scanner and overwrite protection.
 - [x] Wire router, install, hub, memory paths, MCP, docs, and version.
 - [x] Add focused tests and release-readiness checks.
-- [ ] Publish `ace-pack@2.2.0` after npm permissions are available.
+- [x] Publish `ace-pack@2.2.0` to npm.
 
 ## Affected Areas
 - `package.json`
@@ -179,22 +177,22 @@ Chosen Approach:
 - Package version is `2.2.0`.
 
 ## Completion Checklist
-- [ ] Goal completed
-- [ ] Always: summarize what changed in `.ai/session-handoff.md`
-- [ ] Always: update `.ai/changed-files.md`, record verification, and run project-owned `ace:validate`
-- [ ] Always: state publish/deploy decision when relevant
-- [ ] If standard/large: add product, architecture, security, and code-quality review notes
-- [ ] If large/high-risk: confirm design approach, add useful reflection, and let `ace finish` archive the snapshot
-- [ ] If release-bound shipped behavior changed: run local smoke and dogfood/self-check routines when available
-- [ ] Only if changed: update tech docs, product roadmap, durable decisions, or release notes
-- [ ] `ace finish` passed and generated reports
+- [x] Goal completed
+- [x] Always: summarize what changed in `.ai/session-handoff.md`
+- [x] Always: update `.ai/changed-files.md`, record verification, and run project-owned `ace:validate`
+- [x] Always: state publish/deploy decision when relevant
+- [x] If standard/large: add product, architecture, security, and code-quality review notes
+- [x] If large/high-risk: confirm design approach, add useful reflection, and let `ace finish` archive the snapshot
+- [x] If release-bound shipped behavior changed: run local smoke and dogfood/self-check routines when available
+- [x] Only if changed: update tech docs, product roadmap, durable decisions, or release notes
+- [x] `ace finish` passed and generated reports
 
 # --- FILE: .ai/state/session-handoff.md ---
 
 # Session Handoff
 
 ## Last Update
-2026-06-16 12:33
+2026-06-16 12:46
 
 ## What Was Done
 - Implemented `ace discover` as a deterministic local project conventions
@@ -214,8 +212,8 @@ Chosen Approach:
 - `ace hub` includes project conventions in start, architect, and
   architect-lite contexts when the file exists.
 - Release dry-run passed for `ace-pack@2.2.0`.
-- Real npm publish was attempted, but npm returned `E404 Not Found ... or you
-  do not have permission to access it`; registry latest remains `2.1.0`.
+- `ace-pack@2.2.0` is published on npm and tagged `latest`.
+- Local `package.json` and npm registry latest both report `2.2.0`.
 
 ## Quality Review
 Product Alignment:
@@ -239,12 +237,10 @@ Code Quality:
   release smoke coverage.
 
 ## Next Steps
-- Fix npm auth/package permissions for ace-pack.
-- Run `npm.cmd run release:npm`.
-- Verify `npm.cmd view ace-pack version` returns `2.2.0`.
+- Commit the completed v2.2.0 release work when ready.
 
 ## Known Issues
-- None known for the v2.2.0 candidate.
+- None known for the published v2.2.0 release.
 
 ## Verification
 - `npm.cmd run ace -- classify` passed before implementation; the clean
@@ -266,9 +262,12 @@ Code Quality:
 - `npm.cmd run ace -- check` passed after blocked-publish memory updates.
 - `npm.cmd run ace -- brief` regenerated `.ai/generated/report-brief.md`.
 - Final `npm.cmd run ace -- gate` passed with tier `large`.
+- `npm.cmd view ace-pack version dist-tags time --json` confirmed npm latest is
+  `2.2.0`, published at `2026-06-16T09:44:24.625Z`.
+- Local `package.json` version is `2.2.0`.
 
 ## Notes
-- NPM publish: required before final release; blocked by npm permission.
+- NPM publish: completed. npm latest is `2.2.0`.
 
 # --- FILE: .ai/state/changed-files.md ---
 
@@ -298,6 +297,8 @@ Code Quality:
 - Updated current task, handoff, changed files, tech docs, product roadmap,
   durable decision, work log, generated context, and brief report for v2.2.0
   release work.
+- Confirmed npm latest is `2.2.0` and updated closeout state from blocked to
+  published.
 
 # --- FILE: .ai/knowledge/reflection-log.md ---
 

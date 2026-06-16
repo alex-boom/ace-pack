@@ -1,7 +1,7 @@
 # Session Handoff
 
 ## Last Update
-2026-06-16 12:33
+2026-06-16 12:46
 
 ## What Was Done
 - Implemented `ace discover` as a deterministic local project conventions
@@ -21,8 +21,8 @@
 - `ace hub` includes project conventions in start, architect, and
   architect-lite contexts when the file exists.
 - Release dry-run passed for `ace-pack@2.2.0`.
-- Real npm publish was attempted, but npm returned `E404 Not Found ... or you
-  do not have permission to access it`; registry latest remains `2.1.0`.
+- `ace-pack@2.2.0` is published on npm and tagged `latest`.
+- Local `package.json` and npm registry latest both report `2.2.0`.
 
 ## Quality Review
 Product Alignment:
@@ -46,12 +46,10 @@ Code Quality:
   release smoke coverage.
 
 ## Next Steps
-- Fix npm auth/package permissions for ace-pack.
-- Run `npm.cmd run release:npm`.
-- Verify `npm.cmd view ace-pack version` returns `2.2.0`.
+- Commit the completed v2.2.0 release work when ready.
 
 ## Known Issues
-- None known for the v2.2.0 candidate.
+- None known for the published v2.2.0 release.
 
 ## Verification
 - `npm.cmd run ace -- classify` passed before implementation; the clean
@@ -73,6 +71,9 @@ Code Quality:
 - `npm.cmd run ace -- check` passed after blocked-publish memory updates.
 - `npm.cmd run ace -- brief` regenerated `.ai/generated/report-brief.md`.
 - Final `npm.cmd run ace -- gate` passed with tier `large`.
+- `npm.cmd view ace-pack version dist-tags time --json` confirmed npm latest is
+  `2.2.0`, published at `2026-06-16T09:44:24.625Z`.
+- Local `package.json` version is `2.2.0`.
 
 ## Notes
-- NPM publish: required before final release; blocked by npm permission.
+- NPM publish: completed. npm latest is `2.2.0`.

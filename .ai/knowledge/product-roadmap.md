@@ -72,10 +72,10 @@ handoff and browser-context workflows.
   uninstall flow: `ace eject` exports active memory to a searchable
   `ace-export-*` folder, and `ace destroy` removes only ACE-owned artifacts
   after an export exists.
-- **v2.2 Project Conventions Discovery candidate.** Local release candidate
-  adds `ace discover`, a deterministic scanner that writes a concise
+- **v2.2 Project Conventions Discovery.** ACE now has `ace discover`, a
+  deterministic scanner that writes a concise
   `.ai/knowledge/project-conventions.md` registry for `ace hub` context.
-  Publishing is blocked until npm package permissions are available.
+  `ace-pack@2.2.0` is published on npm.
 
 ## Planned Features
 

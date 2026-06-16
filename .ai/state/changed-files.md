@@ -24,3 +24,5 @@
 - Updated current task, handoff, changed files, tech docs, product roadmap,
   durable decision, work log, generated context, and brief report for v2.2.0
   release work.
+- Confirmed npm latest is `2.2.0` and updated closeout state from blocked to
+  published.

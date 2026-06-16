@@ -3,21 +3,21 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-16 12:38
+- Generated: 2026-06-16 12:47
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-16 12:36
-- Source session-handoff: 2026-06-16 12:38
+- Source current-task: 2026-06-16 12:47
+- Source session-handoff: 2026-06-16 12:47
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (28 changed files)
-- Last commit: 0cbaa26 Add Project Conventions and Pattern Discovery to ROADMAP.md as a long-term research item. Mirrored the concept in product-roadmap.md, ensuring documentation-only changes with no impact on CLI behavior or package version.
-- Task: active (tier: large, version: v1, ready for archive: no)
-- Next command: `npm.cmd run release:npm`
-- Release decision: NPM publish: required before final release; blocked by npm permission.
+- Worktree: dirty (5 changed files)
+- Last commit: 770ba13 Bump version to 2.2.0 and implement Project Conventions Discovery feature. Added `ace discover` command to generate a concise project conventions registry, enhancing agent context. Updated documentation across README, ROADMAP, and schema compatibility files to reflect new functionality and integration. Ensured backward compatibility with legacy paths and maintained zero-dependency principles.
+- Task: complete (tier: large, version: v1, ready for archive: yes)
+- Next command: No command detected
+- Release decision: Not recorded
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
@@ -26,12 +26,12 @@ Detected ecosystems: Generic repository | Package manager: pnpm
 v2.2.0 Project Conventions Discovery
 
 ## Lifecycle
-Status: active
+Status: complete
 Version: v1
 Task Tier: large
 Design Review Required: yes
 Started: 2026-06-16 12:33
-Ready For Archive: no
+Ready For Archive: yes
 
 ## Goal
 Ship `ace discover` so installed repositories can generate a concise local
@@ -46,15 +46,13 @@ database, and package-layout patterns instead of inventing parallel ones.
 - [x] Implement `ace discover` scanner and overwrite protection.
 - [x] Wire router, install, hub, memory paths, MCP, docs, and version.
 - [x] Add focused tests and release-readiness checks.
-- [ ] Publish `ace-pack@2.2.0` after npm permissions are available.
+- [x] Publish `ace-pack@2.2.0` to npm.
 
 ## Next Steps
-- Fix npm auth/package permissions for ace-pack.
-- Run `npm.cmd run release:npm`.
-- Verify `npm.cmd view ace-pack version` returns `2.2.0`.
+- Commit the completed v2.2.0 release work when ready.
 
 ## Risks / Blockers
-- None known for the v2.2.0 candidate.
+- None known for the published v2.2.0 release.
 
 ## Verification
 - `npm.cmd run ace -- classify` passed before implementation; the clean
@@ -97,5 +95,5 @@ Impact:
 - `.ai/**`
 
 ## Overall Progress
-- Completion checklist: 0/9
+- Completion checklist: 9/9
 - Source of truth: `.ai/*` files remain authoritative.
