@@ -47,6 +47,10 @@ export const ACE_MEMORY_PATHS = {
     aliases: ['.ai/product-roadmap.md'],
     canonical: '.ai/knowledge/product-roadmap.md',
   },
+  projectConventions: {
+    aliases: ['.ai/project-conventions.md'],
+    canonical: '.ai/knowledge/project-conventions.md',
+  },
   projectProfile: {
     aliases: ['.ai/project-profile.md'],
     canonical: '.ai/config/project-profile.md',

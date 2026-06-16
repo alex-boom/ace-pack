@@ -9,6 +9,7 @@ const COMMANDS = new Map([
   ['validate', ['check-agent-memory.mjs']],
   ['classify', ['ai-task-classify.mjs']],
   ['finish', ['ai-task-finish.mjs']],
+  ['discover', ['ace-discover.mjs']],
   ['eject', ['ace-eject.mjs']],
   ['destroy', ['ace-destroy.mjs']],
   ['purge', ['ace-destroy.mjs']],
@@ -24,6 +25,7 @@ const COMMANDS = new Map([
   ['ace:check', ['check-agent-memory.mjs']],
   ['ace:classify', ['ai-task-classify.mjs']],
   ['ace:finish', ['ai-task-finish.mjs']],
+  ['ace:discover', ['ace-discover.mjs']],
   ['ace:eject', ['ace-eject.mjs']],
   ['ace:destroy', ['ace-destroy.mjs']],
   ['ace:purge', ['ace-destroy.mjs']],
@@ -100,6 +102,7 @@ Commands:
   check                Validate ACE memory.
   classify             Classify current repository changes.
   finish               Run adaptive task finish.
+  discover             Generate project conventions summary.
   eject                Export active ACE memory before uninstall.
   destroy              Remove ACE-owned files after eject.
   purge                Alias for destroy.

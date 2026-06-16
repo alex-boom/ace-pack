@@ -92,6 +92,27 @@ npx ace-pack@latest --help
 npx ace-pack@latest init --help
 ```
 
+## Project Conventions Discovery
+
+After onboarding, run `ace discover` to generate a compact registry of the
+project's existing patterns:
+
+```bash
+pnpm ace discover
+npm run ace -- discover
+```
+
+ACE writes `.ai/knowledge/project-conventions.md` with a local, deterministic
+summary of conventions such as UI component folders, styling tools, routing
+boundaries, logging packages, error wrappers, data models, and persistence
+patterns. The scanner uses simple path, dependency, and import-string
+heuristics only. It does not parse ASTs, call AI providers, make network
+requests, or enumerate every file in large projects.
+
+`ace hub` includes the conventions file when present, so agents can reuse
+existing project idioms instead of creating duplicate utilities, components, or
+architecture.
+
 ## Safe Eject & Uninstall
 
 ACE is zero-lock-in. Before removing it, export your project memory into a
@@ -334,8 +355,9 @@ pnpm ace hub --list
 Available modes:
 
 - `start` / `coder` - startup context with `.ai/generated/report-brief.md`
-  first.
-- `architect` - repo rules, technical docs, decisions, roadmap, and brief.
+  first, plus project conventions when available.
+- `architect` - repo rules, project conventions, technical docs, decisions,
+  roadmap, and brief.
 - `architect-lite` / `plan` - lower-token planning context without full
   decisions history.
 - `handoff` - compact agent handoff context.
@@ -417,7 +439,8 @@ Do not configure MCP clients through `npm run`; npm may print lifecycle output
 to stdout, which breaks stdio MCP framing.
 
 Exposed resources include the brief report, current task, handoff, decisions,
-roadmap, technical docs, and generated hub context when those files exist.
+roadmap, technical docs, project conventions, and generated hub context when
+those files exist.
 
 ## v2.0 Schema and Compatibility
 
@@ -478,6 +501,7 @@ then stops if unexpected files changed.
 | `ace onboard --apply` | Merges recommendations into `.ai/config/memory-config.json` and marks the repo as profiled. |
 | `ace onboard --preset next-trpc-drizzle-saas --apply` | Applies the built-in Next.js + tRPC + Drizzle SaaS profile. |
 | `ace onboard --check` | Fails if the repository is still unprofiled. |
+| `ace discover` | Generate a concise local project conventions and pattern registry. |
 | `ace classify` | Git diff risk analysis for small, standard, and large tasks. |
 | `ace:validate` | Project-owned mechanical quality gate for lint, typecheck, tests, or equivalent checks. ACE installs a placeholder only when absent. |
 | `ace eject` | Safe data-takeout step that exports active ACE memory before uninstall. |
@@ -507,6 +531,9 @@ Existing memory files are not overwritten. Existing `package.json` files are
 preserved and updated idempotently. Existing IDE rule files are not overwritten;
 ACE-created bridge files only point native IDE agents back to `AGENTS.md` and
 the local `ace` router and `ace:validate` gate.
+
+`ace discover` can later create `.ai/knowledge/project-conventions.md`; init
+does not create it automatically.
 
 ## Development
 

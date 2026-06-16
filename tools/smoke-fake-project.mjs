@@ -32,6 +32,7 @@ async function runSmokeCase(caseName, options) {
     await writeCompleteTaskState(rootDir)
 
     await runNodeScript(rootDir, 'ace-cli.mjs', ['onboard', '--apply'])
+    await runNodeScript(rootDir, 'ace-cli.mjs', ['discover'])
     await initGitRepo(rootDir)
     await writeProjectFile(rootDir, 'README.md', `# ${caseName} smoke change\n`)
     await runNodeScript(rootDir, 'ace-cli.mjs', ['finish'])
@@ -250,6 +251,10 @@ async function verifySmokeProject(rootDir) {
     await readFile(path.join(rootDir, '.ai/config/memory-config.json'), 'utf8'),
   )
   const generatedContext = await readFile(path.join(rootDir, '.ai/generated/context.md'), 'utf8')
+  const projectConventions = await readFile(
+    path.join(rootDir, '.ai/knowledge/project-conventions.md'),
+    'utf8',
+  )
   const handoff = await readFile(path.join(rootDir, '.ai/state/session-handoff.md'), 'utf8')
   const cursorRules = await readFile(path.join(rootDir, '.cursorrules'), 'utf8')
   const windsurfRules = await readFile(path.join(rootDir, '.windsurfrules'), 'utf8')
@@ -271,7 +276,15 @@ async function verifySmokeProject(rootDir) {
     memoryConfig._profile?.status === 'profiled',
     '.ai/config/memory-config.json is not profiled',
   )
+  assert(
+    projectConventions.includes('<!-- ace-discover:managed -->'),
+    'ace discover did not generate project conventions',
+  )
   assert(generatedContext.includes('# ACE Hub Context'), 'ace:hub did not generate context')
+  assert(
+    generatedContext.includes('# --- FILE: .ai/knowledge/project-conventions.md ---'),
+    'ace:hub did not include project conventions',
+  )
   assert(handoff.includes('ACE small-task auto-closeout'), 'ace:finish did not auto-close small smoke diff')
   assert(cursorRules.includes('AGENTS.md'), '.cursorrules missing ACE bridge')
   assert(windsurfRules.includes('AGENTS.md'), '.windsurfrules missing ACE bridge')
@@ -283,6 +296,7 @@ async function verifySmokeProject(rootDir) {
     generatedContext: '.ai/generated/context.md',
     packageManager: memoryConfig._profile?.packageManager ?? 'unknown',
     profileStatus: memoryConfig._profile?.status,
+    projectConventions: '.ai/knowledge/project-conventions.md',
     smallAutoCloseout: handoff.includes('ACE small-task auto-closeout'),
   }
 }

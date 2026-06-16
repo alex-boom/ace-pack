@@ -276,3 +276,16 @@
 - Mirrored the item in canonical `.ai/knowledge/product-roadmap.md`.
 - Kept the task documentation-only with no package version or CLI behavior
   changes.
+
+## 2026-06-16 12:33
+
+- Implemented the v2.2.0 Project Conventions Discovery candidate.
+- Added `ace discover`, project conventions memory path support, hub and MCP
+  integration, installer sync, shipped docs, schema docs, roadmap updates, and
+  focused tests.
+- Verified focused Vitest, full Vitest, fake-project smoke, npm payload guard,
+  and npm release dry-run.
+- Ran gate, dogfood self-check, and project-owned `ace:validate`.
+- Attempted `npm.cmd run release:npm`; npm rejected publish with `E404` /
+  permission error, and registry latest remains `2.1.0`.
+- NPM publish: required before final release; blocked by npm permission.

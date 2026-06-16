@@ -54,6 +54,13 @@ export const ACE_MCP_RESOURCE_SPECS = [
     uri: 'ace://memory/tech-docs',
   },
   {
+    description: 'Generated project conventions and pattern registry for agent context.',
+    filePath: '.ai/knowledge/project-conventions.md',
+    name: 'ACE Project Conventions',
+    title: 'ACE Project Conventions',
+    uri: 'ace://memory/project-conventions',
+  },
+  {
     description: 'Last generated ACE hub payload, when available.',
     filePath: '.ai/generated/context.md',
     name: 'ACE Generated Context',

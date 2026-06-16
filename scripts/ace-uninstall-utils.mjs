@@ -23,6 +23,7 @@ export const OLD_ACE_PACKAGE_SCRIPTS = {
   'ace:init': 'node ./scripts/bootstrap-agent-memory.mjs',
   'ace:check': 'node ./scripts/check-agent-memory.mjs',
   'ace:classify': 'node ./scripts/ai-task-classify.mjs',
+  'ace:discover': 'node ./scripts/ace-discover.mjs',
   'ace:finish': 'node ./scripts/ai-task-finish.mjs',
   'ace:gate': 'node ./scripts/ace-quality-gate.mjs',
   'ace:hub': 'node ./scripts/ace-hub.mjs',
@@ -52,6 +53,7 @@ export const DEFAULT_PACKAGE_SCRIPTS = {
 
 export const MANAGED_SCRIPT_FILES = [
   'ace-cli.mjs',
+  'ace-discover.mjs',
   'ace-destroy.mjs',
   'ace-eject.mjs',
   'ace-hub.mjs',

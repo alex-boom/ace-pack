@@ -32,6 +32,11 @@ async function createMcpRepo() {
   await ensureAgentMemory(rootDir)
   await writeRepoFile(rootDir, '.ai/report-brief.md', '# AI Brief Report\n\nReady.\n')
   await writeRepoFile(rootDir, '.ai/generated-context.md', '# ACE Hub Context\n\nReady.\n')
+  await writeRepoFile(
+    rootDir,
+    '.ai/project-conventions.md',
+    '# Project Conventions and Pattern Registry\n\nReady.\n',
+  )
 
   return rootDir
 }
@@ -56,6 +61,7 @@ describe('ace MCP read-only server', () => {
         'ace://memory/session-handoff',
         'ace://memory/decisions',
         'ace://memory/product-roadmap',
+        'ace://memory/project-conventions',
         'ace://memory/tech-docs',
         'ace://memory/generated-context',
       ]),

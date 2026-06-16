@@ -8,6 +8,10 @@ describe('ACE command router', () => {
       rest: [],
       scriptName: 'ai-task-finish.mjs',
     })
+    expect(resolveAceCommand(['discover'])).toMatchObject({
+      rest: [],
+      scriptName: 'ace-discover.mjs',
+    })
     expect(resolveAceCommand(['eject'])).toMatchObject({
       rest: [],
       scriptName: 'ace-eject.mjs',
@@ -43,6 +47,10 @@ describe('ACE command router', () => {
       rest: [],
       scriptName: 'ai-task-finish.mjs',
     })
+    expect(resolveAceCommand(['ace:discover'])).toMatchObject({
+      rest: [],
+      scriptName: 'ace-discover.mjs',
+    })
     expect(resolveAceCommand(['ace:eject'])).toMatchObject({
       rest: [],
       scriptName: 'ace-eject.mjs',
@@ -72,6 +80,7 @@ describe('ACE command router', () => {
   it('prints help and rejects unknown commands', () => {
     expect(resolveAceCommand([])).toMatchObject({ help: true })
     expect(getAceHelpText()).toContain('npm run ace -- <command>')
+    expect(getAceHelpText()).toContain('discover')
     expect(getAceHelpText()).toContain('eject')
     expect(getAceHelpText()).toContain('destroy')
     expect(getAceHelpText()).toContain('migrate')

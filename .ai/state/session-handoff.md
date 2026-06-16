@@ -1,54 +1,78 @@
 # Session Handoff
 
 ## Last Update
-2026-06-15 12:30
+2026-06-16 12:33
 
 ## What Was Done
-- Added Project Conventions and Pattern Discovery to `ROADMAP.md` as a
-  long-term research item.
-- Mirrored the same strategic item in `.ai/knowledge/product-roadmap.md`.
-- Kept the change documentation-only: no CLI behavior, scripts, tests,
-  package metadata, or package version changes.
+- Implemented `ace discover` as a deterministic local project conventions
+  scanner for `ace-pack@2.2.0`.
+- Added `.ai/knowledge/project-conventions.md` with
+  `.ai/project-conventions.md` as a legacy read alias.
+- Wired discover into the ACE router, installer-managed scripts, hub context,
+  MCP resources, README surfaces, schema docs, roadmap, smoke tests, and
+  focused unit tests.
+- Bumped package version from `2.1.0` to `2.2.0`.
 
 ## Current State
-- Local package version remains `ace-pack@2.1.0`.
-- The future `ace discover` concept is documented as explicit opt-in,
-  agent-assisted, stack-agnostic research.
-- The canonical future conventions memory path is documented as
-  `.ai/knowledge/project-conventions.md`, with `.ai/project-conventions.md` as
-  a possible legacy alias.
+- `ace discover` writes a concise ACE-managed conventions registry with
+  `<!-- ace-discover:managed -->`.
+- Existing human-written conventions files are preserved unless `--force` is
+  used.
+- `ace hub` includes project conventions in start, architect, and
+  architect-lite contexts when the file exists.
+- Release dry-run passed for `ace-pack@2.2.0`.
+- Real npm publish was attempted, but npm returned `E404 Not Found ... or you
+  do not have permission to access it`; registry latest remains `2.1.0`.
 
 ## Quality Review
 Product Alignment:
-- The roadmap item targets a core ACE adoption problem: helping AI agents reuse
-  established project conventions instead of inventing duplicate patterns.
+- The feature addresses architectural drift by giving agents a local summary of
+  existing UI, routing, logging, error-handling, package-layout, and persistence
+  patterns.
 
 Architecture:
-- The item is framed as research, not a shipped interface. It uses v2 canonical
-  command and memory naming while preserving room for legacy aliases.
+- The scanner is a zero-dependency managed script using simple file, dependency,
+  and import-string heuristics. It avoids AST parsing and keeps generated
+  Markdown aggregated for LLM context safety.
 
 Security:
-- The roadmap explicitly keeps any automated AI-assisted discovery under ACE's
-  no-hidden-AI-calls and explicit opt-in policy.
+- No AI providers, API keys, network calls, dependency installs, or external
+  services were added. Discovery reads local files only and skips heavy
+  generated directories.
 
 Code Quality:
-- Markdown-only edit; no implementation code or runtime behavior was changed.
+- Focused tests cover React/Tailwind, Go, FastAPI, overwrite protection,
+  stdout/JSON behavior, concise output, router/install/hub/MCP integration, and
+  release smoke coverage.
 
 ## Next Steps
-- Publish when ready with `npm.cmd run release:npm`.
-- After publishing the already completed v2.1.0 candidate, verify
-  `npm.cmd view ace-pack version` and update repo-local ACE memory to mark npm
-  latest as `2.1.0`.
+- Fix npm auth/package permissions for ace-pack.
+- Run `npm.cmd run release:npm`.
+- Verify `npm.cmd view ace-pack version` returns `2.2.0`.
 
 ## Known Issues
-- None known for the v2.1.0 candidate.
+- None known for the v2.2.0 candidate.
 
 ## Verification
-- `npm.cmd run ace -- classify` passed and classified this as `small`.
-- `npm.cmd run ace:validate` passed.
-- `npm.cmd run ace -- check` passed.
+- `npm.cmd run ace -- classify` passed before implementation; the clean
+  worktree detected as `small`, but the shipped command scope is treated as
+  large.
+- Focused Vitest passed: 7 files, 54 tests.
+- `npm.cmd run test` passed: 16 files, 123 tests.
+- `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
+- `npm.cmd run check:npm-payload` passed and checked 35 packed files.
+- `npm.cmd run release:npm:dry` passed for `ace-pack@2.2.0`.
+- `npm.cmd run ace -- gate` passed with tier `large`.
+- `npm.cmd run dogfood:self-check -- --allow-dirty` passed with no created or
+  updated installed files.
+- `npm.cmd run ace:validate` passed after closeout updates: 16 files,
+  123 tests.
+- `npm.cmd run release:npm` failed at publish with npm `E404` permission/package
+  access error.
+- `npm.cmd view ace-pack version` still returns `2.1.0`.
+- `npm.cmd run ace -- check` passed after blocked-publish memory updates.
 - `npm.cmd run ace -- brief` regenerated `.ai/generated/report-brief.md`.
-- Confirmed `package.json` version remains `2.1.0`.
+- Final `npm.cmd run ace -- gate` passed with tier `large`.
 
 ## Notes
-- NPM publish: not required. Reason: documentation-only; no npm payload change.
+- NPM publish: required before final release; blocked by npm permission.

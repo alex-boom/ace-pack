@@ -68,6 +68,11 @@ async function createHubRepo() {
     '.ai/product-roadmap.md',
     '# Product Roadmap\n\n## Business Goals\nBusiness notes.\n',
   )
+  await writeRepoFile(
+    rootDir,
+    '.ai/project-conventions.md',
+    '# Project Conventions and Pattern Registry\n\n## Summary\nConventions.\n',
+  )
   await writeRepoFile(rootDir, '.ai/work-log.md', '# Work Log\n\n## 2026-06-14\n- Work.\n')
 
   return rootDir
@@ -104,6 +109,7 @@ describe('generateContextPayload', () => {
     expect(result.mode.id).toBe('start')
     expect(result.includedFiles).toEqual([
       '.ai/generated/report-brief.md',
+      '.ai/knowledge/project-conventions.md',
       '.ai/state/current-task.md',
       '.ai/state/session-handoff.md',
       '.ai/state/changed-files.md',
@@ -126,6 +132,7 @@ describe('generateContextPayload', () => {
 
     expect(result.mode.id).toBe('start')
     expect(result.includedFiles).toEqual([
+      '.ai/knowledge/project-conventions.md',
       '.ai/state/current-task.md',
       '.ai/state/session-handoff.md',
       '.ai/state/changed-files.md',
@@ -147,6 +154,7 @@ describe('generateContextPayload', () => {
     expect(architect.mode.id).toBe('architect')
     expect(architect.includedFiles).toEqual([
       'AGENTS.md',
+      '.ai/knowledge/project-conventions.md',
       '.ai/knowledge/tech-docs.md',
       '.ai/knowledge/decisions.md',
       '.ai/knowledge/product-roadmap.md',
@@ -172,6 +180,7 @@ describe('generateContextPayload', () => {
     expect(result.includedFiles).toEqual([
       '.ai/generated/report-brief.md',
       'AGENTS.md',
+      '.ai/knowledge/project-conventions.md',
       '.ai/knowledge/product-roadmap.md',
       '.ai/knowledge/tech-docs.md',
     ])

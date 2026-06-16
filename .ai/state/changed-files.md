@@ -1,20 +1,26 @@
 # Changed Files
 
-[ROADMAP.md]
-- Added Project Conventions and Pattern Discovery to long-term research as a
-  stack-agnostic, opt-in `ace discover` concept.
+[package.json]
+- Bumped `ace-pack` to `2.2.0` for the shipped `ace discover` feature.
 
-[.ai/knowledge/product-roadmap.md]
-- Mirrored the conventions discovery research item for compact ACE context.
+[scripts/ace-discover.mjs]
+- Added deterministic local Project Conventions discovery with managed-marker
+  overwrite protection, concise Markdown output, `--stdout`, `--json`,
+  `--root`, and `--force`.
 
-[.ai/state/session-handoff.md]
-- Recorded closeout notes for this small documentation-only task.
+[scripts/ace-cli.mjs, scripts/ai-memory-utils.mjs, scripts/ace-hub.mjs, scripts/ace-mcp-server.mjs]
+- Registered discover routing, project conventions memory aliases, optional hub
+  inclusion, and the read-only MCP resource.
 
-[.ai/state/changed-files.md]
-- Refreshed the touched-file summary.
+[scripts/ace-uninstall-utils.mjs, install/tests]
+- Added `ace-discover.mjs` to installed managed scripts and covered install,
+  router, hub, MCP, smoke, and discover behavior.
 
-[.ai/knowledge/work-log.md]
-- Appended a compact work-log entry.
+[README.md, README.npm.md, docs/schema-compatibility.md, ROADMAP.md]
+- Documented Project Conventions Discovery, CLI usage, schema compatibility,
+  hub/MCP integration, and v2.2 roadmap status.
 
-[.ai/generated/report-brief.md]
-- Regenerated the brief report.
+[.ai/**]
+- Updated current task, handoff, changed files, tech docs, product roadmap,
+  durable decision, work log, generated context, and brief report for v2.2.0
+  release work.

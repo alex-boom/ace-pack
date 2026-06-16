@@ -1,8 +1,8 @@
 # ACE Hub Context
 - Mode: start (Start / AI Coder Context)
-- Generated: 2026-06-14T16:44:30.396Z
+- Generated: 2026-06-16T09:38:11.668Z
 - Included files: .ai/generated/report-brief.md, .ai/state/current-task.md, .ai/state/session-handoff.md, .ai/state/changed-files.md, .ai/knowledge/reflection-log.md
-- Missing optional files: none
+- Missing optional files: .ai/knowledge/project-conventions.md
 
 # --- FILE: .ai/generated/report-brief.md ---
 
@@ -11,102 +11,101 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-14 19:43
+- Generated: 2026-06-16 12:38
 - Freshness: Fresh
 - Current task version: v1
 - Current task tier: large
-- Source current-task: 2026-06-14 19:43
-- Source session-handoff: 2026-06-14 19:42
+- Source current-task: 2026-06-16 12:36
+- Source session-handoff: 2026-06-16 12:38
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (27 changed files)
-- Last commit: dca94cd Refactor ACE command structure to unify under a single `ace` router, replacing legacy command scripts with router arguments. Update documentation to reflect changes in command usage and memory validation processes. Bump version to 2.0.1, ensuring compatibility with existing repositories while streamlining the user experience.
-- Task: complete (tier: large, version: v1, ready for archive: yes)
+- Worktree: dirty (28 changed files)
+- Last commit: 0cbaa26 Add Project Conventions and Pattern Discovery to ROADMAP.md as a long-term research item. Mirrored the concept in product-roadmap.md, ensuring documentation-only changes with no impact on CLI behavior or package version.
+- Task: active (tier: large, version: v1, ready for archive: no)
 - Next command: `npm.cmd run release:npm`
-- Release decision: NPM publish: required before final release; deferred by maintainer.
+- Release decision: NPM publish: required before final release; blocked by npm permission.
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
 
 ## Current Task
-v2.1.0 Safe ACE Eject & Destroy
+v2.2.0 Project Conventions Discovery
 
 ## Lifecycle
-Status: complete
+Status: active
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 17:10
-Ready For Archive: yes
+Started: 2026-06-16 12:33
+Ready For Archive: no
 
 ## Goal
-Add a safe two-step uninstall flow so installed repositories can export ACE
-memory before removing ACE-owned files.
+Ship `ace discover` so installed repositories can generate a concise local
+Project Conventions and Pattern Registry for AI agents.
 
 ## Business Value
-This strengthens ACE's zero-lock-in promise. Developers can inspect how to leave
-before adopting the tool, keep their AI memory in a searchable export, and avoid
-destructive cleanup of project-owned files.
+This directly addresses architectural drift in established codebases. ACE will
+help agents reuse a project's existing UI, routing, logging, error-handling,
+database, and package-layout patterns instead of inventing parallel ones.
 
 ## Current Status
-- [x] Implement eject/export command.
-- [x] Implement guarded destroy command.
-- [x] Wire router, installer, docs, version, and tests.
-- [x] Run validation and closeout.
+- [x] Implement `ace discover` scanner and overwrite protection.
+- [x] Wire router, install, hub, memory paths, MCP, docs, and version.
+- [x] Add focused tests and release-readiness checks.
+- [ ] Publish `ace-pack@2.2.0` after npm permissions are available.
 
 ## Next Steps
-- Publish when ready with `npm.cmd run release:npm`.
-- After publish, verify `npm.cmd view ace-pack version` and update repo-local
-  ACE memory to mark npm latest as `2.1.0`.
+- Fix npm auth/package permissions for ace-pack.
+- Run `npm.cmd run release:npm`.
+- Verify `npm.cmd view ace-pack version` returns `2.2.0`.
 
 ## Risks / Blockers
-- None known for the v2.1.0 candidate.
+- None known for the v2.2.0 candidate.
 
 ## Verification
-- `pnpm.cmd ace classify` passed before implementation; it detected `small`
-because the working tree was clean, but the shipped product scope was treated
-as large.
-- Focused Vitest passed for uninstall, router, installer, and schema docs:
-4 files, 31 tests.
-- `npm.cmd test` passed: 15 files, 116 tests.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
+- `npm.cmd run ace -- classify` passed before implementation; the clean
+worktree detected as `small`, but the shipped command scope is treated as
+large.
+- Focused Vitest passed: 7 files, 54 tests.
+- `npm.cmd run test` passed: 16 files, 123 tests.
+- `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
 
 ## Recent Decision
-## 2026-06-14 17:10
+## 2026-06-16 12:33
 
 Decision:
-- Implement ACE uninstall as a guarded two-step `ace eject` then `ace destroy`
-  workflow.
+- Implement Project Conventions Discovery as deterministic local `ace discover`
+  heuristics instead of AI-provider analysis.
 
 Reason:
-- ACE needs to demonstrate zero-lock-in while protecting project-owned AI
-  memory from accidental deletion. A direct destructive command would undermine
-  the product promise.
+- ACE must preserve its local-first, zero-dependency, no-hidden-AI-calls
+  promise while still helping agents reuse established repository patterns.
+  Simple import/dependency/path signals are less brittle than pseudo-AST regex
+  parsing and safer for large private repositories.
 
 Impact:
-- `ace eject` exports active `.ai/**` memory and agent rule files into a
-  searchable `ace-export-*` folder with manual restore instructions.
-- `ace destroy` refuses active memory without an export, refuses the ACE
-  product repository unless explicitly overridden for internal tests, and
-  removes only ACE-owned files/scripts while preserving custom project content.
-- Installer, router, docs, payload, and tests now treat eject/destroy as shipped
-  `ace-pack@2.1.0` behavior.
+- `ace discover` writes `.ai/knowledge/project-conventions.md` with a managed
+  marker and protects human-written files unless `--force` is passed.
+- `ace hub` and the read-only MCP adapter can expose the conventions summary
+  when it exists.
+- Future AI-assisted convention discovery remains a separate explicit opt-in
+  feature, not part of the default v2.2 workflow.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.
 
 ## Changed Areas
 - `package.json`
-- `scripts/ace-eject.mjs`
-- `scripts/ace-destroy.mjs`
-- `scripts/ace-uninstall-utils.mjs`
-- `install-ace-pack.mjs`
-- `scripts/ace-cli.mjs`
+- `scripts/ace-discover.mjs`
+- `scripts/ace-cli.mjs, scripts/ai-memory-utils.mjs, scripts/ace-hub.mjs, scripts/ace-mcp-server.mjs`
+- `scripts/ace-uninstall-utils.mjs, install/tests`
+- `README.md, README.npm.md, docs/schema-compatibility.md, ROADMAP.md`
+- `.ai/**`
 
 ## Overall Progress
-- Completion checklist: 9/9
+- Completion checklist: 0/9
 - Source of truth: `.ai/*` files remain authoritative.
 
 # --- FILE: .ai/state/current-task.md ---
@@ -114,194 +113,191 @@ Impact:
 # Current Task
 
 ## Feature Name
-v2.1.0 Safe ACE Eject & Destroy
+v2.2.0 Project Conventions Discovery
 
 ## Lifecycle
-Status: complete
+Status: active
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 17:10
-Ready For Archive: yes
+Started: 2026-06-16 12:33
+Ready For Archive: no
 
 ## Goal
-Add a safe two-step uninstall flow so installed repositories can export ACE
-memory before removing ACE-owned files.
+Ship `ace discover` so installed repositories can generate a concise local
+Project Conventions and Pattern Registry for AI agents.
 
 ## Business Value / Product Alignment
-This strengthens ACE's zero-lock-in promise. Developers can inspect how to leave
-before adopting the tool, keep their AI memory in a searchable export, and avoid
-destructive cleanup of project-owned files.
+This directly addresses architectural drift in established codebases. ACE will
+help agents reuse a project's existing UI, routing, logging, error-handling,
+database, and package-layout patterns instead of inventing parallel ones.
 
 ## Technical Approach
 Option 1:
-- Implement a single destructive `ace uninstall` command. This is simpler but
-  risks accidental loss of `.ai` memory and does not model the data-takeout
-  flow.
+- Add an AI-provider-backed discovery flow. This may produce richer analysis,
+  but it requires API keys, privacy configuration, provider fallback policy, and
+  more release risk.
 
 Option 2:
-- Implement `ace eject` as the export/preflight step and `ace destroy` as the
-  guarded cleanup step. Cleanup removes only ACE-owned artifacts and refuses
-  active memory without an export.
+- Add a deterministic local scanner that uses simple path, dependency, and
+  import-string heuristics to write a short Markdown conventions summary.
 
 Chosen Approach:
-- Use Option 2. It preserves developer trust, matches ACE's local-first product
-  philosophy, and keeps destructive behavior explicit and reversible by default.
+- Use Option 2 for v2.2.0. It preserves ACE's local-first, zero-dependency,
+  zero-hidden-AI-calls promise while still giving agents useful repo-specific
+  convention context.
 
 ## Current Status
-- [x] Implement eject/export command.
-- [x] Implement guarded destroy command.
-- [x] Wire router, installer, docs, version, and tests.
-- [x] Run validation and closeout.
+- [x] Implement `ace discover` scanner and overwrite protection.
+- [x] Wire router, install, hub, memory paths, MCP, docs, and version.
+- [x] Add focused tests and release-readiness checks.
+- [ ] Publish `ace-pack@2.2.0` after npm permissions are available.
 
 ## Affected Areas
 - `package.json`
-- `install-ace-pack.mjs`
-- `scripts/ace-cli.mjs`
-- `scripts/ace-eject.mjs`
-- `scripts/ace-destroy.mjs`
-- README/docs/tests and smoke tooling
+- `scripts/ace-discover.mjs`
+- ACE router, memory utils, hub, MCP, installer-managed script lists
+- README surfaces, schema docs, roadmap, tests, smoke tooling
 
 ## Constraints
-- Do not delete project-owned files such as custom `AGENTS.md`, custom
-  `CLAUDE.md`, `DEVELOPING.md`, `ROADMAP.md`, custom scripts, or custom
-  `ace:validate`.
-- Refuse destructive cleanup in the ACE product repository unless an explicit
-  internal override is provided.
-- Use native Node.js APIs only. Do not add dependencies, AI calls, network
-  calls, zip archives, or restore automation scripts.
-- Use ASCII CLI output for Windows/npm reliability.
+- Use native Node.js APIs only. Do not add dependencies.
+- Do not make AI calls, network calls, AST parsing, or complex regex analysis.
+- Keep regex heuristics simple: detect imports, dependencies, and obvious path
+  patterns.
+- Keep generated `project-conventions.md` concise and aggregated so it does not
+  bloat `ace hub` context.
+- Protect human-written conventions files; overwrite unmanaged files only with
+  `--force`.
 
 ## Acceptance Criteria
-- `ace eject` exports active ACE memory to `ace-export-YYYYMMDD-HHMMSS/` with
-  `RESTORE.md`, and reports safe removal for template-only memory.
-- `ace destroy` removes only ACE-owned artifacts, preserves custom project
-  content, and refuses active memory unless an export exists.
-- Router, installer, README surfaces, compatibility docs, and tests cover the
-  new commands.
-- Package version is `2.1.0`.
+- `ace discover` writes `.ai/knowledge/project-conventions.md` with a managed
+  marker and concise detected conventions.
+- `ace discover --stdout` prints without writing, and `--json` prints parseable
+  metadata.
+- Router, install, hub, MCP, README, schema docs, and tests cover the new
+  shipped command and memory file.
+- Package version is `2.2.0`.
 
 ## Completion Checklist
-- [x] Goal completed
-- [x] Always: summarize what changed in `.ai/session-handoff.md`
-- [x] Always: update `.ai/changed-files.md`, record verification, and run project-owned `ace:validate`
-- [x] Always: state publish/deploy decision when relevant
-- [x] If standard/large: add product, architecture, security, and code-quality review notes
-- [x] If large/high-risk: confirm design approach, add useful reflection, and let `ace finish` archive the snapshot
-- [x] If release-bound shipped behavior changed: run local smoke and dogfood/self-check routines when available
-- [x] Only if changed: update tech docs, product roadmap, durable decisions, or release notes
-- [x] `ace finish` passed and generated reports
+- [ ] Goal completed
+- [ ] Always: summarize what changed in `.ai/session-handoff.md`
+- [ ] Always: update `.ai/changed-files.md`, record verification, and run project-owned `ace:validate`
+- [ ] Always: state publish/deploy decision when relevant
+- [ ] If standard/large: add product, architecture, security, and code-quality review notes
+- [ ] If large/high-risk: confirm design approach, add useful reflection, and let `ace finish` archive the snapshot
+- [ ] If release-bound shipped behavior changed: run local smoke and dogfood/self-check routines when available
+- [ ] Only if changed: update tech docs, product roadmap, durable decisions, or release notes
+- [ ] `ace finish` passed and generated reports
 
 # --- FILE: .ai/state/session-handoff.md ---
 
 # Session Handoff
 
 ## Last Update
-2026-06-14 17:10
+2026-06-16 12:33
 
 ## What Was Done
-- Implemented `ace-pack@2.1.0` Safe Eject and Uninstall.
-- Added `ace eject` to export active ACE memory into searchable
-  `ace-export-YYYYMMDD-HHMMSS/` folders with `RESTORE.md`.
-- Added guarded `ace destroy` / `ace purge` cleanup that removes only ACE-owned
-  artifacts after an export exists.
-- Centralized managed ACE script, package script, IDE bridge, and template
-  definitions so install and uninstall behavior cannot drift.
-- Updated router, installer, README surfaces, schema compatibility docs,
-  roadmap, and tests for the new uninstall flow.
+- Implemented `ace discover` as a deterministic local project conventions
+  scanner for `ace-pack@2.2.0`.
+- Added `.ai/knowledge/project-conventions.md` with
+  `.ai/project-conventions.md` as a legacy read alias.
+- Wired discover into the ACE router, installer-managed scripts, hub context,
+  MCP resources, README surfaces, schema docs, roadmap, smoke tests, and
+  focused unit tests.
+- Bumped package version from `2.1.0` to `2.2.0`.
 
 ## Current State
-- Local candidate is `ace-pack@2.1.0`.
-- Fresh installs include the new eject/destroy managed scripts.
-- `ace destroy` preserves custom `AGENTS.md`, custom `CLAUDE.md`, custom
-  `ace:validate`, project-owned scripts, `DEVELOPING.md`, and `ROADMAP.md`.
-- `ROADMAP.md` and `.ai/knowledge/product-roadmap.md` now list v2.1 Safe Eject
-  and Uninstall as shipped.
+- `ace discover` writes a concise ACE-managed conventions registry with
+  `<!-- ace-discover:managed -->`.
+- Existing human-written conventions files are preserved unless `--force` is
+  used.
+- `ace hub` includes project conventions in start, architect, and
+  architect-lite contexts when the file exists.
+- Release dry-run passed for `ace-pack@2.2.0`.
+- Real npm publish was attempted, but npm returned `E404 Not Found ... or you
+  do not have permission to access it`; registry latest remains `2.1.0`.
 
 ## Quality Review
 Product Alignment:
-- The feature directly supports ACE's zero-lock-in promise and makes uninstall
-  transparency visible near the top of both README surfaces.
+- The feature addresses architectural drift by giving agents a local summary of
+  existing UI, routing, logging, error-handling, package-layout, and persistence
+  patterns.
 
 Architecture:
-- A shared uninstall utility owns managed-file/script definitions and exact IDE
-  bridge templates. `ace eject` handles data takeout; `ace destroy` handles
-  guarded cleanup and package.json surgery.
+- The scanner is a zero-dependency managed script using simple file, dependency,
+  and import-string heuristics. It avoids AST parsing and keeps generated
+  Markdown aggregated for LLM context safety.
 
 Security:
-- No dependencies, network calls, AI calls, credentials, SaaS behavior, or zip
-  archives were added. Destroy refuses active memory without an export and
-  refuses the ACE product repository without an explicit internal override.
+- No AI providers, API keys, network calls, dependency installs, or external
+  services were added. Discovery reads local files only and skips heavy
+  generated directories.
 
 Code Quality:
-- Focused tests cover empty vs active eject, export contents, destroy refusal,
-  custom-file preservation, runner-package cleanup, product-repo guard, router
-  aliases, installer managed scripts, and docs contract.
+- Focused tests cover React/Tailwind, Go, FastAPI, overwrite protection,
+  stdout/JSON behavior, concise output, router/install/hub/MCP integration, and
+  release smoke coverage.
 
 ## Next Steps
-- Publish when ready with `npm.cmd run release:npm`.
-- After publish, verify `npm.cmd view ace-pack version` and update repo-local
-  ACE memory to mark npm latest as `2.1.0`.
+- Fix npm auth/package permissions for ace-pack.
+- Run `npm.cmd run release:npm`.
+- Verify `npm.cmd view ace-pack version` returns `2.2.0`.
 
 ## Known Issues
-- None known for the v2.1.0 candidate.
+- None known for the v2.2.0 candidate.
 
 ## Verification
-- `pnpm.cmd ace classify` passed before implementation; it detected `small`
-  because the working tree was clean, but the shipped product scope was treated
-  as large.
-- Focused Vitest passed for uninstall, router, installer, and schema docs:
-  4 files, 31 tests.
-- `npm.cmd test` passed: 15 files, 116 tests.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
-- `npm.cmd run check:npm-payload` passed and checked 34 packed files.
-- `npm.cmd run ace:validate` passed, invoking the project-owned test gate.
+- `npm.cmd run ace -- classify` passed before implementation; the clean
+  worktree detected as `small`, but the shipped command scope is treated as
+  large.
+- Focused Vitest passed: 7 files, 54 tests.
+- `npm.cmd run test` passed: 16 files, 123 tests.
+- `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
+- `npm.cmd run check:npm-payload` passed and checked 35 packed files.
+- `npm.cmd run release:npm:dry` passed for `ace-pack@2.2.0`.
+- `npm.cmd run ace -- gate` passed with tier `large`.
 - `npm.cmd run dogfood:self-check -- --allow-dirty` passed with no created or
   updated installed files.
+- `npm.cmd run ace:validate` passed after closeout updates: 16 files,
+  123 tests.
+- `npm.cmd run release:npm` failed at publish with npm `E404` permission/package
+  access error.
+- `npm.cmd view ace-pack version` still returns `2.1.0`.
+- `npm.cmd run ace -- check` passed after blocked-publish memory updates.
+- `npm.cmd run ace -- brief` regenerated `.ai/generated/report-brief.md`.
+- Final `npm.cmd run ace -- gate` passed with tier `large`.
 
 ## Notes
-- NPM publish: required before final release; deferred by maintainer.
+- NPM publish: required before final release; blocked by npm permission.
 
 # --- FILE: .ai/state/changed-files.md ---
 
 # Changed Files
 
 [package.json]
-- Bumped `ace-pack` to `2.1.0` for the shipped backward-compatible uninstall
-  feature.
+- Bumped `ace-pack` to `2.2.0` for the shipped `ace discover` feature.
 
-[scripts/ace-eject.mjs]
-- Added the safe data-takeout command that detects active ACE memory and writes
-  searchable `ace-export-*` folders with `RESTORE.md`.
+[scripts/ace-discover.mjs]
+- Added deterministic local Project Conventions discovery with managed-marker
+  overwrite protection, concise Markdown output, `--stdout`, `--json`,
+  `--root`, and `--force`.
 
-[scripts/ace-destroy.mjs]
-- Added guarded cleanup that refuses active memory without export, protects the
-  ACE product repo, and removes only ACE-owned files/scripts.
+[scripts/ace-cli.mjs, scripts/ai-memory-utils.mjs, scripts/ace-hub.mjs, scripts/ace-mcp-server.mjs]
+- Registered discover routing, project conventions memory aliases, optional hub
+  inclusion, and the read-only MCP resource.
 
-[scripts/ace-uninstall-utils.mjs]
-- Centralized managed script names, package script defaults, IDE bridge
-  templates, exact-template checks, export discovery, and active-memory
-  detection shared by install/eject/destroy.
-
-[install-ace-pack.mjs]
-- Reused the shared managed-file definitions and added eject/destroy utilities
-  to installed consumer projects.
-
-[scripts/ace-cli.mjs]
-- Routed `eject`, `destroy`, and `purge`, plus legacy `ace:*` variants, through
-  the single ACE router.
+[scripts/ace-uninstall-utils.mjs, install/tests]
+- Added `ace-discover.mjs` to installed managed scripts and covered install,
+  router, hub, MCP, smoke, and discover behavior.
 
 [README.md, README.npm.md, docs/schema-compatibility.md, ROADMAP.md]
-- Documented the prominent Safe Eject and Uninstall flow, CLI contract, and
-  v2.1 shipped roadmap state.
-
-[tests/ace-uninstall.test.ts, tests/**]
-- Added focused uninstall safety coverage and extended router, installer, and
-  schema compatibility assertions.
+- Documented Project Conventions Discovery, CLI usage, schema compatibility,
+  hub/MCP integration, and v2.2 roadmap status.
 
 [.ai/**]
 - Updated current task, handoff, changed files, tech docs, product roadmap,
-  durable decision, and generated context for the v2.1.0 closeout.
+  durable decision, work log, generated context, and brief report for v2.2.0
+  release work.
 
 # --- FILE: .ai/knowledge/reflection-log.md ---
 

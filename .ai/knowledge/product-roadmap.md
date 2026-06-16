@@ -72,23 +72,22 @@ handoff and browser-context workflows.
   uninstall flow: `ace eject` exports active memory to a searchable
   `ace-export-*` folder, and `ace destroy` removes only ACE-owned artifacts
   after an export exists.
+- **v2.2 Project Conventions Discovery candidate.** Local release candidate
+  adds `ace discover`, a deterministic scanner that writes a concise
+  `.ai/knowledge/project-conventions.md` registry for `ace hub` context.
+  Publishing is blocked until npm package permissions are available.
 
 ## Planned Features
 
 - No next feature is selected yet. Future work should preserve the v2.0
   compatibility contract unless a deliberate major-version migration is planned.
 
-## Long-Term Research and Development (v2.2+)
+## Long-Term Research and Development (v2.3+)
 
 - **Deeper Memory Consolidation.** Research merging high-churn project state
   such as current task, handoff, and changed-files into fewer files beyond the
   v2 categorized layout. Any implementation must follow compatibility and
   migration rules before another schema change.
-- **Project Conventions and Pattern Discovery.** Research an explicit opt-in,
-  stack-agnostic `ace discover` workflow that records repository conventions in
-  `.ai/knowledge/project-conventions.md` so `ace hub` can help agents reuse
-  existing UI, routing, logging, error-handling, package-layout, persistence,
-  and styling patterns instead of inventing parallel ones.
 - **Standalone ACE Engine.** Research native binaries for macOS, Linux, and
   Windows so teams can use ACE without Node.js/npm on developer machines.
 - **Automated PR/CI Reviewer.** Research GitHub Action and GitLab CI templates

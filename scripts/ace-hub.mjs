@@ -32,6 +32,7 @@ export const HUB_MODES = [
     description: 'Brief, active task, handoff, changed files, and reflection.',
     files: [
       optionalFile('.ai/generated/report-brief.md'),
+      optionalFile('.ai/knowledge/project-conventions.md'),
       requiredFile('.ai/state/current-task.md'),
       requiredFile('.ai/state/session-handoff.md'),
       requiredFile('.ai/state/changed-files.md'),
@@ -46,6 +47,7 @@ export const HUB_MODES = [
     description: 'Repo rules, technical docs, decisions, roadmap, and brief.',
     files: [
       requiredFile('AGENTS.md'),
+      optionalFile('.ai/knowledge/project-conventions.md'),
       requiredFile('.ai/knowledge/tech-docs.md'),
       requiredFile('.ai/knowledge/decisions.md'),
       requiredFile('.ai/knowledge/product-roadmap.md'),
@@ -60,6 +62,7 @@ export const HUB_MODES = [
     files: [
       optionalFile('.ai/generated/report-brief.md'),
       requiredFile('AGENTS.md'),
+      optionalFile('.ai/knowledge/project-conventions.md'),
       requiredFile('.ai/knowledge/product-roadmap.md'),
       requiredFile('.ai/knowledge/tech-docs.md'),
     ],

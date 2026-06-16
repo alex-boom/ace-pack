@@ -1,80 +1,78 @@
 # Current Task
 
 ## Feature Name
-v2.1.0 Safe ACE Eject & Destroy
+v2.2.0 Project Conventions Discovery
 
 ## Lifecycle
-Status: complete
+Status: active
 Version: v1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-14 17:10
-Ready For Archive: yes
+Started: 2026-06-16 12:33
+Ready For Archive: no
 
 ## Goal
-Add a safe two-step uninstall flow so installed repositories can export ACE
-memory before removing ACE-owned files.
+Ship `ace discover` so installed repositories can generate a concise local
+Project Conventions and Pattern Registry for AI agents.
 
 ## Business Value / Product Alignment
-This strengthens ACE's zero-lock-in promise. Developers can inspect how to leave
-before adopting the tool, keep their AI memory in a searchable export, and avoid
-destructive cleanup of project-owned files.
+This directly addresses architectural drift in established codebases. ACE will
+help agents reuse a project's existing UI, routing, logging, error-handling,
+database, and package-layout patterns instead of inventing parallel ones.
 
 ## Technical Approach
 Option 1:
-- Implement a single destructive `ace uninstall` command. This is simpler but
-  risks accidental loss of `.ai` memory and does not model the data-takeout
-  flow.
+- Add an AI-provider-backed discovery flow. This may produce richer analysis,
+  but it requires API keys, privacy configuration, provider fallback policy, and
+  more release risk.
 
 Option 2:
-- Implement `ace eject` as the export/preflight step and `ace destroy` as the
-  guarded cleanup step. Cleanup removes only ACE-owned artifacts and refuses
-  active memory without an export.
+- Add a deterministic local scanner that uses simple path, dependency, and
+  import-string heuristics to write a short Markdown conventions summary.
 
 Chosen Approach:
-- Use Option 2. It preserves developer trust, matches ACE's local-first product
-  philosophy, and keeps destructive behavior explicit and reversible by default.
+- Use Option 2 for v2.2.0. It preserves ACE's local-first, zero-dependency,
+  zero-hidden-AI-calls promise while still giving agents useful repo-specific
+  convention context.
 
 ## Current Status
-- [x] Implement eject/export command.
-- [x] Implement guarded destroy command.
-- [x] Wire router, installer, docs, version, and tests.
-- [x] Run validation and closeout.
+- [x] Implement `ace discover` scanner and overwrite protection.
+- [x] Wire router, install, hub, memory paths, MCP, docs, and version.
+- [x] Add focused tests and release-readiness checks.
+- [ ] Publish `ace-pack@2.2.0` after npm permissions are available.
 
 ## Affected Areas
 - `package.json`
-- `install-ace-pack.mjs`
-- `scripts/ace-cli.mjs`
-- `scripts/ace-eject.mjs`
-- `scripts/ace-destroy.mjs`
-- README/docs/tests and smoke tooling
+- `scripts/ace-discover.mjs`
+- ACE router, memory utils, hub, MCP, installer-managed script lists
+- README surfaces, schema docs, roadmap, tests, smoke tooling
 
 ## Constraints
-- Do not delete project-owned files such as custom `AGENTS.md`, custom
-  `CLAUDE.md`, `DEVELOPING.md`, `ROADMAP.md`, custom scripts, or custom
-  `ace:validate`.
-- Refuse destructive cleanup in the ACE product repository unless an explicit
-  internal override is provided.
-- Use native Node.js APIs only. Do not add dependencies, AI calls, network
-  calls, zip archives, or restore automation scripts.
-- Use ASCII CLI output for Windows/npm reliability.
+- Use native Node.js APIs only. Do not add dependencies.
+- Do not make AI calls, network calls, AST parsing, or complex regex analysis.
+- Keep regex heuristics simple: detect imports, dependencies, and obvious path
+  patterns.
+- Keep generated `project-conventions.md` concise and aggregated so it does not
+  bloat `ace hub` context.
+- Protect human-written conventions files; overwrite unmanaged files only with
+  `--force`.
 
 ## Acceptance Criteria
-- `ace eject` exports active ACE memory to `ace-export-YYYYMMDD-HHMMSS/` with
-  `RESTORE.md`, and reports safe removal for template-only memory.
-- `ace destroy` removes only ACE-owned artifacts, preserves custom project
-  content, and refuses active memory unless an export exists.
-- Router, installer, README surfaces, compatibility docs, and tests cover the
-  new commands.
-- Package version is `2.1.0`.
+- `ace discover` writes `.ai/knowledge/project-conventions.md` with a managed
+  marker and concise detected conventions.
+- `ace discover --stdout` prints without writing, and `--json` prints parseable
+  metadata.
+- Router, install, hub, MCP, README, schema docs, and tests cover the new
+  shipped command and memory file.
+- Package version is `2.2.0`.
 
 ## Completion Checklist
-- [x] Goal completed
-- [x] Always: summarize what changed in `.ai/session-handoff.md`
-- [x] Always: update `.ai/changed-files.md`, record verification, and run project-owned `ace:validate`
-- [x] Always: state publish/deploy decision when relevant
-- [x] If standard/large: add product, architecture, security, and code-quality review notes
-- [x] If large/high-risk: confirm design approach, add useful reflection, and let `ace finish` archive the snapshot
-- [x] If release-bound shipped behavior changed: run local smoke and dogfood/self-check routines when available
-- [x] Only if changed: update tech docs, product roadmap, durable decisions, or release notes
-- [x] `ace finish` passed and generated reports
+- [ ] Goal completed
+- [ ] Always: summarize what changed in `.ai/session-handoff.md`
+- [ ] Always: update `.ai/changed-files.md`, record verification, and run project-owned `ace:validate`
+- [ ] Always: state publish/deploy decision when relevant
+- [ ] If standard/large: add product, architecture, security, and code-quality review notes
+- [ ] If large/high-risk: confirm design approach, add useful reflection, and let `ace finish` archive the snapshot
+- [ ] If release-bound shipped behavior changed: run local smoke and dogfood/self-check routines when available
+- [ ] Only if changed: update tech docs, product roadmap, durable decisions, or release notes
+- [ ] `ace finish` passed and generated reports

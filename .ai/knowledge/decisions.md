@@ -409,3 +409,23 @@ Impact:
   removes only ACE-owned files/scripts while preserving custom project content.
 - Installer, router, docs, payload, and tests now treat eject/destroy as shipped
   `ace-pack@2.1.0` behavior.
+
+## 2026-06-16 12:33
+
+Decision:
+- Implement Project Conventions Discovery as deterministic local `ace discover`
+  heuristics instead of AI-provider analysis.
+
+Reason:
+- ACE must preserve its local-first, zero-dependency, no-hidden-AI-calls
+  promise while still helping agents reuse established repository patterns.
+  Simple import/dependency/path signals are less brittle than pseudo-AST regex
+  parsing and safer for large private repositories.
+
+Impact:
+- `ace discover` writes `.ai/knowledge/project-conventions.md` with a managed
+  marker and protects human-written files unless `--force` is passed.
+- `ace hub` and the read-only MCP adapter can expose the conventions summary
+  when it exists.
+- Future AI-assisted convention discovery remains a separate explicit opt-in
+  feature, not part of the default v2.2 workflow.

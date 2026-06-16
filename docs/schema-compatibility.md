@@ -25,6 +25,7 @@ The router supports modern commands:
 - `init`
 - `check`
 - `classify`
+- `discover`
 - `eject`
 - `destroy`
 - `finish`
@@ -52,6 +53,7 @@ Previous ACE package script names remain supported only as router arguments:
 - `ace:check`
 - `ace:onboard`
 - `ace:classify`
+- `ace:discover`
 - `ace:finish`
 - `ace:eject`
 - `ace:destroy`
@@ -97,6 +99,24 @@ managed ACE scripts, and ACE-owned package scripts. It preserves custom
 `AGENTS.md`, custom `CLAUDE.md`, custom `ace:validate`, project-owned scripts,
 `DEVELOPING.md`, and `ROADMAP.md`.
 
+## Project Conventions Discovery
+
+`ace discover` scans the local repository with deterministic path, dependency,
+and import-string heuristics. It does not parse ASTs, call AI providers, make
+network requests, or install dependencies.
+
+The command writes a concise generated registry to
+`.ai/knowledge/project-conventions.md`. Legacy `.ai/project-conventions.md` is
+readable as an alias. The generated file includes an
+`<!-- ace-discover:managed -->` marker so ACE can regenerate it safely. If a
+project-owned conventions file exists without that marker, `ace discover`
+refuses to overwrite it unless `--force` is passed.
+
+The registry is intentionally aggregated for `ace hub` context. It summarizes
+top folders and detected tools such as UI libraries, routing frameworks,
+logging packages, error wrappers, and persistence patterns instead of listing
+every source file.
+
 ## Canonical v2 Memory Layout
 
 v2 organizes ACE memory by category:
@@ -115,6 +135,7 @@ v2 organizes ACE memory by category:
 
   knowledge/
     decisions.md
+    project-conventions.md
     tech-docs.md
     product-roadmap.md
     reflection-log.md
@@ -148,6 +169,7 @@ visibly organized.
 | `.ai/state/session-handoff.md` | `.ai/session-handoff.md` |
 | `.ai/state/changed-files.md` | `.ai/changed-files.md` |
 | `.ai/knowledge/decisions.md` | `.ai/decisions.md` |
+| `.ai/knowledge/project-conventions.md` | `.ai/project-conventions.md` |
 | `.ai/knowledge/tech-docs.md` | `.ai/tech-docs.md` |
 | `.ai/knowledge/product-roadmap.md` | `.ai/product-roadmap.md` |
 | `.ai/knowledge/reflection-log.md` | `.ai/reflection-log.md` |
@@ -207,6 +229,7 @@ exist in either canonical or legacy paths:
 | current task | `## Lifecycle`, `## Goal`, `## Business Value / Product Alignment`, `## Technical Approach`, `## Acceptance Criteria`, `## Completion Checklist` |
 | session handoff | `## What Was Done`, `## Quality Review`, `## Next Steps` |
 | decisions | `Decision:`, `Impact:` |
+| project conventions | `# Project Conventions and Pattern Registry`, `## Summary` |
 | product roadmap | `## Business Goals`, `## Completed Epics`, `## Planned Features` |
 | technical docs | `## Architecture`, `## Data Model / DB Schema`, `## Auth, RBAC, and Security`, `## External APIs and Integrations` |
 | changed files | `# Changed Files` |

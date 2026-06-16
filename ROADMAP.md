@@ -158,7 +158,16 @@ removes only ACE-owned files and package scripts after a backup exists. The
 cleanup preserves custom project files, custom validation scripts, project docs,
 and shared script folders.
 
-## Long-Term Research and Development (v2.2+)
+### v2.2: Project Conventions Discovery (candidate)
+
+Help agents reuse established repository patterns. `ace discover` scans a
+project locally with deterministic path, dependency, and import-string
+heuristics, then writes a concise `.ai/knowledge/project-conventions.md`
+registry for `ace hub` context. The first release stays zero-dependency,
+zero-AI, and aggregated by design so large projects do not flood the LLM
+context window.
+
+## Long-Term Research and Development (v2.3+)
 
 ### Deeper Memory Consolidation Research
 
@@ -168,26 +177,6 @@ of only categorized. The goal is to reduce token load, prevent LLM desync, and
 simplify future agent context. Any implementation must follow the v2
 compatibility contract and include deterministic migration behavior before
 changing schema shape again.
-
-### Project Conventions and Pattern Discovery
-
-Research an explicit opt-in, agent-assisted `ace discover` workflow that scans
-an established repository and documents its local conventions in
-`.ai/knowledge/project-conventions.md`, with `.ai/project-conventions.md` as a
-possible legacy alias. The compatibility alias `ace:discover` may remain
-available through the router if this becomes a shipped command.
-
-The discovery model must stay stack-agnostic. Frontend projects should surface
-existing UI components, styling systems, and design primitives so agents do not
-create duplicates. Backend and CLI projects should surface routing, logging,
-error-handling, package layout, persistence, and similar architectural patterns
-so generated changes match the surrounding codebase.
-
-If integrated into `ace hub`, the conventions file should be included in
-context payloads so agents reuse existing project tools and idioms instead of
-inventing parallel patterns. Any automated AI-assisted discovery must follow
-the explicit AI opt-in policy: no hidden network calls, cloud providers, local
-LLMs, or model execution by default.
 
 ### Standalone ACE Engine
 

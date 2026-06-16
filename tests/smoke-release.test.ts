@@ -187,6 +187,7 @@ describe('release readiness smoke routines', () => {
     expect(results.map((result) => result.caseName)).toEqual(['js', 'non-js'])
     expect(results.every((result) => result.verification.profileStatus === 'profiled')).toBe(true)
     expect(results.every((result) => result.verification.generatedContext)).toBe(true)
+    expect(results.every((result) => result.verification.projectConventions)).toBe(true)
     expect(results.every((result) => result.verification.bridges.length === 3)).toBe(true)
     expect(results.every((result) => result.verification.smallAutoCloseout)).toBe(true)
   })
