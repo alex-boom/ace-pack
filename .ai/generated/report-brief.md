@@ -3,67 +3,69 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-16 14:40
+- Generated: 2026-06-17 23:14
 - Freshness: Fresh
-- Current task version: v3.0.1
-- Current task tier: small
-- Source task-state: 2026-06-16 14:39
+- Current task version: v3.5.0
+- Current task tier: large
+- Source task-state: 2026-06-17 23:14
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (2 changed files)
-- Last commit: 6974eb4 Upgrade to `ace-pack@3.0.1`, addressing IDE bridge issues by replacing old ACE-only rule files with managed blocks. Cleaned up legacy IDE bridge text and ensured proper normalization during upgrades. Updated documentation and tests to reflect these changes, confirming successful integration and functionality. No further NPM publish required at this time.
-- Task: complete (tier: small, version: v3.0.1, ready for archive: yes)
+- Worktree: dirty (19 changed files)
+- Last commit: cb9f7a2 Update version to `3.4.0` and introduce friction tracking in task-state management. Enhanced documentation to reflect the new friction tracking functionality, including guidelines for recording systemic friction and its impact on task completion. Updated schema compatibility documentation for v3.4, ensuring clarity on new features while maintaining backward compatibility with existing task-state files.
+- Task: active (tier: large, version: v3.5.0, ready for archive: no)
+- Current Phase: Complete
+- Next Autonomous Action: No further autonomous action; task is complete.
 - Next command: No command detected
-- Release decision: NPM publish: not required; `ace-pack@3.0.1` is already published on npm and
+- Release decision: NPM publish: required because shipped scripts/templates/docs and package
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
 
 ## Current Task
-ACE Pack v3.0.1 IDE Bridge Upgrade Fix
+ACE Pack v3.5 Knowledge Promotion & Context Pruning
 
 ## Lifecycle
-Status: complete
-Version: v3.0.1
-Task Tier: small
-Design Review Required: no
-Started: 2026-06-16 13:00
-Ready For Archive: yes
+Status: active
+Version: v3.5.0
+Task Tier: large
+Design Review Required: yes
+Friction Encountered: no
+Current Phase: Complete
+Next Autonomous Action: No further autonomous action; task is complete.
+Started: 2026-06-17 20:45
+Ready For Archive: no
 
 ## Goal
-Patch the v3 IDE bridge upgrader so old ACE-only rule files are replaced by the
-managed-block form instead of keeping duplicated legacy text.
+Add explicit knowledge promotion context and deterministic active-log rotation so
+ACE memory can stay useful without hidden AI/API calls or semantic processing in
+scripts.
 
 ## Business Value
-This patch completes the v3 IDE bridge promise for already dogfooded or older
-ACE repos: old ACE-owned bridge text is removed, while custom user-owned IDE
-rules remain preserved.
+Knowledge promotion lets agents turn resolved friction into durable project
+rules, while archive rotation keeps daily context small and focused. This
+reduces repeated mistakes without adding runtime orchestration or provider
+integration.
 
 ## Current Status
-- [x] Consolidated active task memory into `.ai/state/task-state.md`.
-- [x] Added deterministic v2 legacy task-file auto-migration with backups.
-- [x] Added managed IDE bridge blocks and safe destroy cleanup.
-- [x] Made small low-risk finish zero-ceremony from task-state plus current git state.
-- [x] Updated docs, package version, tests, smoke, and release dry-run.
-- [x] Published `ace-pack@3.0.0` to npm and confirmed `latest`.
-- [x] Fixed legacy IDE bridge exact-match normalization and cleaned dogfood IDE
-  rule files to managed-block-only form.
-- [x] Bumped package version to `3.0.1` for the patch candidate.
-- [x] Published `ace-pack@3.0.1` to npm and confirmed `latest`.
+- [x] Implemented `ace hub distill` / `promote`.
+- [x] Implemented `ace archive`.
+- [x] Updated shipped templates, docs, package version, and tests.
+- [x] Ran full validation, fake-project smoke, ACE check/classify, and npm
+  payload guard.
 
 ## Next Steps
-- No release action remains for v3.0.1.
+- Maintainer review, then run the npm release flow when ready.
 
 ## Risks / Blockers
-- None known after release-readiness checks.
+- None known.
 
 ## Verification
-- `pnpm.cmd typecheck` passed.
-- `pnpm.cmd lint` passed.
-- `pnpm.cmd test` passed: 16 files, 123 tests.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
+- `npm.cmd test -- tests/ace-hub.test.ts tests/ace-archive.test.ts tests/ace-cli.test.ts tests/agent-memory.test.ts tests/install-agent-memory-pack.test.ts tests/schema-compatibility.test.ts` passed.
+- `npm.cmd run typecheck` passed.
+- `npm.cmd run lint` passed.
+- `npm.cmd run test` passed: 17 files / 146 tests.
 
 ## Recent Decision
 ## 2026-06-16 13:51
@@ -92,12 +94,11 @@ Impact:
 - No unresolved reflections recorded.
 
 ## Changed Areas
-- `scripts/ace-task-state.mjs`
-- `scripts/ai-memory-utils.mjs, scripts/ai-markdown-utils.mjs, scripts/ai-report-utils.mjs`
-- `scripts/agent-memory-templates.mjs, scripts/agent-memory-lib.mjs, scripts/ace-cli.mjs, scripts/ace-migrate.mjs`
-- `scripts/ai-report*.mjs, scripts/ace-hub.mjs, scripts/ace-quality-gate.mjs, scripts/ai-update.mjs, scripts/ace-mcp-server.mjs`
-- `scripts/ai-task-finish.mjs`
-- `scripts/ace-uninstall-utils.mjs, install-ace-pack.mjs, install-agent-memory-pack.mjs, scripts/ace-install-lib.mjs, scripts/bootstrap-agent-memory.mjs, scripts/ace-destroy.mjs`
+- `scripts/ace-hub-distill.mjs, scripts/ace-hub.mjs, scripts/ace-hub-modes.mjs`
+- `scripts/ace-archive.mjs, scripts/ace-cli.mjs, scripts/ace-uninstall-utils.mjs`
+- `scripts/agent-memory-templates.mjs`
+- `README.md, README.npm.md, docs/schema-compatibility.md, package.json`
+- `tests/**`
 
 ## Overall Progress
 - Completion checklist: 6/6

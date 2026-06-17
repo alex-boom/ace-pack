@@ -1,8 +1,9 @@
-# ACE v3.4 Schema and Compatibility
+# ACE v3.5 Schema and Compatibility
 
 This document defines the compatibility contract for installed ACE repositories
 starting with `ace-pack@3.0.0`, including additive v3.1 task-state fields and
-the v3.2 review, v3.3 red-team, and v3.4 friction-tracking additions.
+the v3.2 review, v3.3 red-team, v3.4 friction-tracking, and v3.5 knowledge
+promotion/context-pruning additions.
 
 ACE remains Markdown-first, local-first, and zero-dependency. v3 consolidates
 active task memory into one task-state file and keeps migration deterministic.
@@ -21,10 +22,10 @@ npm run ace -- finish
 pnpm ace finish
 ```
 
-The router supports `init`, `check`, `classify`, `discover`, `eject`,
-`destroy`, `finish`, `gate`, `hub`, `migrate`, `onboard`, and reports. Legacy
-router names such as `ace:finish`, `agent-memory:init`, and `ai:task:finish`
-remain accepted only as router arguments.
+The router supports `init`, `check`, `classify`, `archive`, `discover`,
+`eject`, `destroy`, `finish`, `gate`, `hub`, `migrate`, `onboard`, and reports.
+Legacy router names such as `ace:finish`, `agent-memory:init`, and
+`ai:task:finish` remain accepted only as router arguments.
 
 ## Canonical v3 Memory Layout
 
@@ -70,7 +71,7 @@ sections or signals:
 
 | Section | Required signals |
 | --- | --- |
-| `## Lifecycle & Meta` | `### Feature Name`, `### Lifecycle`, `Task Tier:`, `Design Review Required:`, `Friction Encountered:` in fresh v3.4 templates, `### Goal`, `### Completion Checklist` |
+| `## Lifecycle & Meta` | `### Feature Name`, `### Lifecycle`, `Task Tier:`, `Design Review Required:`, `Friction Encountered:` in fresh v3.5 templates, `### Goal`, `### Completion Checklist` |
 | `## Business Value & Approach` | `### Business Value / Product Alignment`, `### Technical Approach`, `### Edge Cases & Red Teaming` in fresh v3.3 templates |
 | `## Changed Files / Diff` | path headings such as `[README.md]` when changes are recorded |
 | `## Handoff & Next Steps` | `### Quality Review`, `### Next Steps`, `### Verification`, `### Notes` |
@@ -126,6 +127,47 @@ npm run ace -- finish --friction "Unclear API docs caused repeated validation lo
 reflection entry, prints a warning, and records friction status in the
 work-log entry. Existing meaningful v3 task-state files without the v3.4 label
 remain valid; missing friction is treated as `no`.
+
+## Knowledge Promotion and Context Pruning
+
+`ace hub distill` and its alias `ace hub promote` generate a local knowledge
+promotion prompt. ACE does not call an LLM or network service; it writes or
+prints deterministic Markdown that users may hand to an explicitly chosen
+knowledge-engineering agent.
+
+The distill payload includes:
+
+- a strict Knowledge Engineer system instruction;
+- current `.ai/knowledge/project-conventions.md` when present;
+- the `## Resolved` section from `.ai/knowledge/reflection-log.md`.
+
+If `project-conventions.md` is missing, the payload records that fact and still
+generates. If `## Resolved` exists but is empty, the payload explicitly says
+there is nothing ready to promote. If the resolved heading is missing or the
+reflection log formatting is broken, the payload includes the full reflection
+log and instructs the reviewer: `Focus ONLY on the ## Resolved section. Ignore
+## Unresolved.`
+
+`ace archive` is deterministic mechanical rotation, not semantic
+summarization. It rotates only `.ai/knowledge/work-log.md` and
+`.ai/knowledge/reflection-log.md` when they exceed the configured line limit
+(default `100`), copying the full current content into `.ai/archive/` and
+creating fresh active files with relative clickable links such as:
+
+```md
+*Archived history can be found in [YYYY-MM-DD-work-log.md](../archive/YYYY-MM-DD-work-log.md)*
+```
+
+Use:
+
+```bash
+pnpm ace archive --dry-run --max-lines 100
+npm run ace -- archive --max-lines 100
+```
+
+Repeated archive runs on the same date add `-2`, `-3`, and later suffixes
+instead of overwriting existing archives. `decisions.md` remains active durable
+history and is not archived by `ace archive` in v3.5.
 
 ## Agentic Red Team Planning Mode
 

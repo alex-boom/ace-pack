@@ -98,6 +98,14 @@ current task.
   \`ace finish\`, add an entry to \`.ai/knowledge/reflection-log.md\` with the
   stuck point and likely cause, or use \`pnpm ace finish --friction "<reason>"\`
   to append it during manual closeout.
+- Maintain context hygiene. When \`.ai/knowledge/reflection-log.md\` has
+  resolved items worth turning into durable rules, or active context feels
+  noisy, run \`pnpm ace hub distill\` (or \`npm run ace -- hub distill\`) and
+  promote only reusable rules into \`.ai/knowledge/project-conventions.md\`.
+  When \`.ai/knowledge/work-log.md\` or \`.ai/knowledge/reflection-log.md\`
+  grows too large, run \`pnpm ace archive\` (or \`npm run ace -- archive\`) to
+  mechanically rotate it. Treat \`.ai/archive/**\` as deep history, not daily
+  context.
 - When Current Phase is \`Review\`, act as a strict reviewer. Run
   \`pnpm ace hub review\` (or \`npm run ace -- hub review\`) to read the
   evaluation context, compare the original intent and conventions against the
@@ -218,9 +226,16 @@ While working:
   timestamps in \`YYYY-MM-DD HH:mm\` format.
 - Keep \`.ai/state/task-state.md\` and \`.ai/knowledge/reflection-log.md\`
   compact.
-- Archive only \`.ai/knowledge/work-log.md\`,
-  \`.ai/knowledge/reflection-log.md\`, and \`.ai/knowledge/decisions.md\` into
-  \`.ai/archive/\` when they grow past the documented thresholds.
+- When \`.ai/knowledge/reflection-log.md\` has resolved items ready for durable
+  reuse, or active context is noisy, run \`pnpm ace hub distill\` (or
+  \`npm run ace -- hub distill\`) and promote only reusable rules into
+  \`.ai/knowledge/project-conventions.md\`.
+- When \`.ai/knowledge/work-log.md\` or
+  \`.ai/knowledge/reflection-log.md\` grows too large, run
+  \`pnpm ace archive\` (or \`npm run ace -- archive\`) to mechanically rotate
+  it into \`.ai/archive/\`. Do not archive \`.ai/knowledge/decisions.md\` in
+  ACE v3.5.
+- Treat \`.ai/archive/**\` as deep history, not daily context.
 - Use \`.ai/state/task-state.md\` lifecycle fields for task/version
   transitions.
   When a large task version is complete, mark its completion checklist and let

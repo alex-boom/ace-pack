@@ -260,7 +260,7 @@ Keep this too.
       files?: string[]
     }
 
-    expect(schemaDocs).toContain('ACE v3.4 Schema and Compatibility')
+    expect(schemaDocs).toContain('ACE v3.5 Schema and Compatibility')
     expect(schemaDocs).toContain('Installed repositories expose only:')
     expect(schemaDocs).toContain('remain accepted only as router arguments')
     expect(schemaDocs).toContain('Canonical v3 Memory Layout')
@@ -272,6 +272,11 @@ Keep this too.
     expect(schemaDocs).toContain('Friction Encountered:')
     expect(schemaDocs).toContain('Autonomous Phase Routing')
     expect(schemaDocs).toContain('Friction Tracking')
+    expect(schemaDocs).toContain('Knowledge Promotion and Context Pruning')
+    expect(schemaDocs).toContain('ace hub distill')
+    expect(schemaDocs).toContain('ace hub promote')
+    expect(schemaDocs).toContain('ace archive')
+    expect(schemaDocs).toContain('decisions.md` remains active durable')
     expect(schemaDocs).toContain('Agentic Evaluation Review Mode')
     expect(schemaDocs).toContain('ace hub review')
     expect(schemaDocs).toContain('Agentic Red Team Planning Mode')

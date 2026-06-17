@@ -361,219 +361,7 @@ Status: resolved
   a new chat.
 - Likely Cause: Release steps were previously only discussed in conversation.
 - Proposed Improvement: Keep publish commands discoverable through
-  `package.json` scripts and record npm publishing notes in `.ai/session-handoff.md`.</file><file path=".ai/state/task-state.md"># Task State
-
-## Lifecycle &amp; Meta
-
-### Feature Name
-ACE Pack v3.0.1 IDE Bridge Upgrade Fix
-
-### Lifecycle
-Status: complete
-Version: v3.0.1
-Task Tier: small
-Design Review Required: no
-Started: 2026-06-16 13:00
-Ready For Archive: yes
-
-### Goal
-Patch the v3 IDE bridge upgrader so old ACE-only rule files are replaced by the
-managed-block form instead of keeping duplicated legacy text.
-
-### Current Status
-- [x] Consolidated active task memory into `.ai/state/task-state.md`.
-- [x] Added deterministic v2 legacy task-file auto-migration with backups.
-- [x] Added managed IDE bridge blocks and safe destroy cleanup.
-- [x] Made small low-risk finish zero-ceremony from task-state plus current git state.
-- [x] Updated docs, package version, tests, smoke, and release dry-run.
-- [x] Published `ace-pack@3.0.0` to npm and confirmed `latest`.
-- [x] Fixed legacy IDE bridge exact-match normalization and cleaned dogfood IDE
-  rule files to managed-block-only form.
-- [x] Bumped package version to `3.0.1` for the patch candidate.
-- [x] Published `ace-pack@3.0.1` to npm and confirmed `latest`.
-
-### Affected Areas
-- `package.json`
-- `install-ace-pack.mjs`, `install-agent-memory-pack.mjs`
-- `scripts/*.mjs`
-- `README.md`, `README.npm.md`, `ROADMAP.md`, `docs/schema-compatibility.md`
-- `AGENTS.md`, `CLAUDE.md`, `DEVELOPING.md`
-- `tests/**`, `tools/**`
-- repo-local `.ai/**` dogfooding memory
-- `.cursorrules`, `.windsurfrules`, `.github/copilot-instructions.md`
-
-### Constraints
-- Keep ACE local-first and zero hidden AI/network calls for migration.
-- Do not overwrite project-owned IDE rule files.
-- Preserve existing installed-repo compatibility through deterministic aliases
-  and migration.
-- Keep touched scripts within the 400 non-empty-line limit.
-- Publish only a patch release if the maintainer decides the IDE bridge upgrade
-  fix should go to npm.
-
-### Acceptance Criteria
-- Fresh installs create `task-state.md`, not `current-task.md`,
-  `session-handoff.md`, or `changed-files.md`.
-- `ace init`, `ace check`, router startup, and `ace migrate` auto-migrate safe
-  legacy task files with timestamped backups.
-- IDE rules use `ace-managed-ide-rules` blocks and `ace destroy` removes only
-  those blocks.
-- Small finish writes work-log from task title and current diff/status without
-  reading latest commits.
-- Reports, hub, gate, MCP, update helpers, smoke fixtures, docs, and tests all
-  use task-state behavior.
-- Existing old ACE-only IDE bridge files are upgraded to one managed block, and
-  mixed old+managed files are cleaned on repeat init/install.
-
-### Completion Checklist
-- [x] Goal completed
-- [x] Future agent context preserved
-- [x] Verification recorded
-- [x] Publish/deploy decision recorded when relevant
-- [x] Extra docs updated only where changed
-- [x] `ace:validate` and release checks passed
-
-## Business Value &amp; Approach
-
-### Business Value / Product Alignment
-This patch completes the v3 IDE bridge promise for already dogfooded or older
-ACE repos: old ACE-owned bridge text is removed, while custom user-owned IDE
-rules remain preserved.
-
-### Technical Approach
-Option 1:
-- Introduce the v3 file but leave old task files in place indefinitely as
-  mirrors. This minimizes migration risk but keeps the file sprawl and agent
-  desynchronization problem alive.
-
-Option 2:
-- Consolidate into task-state with a deterministic auto-migrator, backup legacy
-  files before cleanup, and keep old reader/MCP aliases as compatibility paths.
-
-Chosen Approach:
-- Use Option 2. It is a clean major-version schema change while preserving local
-  recovery, no-network migration, and compatibility for older installed repos.
-
-Patch Note:
-- The v3.0.0 upgrader appended managed blocks to some old ACE-only bridge files
-  because exact comparison treated blank lines as meaningful. v3.0.1 ignores
-  blank lines for template comparison and also cleans already mixed old+managed
-  ACE bridge files.
-
-## Changed Files / Diff
-
-[scripts/ace-task-state.mjs]
-- Added task-state template, legacy file detection, safe backup migration,
-  title extraction, and completed-state generation.
-
-[scripts/ai-memory-utils.mjs, scripts/ai-markdown-utils.mjs, scripts/ai-report-utils.mjs]
-- Moved shared Markdown/report helpers into focused modules and registered
-  task-state as the canonical memory key.
-
-[scripts/agent-memory-templates.mjs, scripts/agent-memory-lib.mjs, scripts/ace-cli.mjs, scripts/ace-migrate.mjs]
-- Fresh installs and router/init/check/migrate flows now create or migrate
-  `task-state.md`.
-
-[scripts/ai-report*.mjs, scripts/ace-hub.mjs, scripts/ace-quality-gate.mjs, scripts/ai-update.mjs, scripts/ace-mcp-server.mjs]
-- Updated reports, hub, gate, update helpers, and MCP resources to use
-  task-state; deprecated old MCP task/handoff URIs now alias task-state.
-
-[scripts/ai-task-finish.mjs]
-- Small low-risk finish now uses task title and current git diff/status, writes
-  a compact work-log entry, resets task-state, and skips manual handoff prompts.
-
-[scripts/ace-uninstall-utils.mjs, install-ace-pack.mjs, install-agent-memory-pack.mjs, scripts/ace-install-lib.mjs, scripts/bootstrap-agent-memory.mjs, scripts/ace-destroy.mjs]
-- Added managed IDE rule block upsert/removal, safe destroy cleanup, and split
-  the installer into an importable library plus CLI wrappers.
-
-[README.md, README.npm.md, ROADMAP.md, docs/schema-compatibility.md, AGENTS.md, CLAUDE.md, DEVELOPING.md, docs/*.md]
-- Documented v3 task-state schema, migration, managed IDE rules, and one major
-  npm release strategy.
-
-[tests/**, tools/**]
-- Added and updated migration, install, schema, hub, report, gate, finish, MCP,
-  uninstall, smoke, syntax, and line-limit coverage.
-
-[.cursorrules, .windsurfrules, .github/copilot-instructions.md]
-- Cleaned dogfood IDE bridge files to the v3 managed-block-only form.
-
-## Handoff &amp; Next Steps
-
-### Last Update
-2026-06-16 14:38
-
-### What Was Done
-- Implemented ACE Pack v3.0.0 as one major release candidate with Memory Schema
-  v3 and config schema still at version `1`.
-- Added zero-human-effort migration from legacy task files to task-state with
-  local backups under `.ai/archive/migrations/`.
-- Added idempotent managed IDE rule blocks for Cursor, Windsurf, and Copilot,
-  plus surgical cleanup in `ace destroy`.
-- Updated small-task finish to avoid latest commits and use task-state plus
-  current git diff/status.
-- Updated docs, package version, tests, smoke fixtures, payload checks, and npm
-  dry-run release path.
-- Confirmed `ace-pack@3.0.0` is published on npm and tagged `latest`.
-- Fixed the v3 IDE bridge upgrade bug found in dogfood after publication.
-- Confirmed `ace-pack@3.0.1` is published on npm and tagged `latest`.
-
-### Current State
-- `npm.cmd run release:ready` passes for `ace-pack@3.0.0`.
-- `npm.cmd run release:npm:dry` passes and stages a 39-file npm payload.
-- This repo&apos;s local `.ai` dogfood memory was migrated to `.ai/state/task-state.md`
-  during release checks with a backup under `.ai/archive/migrations/`.
-- No intermediate npm versions were published.
-- npm registry latest is `3.0.1`.
-- GitHub `main` matches `origin/main` at commit `6974eb4`.
-
-### Quality Review
-Product Alignment:
-- The release directly addresses the requested DevEx outcomes: cleaner memory,
-  safer IDE integration, and lower small-task ceremony.
-
-Architecture:
-- Migration and IDE block handling are centralized in shared helpers, while
-  old MCP/task reader surfaces remain compatibility aliases instead of parallel
-  state.
-
-Security:
-- Migration uses only local filesystem reads/writes and timestamped backups.
-  IDE cleanup removes only ACE-managed blocks and preserves custom user rules.
-
-Code Quality:
-- Large modules were split where needed to satisfy the 400 non-empty-line guard.
-  Tests cover migration, install, destroy, finish, reports, gate, hub, MCP, and
-  release smoke paths.
-
-### Next Steps
-- No release action remains for v3.0.1.
-
-### Known Issues
-- None known after release-readiness checks.
-
-### Verification
-- `pnpm.cmd typecheck` passed.
-- `pnpm.cmd lint` passed.
-- `pnpm.cmd test` passed: 16 files, 123 tests.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
-- `npm.cmd run release:ready` passed.
-- `npm.cmd run release:npm:dry` passed.
-- `npm.cmd view ace-pack version dist-tags time --json` confirmed npm latest is
-  `3.0.0`, published at `2026-06-16T11:01:40.740Z`.
-- Focused install test passed after the IDE bridge fix: 1 file, 17 tests.
-- `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd test` passed after the
-  patch fix: 16 files, 125 tests.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
-- `npm.cmd run release:ready` passed for `ace-pack@3.0.1`, including npm
-  payload guard and publish dry-run.
-- `npm.cmd view ace-pack version dist-tags time --json` confirmed npm latest is
-  `3.0.1`, published at `2026-06-16T11:37:47.243Z`.
-- `git status -sb` showed `main...origin/main` clean before this final local
-  ACE memory closeout update.
-
-### Notes
-- NPM publish: not required; `ace-pack@3.0.1` is already published on npm and
-  tagged `latest`.</file><file path=".ai/knowledge/decisions.md"># Decisions
+  `package.json` scripts and record npm publishing notes in `.ai/session-handoff.md`.</file><file path=".ai/knowledge/decisions.md"># Decisions
 
 ## 2026-06-13 20:59
 
@@ -1025,7 +813,177 @@ Impact:
 - `.cursorrules`, `.windsurfrules`, and Copilot instructions use
   `ace-managed-ide-rules` blocks that `ace destroy` can remove surgically.
 - `ace-pack@3.0.0` is a major release; npm publish is required only for the
-  final reviewed release.</file><file path="AGENTS.md">&gt; [!WARNING]
+  final reviewed release.</file><file path=".ai/state/task-state.md"># Task State
+
+## Lifecycle &amp; Meta
+
+### Feature Name
+ACE Pack v3.5 Knowledge Promotion &amp; Context Pruning
+
+### Lifecycle
+Status: active
+Version: v3.5.0
+Task Tier: large
+Design Review Required: yes
+Friction Encountered: no
+Current Phase: Complete
+Next Autonomous Action: No further autonomous action; task is complete.
+Started: 2026-06-17 20:45
+Ready For Archive: no
+
+### Goal
+Add explicit knowledge promotion context and deterministic active-log rotation so
+ACE memory can stay useful without hidden AI/API calls or semantic processing in
+scripts.
+
+### Current Status
+- [x] Implemented `ace hub distill` / `promote`.
+- [x] Implemented `ace archive`.
+- [x] Updated shipped templates, docs, package version, and tests.
+- [x] Ran full validation, fake-project smoke, ACE check/classify, and npm
+  payload guard.
+
+### Affected Areas
+- `scripts/ace-hub*.mjs`
+- `scripts/ace-cli.mjs`
+- `scripts/ace-archive.mjs`
+- `scripts/agent-memory-templates.mjs`
+- `scripts/ace-uninstall-utils.mjs`
+- `README.md`, `README.npm.md`, `docs/schema-compatibility.md`
+- `package.json`
+- `tests/**`
+
+### Constraints
+- Keep ACE local-first, zero-dependency, and zero hidden AI/network calls.
+- Do not archive `decisions.md` in v3.5.
+- Preserve compatibility with existing memory files.
+- Keep script files under the 400-line guard.
+- Do not edit repo-local root `AGENTS.md` or `CLAUDE.md` to change product behavior.
+
+### Acceptance Criteria
+- [x] `ace hub distill` and alias `promote` output knowledge promotion context.
+- [x] Distill handles optional conventions, empty resolved reflections, and
+  missing or broken `## Resolved` formatting with the specified fallback
+  instruction.
+- [x] `ace archive` rotates only work-log and reflection-log with `--max-lines`
+  and `--dry-run`.
+- [x] Fresh active logs contain clickable relative archive links.
+- [x] Same-day repeated archives do not overwrite existing archive files.
+- [x] Router, install sync, docs, schema tests, and full validation pass.
+
+### Completion Checklist
+- [x] Goal completed
+- [x] Future agent context preserved
+- [x] Verification recorded
+- [x] Publish/deploy decision recorded when relevant
+- [x] Extra docs updated only where changed
+- [x] `ace:validate` and release checks passed
+
+## Business Value &amp; Approach
+
+### Business Value / Product Alignment
+Knowledge promotion lets agents turn resolved friction into durable project
+rules, while archive rotation keeps daily context small and focused. This
+reduces repeated mistakes without adding runtime orchestration or provider
+integration.
+
+### Technical Approach
+Option 1:
+- Add semantic summarization into `ace archive`. This would be convenient but
+  violates ACE&apos;s no hidden AI calls and deterministic local-first model.
+
+Option 2:
+- Add `hub distill` as a prompt generator for explicit agent work, and keep
+  `ace archive` as a mechanical Markdown rotation command.
+
+Chosen Approach:
+- Use Option 2. It separates intelligence from mechanics, keeps scripts
+  dependency-free, and preserves human-readable Markdown as the data bus.
+
+### Edge Cases &amp; Red Teaming
+- Failure mode: a human breaks the `reflection-log.md` headings. Mitigation:
+  distill falls back to the full file with a strict instruction to focus only on
+  `## Resolved` and ignore `## Unresolved`.
+- Failure mode: archive runs multiple times on the same date. Mitigation: archive
+  filenames get `-2`, `-3`, etc. suffixes without overwriting.
+- Failure mode: log rotation removes section headings needed by checks.
+  Mitigation: fresh `reflection-log.md` keeps `## Unresolved` and `## Resolved`.
+
+## Changed Files / Diff
+
+[scripts/ace-hub-distill.mjs, scripts/ace-hub.mjs, scripts/ace-hub-modes.mjs]
+- Added `distill` / `promote` hub mode with phase/action metadata, project
+  conventions context, resolved-reflection extraction, empty-resolved handling,
+  and the strict fallback instruction for missing or broken `## Resolved`.
+
+[scripts/ace-archive.mjs, scripts/ace-cli.mjs, scripts/ace-uninstall-utils.mjs]
+- Added deterministic `ace archive` routing, CLI flags, dry-run behavior,
+  same-day suffixes, fresh active log links, and managed script installation.
+
+[scripts/agent-memory-templates.mjs]
+- Added context hygiene rules for `hub distill`, `archive`, `.ai/archive/**`
+  deep-history treatment, and the v3.5 decision not to archive `decisions.md`.
+
+[README.md, README.npm.md, docs/schema-compatibility.md, package.json]
+- Documented v3.5 schema and command surfaces, updated command tables, and
+  bumped the package version to `3.5.0`.
+
+[tests/**]
+- Added/updated coverage for hub distill payloads, archive rotation, router
+  mappings, installed script sync, shipped instructions, and schema docs.
+
+## Handoff &amp; Next Steps
+
+### Last Update
+2026-06-17 23:12
+
+### What Was Done
+- Implemented the v3.5 knowledge promotion and context pruning pipeline.
+- Kept semantic distillation in explicit agent prompts and archive rotation
+  deterministic.
+
+### Current State
+- Complete and ready for maintainer review.
+
+### Quality Review
+Product Alignment:
+- v3.5 directly supports self-healing ACE memory without adding hidden LLM calls
+  or runtime orchestration.
+
+Architecture:
+- Distill follows the existing hub payload-builder pattern; archive is a separate
+  deterministic CLI with no semantic summary logic.
+
+Security:
+- No dependencies, network calls, credentials, provider integrations, or
+  background schedulers were added.
+
+Code Quality:
+- New behavior is covered by focused tests and kept in isolated script modules
+  under the line-limit guard.
+
+### Next Steps
+- Maintainer review, then run the npm release flow when ready.
+
+### Known Issues
+- None known.
+
+### Verification
+- `npm.cmd test -- tests/ace-hub.test.ts tests/ace-archive.test.ts tests/ace-cli.test.ts tests/agent-memory.test.ts tests/install-agent-memory-pack.test.ts tests/schema-compatibility.test.ts` passed.
+- `npm.cmd run typecheck` passed.
+- `npm.cmd run lint` passed.
+- `npm.cmd run test` passed: 17 files / 146 tests.
+- `npm.cmd run ace:validate` passed: typecheck, line-limit lint, and Vitest.
+- `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
+- `npm.cmd run ace -- check` passed.
+- `npm.cmd run ace -- classify` passed; current diff is large and design review
+  is required.
+- `npm.cmd run check:npm-payload` passed; 46 packed files checked.
+- `git diff --check` passed.
+
+### Notes
+- NPM publish: required because shipped scripts/templates/docs and package
+  version changed.</file><file path="AGENTS.md">&gt; [!WARNING]
 &gt; **META-ARCHITECTURE WARNING:** This repository BUILDS the ACE product, but also USES ACE locally. If you are instructed to modify ACE behavior for users, edit the product source and templates in `scripts/`. Do not edit this local `AGENTS.md`, `CLAUDE.md`, or `.ai/**` to change global product behavior.
 
 # AGENTS.md
@@ -1495,4 +1453,10 @@ safety:
   `2026-06-16T11:37:47.243Z`.
 - Confirmed local `main` matches `origin/main` at commit `6974eb4`.
 - Updated local ACE task-state for final v3.0.1 closeout.
-- NPM publish: not required; v3.0.1 is already published.</file></files></repomix>
+- NPM publish: not required; v3.0.1 is already published.
+
+## 2026-06-17 23:14
+
+- ACE finished large task: ACE Pack v3.5 Knowledge Promotion &amp; Context Pruning.
+- Friction Encountered: no.
+- Design Review Required: yes.</file></files></repomix>

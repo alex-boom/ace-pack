@@ -12,6 +12,7 @@ import {
   generateContextPayload,
   listHubModes,
 } from '../scripts/ace-hub.mjs'
+import { DISTILL_SYSTEM_INSTRUCTION } from '../scripts/ace-hub-distill.mjs'
 import { RED_TEAM_SYSTEM_INSTRUCTION } from '../scripts/ace-hub-red-team.mjs'
 import { REVIEW_SYSTEM_INSTRUCTION } from '../scripts/ace-hub-review.mjs'
 
@@ -93,7 +94,18 @@ Fixture.
   await writeRepoFile(
     rootDir,
     '.ai/reflection-log.md',
-    '# Reflection Log\n\n## Unresolved\n\n## Resolved\n',
+    `# Reflection Log
+
+## Unresolved
+
+## Resolved
+
+### 2026-06-14 13:00 Hub friction resolved
+Status: resolved
+- Stuck Point: Hub fixtures lost project conventions.
+- Likely Cause: Context payload did not include durable rules.
+- Promoted Rule: Include project conventions in daily startup context.
+`,
   )
   await writeRepoFile(
     rootDir,
@@ -333,6 +345,67 @@ describe('generateContextPayload', () => {
     expect(result.payload).toContain('- No high-risk rules configured.')
   })
 
+  it('generates knowledge promotion distill context with resolved reflections', async () => {
+    const rootDir = await createHubRepo()
+
+    const result = await generateContextPayload(rootDir, 'distill')
+
+    expect(result.mode.id).toBe('distill')
+    expect(result.includedFiles).toEqual([
+      '.ai/knowledge/reflection-log.md',
+      '.ai/knowledge/project-conventions.md',
+    ])
+    expect(result.payload).toContain('# ACE Knowledge Promotion Context')
+    expect(result.payload).toContain('- Current Phase: Implementation')
+    expect(result.payload).toContain(DISTILL_SYSTEM_INSTRUCTION)
+    expect(result.payload).toContain('## Current Project Conventions')
+    expect(result.payload).toContain('# Project Conventions and Pattern Registry')
+    expect(result.payload).toContain('## Resolved Reflections')
+    expect(result.payload).toContain('### 2026-06-14 13:00 Hub friction resolved')
+    expect(result.payload).toContain('Include project conventions in daily startup context.')
+    expect(result.payload).toContain(
+      'remove the promoted resolved items from `.ai/knowledge/reflection-log.md`',
+    )
+  })
+
+  it('generates distill context when project conventions are missing', async () => {
+    const rootDir = await createHubRepo()
+    await unlink(path.join(rootDir, '.ai', 'project-conventions.md'))
+
+    const result = await generateContextPayload(rootDir, 'promote')
+
+    expect(result.mode.id).toBe('distill')
+    expect(result.missingOptionalFiles).toEqual(['.ai/knowledge/project-conventions.md'])
+    expect(result.payload).toContain('- Project conventions file not found.')
+    expect(result.payload).toContain('## Resolved Reflections')
+  })
+
+  it('states clearly when resolved reflections are empty', async () => {
+    const rootDir = await createHubRepo()
+    await writeRepoFile(rootDir, '.ai/reflection-log.md', '# Reflection Log\n\n## Unresolved\n\n## Resolved\n')
+
+    const result = await generateContextPayload(rootDir, 'distill')
+
+    expect(result.payload).toContain('## Resolved Reflections')
+    expect(result.payload).toContain('- No resolved reflections recorded. Nothing is ready to promote.')
+  })
+
+  it('falls back to the full reflection log when the resolved heading is missing', async () => {
+    const rootDir = await createHubRepo()
+    await writeRepoFile(
+      rootDir,
+      '.ai/reflection-log.md',
+      '# Reflection Log\n\n## Unresolved\n- Active issue.\n\n## Resolved Items\n- Broken heading.\n',
+    )
+
+    const result = await generateContextPayload(rootDir, 'distill')
+
+    expect(result.payload).toContain('## Reflection Log Fallback')
+    expect(result.payload).toContain('Focus ONLY on the ## Resolved section. Ignore ## Unresolved.')
+    expect(result.payload).toContain('## Resolved Items')
+    expect(result.payload).toContain('- Broken heading.')
+  })
+
   it('generates architect-lite planning context without full decisions history', async () => {
     const rootDir = await createHubRepo()
 
@@ -411,11 +484,13 @@ describe('ace hub CLI', () => {
     expect(list).toContain('handoff')
     expect(list).toContain('review, eval, evaluate')
     expect(list).toContain('red-team, redteam, adversarial')
+    expect(list).toContain('distill, promote')
     expect(list).toContain('pr')
     expect(HUB_MENU).toContain('[architect-lite] AI Architect Lite Context')
     expect(HUB_MENU).toContain('[handoff] Agent Handoff Context')
     expect(HUB_MENU).toContain('[review] Agentic Evaluation Review')
     expect(HUB_MENU).toContain('[red-team] Agentic Red Team Planning')
+    expect(HUB_MENU).toContain('[distill] Knowledge Promotion Distill')
     expect(HUB_MENU).toContain('[pr] PR Summary Context')
   })
 
@@ -426,6 +501,7 @@ describe('ace hub CLI', () => {
     expect(stdout).toContain('architect-lite, plan')
     expect(stdout).toContain('review, eval, evaluate')
     expect(stdout).toContain('red-team, redteam, adversarial')
+    expect(stdout).toContain('distill, promote')
     expect(stdout).toContain('pr')
   })
 
@@ -485,5 +561,19 @@ describe('ace hub CLI', () => {
     await expect(readFile(path.join(rootDir, GENERATED_CONTEXT_PATH), 'utf8')).rejects.toThrow()
     expect(stdout).toContain('# ACE Agentic Red Team Context')
     expect(stdout).toContain(RED_TEAM_SYSTEM_INSTRUCTION)
+  })
+
+  it('prints distill payload to stdout', async () => {
+    const rootDir = await createHubRepo()
+
+    const { stdout } = await execFileAsync(
+      process.execPath,
+      [hubScriptPath, 'promote', '--stdout'],
+      { cwd: rootDir },
+    )
+
+    await expect(readFile(path.join(rootDir, GENERATED_CONTEXT_PATH), 'utf8')).rejects.toThrow()
+    expect(stdout).toContain('# ACE Knowledge Promotion Context')
+    expect(stdout).toContain(DISTILL_SYSTEM_INSTRUCTION)
   })
 })

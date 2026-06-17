@@ -80,6 +80,10 @@ describe('ensureAgentMemory', () => {
     expect(agentsContent).toContain('pnpm ace hub review')
     expect(agentsContent).toContain('If review fails')
     expect(agentsContent).toContain('pnpm ace hub red-team')
+    expect(agentsContent).toContain('pnpm ace hub distill')
+    expect(agentsContent).toContain('pnpm ace archive')
+    expect(agentsContent).toContain('Do not archive `.ai/knowledge/decisions.md`')
+    expect(agentsContent).toContain('`.ai/archive/**` as deep history')
     expect(agentsContent).toContain('Edge Cases & Red Teaming')
     expect(agentsContent).toContain('.cursorrules')
     expect(agentsContent).toContain('dogfood/self-check routines before final publish')
@@ -111,6 +115,9 @@ describe('ensureAgentMemory', () => {
     expect(claudeContent).toContain('pnpm ace hub review')
     expect(claudeContent).toContain('When Current Phase is `Review`')
     expect(claudeContent).toContain('pnpm ace hub red-team')
+    expect(claudeContent).toContain('pnpm ace hub distill')
+    expect(claudeContent).toContain('pnpm ace archive')
+    expect(claudeContent).toContain('`.ai/archive/**` as deep history')
     expect(claudeContent).toContain('Edge Cases & Red Teaming')
     expect(claudeContent).toContain(
       'Do the smallest closeout that preserves future agent context and project',

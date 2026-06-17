@@ -69,10 +69,12 @@ describe('installAcePack', () => {
     expect(result.createdFiles).toContain('AGENTS.md')
     expect(result.createdFiles).toContain('CLAUDE.md')
     expect(result.createdFiles).toContain('scripts/ace-cli.mjs')
+    expect(result.createdFiles).toContain('scripts/ace-archive.mjs')
     expect(result.createdFiles).toContain('scripts/ace-discover.mjs')
     expect(result.createdFiles).toContain('scripts/ace-destroy.mjs')
     expect(result.createdFiles).toContain('scripts/ace-eject.mjs')
     expect(result.createdFiles).toContain('scripts/ace-hub.mjs')
+    expect(result.createdFiles).toContain('scripts/ace-hub-distill.mjs')
     expect(result.createdFiles).toContain('scripts/ace-hub-modes.mjs')
     expect(result.createdFiles).toContain('scripts/ace-hub-red-team.mjs')
     expect(result.createdFiles).toContain('scripts/ace-hub-review.mjs')
@@ -100,6 +102,7 @@ describe('installAcePack', () => {
       'ace:init',
       'ace:check',
       'ace:classify',
+      'ace:archive',
       'ace:discover',
       'ace:finish',
       'ace:gate',

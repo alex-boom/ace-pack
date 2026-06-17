@@ -22,6 +22,7 @@ export const OLD_ACE_PACKAGE_SCRIPTS = {
   'ace:classify': 'node ./scripts/ai-task-classify.mjs',
   'ace:discover': 'node ./scripts/ace-discover.mjs',
   'ace:finish': 'node ./scripts/ai-task-finish.mjs',
+  'ace:archive': 'node ./scripts/ace-archive.mjs',
   'ace:gate': 'node ./scripts/ace-quality-gate.mjs',
   'ace:hub': 'node ./scripts/ace-hub.mjs',
   'ace:onboard': 'node ./scripts/ace-onboard.mjs',
@@ -48,10 +49,12 @@ export const DEFAULT_PACKAGE_SCRIPTS = {
 }
 export const MANAGED_SCRIPT_FILES = [
   'ace-cli.mjs',
+  'ace-archive.mjs',
   'ace-discover.mjs',
   'ace-destroy.mjs',
   'ace-eject.mjs',
   'ace-hub.mjs',
+  'ace-hub-distill.mjs',
   'ace-hub-modes.mjs',
   'ace-hub-red-team.mjs',
   'ace-hub-review.mjs',

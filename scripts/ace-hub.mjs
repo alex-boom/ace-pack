@@ -4,6 +4,7 @@ import path from 'node:path'
 import { stdin as input, stdout as output } from 'node:process'
 import readline from 'node:readline'
 import { pathToFileURL } from 'node:url'
+import { buildDistillPayload } from './ace-hub-distill.mjs'
 import { HUB_MENU, listHubModes, resolveHubMode } from './ace-hub-modes.mjs'
 import { buildRedTeamPayload } from './ace-hub-red-team.mjs'
 import { buildReviewPayload } from './ace-hub-review.mjs'
@@ -27,6 +28,14 @@ export async function generateContextPayload(rootDir, selection, options = {}) {
   if (mode.redTeamPayload) {
     return writePayloadResult(rootDir, {
       ...(await buildRedTeamPayload(rootDir, { generatedAt, mode, taskAutonomy })),
+      generatedAt,
+      mode,
+      options,
+    })
+  }
+  if (mode.distillPayload) {
+    return writePayloadResult(rootDir, {
+      ...(await buildDistillPayload(rootDir, { generatedAt, mode, taskAutonomy })),
       generatedAt,
       mode,
       options,

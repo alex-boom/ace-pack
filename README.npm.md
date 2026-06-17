@@ -360,6 +360,7 @@ pnpm ace hub
 pnpm ace hub start
 pnpm ace hub red-team
 pnpm ace hub review
+pnpm ace hub distill
 pnpm ace hub --mode pr
 pnpm ace hub --list
 ```
@@ -377,6 +378,8 @@ Available modes:
   project conventions, configured risk rules, and mitigation pressure.
 - `review` / `eval` - strict agentic evaluation prompt with original intent,
   project conventions, triggered risk rules, and current git diff.
+- `distill` / `promote` - knowledge promotion prompt that turns resolved
+  reflections into durable project conventions.
 - `pr` - PR summary context with local git status and diff stat.
 - `business` - roadmap and work log.
 - `docs` - technical docs and optional setup/devops notes.
@@ -388,9 +391,30 @@ By default ACE writes `.ai/generated/context.md`. Legacy
 pnpm ace hub --mode start --stdout
 pnpm ace hub --mode red-team --stdout
 pnpm ace hub --mode review --stdout
+pnpm ace hub --mode distill --stdout
 pnpm ace hub --mode architect-lite --stdout
 pnpm ace hub --mode architect --output .ai/architect-context.md
 pnpm ace hub --mode pr --json
+```
+
+## Context Hygiene
+
+Use `ace hub distill` when resolved reflections should become permanent project
+rules. ACE generates a strict knowledge-promotion prompt from
+`.ai/knowledge/reflection-log.md` and the current
+`.ai/knowledge/project-conventions.md`; it does not call an LLM or edit files
+for you.
+
+Use `ace archive` when active logs get too large for daily context. The command
+mechanically rotates only `.ai/knowledge/work-log.md` and
+`.ai/knowledge/reflection-log.md` into `.ai/archive/`, then creates fresh active
+files with clickable links back to the archived history. `decisions.md` remains
+active durable history in v3.5.
+
+```bash
+pnpm ace hub distill --stdout
+pnpm ace archive --dry-run --max-lines 100
+pnpm ace archive --max-lines 100
 ```
 
 ## PR and CI Quality Gates
@@ -467,9 +491,9 @@ technical docs, project conventions, and generated hub context when those files
 exist. Legacy current-task and handoff MCP URIs remain deprecated aliases for
 the consolidated task state.
 
-## v3.4 Schema and Compatibility
+## v3.5 Schema and Compatibility
 
-ACE v3.4 keeps categorized canonical memory paths under `.ai/config`,
+ACE v3.5 keeps categorized canonical memory paths under `.ai/config`,
 `.ai/state`, `.ai/knowledge`, and `.ai/generated`, and consolidates active task
 memory into `.ai/state/task-state.md`. The config schema remains version `1`.
 Fresh v3 installs create only the consolidated task-state file. Existing v2
@@ -497,8 +521,14 @@ strict reviewer prompt from task intent, acceptance criteria, project
 conventions, triggered high-risk rules, and the current local git diff,
 including bounded pseudo-diff entries for new untracked text files.
 
+`ace hub distill` adds knowledge promotion without hidden AI calls. It generates
+a prompt for turning resolved reflections into durable project conventions.
+`ace archive` adds deterministic log rotation for only `work-log.md` and
+`reflection-log.md`; the fresh active files link to the archived Markdown with
+relative clickable links.
+
 Read the full contract on GitHub:
-[ACE v3.4 Schema and Compatibility](https://github.com/alex-boom/ace-pack/blob/main/docs/schema-compatibility.md).
+[ACE v3.5 Schema and Compatibility](https://github.com/alex-boom/ace-pack/blob/main/docs/schema-compatibility.md).
 
 ## Adoption Guides
 
@@ -555,7 +585,8 @@ then stops if unexpected files changed.
 | `ace destroy` | Guarded cleanup that removes only ACE-owned files after export. |
 | `ace finish` | Adaptive closeout, phase completion, friction tracking, small low-risk auto-closeout, memory documentation, reports, and reflection. |
 | `ace gate` | Optional PR/CI quality gate with actionable failures, PR refs, JSON output, explicit human override, and opt-in hook/workflow generation. |
-| `ace hub` | Interactive and named-mode context generator with phase/action metadata for start, red-team, review, architect-lite, architect, handoff, PR, business, and docs payloads. |
+| `ace hub` | Interactive and named-mode context generator with phase/action metadata for start, red-team, review, distill, architect-lite, architect, handoff, PR, business, and docs payloads. |
+| `ace archive` | Deterministic active-log rotation for work-log and reflection-log into `.ai/archive/`. |
 
 ## Installed Project Files
 

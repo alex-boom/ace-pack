@@ -87,6 +87,14 @@ export const HUB_MODES = [
     files: [],
   },
   {
+    id: 'distill',
+    aliases: ['promote'],
+    label: 'Knowledge Promotion Distill',
+    description: 'Knowledge promotion prompt for resolved reflections and project conventions.',
+    distillPayload: true,
+    files: [],
+  },
+  {
     id: 'pr',
     aliases: [],
     label: 'PR Summary Context',

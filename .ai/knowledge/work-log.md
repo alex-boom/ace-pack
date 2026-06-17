@@ -343,3 +343,9 @@
 - Confirmed local `main` matches `origin/main` at commit `6974eb4`.
 - Updated local ACE task-state for final v3.0.1 closeout.
 - NPM publish: not required; v3.0.1 is already published.
+
+## 2026-06-17 23:14
+
+- ACE finished large task: ACE Pack v3.5 Knowledge Promotion & Context Pruning.
+- Friction Encountered: no.
+- Design Review Required: yes.
