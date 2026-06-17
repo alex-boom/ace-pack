@@ -7,6 +7,7 @@ import {
   buildCompletedTaskState,
   extractTaskTitle,
 } from './ace-task-state.mjs'
+import { markTaskAutonomyComplete } from './ace-task-autonomy.mjs'
 import {
   extractLabeledValue,
   extractMarkdownSection,
@@ -133,6 +134,8 @@ async function main() {
     await autoCloseSmallTask(rootDir, {
       taskStateContent: currentTaskContent,
     })
+  } else {
+    await writeMemoryFile(rootDir, 'taskState', markTaskAutonomyComplete(currentTaskContent))
   }
 
   await runNodeScript(rootDir, 'ai-report-brief.mjs')

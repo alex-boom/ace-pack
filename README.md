@@ -65,6 +65,9 @@ With ACE, the repository carries the discipline:
 - `ace classify` detects whether the change is small, standard, or large.
 - Large and high-risk work starts with a shift-left design review before code.
 - `ace hub` generates focused context instead of manual copy/paste bundles.
+- `task-state.md` carries `Current Phase` and `Next Autonomous Action`, so solo
+  agents can switch roles and multi-agent workflows can hand off through local
+  Markdown.
 - `ace finish` commits decisions, changed files, validation notes, and
   reflection back into project memory; small low-risk changes can auto-close
   with compact notes.
@@ -110,9 +113,10 @@ Legacy command names remain supported only as router arguments, such as
 `pnpm ace ai:task:finish` or `npm run ace -- ai:task:finish`.
 
 The key behavior is **Shift-Left Design Review**. For large or high-risk tasks,
-the agent must stop before implementation, fill `.ai/state/task-state.md` with the
-business value and technical approach, compare viable patterns, and choose one
-explicitly. The code comes after the architectural decision, not before it.
+the agent must fill `.ai/state/task-state.md` with the business value and
+technical approach, compare viable patterns, and choose one explicitly before
+implementation. It then updates `Current Phase` and `Next Autonomous Action`
+directly in Markdown and keeps moving unless it is genuinely blocked.
 
 Unknown repositories start with a neutral memory config. Then `ace onboard`
 profiles the repo and recommends project-specific risk rules before they are
@@ -337,8 +341,10 @@ pnpm ace classify
 
 ## ACE Hub
 
-`ace hub` is the daily context launcher. Use the interactive menu, or generate a
-specific payload directly:
+`ace hub` is the daily context launcher. Every payload header includes
+`Current Phase` and `Next Autonomous Action` before the file sections, so a
+newly awakened agent sees the handoff state immediately. Use the interactive
+menu, or generate a specific payload directly:
 
 ```bash
 pnpm ace hub
@@ -438,9 +444,9 @@ technical docs, project conventions, and generated hub context when those files
 exist. Legacy current-task and handoff MCP URIs remain deprecated aliases for
 the consolidated task state.
 
-## v3.0 Schema and Compatibility
+## v3.1 Schema and Compatibility
 
-ACE v3.0 keeps categorized canonical memory paths under `.ai/config`,
+ACE v3.1 keeps categorized canonical memory paths under `.ai/config`,
 `.ai/state`, `.ai/knowledge`, and `.ai/generated`, and consolidates active task
 memory into `.ai/state/task-state.md`. The config schema remains version `1`.
 Fresh v3 installs create only the consolidated task-state file. Existing v2
@@ -448,8 +454,13 @@ task files are auto-migrated locally with a timestamped backup before cleanup.
 Existing memory remains project-owned, and the installer stays additive and
 idempotent.
 
+Task state now includes additive autonomous routing labels:
+`Current Phase: Planning` and `Next Autonomous Action: Analyze task and update
+Business Value & Approach.` Existing v3 task-state files without these labels
+remain valid.
+
 Read the full contract:
-[ACE v3.0 Schema and Compatibility](./docs/schema-compatibility.md).
+[ACE v3.1 Schema and Compatibility](./docs/schema-compatibility.md).
 
 ## Adoption Guides
 
@@ -504,9 +515,9 @@ then stops if unexpected files changed.
 | `ace:validate` | Project-owned mechanical quality gate for lint, typecheck, tests, or equivalent checks. ACE installs a placeholder only when absent. |
 | `ace eject` | Safe data-takeout step that exports active ACE memory before uninstall. |
 | `ace destroy` | Guarded cleanup that removes only ACE-owned files after export. |
-| `ace finish` | Adaptive closeout, small low-risk auto-closeout, memory documentation, reports, and reflection. |
+| `ace finish` | Adaptive closeout, phase completion, small low-risk auto-closeout, memory documentation, reports, and reflection. |
 | `ace gate` | Optional PR/CI quality gate with actionable failures, PR refs, JSON output, explicit human override, and opt-in hook/workflow generation. |
-| `ace hub` | Interactive and named-mode context generator for start, architect-lite, architect, handoff, PR, business, and docs payloads. |
+| `ace hub` | Interactive and named-mode context generator with phase/action metadata for start, architect-lite, architect, handoff, PR, business, and docs payloads. |
 
 ## Installed Project Files
 

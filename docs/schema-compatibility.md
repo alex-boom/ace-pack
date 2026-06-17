@@ -1,7 +1,7 @@
-# ACE v3.0 Schema and Compatibility
+# ACE v3.1 Schema and Compatibility
 
 This document defines the compatibility contract for installed ACE repositories
-starting with `ace-pack@3.0.0`.
+starting with `ace-pack@3.0.0`, including the additive v3.1 task-state fields.
 
 ACE remains Markdown-first, local-first, and zero-dependency. v3 consolidates
 active task memory into one task-state file and keeps migration deterministic.
@@ -76,6 +76,31 @@ sections or signals:
 
 ACE tools rely on headings and labeled values, not exact prose.
 
+## Autonomous Phase Routing
+
+Fresh v3.1 task-state files include two additive lifecycle labels:
+
+```md
+Current Phase: Planning
+Next Autonomous Action: Analyze task and update Business Value & Approach.
+```
+
+Allowed `Current Phase` values are `Planning`, `Implementation`, `Review`, and
+`Complete`. Agents may update these labels directly in Markdown when switching
+roles or handing work to another agent. Scripted integrations may also use:
+
+```bash
+npm run ace -- update:task --phase Review --next-action "Review diff against intent."
+pnpm ace update:task --phase Review --next-action "Review diff against intent."
+```
+
+For blocked work, use `Status: blocked` and set
+`Next Autonomous Action: Needs Human: <specific request>`.
+
+Existing meaningful v3 task-state files without these fields remain valid.
+`ace check` does not fail old task-state files solely because the v3.1 labels
+are missing.
+
 ## v2 Legacy Auto-Migration
 
 When `ace init`, `ace check`, `ace migrate`, or the `ace` router detects legacy
@@ -118,11 +143,13 @@ block and deletes an IDE file only when it becomes empty.
 For small low-risk tasks, `ace finish` is zero-ceremony. It reads the task title
 from `task-state.md`, records current uncommitted/staged git state with
 `git diff HEAD --stat` or `git status --short`, appends a compact `work-log.md`
-entry, resets `task-state.md` to a complete empty state, and regenerates the
-brief report.
+entry, resets `task-state.md` to a complete empty state with
+`Current Phase: Complete`, and regenerates the brief report.
 
 Standard and large tasks still require meaningful approach, review,
-verification, and handoff sections in `task-state.md`.
+verification, and handoff sections in `task-state.md`. Successful standard and
+large finishes mark `Current Phase: Complete` before report generation; large
+task archives therefore contain the completed phase metadata.
 
 ## `.ai/config/memory-config.json` Schema Version 1
 

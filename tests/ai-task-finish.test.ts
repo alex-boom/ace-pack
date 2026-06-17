@@ -229,10 +229,189 @@ TODO
 
     expect(taskState).toContain('Status: complete')
     expect(taskState).toContain('Ready For Archive: yes')
+    expect(taskState).toContain('Current Phase: Complete')
+    expect(taskState).toContain('Next Autonomous Action: No further autonomous action; task is complete.')
     expect(taskState).toContain('Small typo fix')
     expect(taskState).toContain('NPM publish: not required')
     expect(workLog).toContain('ACE auto-closed small task: Small typo fix.')
     expect(workLog).toContain('README.md')
     expect(archiveFiles).toEqual(['.gitkeep'])
   })
+
+  it('marks standard task autonomy complete without archiving', async () => {
+    const rootDir = await mkdtemp(path.join(os.tmpdir(), 'ace-finish-standard-'))
+    tempDirs.push(rootDir)
+
+    await writeFile(path.join(rootDir, 'AGENTS.md'), '# AGENTS.md\n\n## Project Rules\n\nTest.\n')
+    await installAcePack(rootDir)
+    await writeFile(path.join(rootDir, '.ai/state/task-state.md'), finishReadyTaskState())
+    await initGitFixture(rootDir)
+    await writeFile(path.join(rootDir, 'a.ts'), 'export const a = true\n', 'utf8')
+    await writeFile(path.join(rootDir, 'b.ts'), 'export const b = true\n', 'utf8')
+    await writeFile(path.join(rootDir, 'c.ts'), 'export const c = true\n', 'utf8')
+
+    await execFileAsync(process.execPath, [path.join(rootDir, 'scripts/ai-task-finish.mjs')], {
+      cwd: rootDir,
+    })
+
+    const taskState = await readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')
+    const archiveFiles = await readdir(path.join(rootDir, '.ai/archive/tasks'))
+
+    expect(taskState).toContain('Current Phase: Complete')
+    expect(taskState).toContain('Next Autonomous Action: No further autonomous action; task is complete.')
+    expect(archiveFiles).toEqual(['.gitkeep'])
+  })
+
+  it('archives large task after marking autonomy complete', async () => {
+    const rootDir = await mkdtemp(path.join(os.tmpdir(), 'ace-finish-large-'))
+    tempDirs.push(rootDir)
+
+    await writeFile(path.join(rootDir, 'AGENTS.md'), '# AGENTS.md\n\n## Project Rules\n\nTest.\n')
+    await installAcePack(rootDir)
+    await writeFile(path.join(rootDir, '.ai/state/task-state.md'), finishReadyTaskState())
+    await writeFile(
+      path.join(rootDir, '.ai/knowledge/reflection-log.md'),
+      `# Reflection Log
+
+## Unresolved
+
+## Resolved
+
+### 2026-06-14 14:30 Large finish fixture
+Status: resolved
+- Stuck Point: Large tasks need archived complete state.
+- Likely Cause: Archive timing can capture stale lifecycle fields.
+- Proposed Improvement: Mark phase complete before archiving.
+`,
+      'utf8',
+    )
+    await initGitFixture(rootDir)
+    for (let index = 0; index < 8; index += 1) {
+      await writeFile(path.join(rootDir, `large-${index}.ts`), `export const v${index} = true\n`, 'utf8')
+    }
+
+    await execFileAsync(process.execPath, [path.join(rootDir, 'scripts/ai-task-finish.mjs')], {
+      cwd: rootDir,
+      env: {
+        ...process.env,
+        AI_REPORT_SKIP_XML: '1',
+      },
+    })
+
+    const archiveFiles = await readdir(path.join(rootDir, '.ai/archive/tasks'))
+    const archivedTask = archiveFiles.find((fileName) => fileName.endsWith('.md'))
+
+    expect(archivedTask).toBeDefined()
+    const archivedContent = await readFile(
+      path.join(rootDir, '.ai/archive/tasks', archivedTask ?? ''),
+      'utf8',
+    )
+
+    expect(archivedContent).toContain('Current Phase: Complete')
+    expect(archivedContent).toContain(
+      'Next Autonomous Action: No further autonomous action; task is complete.',
+    )
+  })
 })
+
+async function initGitFixture(rootDir: string) {
+  await execFileAsync('git', ['init'], { cwd: rootDir })
+  await execFileAsync('git', ['config', 'user.email', 'ace@example.com'], { cwd: rootDir })
+  await execFileAsync('git', ['config', 'user.name', 'ACE Test'], { cwd: rootDir })
+  await execFileAsync('git', ['add', '.'], { cwd: rootDir })
+  await execFileAsync('git', ['commit', '-m', 'Initial fixture'], { cwd: rootDir })
+}
+
+function finishReadyTaskState() {
+  return `# Task State
+
+## Lifecycle & Meta
+
+### Feature Name
+Finish fixture
+
+### Lifecycle
+Status: active
+Version: v1
+Task Tier: standard
+Design Review Required: no
+Current Phase: Review
+Next Autonomous Action: Run finish.
+Started: 2026-06-14 14:30
+Ready For Archive: no
+
+### Goal
+Verify finish phase behavior.
+
+### Current Status
+- [x] Fixture is ready.
+
+### Affected Areas
+- src
+
+### Constraints
+- Keep checks local.
+
+### Acceptance Criteria
+- Finish marks autonomy complete.
+
+### Completion Checklist
+- [x] Goal completed
+
+## Business Value & Approach
+
+### Business Value / Product Alignment
+This keeps handoff and archive state coherent for agent workflows.
+
+### Technical Approach
+Option 1:
+- Leave phase unchanged during finish.
+
+Option 2:
+- Mark phase complete before reports and archive.
+
+Chosen Approach:
+- Mark phase complete because finish means autonomous work is done.
+
+## Changed Files / Diff
+
+[src]
+- Fixture files.
+
+## Handoff & Next Steps
+
+### Last Update
+2026-06-14 14:30
+
+### What Was Done
+- Prepared finish fixture.
+
+### Current State
+- Ready to finish.
+
+### Quality Review
+Product Alignment:
+- Phase metadata supports agent handoff.
+
+Architecture:
+- Finish reuses task-state Markdown.
+
+Security:
+- No network calls are required.
+
+Code Quality:
+- Tests cover standard and large finish paths.
+
+### Next Steps
+- Run finish.
+
+### Known Issues
+- None.
+
+### Verification
+- Fixture prepared.
+
+### Notes
+- NPM publish: not required
+`
+}

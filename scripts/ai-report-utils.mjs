@@ -124,7 +124,10 @@ export async function buildStartSnapshot({ currentTaskContent, handoffContent, r
     nextCommand: nextCommand || 'No command detected',
     readyForArchive: extractLabeledValue(lifecycle, 'Ready For Archive') || 'unknown',
     releaseDecision: releaseDecision || 'Not recorded',
+    nextAutonomousAction:
+      extractLabeledValue(lifecycle, 'Next Autonomous Action') || 'unknown',
     taskStatus: extractLabeledValue(lifecycle, 'Status') || 'unknown',
+    taskPhase: extractLabeledValue(lifecycle, 'Current Phase') || 'unknown',
     taskTier: extractLabeledValue(lifecycle, 'Task Tier') || 'unknown',
     taskVersion: extractLabeledValue(lifecycle, 'Version') || 'unknown',
     worktreeState: gitSnapshot.worktreeState,
@@ -137,6 +140,8 @@ export function formatStartSnapshot(snapshot) {
     `- Worktree: ${snapshot.worktreeState} (${snapshot.changedFileCountDisplay} changed files)`,
     `- Last commit: ${snapshot.lastCommit}`,
     `- Task: ${snapshot.taskStatus} (tier: ${snapshot.taskTier}, version: ${snapshot.taskVersion}, ready for archive: ${snapshot.readyForArchive})`,
+    `- Current Phase: ${snapshot.taskPhase}`,
+    `- Next Autonomous Action: ${snapshot.nextAutonomousAction}`,
     `- Next command: ${formatOptionalCommand(snapshot.nextCommand)}`,
     `- Release decision: ${snapshot.releaseDecision}`,
   ].join('\n')

@@ -78,6 +78,7 @@ describe('installAcePack', () => {
     expect(result.createdFiles).toContain('scripts/ace-onboard.mjs')
     expect(result.createdFiles).toContain('scripts/ace-project-presets.mjs')
     expect(result.createdFiles).toContain('scripts/ace-quality-gate.mjs')
+    expect(result.createdFiles).toContain('scripts/ace-task-autonomy.mjs')
     expect(result.createdFiles).toContain('scripts/ace-task-state.mjs')
     expect(result.createdFiles).toContain('scripts/ace-uninstall-utils.mjs')
     expect(result.createdFiles).toContain('scripts/agent-memory-lib.mjs')
@@ -115,6 +116,12 @@ describe('installAcePack', () => {
     }
     await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
       '# Task State',
+    )
+    await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
+      'Current Phase: Planning',
+    )
+    await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
+      'Next Autonomous Action: Analyze task and update Business Value & Approach.',
     )
     await expect(
       readFile(path.join(rootDir, '.ai/config/memory-config.json'), 'utf8'),

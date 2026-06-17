@@ -48,6 +48,8 @@ Status: active
 Version: v1
 Task Tier: small
 Design Review Required: no
+Current Phase: Implementation
+Next Autonomous Action: Continue hub fixture implementation.
 Started: 2026-06-14 12:00
 Ready For Archive: no
 
@@ -146,6 +148,10 @@ describe('generateContextPayload', () => {
     ])
     expect(generatedContent).toContain('# ACE Hub Context')
     expect(generatedContent).toContain('- Mode: start (Start / AI Coder Context)')
+    expect(generatedContent).toContain('- Current Phase: Implementation')
+    expect(generatedContent).toContain(
+      '- Next Autonomous Action: Continue hub fixture implementation.',
+    )
     expect(generatedContent.indexOf('# --- FILE: .ai/generated/report-brief.md ---')).toBeLessThan(
       generatedContent.indexOf('# --- FILE: .ai/state/task-state.md ---'),
     )
@@ -227,10 +233,15 @@ describe('generateContextPayload', () => {
       '.ai/state/task-state.md',
       '.ai/knowledge/decisions.md',
     ])
+    expect(handoff.payload).toContain('- Current Phase: Implementation')
+    expect(handoff.payload).toContain(
+      '- Next Autonomous Action: Continue hub fixture implementation.',
+    )
     expect(pr.mode.id).toBe('pr')
     expect(pr.gitSummary?.status).toBe('unknown')
     expect(generatedContent).toContain('## Git Summary')
     expect(generatedContent).toContain('Git summary: unknown')
+    expect(generatedContent).toContain('- Current Phase: Implementation')
   })
 
   it('fails clearly when required files are missing', async () => {

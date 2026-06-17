@@ -147,6 +147,12 @@ Chosen Approach:
     await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
       '## Handoff & Next Steps',
     )
+    await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
+      'Current Phase: Planning',
+    )
+    await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
+      'Next Autonomous Action: Analyze task and update Business Value & Approach.',
+    )
   })
 
   it('updates only the marked ACE workflow section in AGENTS.md', async () => {
@@ -248,13 +254,16 @@ Keep this too.
       files?: string[]
     }
 
-    expect(schemaDocs).toContain('ACE v3.0 Schema and Compatibility')
+    expect(schemaDocs).toContain('ACE v3.1 Schema and Compatibility')
     expect(schemaDocs).toContain('Installed repositories expose only:')
     expect(schemaDocs).toContain('remain accepted only as router arguments')
     expect(schemaDocs).toContain('Canonical v3 Memory Layout')
     expect(schemaDocs).toContain('project-conventions.md')
     expect(schemaDocs).toContain('`.ai/config/memory-config.json` Schema Version 1')
     expect(schemaDocs).toContain('.ai/state/task-state.md')
+    expect(schemaDocs).toContain('Current Phase:')
+    expect(schemaDocs).toContain('Next Autonomous Action:')
+    expect(schemaDocs).toContain('Autonomous Phase Routing')
     expect(schemaDocs).toContain('v2 Legacy Auto-Migration')
     expect(schemaDocs).toContain('IDE Managed Blocks')
     expect(schemaDocs).toContain('Small Task Finish')

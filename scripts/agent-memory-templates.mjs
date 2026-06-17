@@ -83,6 +83,10 @@ current task.
 - For large or high-risk standard tasks, complete the
   \`.ai/state/task-state.md\` Business Value & Approach section before writing
   code.
+- Use \`.ai/state/task-state.md\` Current Phase and Next Autonomous Action as
+  the autonomous handoff bus. Update those fields directly in Markdown when
+  switching Planning, Implementation, Review, or Complete; CLI update commands
+  are optional for scripts.
 - Treat \`.ai/*\` as the current source of task context and handoff state.
 - Use \`YYYY-MM-DD HH:mm\` timestamps in task state, work-log, reflection-log,
   and decisions entries.
@@ -161,6 +165,13 @@ While working:
 - Do not rewrite large components or architecture unless the task requires it.
 - Keep \`.ai/state/task-state.md\` aligned with the active task when scope
   changes.
+- ACE supports autonomous phase transitions through \`.ai/state/task-state.md\`.
+  When you complete the current objective, directly edit \`Current Phase\` and
+  \`Next Autonomous Action\`, then proceed to that next action without asking
+  the human for permission. Ask only when blocked, when a highly sensitive
+  architecture decision is required, or when required validation cannot be run
+  or interpreted safely. If blocked, set \`Status: blocked\` and
+  \`Next Autonomous Action: Needs Human: <specific request>\`.
 - Keep project-specific tier and risk rules in
   \`.ai/config/memory-config.json\`, the canonical ACE config, not inside the
   scripts, so the toolset remains portable.

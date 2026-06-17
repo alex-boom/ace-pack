@@ -10,6 +10,12 @@ import {
   readTextIfExists,
   writeTextFile,
 } from './ai-memory-utils.mjs'
+import {
+  COMPLETED_NEXT_AUTONOMOUS_ACTION,
+  DEFAULT_CURRENT_PHASE,
+  DEFAULT_NEXT_AUTONOMOUS_ACTION,
+  ensureAutonomyLifecycleFields,
+} from './ace-task-autonomy.mjs'
 export const LEGACY_TASK_STATE_PATHS = {
   changedFiles: ['.ai/state/changed-files.md', '.ai/changed-files.md'],
   currentTask: ['.ai/state/current-task.md', '.ai/current-task.md'],
@@ -19,6 +25,8 @@ const DEFAULT_LIFECYCLE = `Status: active
 Version: v1
 Task Tier: standard
 Design Review Required: no
+Current Phase: ${DEFAULT_CURRENT_PHASE}
+Next Autonomous Action: ${DEFAULT_NEXT_AUTONOMOUS_ACTION}
 Started: [YYYY-MM-DD HH:mm]
 Ready For Archive: no`
 const DEFAULT_QUALITY_REVIEW = `Product Alignment:
@@ -104,6 +112,8 @@ Status: complete
 Version: v1
 Task Tier: small
 Design Review Required: no
+Current Phase: Complete
+Next Autonomous Action: ${COMPLETED_NEXT_AUTONOMOUS_ACTION}
 Started: ${timestamp}
 Ready For Archive: yes
 ### Goal
@@ -215,7 +225,7 @@ function mergeLegacyTaskState({
 ### Feature Name
 ${sectionOrFallback(currentTaskContent, 'Feature Name', '[Set the active feature or task name]')}
 ### Lifecycle
-${sectionOrFallback(currentTaskContent, 'Lifecycle', DEFAULT_LIFECYCLE)}
+${ensureAutonomyLifecycleFields(sectionOrFallback(currentTaskContent, 'Lifecycle', DEFAULT_LIFECYCLE))}
 ### Goal
 ${sectionOrFallback(currentTaskContent, 'Goal', '[Describe what is being built or changed]')}
 ### Current Status

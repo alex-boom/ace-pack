@@ -57,6 +57,7 @@ export const MANAGED_SCRIPT_FILES = [
   'ace-onboard.mjs',
   'ace-project-presets.mjs',
   'ace-quality-gate.mjs',
+  'ace-task-autonomy.mjs',
   'ace-task-state.mjs',
   'ace-uninstall-utils.mjs',
   'ace-universal-doc-templates.mjs',

@@ -4,6 +4,7 @@ import path from 'node:path'
 import { stdin as input, stdout as output } from 'node:process'
 import readline from 'node:readline'
 import { pathToFileURL } from 'node:url'
+import { extractTaskAutonomy } from './ace-task-autonomy.mjs'
 import { getMemoryPath, readMemoryFile, writeMemoryFile } from './ai-memory-utils.mjs'
 export const GENERATED_CONTEXT_PATH = getMemoryPath('generatedContext')
 function requiredFile(filePath) { return { path: filePath, required: true } }
@@ -121,9 +122,8 @@ export function resolveHubMode(selection) {
 }
 export async function generateContextPayload(rootDir, selection, options = {}) {
   const mode = resolveHubMode(selection)
-  const sections = []
-  const includedFiles = []
-  const missingOptionalFiles = []
+  const sections = [], includedFiles = [], missingOptionalFiles = []
+  const taskAutonomy = extractTaskAutonomy(await readMemoryFile(rootDir, 'taskState'))
   for (const file of mode.files) {
     const content = await readContextFile(rootDir, file)
     if (content === null) {
@@ -142,6 +142,7 @@ export async function generateContextPayload(rootDir, selection, options = {}) {
     missingOptionalFiles,
     mode,
     sections,
+    taskAutonomy,
   })
   const shouldWrite = options.writeOutput !== false
   let outputPath = null
@@ -196,10 +197,13 @@ function formatContextPayload({
   missingOptionalFiles,
   mode,
   sections,
+  taskAutonomy,
 }) {
   const header = [
     '# ACE Hub Context',
     `- Mode: ${mode.id} (${mode.label})`,
+    `- Current Phase: ${taskAutonomy.currentPhase}`,
+    `- Next Autonomous Action: ${taskAutonomy.nextAutonomousAction}`,
     `- Generated: ${generatedAt}`,
     `- Included files: ${includedFiles.length > 0 ? includedFiles.join(', ') : 'none'}`,
     `- Missing optional files: ${
@@ -246,13 +250,7 @@ function execGit(rootDir, args) {
   })
 }
 function parseHubArgs(argv) {
-  const parsed = {
-    json: false,
-    list: false,
-    mode: null,
-    outputPath: null,
-    stdout: false,
-  }
+  const parsed = { json: false, list: false, mode: null, outputPath: null, stdout: false }
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index]
     if (arg === '--help' || arg === '-h') {

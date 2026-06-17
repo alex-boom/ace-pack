@@ -73,6 +73,8 @@ describe('ensureAgentMemory', () => {
     expect(agentsContent).toContain('If release is deferred, say so explicitly.')
     expect(agentsContent).toContain('For small low-risk tasks')
     expect(agentsContent).toContain('task-state')
+    expect(agentsContent).toContain('autonomous phase transitions')
+    expect(agentsContent).toContain('Next Autonomous Action: Needs Human')
     expect(agentsContent).toContain('.cursorrules')
     expect(agentsContent).toContain('dogfood/self-check routines before final publish')
     expect(memoryConfigContent).toContain('"ACE (Agentic Context Engine) Configuration"')
@@ -96,6 +98,8 @@ describe('ensureAgentMemory', () => {
     )
     expect(claudeContent).toContain('.ai/generated/report-brief.md')
     expect(claudeContent).toContain('pnpm.cmd ace:validate')
+    expect(claudeContent).toContain('Current Phase and Next Autonomous Action')
+    expect(claudeContent).toContain('Update those fields directly in Markdown')
     expect(claudeContent).toContain(
       'Do the smallest closeout that preserves future agent context and project',
     )
@@ -105,6 +109,10 @@ describe('ensureAgentMemory', () => {
     )
     expect(taskStateContent).toContain(
       'Only if changed: update tech docs, product roadmap, durable decisions, or release notes',
+    )
+    expect(taskStateContent).toContain('Current Phase: Planning')
+    expect(taskStateContent).toContain(
+      'Next Autonomous Action: Analyze task and update Business Value & Approach.',
     )
     expect(taskStateContent).toContain('deferred release wording')
     expect(taskStateContent).toContain('If small/low-risk')
@@ -150,6 +158,30 @@ Legacy body.
     expect(result.updatedFiles).toContain('AGENTS.md')
     expect(agentsContent).toContain('## ACE (Agentic Context Engine) Workflow')
     expect(agentsContent).not.toContain('## Agent Memory Workflow')
+  })
+
+  it('updates autonomous task fields through the optional update command', async () => {
+    const rootDir = await createRepo()
+
+    await ensureAgentMemory(rootDir)
+    await execFileAsync(process.execPath, [
+      path.resolve('scripts/ace-cli.mjs'),
+      'update:task',
+      '--phase',
+      'Review',
+      '--next-action',
+      'Review diff against intent.',
+    ], {
+      cwd: rootDir,
+    })
+
+    const taskStateContent = await readFile(
+      path.join(rootDir, '.ai/state/task-state.md'),
+      'utf8',
+    )
+
+    expect(taskStateContent).toContain('Current Phase: Review')
+    expect(taskStateContent).toContain('Next Autonomous Action: Review diff against intent.')
   })
 })
 

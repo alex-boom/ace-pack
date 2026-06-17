@@ -80,6 +80,8 @@ Status: in_progress
 Version: v99
 Task Tier: standard
 Design Review Required: no
+Current Phase: Review
+Next Autonomous Action: Review generated reports against task intent.
 Started: 2026-04-24 12:00
 Ready For Archive: no
 
@@ -285,6 +287,10 @@ describe('ai report scripts', () => {
     expect(briefReport).toContain(
       '- Task: in_progress (tier: standard, version: v99, ready for archive: no)',
     )
+    expect(briefReport).toContain('- Current Phase: Review')
+    expect(briefReport).toContain(
+      '- Next Autonomous Action: Review generated reports against task intent.',
+    )
     expect(briefReport).toContain('- Next command: No command detected')
     expect(briefReport).toContain('- Release decision: NPM publish: not required')
     expect(briefReport).toContain('## Business Value')
@@ -304,6 +310,10 @@ describe('ai report scripts', () => {
     expect(fullReport).toContain('## Report Metadata')
     expect(fullReport).toContain('## Start Snapshot')
     expect(fullReport).toContain('- Next command: No command detected')
+    expect(fullReport).toContain('- Current Phase: Review')
+    expect(fullReport).toContain(
+      '- Next Autonomous Action: Review generated reports against task intent.',
+    )
     expect(fullReport).toContain('- Release decision: NPM publish: not required')
     expect(fullReport).toContain('Verification level: smoke-tested')
     expect(fullReport).toContain('## Verification')

@@ -3,21 +3,20 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-16 12:47
+- Generated: 2026-06-16 16:57
 - Freshness: Fresh
-- Current task version: v1
-- Current task tier: large
-- Source current-task: 2026-06-16 12:47
-- Source session-handoff: 2026-06-16 12:47
+- Current task version: v3.0.1
+- Current task tier: small
+- Source task-state: 2026-06-16 14:39
 - Verification level: smoke-tested
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (7 changed files)
-- Last commit: 770ba13 Bump version to 2.2.0 and implement Project Conventions Discovery feature. Added `ace discover` command to generate a concise project conventions registry, enhancing agent context. Updated documentation across README, ROADMAP, and schema compatibility files to reflect new functionality and integration. Ensured backward compatibility with legacy paths and maintained zero-dependency principles.
-- Task: complete (tier: large, version: v1, ready for archive: yes)
+- Worktree: clean (0 changed files)
+- Last commit: fa83c4d Update report-brief and work-log to reflect the successful publication of `ace-pack@3.0.1` to npm, confirming it as the latest version. Cleaned up task-state documentation and removed unnecessary release actions for the current version.
+- Task: complete (tier: small, version: v3.0.1, ready for archive: yes)
 - Next command: No command detected
-- Release decision: Not recorded
+- Release decision: NPM publish: not required; `ace-pack@3.0.1` is already published on npm and
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
@@ -26,132 +25,146 @@ Detected ecosystems: Generic repository | Package manager: pnpm
 
 
 ## Current Task
-v2.2.0 Project Conventions Discovery
+ACE Pack v3.0.1 IDE Bridge Upgrade Fix
 
 ## Lifecycle
 Status: complete
-Version: v1
-Task Tier: large
-Design Review Required: yes
-Started: 2026-06-16 12:33
+Version: v3.0.1
+Task Tier: small
+Design Review Required: no
+Started: 2026-06-16 13:00
 Ready For Archive: yes
 
 ## Goal
-Ship `ace discover` so installed repositories can generate a concise local
-Project Conventions and Pattern Registry for AI agents.
+Patch the v3 IDE bridge upgrader so old ACE-only rule files are replaced by the
+managed-block form instead of keeping duplicated legacy text.
 
 ## Business Value
-This directly addresses architectural drift in established codebases. ACE will
-help agents reuse a project's existing UI, routing, logging, error-handling,
-database, and package-layout patterns instead of inventing parallel ones.
+This patch completes the v3 IDE bridge promise for already dogfooded or older
+ACE repos: old ACE-owned bridge text is removed, while custom user-owned IDE
+rules remain preserved.
 
 ## Technical Approach
 Option 1:
-- Add an AI-provider-backed discovery flow. This may produce richer analysis,
-  but it requires API keys, privacy configuration, provider fallback policy, and
-  more release risk.
+- Introduce the v3 file but leave old task files in place indefinitely as
+  mirrors. This minimizes migration risk but keeps the file sprawl and agent
+  desynchronization problem alive.
 
 Option 2:
-- Add a deterministic local scanner that uses simple path, dependency, and
-  import-string heuristics to write a short Markdown conventions summary.
+- Consolidate into task-state with a deterministic auto-migrator, backup legacy
+  files before cleanup, and keep old reader/MCP aliases as compatibility paths.
 
 Chosen Approach:
-- Use Option 2 for v2.2.0. It preserves ACE's local-first, zero-dependency,
-  zero-hidden-AI-calls promise while still giving agents useful repo-specific
-  convention context.
+- Use Option 2. It is a clean major-version schema change while preserving local
+  recovery, no-network migration, and compatibility for older installed repos.
+
+Patch Note:
+- The v3.0.0 upgrader appended managed blocks to some old ACE-only bridge files
+  because exact comparison treated blank lines as meaningful. v3.0.1 ignores
+  blank lines for template comparison and also cleans already mixed old+managed
+  ACE bridge files.
 
 ## Current Status
-- [x] Implement `ace discover` scanner and overwrite protection.
-- [x] Wire router, install, hub, memory paths, MCP, docs, and version.
-- [x] Add focused tests and release-readiness checks.
-- [x] Publish `ace-pack@2.2.0` to npm.
+- [x] Consolidated active task memory into `.ai/state/task-state.md`.
+- [x] Added deterministic v2 legacy task-file auto-migration with backups.
+- [x] Added managed IDE bridge blocks and safe destroy cleanup.
+- [x] Made small low-risk finish zero-ceremony from task-state plus current git state.
+- [x] Updated docs, package version, tests, smoke, and release dry-run.
+- [x] Published `ace-pack@3.0.0` to npm and confirmed `latest`.
+- [x] Fixed legacy IDE bridge exact-match normalization and cleaned dogfood IDE
+  rule files to managed-block-only form.
+- [x] Bumped package version to `3.0.1` for the patch candidate.
+- [x] Published `ace-pack@3.0.1` to npm and confirmed `latest`.
 
 ## What Was Done
-- Implemented `ace discover` as a deterministic local project conventions
-  scanner for `ace-pack@2.2.0`.
-- Added `.ai/knowledge/project-conventions.md` with
-  `.ai/project-conventions.md` as a legacy read alias.
-- Wired discover into the ACE router, installer-managed scripts, hub context,
-  MCP resources, README surfaces, schema docs, roadmap, smoke tests, and
-  focused unit tests.
-- Bumped package version from `2.1.0` to `2.2.0`.
+- Implemented ACE Pack v3.0.0 as one major release candidate with Memory Schema
+  v3 and config schema still at version `1`.
+- Added zero-human-effort migration from legacy task files to task-state with
+  local backups under `.ai/archive/migrations/`.
+- Added idempotent managed IDE rule blocks for Cursor, Windsurf, and Copilot,
+  plus surgical cleanup in `ace destroy`.
+- Updated small-task finish to avoid latest commits and use task-state plus
+  current git diff/status.
+- Updated docs, package version, tests, smoke fixtures, payload checks, and npm
+  dry-run release path.
+- Confirmed `ace-pack@3.0.0` is published on npm and tagged `latest`.
+- Fixed the v3 IDE bridge upgrade bug found in dogfood after publication.
+- Confirmed `ace-pack@3.0.1` is published on npm and tagged `latest`.
 
 ## Current State
-- `ace discover` writes a concise ACE-managed conventions registry with
-  `<!-- ace-discover:managed -->`.
-- Existing human-written conventions files are preserved unless `--force` is
-  used.
-- `ace hub` includes project conventions in start, architect, and
-  architect-lite contexts when the file exists.
-- Release dry-run passed for `ace-pack@2.2.0`.
-- `ace-pack@2.2.0` is published on npm and tagged `latest`.
-- Local `package.json` and npm registry latest both report `2.2.0`.
+- `npm.cmd run release:ready` passes for `ace-pack@3.0.0`.
+- `npm.cmd run release:npm:dry` passes and stages a 39-file npm payload.
+- This repo's local `.ai` dogfood memory was migrated to `.ai/state/task-state.md`
+  during release checks with a backup under `.ai/archive/migrations/`.
+- No intermediate npm versions were published.
+- npm registry latest is `3.0.1`.
+- GitHub `main` matches `origin/main` at commit `6974eb4`.
 
 ## Next Steps
-- Commit the completed v2.2.0 release work when ready.
+- No release action remains for v3.0.1.
 
 ## Known Issues
-- None known for the published v2.2.0 release.
+- None known after release-readiness checks.
 
 ## Quality Review
 Product Alignment:
-- The feature addresses architectural drift by giving agents a local summary of
-  existing UI, routing, logging, error-handling, package-layout, and persistence
-  patterns.
+- The release directly addresses the requested DevEx outcomes: cleaner memory,
+  safer IDE integration, and lower small-task ceremony.
 
 Architecture:
-- The scanner is a zero-dependency managed script using simple file, dependency,
-  and import-string heuristics. It avoids AST parsing and keeps generated
-  Markdown aggregated for LLM context safety.
+- Migration and IDE block handling are centralized in shared helpers, while
+  old MCP/task reader surfaces remain compatibility aliases instead of parallel
+  state.
 
 Security:
-- No AI providers, API keys, network calls, dependency installs, or external
-  services were added. Discovery reads local files only and skips heavy
-  generated directories.
+- Migration uses only local filesystem reads/writes and timestamped backups.
+  IDE cleanup removes only ACE-managed blocks and preserves custom user rules.
 
 Code Quality:
-- Focused tests cover React/Tailwind, Go, FastAPI, overwrite protection,
-  stdout/JSON behavior, concise output, router/install/hub/MCP integration, and
-  release smoke coverage.
+- Large modules were split where needed to satisfy the 400 non-empty-line guard.
+  Tests cover migration, install, destroy, finish, reports, gate, hub, MCP, and
+  release smoke paths.
 
 ## Verification
-- `npm.cmd run ace -- classify` passed before implementation; the clean
-worktree detected as `small`, but the shipped command scope is treated as
-large.
-- Focused Vitest passed: 7 files, 54 tests.
-- `npm.cmd run test` passed: 16 files, 123 tests.
+- `pnpm.cmd typecheck` passed.
+- `pnpm.cmd lint` passed.
+- `pnpm.cmd test` passed: 16 files, 123 tests.
 - `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
-- `npm.cmd run check:npm-payload` passed and checked 35 packed files.
-- `npm.cmd run release:npm:dry` passed for `ace-pack@2.2.0`.
+- `npm.cmd run release:ready` passed.
+- `npm.cmd run release:npm:dry` passed.
 
 ## Recent Decisions
-## 2026-06-16 12:33
+## 2026-06-16 13:51
 
 Decision:
-- Implement Project Conventions Discovery as deterministic local `ace discover`
-  heuristics instead of AI-provider analysis.
+- Implement ACE Pack v3.0.0 as a consolidated task-state memory schema with
+  deterministic legacy auto-migration, managed IDE rule blocks, and
+  zero-ceremony small-task finish.
 
 Reason:
-- ACE must preserve its local-first, zero-dependency, no-hidden-AI-calls
-  promise while still helping agents reuse established repository patterns.
-  Simple import/dependency/path signals are less brittle than pseudo-AST regex
-  parsing and safer for large private repositories.
+- The old current-task, session-handoff, and changed-files split created
+  avoidable file sprawl and agent desynchronization. IDE rule bridging must be
+  native but must never overwrite user-owned editor instructions.
 
 Impact:
-- `ace discover` writes `.ai/knowledge/project-conventions.md` with a managed
-  marker and protects human-written files unless `--force` is passed.
-- `ace hub` and the read-only MCP adapter can expose the conventions summary
-  when it exists.
-- Future AI-assisted convention discovery remains a separate explicit opt-in
-  feature, not part of the default v2.2 workflow.
+- `.ai/state/task-state.md` is the canonical active task file, with
+  `.ai/task-state.md` as a legacy alias.
+- Legacy task files are backed up under `.ai/archive/migrations/` before safe
+  cleanup.
+- `.cursorrules`, `.windsurfrules`, and Copilot instructions use
+  `ace-managed-ide-rules` blocks that `ace destroy` can remove surgically.
+- `ace-pack@3.0.0` is a major release; npm publish is required only for the
+  final reviewed release.
 
 ## Changed Areas
-- `package.json`
-- `scripts/ace-discover.mjs`
-- `scripts/ace-cli.mjs, scripts/ai-memory-utils.mjs, scripts/ace-hub.mjs, scripts/ace-mcp-server.mjs`
-- `scripts/ace-uninstall-utils.mjs, install/tests`
-- `README.md, README.npm.md, docs/schema-compatibility.md, ROADMAP.md`
-- `.ai/**`
+- `scripts/ace-task-state.mjs`
+- `scripts/ai-memory-utils.mjs, scripts/ai-markdown-utils.mjs, scripts/ai-report-utils.mjs`
+- `scripts/agent-memory-templates.mjs, scripts/agent-memory-lib.mjs, scripts/ace-cli.mjs, scripts/ace-migrate.mjs`
+- `scripts/ai-report*.mjs, scripts/ace-hub.mjs, scripts/ace-quality-gate.mjs, scripts/ai-update.mjs, scripts/ace-mcp-server.mjs`
+- `scripts/ai-task-finish.mjs`
+- `scripts/ace-uninstall-utils.mjs, install-ace-pack.mjs, install-agent-memory-pack.mjs, scripts/ace-install-lib.mjs, scripts/bootstrap-agent-memory.mjs, scripts/ace-destroy.mjs`
+- `README.md, README.npm.md, ROADMAP.md, docs/schema-compatibility.md, AGENTS.md, CLAUDE.md, DEVELOPING.md, docs/*.md`
+- `tests/**, tools/**`
 
 ## Latest Work Log
 # Work Log
@@ -453,10 +466,57 @@ Impact:
   publish.
 - NPM publish: completed.
 
+## 2026-06-16 13:51
+
+- Implemented the `ace-pack@3.0.0` DevEx overhaul and Memory Schema v3.
+- Consolidated active task state into `.ai/state/task-state.md` with automatic
+  legacy migration, timestamped backups, and compatibility aliases.
+- Added safe managed IDE rule blocks for Cursor, Windsurf, and Copilot plus
+  surgical destroy cleanup.
+- Updated small-task finish to use task-state and current git diff/status
+  without latest commit reads or manual handoff prompts.
+- Updated shipped docs, generated templates, MCP, reports, hub, gate, update
+  helpers, smoke fixtures, tests, package version, and release tooling.
+- Verified `pnpm.cmd typecheck`, `pnpm.cmd lint`, `pnpm.cmd test`,
+  `npm.cmd run smoke:fake-project`, `npm.cmd run release:ready`, and
+  `npm.cmd run release:npm:dry`.
+- NPM publish: required before final release; deferred by maintainer.
+
+## 2026-06-16 14:02
+
+- Confirmed `ace-pack@3.0.0` is published on npm and tagged `latest`.
+- Registry check: `npm.cmd view ace-pack version dist-tags time --json`
+  returned version `3.0.0` and publish time `2026-06-16T11:01:40.740Z`.
+- Updated local ACE task-state for the final closeout.
+- NPM publish: completed.
+
+## 2026-06-16 14:29
+
+- Found dogfood gap after v3.0.0 publish: old ACE-only IDE bridge files were
+  getting a managed block appended instead of being replaced.
+- Fixed exact-template comparison to ignore blank lines and added cleanup for
+  mixed old+managed ACE bridge files.
+- Added regression coverage for old bridge upgrade and mixed bridge cleanup.
+- Cleaned dogfood `.cursorrules`, `.windsurfrules`, and
+  `.github/copilot-instructions.md` to managed-block-only form.
+- Bumped local package version to `3.0.1` for the patch candidate.
+- Verified typecheck, lint, full Vitest, fake-project smoke, and
+  `npm.cmd run release:ready` for `ace-pack@3.0.1`.
+- NPM publish: required before final patch release.
+
+## 2026-06-16 14:38
+
+- Confirmed `ace-pack@3.0.1` is published on npm and tagged `latest`.
+- Registry check returned version `3.0.1` and publish time
+  `2026-06-16T11:37:47.243Z`.
+- Confirmed local `main` matches `origin/main` at commit `6974eb4`.
+- Updated local ACE task-state for final v3.0.1 closeout.
+- NPM publish: not required; v3.0.1 is already published.
+
 ## Unresolved Reflections
 - No unresolved reflections recorded.
 
 ## Overall Progress
-- Completion checklist: 9/9
-- Canonical context lives in `.ai/*`.
+- Completion checklist: 6/6
+- Canonical task context lives in `.ai/state/task-state.md`.
 - XML bundle generated at `.ai/generated/report-full.xml` for parsable handoff.

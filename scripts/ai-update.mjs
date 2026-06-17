@@ -11,6 +11,7 @@ import {
   replaceMarkdownSection,
   writeMemoryFile,
 } from './ai-memory-utils.mjs'
+import { setTaskAutonomyFields } from './ace-task-autonomy.mjs'
 
 const command = process.argv[2]
 const args = parseCliArgs(process.argv.slice(3))
@@ -52,6 +53,8 @@ async function updateTask() {
   const version = getArgValue(args, 'version')
   const started = getArgValue(args, 'started')
   const ready = getArgValue(args, 'ready')
+  const phase = getArgValue(args, 'phase')
+  const nextAction = getArgValue(args, 'next-action') ?? getArgValue(args, 'nextAction')
 
   if (feature) {
     nextContent = replaceMarkdownSection(nextContent, 'Feature Name', feature)
@@ -79,6 +82,13 @@ async function updateTask() {
 
   if (ready) {
     nextContent = replaceLabeledValue(nextContent, 'Ready For Archive', ready)
+  }
+
+  if (phase || nextAction) {
+    nextContent = setTaskAutonomyFields(nextContent, {
+      nextAction,
+      phase,
+    })
   }
 
   const current = getArgList(args, 'current')
