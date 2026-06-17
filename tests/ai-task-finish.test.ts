@@ -128,6 +128,28 @@ describe('validateFinishRequirements', () => {
 
     expect(missing).toEqual([])
   })
+
+  it('blocks friction closeout without a reflection entry', () => {
+    const missing = validateFinishRequirements({
+      classification: {
+        designReviewRequired: false,
+        riskMatches: [],
+        tier: 'small',
+      },
+      currentTaskContent: `# Task State
+
+## Lifecycle
+Status: active
+Friction Encountered: yes
+`,
+      handoffContent: '# Task State\n\n## Quality Review\nTODO\n',
+      reflectionLogContent: '# Reflection Log\n\n## Unresolved\n\n## Resolved\n',
+    })
+
+    expect(missing).toContain(
+      'Add a compact .ai/knowledge/reflection-log.md entry because Friction Encountered is yes.',
+    )
+  })
 })
 
 describe('ace:finish small auto-closeout', () => {
@@ -229,13 +251,74 @@ TODO
 
     expect(taskState).toContain('Status: complete')
     expect(taskState).toContain('Ready For Archive: yes')
+    expect(taskState).toContain('Friction Encountered: no')
     expect(taskState).toContain('Current Phase: Complete')
     expect(taskState).toContain('Next Autonomous Action: No further autonomous action; task is complete.')
     expect(taskState).toContain('Small typo fix')
     expect(taskState).toContain('NPM publish: not required')
     expect(workLog).toContain('ACE auto-closed small task: Small typo fix.')
+    expect(workLog).toContain('Friction Encountered: no.')
     expect(workLog).toContain('README.md')
     expect(archiveFiles).toEqual(['.gitkeep'])
+  })
+
+  it('records manual friction flag in reflection log and small work-log closeout', async () => {
+    const rootDir = await mkdtemp(path.join(os.tmpdir(), 'ace-finish-friction-'))
+    tempDirs.push(rootDir)
+
+    await writeFile(path.join(rootDir, 'AGENTS.md'), '# AGENTS.md\n\n## Project Rules\n\nTest.\n')
+    await installAcePack(rootDir)
+    await writeFile(
+      path.join(rootDir, '.ai/state/task-state.md'),
+      `# Task State
+
+## Lifecycle & Meta
+
+### Feature Name
+Friction fixture
+
+### Lifecycle
+Status: active
+Version: v1
+Task Tier: small
+Design Review Required: no
+Friction Encountered: no
+Started: 2026-06-14 14:30
+Ready For Archive: no
+
+### Goal
+Close with friction.
+
+## Handoff & Next Steps
+
+### Verification
+TODO
+`,
+    )
+    await initGitFixture(rootDir)
+
+    const { stderr } = await execFileAsync(
+      process.execPath,
+      [
+        path.join(rootDir, 'scripts/ai-task-finish.mjs'),
+        '--friction',
+        'Unclear API docs caused repeated validation loops',
+      ],
+      { cwd: rootDir },
+    )
+
+    const taskState = await readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')
+    const workLog = await readFile(path.join(rootDir, '.ai/knowledge/work-log.md'), 'utf8')
+    const reflectionLog = await readFile(
+      path.join(rootDir, '.ai/knowledge/reflection-log.md'),
+      'utf8',
+    )
+
+    expect(stderr).toContain('Task completed with friction')
+    expect(taskState).toContain('Friction Encountered: yes')
+    expect(workLog).toContain('Friction Encountered: yes.')
+    expect(reflectionLog).toContain('Unclear API docs caused repeated validation loops')
+    expect(reflectionLog).toContain('Friction fixture friction')
   })
 
   it('marks standard task autonomy complete without archiving', async () => {
@@ -255,10 +338,13 @@ TODO
     })
 
     const taskState = await readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')
+    const workLog = await readFile(path.join(rootDir, '.ai/knowledge/work-log.md'), 'utf8')
     const archiveFiles = await readdir(path.join(rootDir, '.ai/archive/tasks'))
 
     expect(taskState).toContain('Current Phase: Complete')
     expect(taskState).toContain('Next Autonomous Action: No further autonomous action; task is complete.')
+    expect(workLog).toContain('ACE finished standard task: Finish fixture.')
+    expect(workLog).toContain('Friction Encountered: no.')
     expect(archiveFiles).toEqual(['.gitkeep'])
   })
 

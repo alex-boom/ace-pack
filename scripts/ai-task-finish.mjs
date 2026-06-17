@@ -7,6 +7,10 @@ import {
   buildCompletedTaskState,
   extractTaskTitle,
 } from './ace-task-state.mjs'
+import {
+  extractFrictionEncountered,
+  setTaskFrictionEncountered,
+} from './ace-task-friction.mjs'
 import { markTaskAutonomyComplete } from './ace-task-autonomy.mjs'
 import {
   extractLabeledValue,
@@ -63,6 +67,12 @@ export function validateFinishRequirements({
     missing.push('Add a compact .ai/reflection-log.md entry for this large task.')
   }
 
+  if (extractFrictionEncountered(currentTaskContent) && !hasMeaningfulReflection(reflectionLogContent)) {
+    missing.push(
+      'Add a compact .ai/knowledge/reflection-log.md entry because Friction Encountered is yes.',
+    )
+  }
+
   return missing
 }
 
@@ -104,15 +114,35 @@ async function main() {
   const rawArgs = process.argv.slice(2)
   const args = parseCliArgs(rawArgs)
   const rootDir = path.resolve(process.cwd(), getArgValue(args, 'root') ?? '.')
+  const frictionReason = getArgValue(args, 'friction')
+  if (frictionReason === 'true') {
+    process.stderr.write('--friction requires a short reason.\n')
+    process.exit(1)
+  }
   const classification = await classifyRepositoryTask(rootDir, {
     overrideReason: getArgValue(args, 'reason'),
     overrideTier: getArgValue(args, 'tier'),
   })
-  const [currentTaskContent, handoffContent, reflectionLogContent] = await Promise.all([
+  let [currentTaskContent, handoffContent, reflectionLogContent] = await Promise.all([
     requireAiFile(rootDir, 'taskState', '.ai/state/task-state.md'),
     requireAiFile(rootDir, 'taskState', '.ai/state/task-state.md'),
     requireAiFile(rootDir, 'reflectionLog', '.ai/knowledge/reflection-log.md'),
   ])
+  if (frictionReason) {
+    const timestamp = formatTimestamp(new Date())
+    const taskTitle = extractTaskTitle(currentTaskContent)
+    currentTaskContent = setTaskFrictionEncountered(currentTaskContent, 'yes')
+    handoffContent = currentTaskContent
+    reflectionLogContent = appendFrictionReflection(reflectionLogContent, {
+      reason: frictionReason,
+      taskTitle,
+      timestamp,
+    })
+    await Promise.all([
+      writeMemoryFile(rootDir, 'taskState', currentTaskContent),
+      writeMemoryFile(rootDir, 'reflectionLog', reflectionLogContent),
+    ])
+  }
   const missing = validateFinishRequirements({
     classification,
     currentTaskContent,
@@ -130,11 +160,18 @@ async function main() {
     process.exit(1)
   }
 
+  const frictionEncountered = extractFrictionEncountered(currentTaskContent)
   if (isSmallLowRiskClassification(classification)) {
     await autoCloseSmallTask(rootDir, {
+      frictionEncountered,
       taskStateContent: currentTaskContent,
     })
   } else {
+    await writeFinishWorkLog(rootDir, {
+      classification,
+      frictionEncountered,
+      taskStateContent: currentTaskContent,
+    })
     await writeMemoryFile(rootDir, 'taskState', markTaskAutonomyComplete(currentTaskContent))
   }
 
@@ -149,10 +186,15 @@ async function main() {
     await runNodeScript(rootDir, 'ai-report.mjs')
   }
 
+  if (frictionEncountered) {
+    process.stderr.write(
+      '[ACE WARNING] Task completed with friction. Systemic issues have been logged to reflection-log.md.\n',
+    )
+  }
   process.stderr.write(`Adaptive task finish passed for ${classification.tier} task.\n`)
 }
 
-async function autoCloseSmallTask(rootDir, { taskStateContent }) {
+async function autoCloseSmallTask(rootDir, { frictionEncountered, taskStateContent }) {
   const timestamp = formatTimestamp(new Date())
   const taskTitle = extractTaskTitle(taskStateContent)
   const diffSummary = await readGitDiffSummary(rootDir)
@@ -165,12 +207,14 @@ async function autoCloseSmallTask(rootDir, { taskStateContent }) {
   await Promise.all([
     writeSmallWorkLog(rootDir, {
       diffSummary,
+      frictionEncountered,
       taskTitle,
       timestamp,
       verificationLine,
     }),
     writeMemoryFile(rootDir, 'taskState', buildCompletedTaskState({
       changedSummary,
+      frictionEncountered: frictionEncountered ? 'yes' : 'no',
       taskTitle,
       timestamp,
       verificationLine,
@@ -180,6 +224,7 @@ async function autoCloseSmallTask(rootDir, { taskStateContent }) {
 
 async function writeSmallWorkLog(rootDir, {
   diffSummary,
+  frictionEncountered,
   taskTitle,
   timestamp,
   verificationLine,
@@ -189,6 +234,7 @@ async function writeSmallWorkLog(rootDir, {
     `## ${timestamp}`,
     '',
     `- ACE auto-closed small task: ${taskTitle}.`,
+    `- Friction Encountered: ${frictionEncountered ? 'yes' : 'no'}.`,
     `- ${verificationLine}`,
     '- NPM publish: not required for this small low-risk closeout unless repository release policy says otherwise.',
     '',
@@ -198,6 +244,44 @@ async function writeSmallWorkLog(rootDir, {
   ].join('\n')
 
   await writeMemoryFile(rootDir, 'workLog', `${currentContent.trimEnd()}\n\n${entry}\n`)
+}
+
+async function writeFinishWorkLog(rootDir, {
+  classification,
+  frictionEncountered,
+  taskStateContent,
+}) {
+  const timestamp = formatTimestamp(new Date())
+  const taskTitle = extractTaskTitle(taskStateContent)
+  const currentContent = (await readMemoryFile(rootDir, 'workLog')) ?? '# Work Log\n'
+  const entry = [
+    `## ${timestamp}`,
+    '',
+    `- ACE finished ${classification.tier} task: ${taskTitle}.`,
+    `- Friction Encountered: ${frictionEncountered ? 'yes' : 'no'}.`,
+    `- Design Review Required: ${classification.designReviewRequired ? 'yes' : 'no'}.`,
+  ].join('\n')
+
+  await writeMemoryFile(rootDir, 'workLog', `${currentContent.trimEnd()}\n\n${entry}\n`)
+}
+
+function appendFrictionReflection(content, {
+  reason,
+  taskTitle,
+  timestamp,
+}) {
+  const entry = [
+    `### ${timestamp} ${taskTitle} friction`,
+    'Status: unresolved',
+    `- Stuck Point: ${reason}`,
+    '- Likely Cause: Needs maintainer triage from the friction note.',
+    '- Proposed Improvement: Update project conventions, task prompts, tests, or architecture docs to reduce this friction.',
+    '',
+  ].join('\n')
+  if (/^## Resolved\b/m.test(content)) {
+    return content.replace(/^## Resolved\b/m, `${entry}## Resolved`)
+  }
+  return `${content.trimEnd()}\n\n## Unresolved\n\n${entry}`
 }
 
 async function requireAiFile(rootDir, memoryKey, displayPath) {

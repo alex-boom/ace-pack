@@ -75,6 +75,8 @@ describe('ensureAgentMemory', () => {
     expect(agentsContent).toContain('task-state')
     expect(agentsContent).toContain('autonomous phase transitions')
     expect(agentsContent).toContain('Next Autonomous Action: Needs Human')
+    expect(agentsContent).toContain('Friction Encountered: yes')
+    expect(agentsContent).toContain('pnpm ace finish --friction')
     expect(agentsContent).toContain('pnpm ace hub review')
     expect(agentsContent).toContain('If review fails')
     expect(agentsContent).toContain('pnpm ace hub red-team')
@@ -104,6 +106,8 @@ describe('ensureAgentMemory', () => {
     expect(claudeContent).toContain('pnpm.cmd ace:validate')
     expect(claudeContent).toContain('Current Phase and Next Autonomous Action')
     expect(claudeContent).toContain('Update those fields directly in Markdown')
+    expect(claudeContent).toContain('Friction Encountered: yes')
+    expect(claudeContent).toContain('pnpm ace finish --friction')
     expect(claudeContent).toContain('pnpm ace hub review')
     expect(claudeContent).toContain('When Current Phase is `Review`')
     expect(claudeContent).toContain('pnpm ace hub red-team')
@@ -119,6 +123,7 @@ describe('ensureAgentMemory', () => {
       'Only if changed: update tech docs, product roadmap, durable decisions, or release notes',
     )
     expect(taskStateContent).toContain('Current Phase: Planning')
+    expect(taskStateContent).toContain('Friction Encountered: no')
     expect(taskStateContent).toContain(
       'Next Autonomous Action: Analyze task and update Business Value & Approach.',
     )

@@ -92,6 +92,12 @@ current task.
   the autonomous handoff bus. Update those fields directly in Markdown when
   switching Planning, Implementation, Review, or Complete; CLI update commands
   are optional for scripts.
+- Track systemic friction directly in task-state. If you fail \`ace:validate\`
+  more than twice, loop between Review and Implementation, or struggle with
+  undocumented architecture, set \`Friction Encountered: yes\`. Before
+  \`ace finish\`, add an entry to \`.ai/knowledge/reflection-log.md\` with the
+  stuck point and likely cause, or use \`pnpm ace finish --friction "<reason>"\`
+  to append it during manual closeout.
 - When Current Phase is \`Review\`, act as a strict reviewer. Run
   \`pnpm ace hub review\` (or \`npm run ace -- hub review\`) to read the
   evaluation context, compare the original intent and conventions against the
@@ -188,6 +194,13 @@ While working:
   architecture decision is required, or when required validation cannot be run
   or interpreted safely. If blocked, set \`Status: blocked\` and
   \`Next Autonomous Action: Needs Human: <specific request>\`.
+- Track productivity friction. If you fail \`ace:validate\` more than twice,
+  loop between Review and Implementation, or struggle with undocumented
+  architecture, set \`Friction Encountered: yes\` in
+  \`.ai/state/task-state.md\`. Before \`pnpm ace finish\`, add a compact
+  \`.ai/knowledge/reflection-log.md\` entry with the stuck point and likely
+  cause, or use \`pnpm ace finish --friction "<reason>"\` during manual
+  closeout.
 - When \`Current Phase\` is \`Review\`, act as a strict reviewer. Run
   \`pnpm ace hub review\` (or \`npm run ace -- hub review\`) and compare the
   original intent, acceptance criteria, project conventions, and triggered risk

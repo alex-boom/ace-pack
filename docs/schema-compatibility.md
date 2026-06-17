@@ -1,8 +1,8 @@
-# ACE v3.3 Schema and Compatibility
+# ACE v3.4 Schema and Compatibility
 
 This document defines the compatibility contract for installed ACE repositories
 starting with `ace-pack@3.0.0`, including additive v3.1 task-state fields and
-the v3.2 review and v3.3 red-team hub modes.
+the v3.2 review, v3.3 red-team, and v3.4 friction-tracking additions.
 
 ACE remains Markdown-first, local-first, and zero-dependency. v3 consolidates
 active task memory into one task-state file and keeps migration deterministic.
@@ -70,7 +70,7 @@ sections or signals:
 
 | Section | Required signals |
 | --- | --- |
-| `## Lifecycle & Meta` | `### Feature Name`, `### Lifecycle`, `Task Tier:`, `Design Review Required:`, `### Goal`, `### Completion Checklist` |
+| `## Lifecycle & Meta` | `### Feature Name`, `### Lifecycle`, `Task Tier:`, `Design Review Required:`, `Friction Encountered:` in fresh v3.4 templates, `### Goal`, `### Completion Checklist` |
 | `## Business Value & Approach` | `### Business Value / Product Alignment`, `### Technical Approach`, `### Edge Cases & Red Teaming` in fresh v3.3 templates |
 | `## Changed Files / Diff` | path headings such as `[README.md]` when changes are recorded |
 | `## Handoff & Next Steps` | `### Quality Review`, `### Next Steps`, `### Verification`, `### Notes` |
@@ -101,6 +101,31 @@ For blocked work, use `Status: blocked` and set
 Existing meaningful v3 task-state files without these fields remain valid.
 `ace check` does not fail old task-state files solely because the v3.1 labels
 are missing.
+
+## Friction Tracking
+
+Fresh v3.4 task-state files include an additive lifecycle label:
+
+```md
+Friction Encountered: no
+```
+
+Agents set this to `yes` when the task experiences systemic friction, such as
+repeated validation failures, Review -> Implementation loops, or undocumented
+architecture. Before finish, the agent records the stuck point and likely cause
+in `.ai/knowledge/reflection-log.md`.
+
+Humans can force the same closeout path with:
+
+```bash
+pnpm ace finish --friction "Unclear API docs caused repeated validation loops"
+npm run ace -- finish --friction "Unclear API docs caused repeated validation loops"
+```
+
+`ace finish --friction` marks `Friction Encountered: yes`, appends a compact
+reflection entry, prints a warning, and records friction status in the
+work-log entry. Existing meaningful v3 task-state files without the v3.4 label
+remain valid; missing friction is treated as `no`.
 
 ## Agentic Red Team Planning Mode
 
@@ -188,12 +213,14 @@ For small low-risk tasks, `ace finish` is zero-ceremony. It reads the task title
 from `task-state.md`, records current uncommitted/staged git state with
 `git diff HEAD --stat` or `git status --short`, appends a compact `work-log.md`
 entry, resets `task-state.md` to a complete empty state with
-`Current Phase: Complete`, and regenerates the brief report.
+`Current Phase: Complete`, records `Friction Encountered: yes/no`, and
+regenerates the brief report.
 
 Standard and large tasks still require meaningful approach, red-team planning,
 review, verification, and handoff sections in `task-state.md`. Successful
 standard and large finishes mark `Current Phase: Complete` before report
-generation; large task archives therefore contain the completed phase metadata.
+generation, append a compact work-log entry with friction status, and large
+task archives therefore contain the completed phase metadata.
 
 ## `.ai/config/memory-config.json` Schema Version 1
 

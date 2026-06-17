@@ -118,7 +118,9 @@ technical approach, compare viable patterns, and choose one explicitly before
 implementation. Standard, large, and high-risk tasks also document
 `Edge Cases & Red Teaming` before Implementation. It then updates
 `Current Phase` and `Next Autonomous Action` directly in Markdown and keeps
-moving unless it is genuinely blocked.
+moving unless it is genuinely blocked. If the task bogs down, ACE exposes that
+friction through `Friction Encountered: yes`, reflection-log notes, and the
+finish work-log entry.
 
 Unknown repositories start with a neutral memory config. Then `ace onboard`
 profiles the repo and recommends project-specific risk rules before they are
@@ -410,6 +412,12 @@ bypass, record the reason explicitly:
 pnpm ace gate --human-override "Human reviewed typo-only docs change."
 ```
 
+For manual closeout when the task was unusually hard, record friction directly:
+
+```bash
+pnpm ace finish --friction "Unclear API docs caused repeated validation loops"
+```
+
 Generate an opt-in GitHub Actions workflow:
 
 ```bash
@@ -454,9 +462,9 @@ technical docs, project conventions, and generated hub context when those files
 exist. Legacy current-task and handoff MCP URIs remain deprecated aliases for
 the consolidated task state.
 
-## v3.3 Schema and Compatibility
+## v3.4 Schema and Compatibility
 
-ACE v3.3 keeps categorized canonical memory paths under `.ai/config`,
+ACE v3.4 keeps categorized canonical memory paths under `.ai/config`,
 `.ai/state`, `.ai/knowledge`, and `.ai/generated`, and consolidates active task
 memory into `.ai/state/task-state.md`. The config schema remains version `1`.
 Fresh v3 installs create only the consolidated task-state file. Existing v2
@@ -473,13 +481,19 @@ Fresh task-state now also includes `### Edge Cases & Red Teaming` under
 Business Value & Approach. Standard, large, and high-risk planning can use
 `ace hub red-team` to generate an adversarial critique before Implementation.
 
+Fresh task-state also includes `Friction Encountered: no`. Agents flip it to
+`yes` when validation loops, repeated review failures, or missing architecture
+context slow the task down, then record the cause in
+`.ai/knowledge/reflection-log.md`. Humans can use `ace finish --friction
+"<reason>"` to force the same log during closeout.
+
 `ace hub review` adds agentic evaluation without hidden AI calls. It generates a
 strict reviewer prompt from task intent, acceptance criteria, project
 conventions, triggered high-risk rules, and the current local git diff,
 including bounded pseudo-diff entries for new untracked text files.
 
 Read the full contract:
-[ACE v3.3 Schema and Compatibility](./docs/schema-compatibility.md).
+[ACE v3.4 Schema and Compatibility](./docs/schema-compatibility.md).
 
 ## Adoption Guides
 
@@ -534,7 +548,7 @@ then stops if unexpected files changed.
 | `ace:validate` | Project-owned mechanical quality gate for lint, typecheck, tests, or equivalent checks. ACE installs a placeholder only when absent. |
 | `ace eject` | Safe data-takeout step that exports active ACE memory before uninstall. |
 | `ace destroy` | Guarded cleanup that removes only ACE-owned files after export. |
-| `ace finish` | Adaptive closeout, phase completion, small low-risk auto-closeout, memory documentation, reports, and reflection. |
+| `ace finish` | Adaptive closeout, phase completion, friction tracking, small low-risk auto-closeout, memory documentation, reports, and reflection. |
 | `ace gate` | Optional PR/CI quality gate with actionable failures, PR refs, JSON output, explicit human override, and opt-in hook/workflow generation. |
 | `ace hub` | Interactive and named-mode context generator with phase/action metadata for start, red-team, review, architect-lite, architect, handoff, PR, business, and docs payloads. |
 

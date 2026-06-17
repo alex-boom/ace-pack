@@ -3,33 +3,38 @@
 ## Lifecycle & Meta
 
 ### Feature Name
-ACE Pack v3.3 Agentic Red Teaming Hub Mode
+ACE Pack v3.4 Friction Tracking
 
 ### Lifecycle
 Status: complete
-Version: v3.3.0
+Version: v3.4.0
 Task Tier: large
 Design Review Required: yes
+Friction Encountered: no
 Current Phase: Complete
 Next Autonomous Action: Ready for maintainer review and npm publish preparation.
-Started: 2026-06-17 19:45
+Started: 2026-06-17 20:20
 Ready For Archive: yes
 
 ### Goal
-Add a local `ace hub red-team` mode and task-state schema section that make
-agents adversarially evaluate failure modes, security risks, and edge cases
-before moving from Planning to Implementation.
+Add lightweight friction tracking so agents and humans can make hidden AI
+productivity drag visible in task-state, reflection-log, finish output, and
+work-log history.
 
 ### Current Status
-- [x] Classified clean baseline as small before implementation.
-- [x] Chosen local hub-mode approach that keeps ACE zero-dependency.
-- [x] Implemented red-team schema, hub payload, instructions, docs, and tests.
-- [x] Ran validation, fake-project smoke, ACE check/classify, red-team output,
-  and npm payload guard.
+- [x] Added `Friction Encountered: no` to fresh task-state lifecycle.
+- [x] Added shipped AGENTS/CLAUDE friction tracking rules.
+- [x] Added finish support for friction warnings, work-log status, reflection
+  enforcement, and `--friction "<reason>"`.
+- [x] Added focused tests for templates, schema compatibility, install sync,
+  and finish closeout behavior.
+- [x] Ran full validation, fake-project smoke, ACE check/classify, and npm
+  payload guard.
 
 ### Affected Areas
 - `scripts/ace-task-state.mjs`
-- `scripts/ace-hub*.mjs`
+- `scripts/ace-task-friction.mjs`
+- `scripts/ai-task-finish.mjs`
 - `scripts/agent-memory-templates.mjs`
 - `scripts/ace-uninstall-utils.mjs`
 - `README.md`, `README.npm.md`, `docs/schema-compatibility.md`
@@ -38,18 +43,19 @@ before moving from Planning to Implementation.
 
 ### Constraints
 - Keep ACE local-first, zero-dependency, and zero hidden AI/network calls.
-- Preserve existing hub modes and CLI compatibility.
-- Legacy task-state files without `Edge Cases & Red Teaming` must remain valid.
+- Preserve existing task-state compatibility when the friction field is missing.
+- Keep script files under the 400-line guard.
 - Do not edit repo-local root `AGENTS.md` or `CLAUDE.md` to change product behavior.
 
 ### Acceptance Criteria
-- Fresh `ace init` creates `### Edge Cases & Red Teaming`.
-- `ace hub red-team` emits a strict adversarial planning prompt.
-- Red-team payload includes Goal, Business Value & Approach, high-risk rules,
-  and project conventions when present.
-- Missing `project-conventions.md` is handled gracefully.
-- Planning phase instructions require red-team notes for standard, large, or
-  high-risk tasks before Implementation.
+- Fresh `ace init` creates `Friction Encountered: no`.
+- Agent instructions require setting friction to `yes` for systemic task
+  struggles and recording reflection before finish.
+- `ace finish` warns when friction is `yes`.
+- `ace finish` work-log entries include friction status.
+- `ace finish --friction "<reason>"` sets friction to `yes`, appends a
+  reflection entry, and proceeds through finish.
+- Legacy task-state files without the field remain valid.
 - Tests, fake-project smoke, ACE check/classify, and npm payload guard pass.
 
 ### Completion Checklist
@@ -63,73 +69,76 @@ before moving from Planning to Implementation.
 ## Business Value & Approach
 
 ### Business Value / Product Alignment
-Agentic red teaming reduces fragile AI-generated code by making planning
-explicitly consider failure modes, security risks, and edge cases before coding.
+Friction tracking makes hidden AI productivity drag visible to maintainers, so
+teams can spot brittle tests, missing conventions, and undocumented architecture
+instead of treating repeated agent loops as invisible effort.
 
 ### Technical Approach
 Option 1:
-- Add a top-level `ace red-team` command. This is discoverable but expands the
-  command surface and makes ACE look like it performs AI work itself.
+- Add a separate friction report command. This would be explicit but adds a new
+  surface and does not integrate with closeout.
 
 Option 2:
-- Add `red-team` as an `ace hub` planning payload mode plus a new Markdown
-  task-state subsection.
+- Add a lifecycle field and extend `ace finish` to enforce/log friction during
+  the existing closeout path.
 
 Chosen Approach:
-- Use Option 2. It matches the existing hub pattern, keeps ACE declarative and
-  local-only, and lets any explicit external reviewer/agent consume the prompt.
+- Use Option 2. It keeps the workflow declarative, local-first, and tied to the
+  moment when agents already summarize the task.
 
 ### Edge Cases & Red Teaming
-- Failure mode: legacy v3 task-state files do not contain the new subsection.
-  Mitigation: keep `ace check` compatibility additive and only require the
-  section in fresh templates/tests.
-- Failure mode: red-team payload could imply hidden AI execution. Mitigation:
-  implement it as deterministic Markdown generation only, with docs stating no
-  network or provider calls are made.
+- Failure mode: existing v3 task-state files do not contain the new lifecycle
+  field. Mitigation: missing friction is treated as `no`, and `ace check`
+  compatibility remains additive.
+- Failure mode: `--friction` could set a flag but fail later on closeout
+  validation. Mitigation: reflection is appended before validation so the
+  diagnostic note is not lost.
+- Failure mode: helper additions push script files over line limit. Mitigation:
+  friction lifecycle helpers live in `ace-task-friction.mjs`.
 
 ## Changed Files / Diff
 
-[scripts/ace-task-state.mjs]
-- Added `### Edge Cases & Red Teaming` to fresh task-state, completed
-  task-state, and legacy migration fallback.
+[scripts/ace-task-state.mjs, scripts/ace-task-friction.mjs]
+- Added the friction lifecycle field, extraction/update helpers, completed-state
+  preservation, and legacy migration fallback.
 
-[scripts/ace-hub.mjs, scripts/ace-hub-modes.mjs, scripts/ace-hub-red-team.mjs]
-- Added `red-team` / `redteam` / `adversarial` hub mode with deterministic
-  adversarial planning context.
+[scripts/ai-task-finish.mjs]
+- Added `--friction`, reflection append, friction warning, finish validation,
+  and work-log friction status for small, standard, and large closeout paths.
 
 [scripts/agent-memory-templates.mjs, scripts/ace-uninstall-utils.mjs]
-- Updated shipped AGENTS/CLAUDE planning rules and included the new red-team
-  hub helper in managed install files.
+- Added shipped friction tracking instructions and included the new helper in
+  managed installed scripts.
 
 [README.md, README.npm.md, docs/schema-compatibility.md, package.json]
-- Documented v3.3 red-team behavior and bumped package version to `3.3.0`.
+- Documented v3.4 friction tracking and bumped package version to `3.4.0`.
 
 [tests/**]
-- Added hub, install, template, schema migration, and backward-compatibility
-  coverage for red-team mode and the new task-state subsection.
+- Added coverage for fresh templates, legacy compatibility, finish friction
+  validation, `--friction`, reflection append, warnings, and work-log status.
 
 ## Handoff & Next Steps
 
 ### Last Update
-2026-06-17 20:16
+2026-06-17 20:29
 
 ### What Was Done
-- Prepared v3.3 task state and selected the hub-mode architecture.
-- Implemented the shipped red-team hub mode, schema addition, docs, and tests.
+- Implemented the v3.4 friction tracking pipeline in templates and finish.
+- Kept the implementation local-only and dependency-free.
 
 ### Current State
 - Complete and ready for maintainer review.
 
 ### Quality Review
 Product Alignment:
-- The feature directly supports planning-time edge-case discovery for AI work.
+- The feature directly exposes hidden AI task friction in durable local memory.
 Architecture:
-- The chosen path reuses the existing hub and task-state surfaces.
+- Friction state is a simple lifecycle label; finish owns closeout enforcement.
 Security:
-- No external services, credentials, or hidden AI calls will be introduced.
+- No external services, credentials, provider integrations, or network calls
+  were added.
 Code Quality:
-- Changes are focused around task-state templates, hub payload generation, docs,
-  and targeted tests.
+- Friction helpers are isolated to keep existing modules under the line limit.
 
 ### Next Steps
 - Maintainer review, then run the npm release flow when ready.
@@ -138,18 +147,15 @@ Code Quality:
 - None known.
 
 ### Verification
-- `npm.cmd run ace -- classify` passed on clean baseline as small.
 - Focused checks passed: `npm.cmd run typecheck`, `npm.cmd run lint`, and
-  `npm.cmd test -- tests/ace-hub.test.ts tests/agent-memory.test.ts tests/install-agent-memory-pack.test.ts tests/schema-compatibility.test.ts`.
+  `npm.cmd test -- tests/ai-task-finish.test.ts tests/agent-memory.test.ts tests/install-agent-memory-pack.test.ts tests/schema-compatibility.test.ts`.
 - `npm.cmd run ace:validate` passed: typecheck, line-limit lint, and Vitest
-  16 files / 135 tests.
+  16 files / 137 tests.
 - `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
-- `npm.cmd run ace -- hub red-team --stdout` passed and showed phase/action,
-  configured high-risk rules, and triggered high-risk rules.
 - `npm.cmd run ace -- check` passed.
 - `npm.cmd run ace -- classify` passed; current diff is large and design review
   is required.
-- `npm.cmd run check:npm-payload` passed; 43 packed files checked.
+- `npm.cmd run check:npm-payload` passed; 44 packed files checked.
 - `git diff --check` passed.
 
 ### Notes

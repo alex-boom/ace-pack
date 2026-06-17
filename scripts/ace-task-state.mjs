@@ -11,6 +11,12 @@ import {
   writeTextFile,
 } from './ai-memory-utils.mjs'
 import {
+  DEFAULT_FRICTION_ENCOUNTERED,
+  FRICTION_ENCOUNTERED_LABEL,
+  ensureFrictionLifecycleField,
+  normalizeFrictionValue,
+} from './ace-task-friction.mjs'
+import {
   COMPLETED_NEXT_AUTONOMOUS_ACTION,
   DEFAULT_CURRENT_PHASE,
   DEFAULT_NEXT_AUTONOMOUS_ACTION,
@@ -25,6 +31,7 @@ const DEFAULT_LIFECYCLE = `Status: active
 Version: v1
 Task Tier: standard
 Design Review Required: no
+${FRICTION_ENCOUNTERED_LABEL}: ${DEFAULT_FRICTION_ENCOUNTERED}
 Current Phase: ${DEFAULT_CURRENT_PHASE}
 Next Autonomous Action: ${DEFAULT_NEXT_AUTONOMOUS_ACTION}
 Started: [YYYY-MM-DD HH:mm]
@@ -103,6 +110,7 @@ ${DEFAULT_QUALITY_REVIEW}
 `
 export function buildCompletedTaskState({
   changedSummary = 'No working-tree changes detected.',
+  frictionEncountered = DEFAULT_FRICTION_ENCOUNTERED,
   taskTitle = 'No active task',
   timestamp = formatTimestamp(new Date()),
   verificationLine = 'No explicit verification was recorded for this small low-risk auto-closeout.',
@@ -116,6 +124,7 @@ Status: complete
 Version: v1
 Task Tier: small
 Design Review Required: no
+${FRICTION_ENCOUNTERED_LABEL}: ${normalizeFrictionValue(frictionEncountered)}
 Current Phase: Complete
 Next Autonomous Action: ${COMPLETED_NEXT_AUTONOMOUS_ACTION}
 Started: ${timestamp}
@@ -221,6 +230,9 @@ export function extractTaskTitle(taskStateContent) {
   const goal = extractMarkdownSection(taskStateContent, 'Goal')
   return firstMeaningfulLine(title) || firstMeaningfulLine(goal) || 'Small ACE task'
 }
+function ensureTaskLifecycleFields(lifecycleContent) {
+  return ensureFrictionLifecycleField(ensureAutonomyLifecycleFields(lifecycleContent))
+}
 function mergeLegacyTaskState({
   changedFilesContent,
   currentTaskContent,
@@ -231,7 +243,7 @@ function mergeLegacyTaskState({
 ### Feature Name
 ${sectionOrFallback(currentTaskContent, 'Feature Name', '[Set the active feature or task name]')}
 ### Lifecycle
-${ensureAutonomyLifecycleFields(sectionOrFallback(currentTaskContent, 'Lifecycle', DEFAULT_LIFECYCLE))}
+${ensureTaskLifecycleFields(sectionOrFallback(currentTaskContent, 'Lifecycle', DEFAULT_LIFECYCLE))}
 ### Goal
 ${sectionOrFallback(currentTaskContent, 'Goal', '[Describe what is being built or changed]')}
 ### Current Status

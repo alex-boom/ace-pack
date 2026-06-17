@@ -151,6 +151,9 @@ Chosen Approach:
       'Current Phase: Planning',
     )
     await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
+      'Friction Encountered: no',
+    )
+    await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
       'Next Autonomous Action: Analyze task and update Business Value & Approach.',
     )
     await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
@@ -257,7 +260,7 @@ Keep this too.
       files?: string[]
     }
 
-    expect(schemaDocs).toContain('ACE v3.3 Schema and Compatibility')
+    expect(schemaDocs).toContain('ACE v3.4 Schema and Compatibility')
     expect(schemaDocs).toContain('Installed repositories expose only:')
     expect(schemaDocs).toContain('remain accepted only as router arguments')
     expect(schemaDocs).toContain('Canonical v3 Memory Layout')
@@ -266,7 +269,9 @@ Keep this too.
     expect(schemaDocs).toContain('.ai/state/task-state.md')
     expect(schemaDocs).toContain('Current Phase:')
     expect(schemaDocs).toContain('Next Autonomous Action:')
+    expect(schemaDocs).toContain('Friction Encountered:')
     expect(schemaDocs).toContain('Autonomous Phase Routing')
+    expect(schemaDocs).toContain('Friction Tracking')
     expect(schemaDocs).toContain('Agentic Evaluation Review Mode')
     expect(schemaDocs).toContain('ace hub review')
     expect(schemaDocs).toContain('Agentic Red Team Planning Mode')
@@ -291,15 +296,17 @@ Keep this too.
     await expect(validateAgentMemory(rootDir)).resolves.toEqual([])
   })
 
-  it('keeps existing v3 task-state files without red-team section valid', async () => {
+  it('keeps existing v3 task-state files without red-team or friction fields valid', async () => {
     const rootDir = await createRepo()
     await installAcePack(rootDir)
     const taskStatePath = path.join(rootDir, '.ai/state/task-state.md')
     const taskState = await readFile(taskStatePath, 'utf8')
-    const legacyCompatibleTaskState = taskState.replace(
-      /\n### Edge Cases & Red Teaming\nIdentify at least two potential failure modes, edge cases, or security risks in the chosen approach, and how to mitigate them\.\n/u,
-      '\n',
-    )
+    const legacyCompatibleTaskState = taskState
+      .replace(/\nFriction Encountered: no/u, '')
+      .replace(
+        /\n### Edge Cases & Red Teaming\nIdentify at least two potential failure modes, edge cases, or security risks in the chosen approach, and how to mitigate them\.\n/u,
+        '\n',
+      )
 
     await writeFile(taskStatePath, legacyCompatibleTaskState, 'utf8')
 
