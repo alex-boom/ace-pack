@@ -77,6 +77,8 @@ describe('ensureAgentMemory', () => {
     expect(agentsContent).toContain('Next Autonomous Action: Needs Human')
     expect(agentsContent).toContain('pnpm ace hub review')
     expect(agentsContent).toContain('If review fails')
+    expect(agentsContent).toContain('pnpm ace hub red-team')
+    expect(agentsContent).toContain('Edge Cases & Red Teaming')
     expect(agentsContent).toContain('.cursorrules')
     expect(agentsContent).toContain('dogfood/self-check routines before final publish')
     expect(memoryConfigContent).toContain('"ACE (Agentic Context Engine) Configuration"')
@@ -104,6 +106,8 @@ describe('ensureAgentMemory', () => {
     expect(claudeContent).toContain('Update those fields directly in Markdown')
     expect(claudeContent).toContain('pnpm ace hub review')
     expect(claudeContent).toContain('When Current Phase is `Review`')
+    expect(claudeContent).toContain('pnpm ace hub red-team')
+    expect(claudeContent).toContain('Edge Cases & Red Teaming')
     expect(claudeContent).toContain(
       'Do the smallest closeout that preserves future agent context and project',
     )
@@ -121,6 +125,10 @@ describe('ensureAgentMemory', () => {
     expect(taskStateContent).toContain('deferred release wording')
     expect(taskStateContent).toContain('If small/low-risk')
     expect(taskStateContent).toContain('run local smoke and dogfood/self-check routines')
+    expect(taskStateContent).toContain('### Edge Cases & Red Teaming')
+    expect(taskStateContent).toContain(
+      'Identify at least two potential failure modes, edge cases, or security risks',
+    )
   })
 
   it('does not overwrite existing memory files', async () => {

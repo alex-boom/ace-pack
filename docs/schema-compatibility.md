@@ -1,8 +1,8 @@
-# ACE v3.2 Schema and Compatibility
+# ACE v3.3 Schema and Compatibility
 
 This document defines the compatibility contract for installed ACE repositories
 starting with `ace-pack@3.0.0`, including additive v3.1 task-state fields and
-the v3.2 review hub mode.
+the v3.2 review and v3.3 red-team hub modes.
 
 ACE remains Markdown-first, local-first, and zero-dependency. v3 consolidates
 active task memory into one task-state file and keeps migration deterministic.
@@ -71,7 +71,7 @@ sections or signals:
 | Section | Required signals |
 | --- | --- |
 | `## Lifecycle & Meta` | `### Feature Name`, `### Lifecycle`, `Task Tier:`, `Design Review Required:`, `### Goal`, `### Completion Checklist` |
-| `## Business Value & Approach` | `### Business Value / Product Alignment`, `### Technical Approach` |
+| `## Business Value & Approach` | `### Business Value / Product Alignment`, `### Technical Approach`, `### Edge Cases & Red Teaming` in fresh v3.3 templates |
 | `## Changed Files / Diff` | path headings such as `[README.md]` when changes are recorded |
 | `## Handoff & Next Steps` | `### Quality Review`, `### Next Steps`, `### Verification`, `### Notes` |
 
@@ -101,6 +101,29 @@ For blocked work, use `Status: blocked` and set
 Existing meaningful v3 task-state files without these fields remain valid.
 `ace check` does not fail old task-state files solely because the v3.1 labels
 are missing.
+
+## Agentic Red Team Planning Mode
+
+Fresh v3.3 task-state files add an `### Edge Cases & Red Teaming` subsection
+under `## Business Value & Approach`. Existing meaningful v3 task-state files
+without the subsection remain valid; `ace check` does not fail old task-state
+files solely because the v3.3 subsection is missing.
+
+`ace hub red-team` generates a local adversarial planning prompt. ACE does not
+call an LLM or network service; it writes or prints deterministic Markdown that
+users may hand to an explicitly chosen reviewer or planning agent.
+
+The red-team payload includes:
+
+- a strict adversarial architect system instruction;
+- Goal and Business Value & Approach from `.ai/state/task-state.md`;
+- `.ai/knowledge/project-conventions.md` when present;
+- configured high-risk path and keyword rules from
+  `.ai/config/memory-config.json`;
+- currently triggered high-risk rules from the local working tree diff.
+
+If `project-conventions.md` is missing, the payload records that fact and still
+generates the red-team prompt.
 
 ## Agentic Evaluation Review Mode
 
@@ -167,10 +190,10 @@ from `task-state.md`, records current uncommitted/staged git state with
 entry, resets `task-state.md` to a complete empty state with
 `Current Phase: Complete`, and regenerates the brief report.
 
-Standard and large tasks still require meaningful approach, review,
-verification, and handoff sections in `task-state.md`. Successful standard and
-large finishes mark `Current Phase: Complete` before report generation; large
-task archives therefore contain the completed phase metadata.
+Standard and large tasks still require meaningful approach, red-team planning,
+review, verification, and handoff sections in `task-state.md`. Successful
+standard and large finishes mark `Current Phase: Complete` before report
+generation; large task archives therefore contain the completed phase metadata.
 
 ## `.ai/config/memory-config.json` Schema Version 1
 

@@ -74,6 +74,7 @@ describe('installAcePack', () => {
     expect(result.createdFiles).toContain('scripts/ace-eject.mjs')
     expect(result.createdFiles).toContain('scripts/ace-hub.mjs')
     expect(result.createdFiles).toContain('scripts/ace-hub-modes.mjs')
+    expect(result.createdFiles).toContain('scripts/ace-hub-red-team.mjs')
     expect(result.createdFiles).toContain('scripts/ace-hub-review.mjs')
     expect(result.createdFiles).toContain('scripts/ace-migrate.mjs')
     expect(result.createdFiles).toContain('scripts/ace-mcp-server.mjs')
@@ -124,6 +125,9 @@ describe('installAcePack', () => {
     )
     await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
       'Next Autonomous Action: Analyze task and update Business Value & Approach.',
+    )
+    await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
+      '### Edge Cases & Red Teaming',
     )
     await expect(
       readFile(path.join(rootDir, '.ai/config/memory-config.json'), 'utf8'),

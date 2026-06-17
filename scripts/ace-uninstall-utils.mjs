@@ -53,6 +53,7 @@ export const MANAGED_SCRIPT_FILES = [
   'ace-eject.mjs',
   'ace-hub.mjs',
   'ace-hub-modes.mjs',
+  'ace-hub-red-team.mjs',
   'ace-hub-review.mjs',
   'ace-migrate.mjs',
   'ace-mcp-server.mjs',

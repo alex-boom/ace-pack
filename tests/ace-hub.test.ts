@@ -12,6 +12,7 @@ import {
   generateContextPayload,
   listHubModes,
 } from '../scripts/ace-hub.mjs'
+import { RED_TEAM_SYSTEM_INSTRUCTION } from '../scripts/ace-hub-red-team.mjs'
 import { REVIEW_SYSTEM_INSTRUCTION } from '../scripts/ace-hub-review.mjs'
 
 const tempDirs: string[] = []
@@ -70,6 +71,10 @@ Hub tests need context.
 
 ### Technical Approach
 Fixture.
+
+### Edge Cases & Red Teaming
+- Fixture risk: hub payloads can omit planning risks.
+- Mitigation: include red-team context in tests.
 
 ## Changed Files / Diff
 
@@ -266,6 +271,68 @@ describe('generateContextPayload', () => {
     expect(result.payload).toContain('- No high-risk rules triggered by current diff.')
   })
 
+  it('generates adversarial red-team planning context', async () => {
+    const rootDir = await createHubRepo()
+    await writeRepoFile(
+      rootDir,
+      '.ai/config/memory-config.json',
+      `${JSON.stringify({
+        version: 1,
+        thresholds: {
+          small: { maxFiles: 2, maxDiffLines: 80 },
+          large: { minFiles: 8, minDiffLines: 300 },
+        },
+        highRiskPaths: [
+          {
+            label: 'Auth',
+            pattern: 'src/auth/**',
+            requiresDesignReview: true,
+            tier: 'large',
+          },
+        ],
+        highRiskKeywords: [
+          {
+            keyword: 'token',
+            label: 'Token Handling',
+            requiresDesignReview: true,
+            tier: 'large',
+          },
+        ],
+      }, null, 2)}\n`,
+    )
+
+    const result = await generateContextPayload(rootDir, 'red-team')
+
+    expect(result.mode.id).toBe('red-team')
+    expect(result.includedFiles).toEqual([
+      '.ai/state/task-state.md',
+      '.ai/config/memory-config.json',
+      '.ai/knowledge/project-conventions.md',
+    ])
+    expect(result.payload).toContain('# ACE Agentic Red Team Context')
+    expect(result.payload).toContain(RED_TEAM_SYSTEM_INSTRUCTION)
+    expect(result.payload).toContain('Task notes.')
+    expect(result.payload).toContain('Hub tests need context.')
+    expect(result.payload).toContain('### Edge Cases & Red Teaming')
+    expect(result.payload).toContain('Fixture risk: hub payloads can omit planning risks.')
+    expect(result.payload).toContain('## Governance')
+    expect(result.payload).toContain('Path: Auth (`src/auth/**`, tier: large')
+    expect(result.payload).toContain('Keyword: Token Handling (`token`, tier: large')
+    expect(result.payload).toContain('# Project Conventions and Pattern Registry')
+  })
+
+  it('generates red-team context when project conventions are missing', async () => {
+    const rootDir = await createHubRepo()
+    await unlink(path.join(rootDir, '.ai', 'project-conventions.md'))
+
+    const result = await generateContextPayload(rootDir, 'adversarial')
+
+    expect(result.mode.id).toBe('red-team')
+    expect(result.missingOptionalFiles).toEqual(['.ai/knowledge/project-conventions.md'])
+    expect(result.payload).toContain('- Project conventions file not found.')
+    expect(result.payload).toContain('- No high-risk rules configured.')
+  })
+
   it('generates architect-lite planning context without full decisions history', async () => {
     const rootDir = await createHubRepo()
 
@@ -343,10 +410,12 @@ describe('ace hub CLI', () => {
     expect(list).toContain('architect-lite, plan')
     expect(list).toContain('handoff')
     expect(list).toContain('review, eval, evaluate')
+    expect(list).toContain('red-team, redteam, adversarial')
     expect(list).toContain('pr')
     expect(HUB_MENU).toContain('[architect-lite] AI Architect Lite Context')
     expect(HUB_MENU).toContain('[handoff] Agent Handoff Context')
     expect(HUB_MENU).toContain('[review] Agentic Evaluation Review')
+    expect(HUB_MENU).toContain('[red-team] Agentic Red Team Planning')
     expect(HUB_MENU).toContain('[pr] PR Summary Context')
   })
 
@@ -356,6 +425,7 @@ describe('ace hub CLI', () => {
     expect(stdout).toContain('1, start, coder')
     expect(stdout).toContain('architect-lite, plan')
     expect(stdout).toContain('review, eval, evaluate')
+    expect(stdout).toContain('red-team, redteam, adversarial')
     expect(stdout).toContain('pr')
   })
 
@@ -401,5 +471,19 @@ describe('ace hub CLI', () => {
     await expect(readFile(path.join(rootDir, GENERATED_CONTEXT_PATH), 'utf8')).rejects.toThrow()
     expect(stdout).toContain('# ACE Agentic Evaluation Context')
     expect(stdout).toContain(REVIEW_SYSTEM_INSTRUCTION)
+  })
+
+  it('prints red-team payload to stdout', async () => {
+    const rootDir = await createHubRepo()
+
+    const { stdout } = await execFileAsync(
+      process.execPath,
+      [hubScriptPath, 'red-team', '--stdout'],
+      { cwd: rootDir },
+    )
+
+    await expect(readFile(path.join(rootDir, GENERATED_CONTEXT_PATH), 'utf8')).rejects.toThrow()
+    expect(stdout).toContain('# ACE Agentic Red Team Context')
+    expect(stdout).toContain(RED_TEAM_SYSTEM_INSTRUCTION)
   })
 })

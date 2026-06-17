@@ -37,6 +37,8 @@ Security:
 - [Note relevant auth, RBAC, tenancy, token, or data exposure risks]
 Code Quality:
 - [Note file size, duplication, strict typing, and test coverage risks]`
+export const DEFAULT_RED_TEAMING_PROMPT =
+  'Identify at least two potential failure modes, edge cases, or security risks in the chosen approach, and how to mitigate them.'
 export const taskStateTemplate = `# Task State
 ## Lifecycle & Meta
 ### Feature Name
@@ -76,6 +78,8 @@ Option 2:
 - [Describe another viable approach and tradeoffs]
 Chosen Approach:
 - [Explain why the selected approach best fits security, flexibility, architecture, and business value]
+### Edge Cases & Red Teaming
+${DEFAULT_RED_TEAMING_PROMPT}
 ## Changed Files / Diff
 [path/to/file]
 - [Short reason for the change]
@@ -141,6 +145,8 @@ Option 2:
 - Let ACE write compact deterministic closeout notes.
 Chosen Approach:
 - Use deterministic closeout because the task was classified as small and low risk.
+### Edge Cases & Red Teaming
+Small low-risk closeout only; no additional adversarial planning was required.
 ## Changed Files / Diff
 [Small task diff]
 - ${changedSummary}
@@ -243,6 +249,8 @@ ${sectionOrFallback(currentTaskContent, 'Completion Checklist', '- [ ] Goal comp
 ${sectionOrFallback(currentTaskContent, 'Business Value / Product Alignment', '[Explain in 1-2 sentences why this matters to users or the business]')}
 ### Technical Approach
 ${sectionOrFallback(currentTaskContent, 'Technical Approach', 'Option 1:\n- [Describe one viable approach and tradeoffs]\n\nOption 2:\n- [Describe another viable approach and tradeoffs]\n\nChosen Approach:\n- [Explain why the selected approach best fits security, flexibility, architecture, and business value]')}
+### Edge Cases & Red Teaming
+${sectionOrFallback(currentTaskContent, 'Edge Cases & Red Teaming', DEFAULT_RED_TEAMING_PROMPT)}
 ## Changed Files / Diff
 ${normalizeChangedFiles(changedFilesContent)}
 ## Handoff & Next Steps

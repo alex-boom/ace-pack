@@ -115,8 +115,10 @@ Legacy command names remain supported only as router arguments, such as
 The key behavior is **Shift-Left Design Review**. For large or high-risk tasks,
 the agent must fill `.ai/state/task-state.md` with the business value and
 technical approach, compare viable patterns, and choose one explicitly before
-implementation. It then updates `Current Phase` and `Next Autonomous Action`
-directly in Markdown and keeps moving unless it is genuinely blocked.
+implementation. Standard, large, and high-risk tasks also document
+`Edge Cases & Red Teaming` before Implementation. It then updates
+`Current Phase` and `Next Autonomous Action` directly in Markdown and keeps
+moving unless it is genuinely blocked.
 
 Unknown repositories start with a neutral memory config. Then `ace onboard`
 profiles the repo and recommends project-specific risk rules before they are
@@ -349,6 +351,7 @@ menu, or generate a specific payload directly:
 ```bash
 pnpm ace hub
 pnpm ace hub start
+pnpm ace hub red-team
 pnpm ace hub review
 pnpm ace hub --mode pr
 pnpm ace hub --list
@@ -363,6 +366,8 @@ Available modes:
 - `architect-lite` / `plan` - lower-token planning context without full
   decisions history.
 - `handoff` - compact agent handoff context.
+- `red-team` / `redteam` - adversarial planning prompt with task intent,
+  project conventions, configured risk rules, and mitigation pressure.
 - `review` / `eval` - strict agentic evaluation prompt with original intent,
   project conventions, triggered risk rules, and current git diff.
 - `pr` - PR summary context with local git status and diff stat.
@@ -374,6 +379,7 @@ By default ACE writes `.ai/generated/context.md`. Legacy
 
 ```bash
 pnpm ace hub --mode start --stdout
+pnpm ace hub --mode red-team --stdout
 pnpm ace hub --mode review --stdout
 pnpm ace hub --mode architect-lite --stdout
 pnpm ace hub --mode architect --output .ai/architect-context.md
@@ -448,9 +454,9 @@ technical docs, project conventions, and generated hub context when those files
 exist. Legacy current-task and handoff MCP URIs remain deprecated aliases for
 the consolidated task state.
 
-## v3.2 Schema and Compatibility
+## v3.3 Schema and Compatibility
 
-ACE v3.2 keeps categorized canonical memory paths under `.ai/config`,
+ACE v3.3 keeps categorized canonical memory paths under `.ai/config`,
 `.ai/state`, `.ai/knowledge`, and `.ai/generated`, and consolidates active task
 memory into `.ai/state/task-state.md`. The config schema remains version `1`.
 Fresh v3 installs create only the consolidated task-state file. Existing v2
@@ -463,13 +469,17 @@ Task state now includes additive autonomous routing labels:
 Business Value & Approach.` Existing v3 task-state files without these labels
 remain valid.
 
+Fresh task-state now also includes `### Edge Cases & Red Teaming` under
+Business Value & Approach. Standard, large, and high-risk planning can use
+`ace hub red-team` to generate an adversarial critique before Implementation.
+
 `ace hub review` adds agentic evaluation without hidden AI calls. It generates a
 strict reviewer prompt from task intent, acceptance criteria, project
 conventions, triggered high-risk rules, and the current local git diff,
 including bounded pseudo-diff entries for new untracked text files.
 
 Read the full contract:
-[ACE v3.2 Schema and Compatibility](./docs/schema-compatibility.md).
+[ACE v3.3 Schema and Compatibility](./docs/schema-compatibility.md).
 
 ## Adoption Guides
 
@@ -526,7 +536,7 @@ then stops if unexpected files changed.
 | `ace destroy` | Guarded cleanup that removes only ACE-owned files after export. |
 | `ace finish` | Adaptive closeout, phase completion, small low-risk auto-closeout, memory documentation, reports, and reflection. |
 | `ace gate` | Optional PR/CI quality gate with actionable failures, PR refs, JSON output, explicit human override, and opt-in hook/workflow generation. |
-| `ace hub` | Interactive and named-mode context generator with phase/action metadata for start, review, architect-lite, architect, handoff, PR, business, and docs payloads. |
+| `ace hub` | Interactive and named-mode context generator with phase/action metadata for start, red-team, review, architect-lite, architect, handoff, PR, business, and docs payloads. |
 
 ## Installed Project Files
 

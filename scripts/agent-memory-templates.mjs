@@ -83,6 +83,11 @@ current task.
 - For large or high-risk standard tasks, complete the
   \`.ai/state/task-state.md\` Business Value & Approach section before writing
   code.
+- For standard or large tasks, or tasks triggering high-risk rules, complete
+  \`.ai/state/task-state.md\` Edge Cases & Red Teaming before moving from
+  Planning to Implementation. Optionally run \`pnpm ace hub red-team\` (or
+  \`npm run ace -- hub red-team\`) to generate adversarial planning context,
+  then document every identified flaw with a mitigation.
 - Use \`.ai/state/task-state.md\` Current Phase and Next Autonomous Action as
   the autonomous handoff bus. Update those fields directly in Markdown when
   switching Planning, Implementation, Review, or Complete; CLI update commands
@@ -145,6 +150,11 @@ Before starting work:
 6. For large tasks, and standard tasks with high-risk signals, complete the
    \`.ai/state/task-state.md\` Business Value & Approach section before writing
    code. Compare at least two viable patterns and choose explicitly.
+   For standard or large tasks, or tasks triggering high-risk rules, also fill
+   \`Edge Cases & Red Teaming\` before moving from Planning to Implementation.
+   You may run \`pnpm ace hub red-team\` (or \`npm run ace -- hub red-team\`)
+   to generate a strict adversarial critique, or self-reflect adversarially;
+   document each identified flaw with a mitigation in task-state.
 7. Read \`.ai/knowledge/work-log.md\` only when you need extra historical
    context.
 8. If the memory files are missing, run \`pnpm ace init\`.

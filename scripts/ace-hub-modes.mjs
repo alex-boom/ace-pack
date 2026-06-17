@@ -79,6 +79,14 @@ export const HUB_MODES = [
     files: [],
   },
   {
+    id: 'red-team',
+    aliases: ['redteam', 'adversarial'],
+    label: 'Agentic Red Team Planning',
+    description: 'Adversarial planning prompt for edge cases, risks, and mitigations.',
+    redTeamPayload: true,
+    files: [],
+  },
+  {
     id: 'pr',
     aliases: [],
     label: 'PR Summary Context',

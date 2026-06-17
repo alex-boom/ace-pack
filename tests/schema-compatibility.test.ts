@@ -153,6 +153,9 @@ Chosen Approach:
     await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
       'Next Autonomous Action: Analyze task and update Business Value & Approach.',
     )
+    await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
+      '### Edge Cases & Red Teaming',
+    )
   })
 
   it('updates only the marked ACE workflow section in AGENTS.md', async () => {
@@ -254,7 +257,7 @@ Keep this too.
       files?: string[]
     }
 
-    expect(schemaDocs).toContain('ACE v3.2 Schema and Compatibility')
+    expect(schemaDocs).toContain('ACE v3.3 Schema and Compatibility')
     expect(schemaDocs).toContain('Installed repositories expose only:')
     expect(schemaDocs).toContain('remain accepted only as router arguments')
     expect(schemaDocs).toContain('Canonical v3 Memory Layout')
@@ -266,6 +269,8 @@ Keep this too.
     expect(schemaDocs).toContain('Autonomous Phase Routing')
     expect(schemaDocs).toContain('Agentic Evaluation Review Mode')
     expect(schemaDocs).toContain('ace hub review')
+    expect(schemaDocs).toContain('Agentic Red Team Planning Mode')
+    expect(schemaDocs).toContain('ace hub red-team')
     expect(schemaDocs).toContain('v2 Legacy Auto-Migration')
     expect(schemaDocs).toContain('IDE Managed Blocks')
     expect(schemaDocs).toContain('Small Task Finish')
@@ -282,6 +287,21 @@ Keep this too.
     const rootDir = await createRepo()
 
     await installAcePack(rootDir)
+
+    await expect(validateAgentMemory(rootDir)).resolves.toEqual([])
+  })
+
+  it('keeps existing v3 task-state files without red-team section valid', async () => {
+    const rootDir = await createRepo()
+    await installAcePack(rootDir)
+    const taskStatePath = path.join(rootDir, '.ai/state/task-state.md')
+    const taskState = await readFile(taskStatePath, 'utf8')
+    const legacyCompatibleTaskState = taskState.replace(
+      /\n### Edge Cases & Red Teaming\nIdentify at least two potential failure modes, edge cases, or security risks in the chosen approach, and how to mitigate them\.\n/u,
+      '\n',
+    )
+
+    await writeFile(taskStatePath, legacyCompatibleTaskState, 'utf8')
 
     await expect(validateAgentMemory(rootDir)).resolves.toEqual([])
   })
