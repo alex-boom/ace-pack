@@ -73,6 +73,8 @@ describe('installAcePack', () => {
     expect(result.createdFiles).toContain('scripts/ace-destroy.mjs')
     expect(result.createdFiles).toContain('scripts/ace-eject.mjs')
     expect(result.createdFiles).toContain('scripts/ace-hub.mjs')
+    expect(result.createdFiles).toContain('scripts/ace-hub-modes.mjs')
+    expect(result.createdFiles).toContain('scripts/ace-hub-review.mjs')
     expect(result.createdFiles).toContain('scripts/ace-migrate.mjs')
     expect(result.createdFiles).toContain('scripts/ace-mcp-server.mjs')
     expect(result.createdFiles).toContain('scripts/ace-onboard.mjs')

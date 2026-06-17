@@ -128,7 +128,7 @@ export function formatClassification(classification) {
 }
 
 async function getChangedFiles(rootDir) {
-  const output = await gitOutput(rootDir, ['status', '--porcelain'])
+  const output = await gitOutput(rootDir, ['status', '--porcelain', '-uall'])
 
   return output
     .split('\n')

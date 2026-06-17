@@ -3,64 +3,54 @@
 ## Lifecycle & Meta
 
 ### Feature Name
-ACE Pack v3.0.1 IDE Bridge Upgrade Fix
+ACE Pack v3.2 Agentic Evaluation Review Hub Mode
 
 ### Lifecycle
 Status: complete
-Version: v3.0.1
-Task Tier: small
-Design Review Required: no
-Started: 2026-06-16 13:00
+Version: v3.2.0
+Task Tier: large
+Design Review Required: yes
+Current Phase: Complete
+Next Autonomous Action: Ready for maintainer review and npm publish preparation.
+Started: 2026-06-17 19:33
 Ready For Archive: yes
 
 ### Goal
-Patch the v3 IDE bridge upgrader so old ACE-only rule files are replaced by the
-managed-block form instead of keeping duplicated legacy text.
+Add a local `ace hub review` mode that generates a strict LLM reviewer context
+from task intent, project conventions, triggered risk rules, and the current
+git diff without adding network calls or dependencies.
 
 ### Current Status
-- [x] Consolidated active task memory into `.ai/state/task-state.md`.
-- [x] Added deterministic v2 legacy task-file auto-migration with backups.
-- [x] Added managed IDE bridge blocks and safe destroy cleanup.
-- [x] Made small low-risk finish zero-ceremony from task-state plus current git state.
-- [x] Updated docs, package version, tests, smoke, and release dry-run.
-- [x] Published `ace-pack@3.0.0` to npm and confirmed `latest`.
-- [x] Fixed legacy IDE bridge exact-match normalization and cleaned dogfood IDE
-  rule files to managed-block-only form.
-- [x] Bumped package version to `3.0.1` for the patch candidate.
-- [x] Published `ace-pack@3.0.1` to npm and confirmed `latest`.
+- [x] Added review payload generation for `ace hub review`.
+- [x] Updated shipped AGENTS and CLAUDE templates for Review phase behavior.
+- [x] Updated v3.2 docs, npm README, package version, and install script list.
+- [x] Added focused tests for review mode, missing conventions, install sync,
+  and shipped instructions.
+- [x] Included untracked text files in review payload as bounded pseudo-diff.
+- [x] Full validation, fake-project smoke, ACE check/classify, review output,
+  and payload guard passed.
 
 ### Affected Areas
+- `scripts/ace-hub*.mjs`
+- `scripts/ai-task-classify.mjs`
+- `scripts/agent-memory-templates.mjs`
+- `scripts/ace-uninstall-utils.mjs`
+- `README.md`, `README.npm.md`, `docs/schema-compatibility.md`
 - `package.json`
-- `install-ace-pack.mjs`, `install-agent-memory-pack.mjs`
-- `scripts/*.mjs`
-- `README.md`, `README.npm.md`, `ROADMAP.md`, `docs/schema-compatibility.md`
-- `AGENTS.md`, `CLAUDE.md`, `DEVELOPING.md`
-- `tests/**`, `tools/**`
-- repo-local `.ai/**` dogfooding memory
-- `.cursorrules`, `.windsurfrules`, `.github/copilot-instructions.md`
+- `tests/**`
 
 ### Constraints
-- Keep ACE local-first and zero hidden AI/network calls for migration.
-- Do not overwrite project-owned IDE rule files.
-- Preserve existing installed-repo compatibility through deterministic aliases
-  and migration.
-- Keep touched scripts within the 400 non-empty-line limit.
-- Publish only a patch release if the maintainer decides the IDE bridge upgrade
-  fix should go to npm.
+- Keep ACE local-first, zero-dependency, and zero hidden AI/network calls.
+- Preserve existing hub modes and CLI compatibility.
+- Keep scripts under the 400 non-empty-line guard.
+- Do not edit repo-local root `AGENTS.md` or `CLAUDE.md` to change product behavior.
 
 ### Acceptance Criteria
-- Fresh installs create `task-state.md`, not `current-task.md`,
-  `session-handoff.md`, or `changed-files.md`.
-- `ace init`, `ace check`, router startup, and `ace migrate` auto-migrate safe
-  legacy task files with timestamped backups.
-- IDE rules use `ace-managed-ide-rules` blocks and `ace destroy` removes only
-  those blocks.
-- Small finish writes work-log from task title and current diff/status without
-  reading latest commits.
-- Reports, hub, gate, MCP, update helpers, smoke fixtures, docs, and tests all
-  use task-state behavior.
-- Existing old ACE-only IDE bridge files are upgraded to one managed block, and
-  mixed old+managed files are cleaned on repeat init/install.
+- `pnpm ace hub review` / `npm run ace -- hub review` emits a strict review prompt.
+- Review payload includes system instruction, original intent, governance, status, and diff.
+- Missing `project-conventions.md` is handled gracefully.
+- Review phase instructions define fail/pass transitions.
+- Tests, fake-project smoke, ACE check/classify, and npm payload guard pass.
 
 ### Completion Checklist
 - [x] Goal completed
@@ -73,141 +63,92 @@ managed-block form instead of keeping duplicated legacy text.
 ## Business Value & Approach
 
 ### Business Value / Product Alignment
-This patch completes the v3 IDE bridge promise for already dogfooded or older
-ACE repos: old ACE-owned bridge text is removed, while custom user-owned IDE
-rules remain preserved.
+Agentic evaluation reduces the review bottleneck for AI-generated code by giving
+reviewer agents the original intent, conventions, risk context, and local diff
+in one deterministic payload.
 
 ### Technical Approach
 Option 1:
-- Introduce the v3 file but leave old task files in place indefinitely as
-  mirrors. This minimizes migration risk but keeps the file sprawl and agent
-  desynchronization problem alive.
+- Add a new standalone `ace review` command. This would be discoverable but
+  expands the command surface and risks implying ACE performs AI review itself.
 
 Option 2:
-- Consolidate into task-state with a deterministic auto-migrator, backup legacy
-  files before cleanup, and keep old reader/MCP aliases as compatibility paths.
+- Add `review` as a focused `ace hub` mode that emits a strict prompt/context
+  for any explicitly chosen reviewer tool.
 
 Chosen Approach:
-- Use Option 2. It is a clean major-version schema change while preserving local
-  recovery, no-network migration, and compatibility for older installed repos.
-
-Patch Note:
-- The v3.0.0 upgrader appended managed blocks to some old ACE-only bridge files
-  because exact comparison treated blank lines as meaningful. v3.0.1 ignores
-  blank lines for template comparison and also cleans already mixed old+managed
-  ACE bridge files.
+- Use Option 2. It preserves ACE's local Markdown context model, avoids provider
+  coupling, keeps zero hidden AI calls, and fits the existing hub UX.
 
 ## Changed Files / Diff
 
-[scripts/ace-task-state.mjs]
-- Added task-state template, legacy file detection, safe backup migration,
-  title extraction, and completed-state generation.
+[scripts/ace-hub.mjs, scripts/ace-hub-modes.mjs, scripts/ace-hub-review.mjs]
+- Added review mode dispatch, moved hub mode registry into a small module, and
+  generated the deterministic review prompt from task-state, conventions,
+  classification risk matches, git status, and git diff.
+- Included untracked text files as bounded pseudo-diff entries so new files can
+  be reviewed before staging.
 
-[scripts/ai-memory-utils.mjs, scripts/ai-markdown-utils.mjs, scripts/ai-report-utils.mjs]
-- Moved shared Markdown/report helpers into focused modules and registered
-  task-state as the canonical memory key.
+[scripts/ai-task-classify.mjs, scripts/agent-memory-templates.mjs, scripts/ace-uninstall-utils.mjs]
+- Made repository classification inspect untracked files with `-uall` so risk
+  rules see concrete new file paths.
+- Added Review phase workflow instructions and ensured new hub helper scripts
+  are installed into consumer repositories.
 
-[scripts/agent-memory-templates.mjs, scripts/agent-memory-lib.mjs, scripts/ace-cli.mjs, scripts/ace-migrate.mjs]
-- Fresh installs and router/init/check/migrate flows now create or migrate
-  `task-state.md`.
+[README.md, README.npm.md, docs/schema-compatibility.md, package.json]
+- Documented v3.2 review mode and bumped the package version to `3.2.0`.
 
-[scripts/ai-report*.mjs, scripts/ace-hub.mjs, scripts/ace-quality-gate.mjs, scripts/ai-update.mjs, scripts/ace-mcp-server.mjs]
-- Updated reports, hub, gate, update helpers, and MCP resources to use
-  task-state; deprecated old MCP task/handoff URIs now alias task-state.
-
-[scripts/ai-task-finish.mjs]
-- Small low-risk finish now uses task title and current git diff/status, writes
-  a compact work-log entry, resets task-state, and skips manual handoff prompts.
-
-[scripts/ace-uninstall-utils.mjs, install-ace-pack.mjs, install-agent-memory-pack.mjs, scripts/ace-install-lib.mjs, scripts/bootstrap-agent-memory.mjs, scripts/ace-destroy.mjs]
-- Added managed IDE rule block upsert/removal, safe destroy cleanup, and split
-  the installer into an importable library plus CLI wrappers.
-
-[README.md, README.npm.md, ROADMAP.md, docs/schema-compatibility.md, AGENTS.md, CLAUDE.md, DEVELOPING.md, docs/*.md]
-- Documented v3 task-state schema, migration, managed IDE rules, and one major
-  npm release strategy.
-
-[tests/**, tools/**]
-- Added and updated migration, install, schema, hub, report, gate, finish, MCP,
-  uninstall, smoke, syntax, and line-limit coverage.
-
-[.cursorrules, .windsurfrules, .github/copilot-instructions.md]
-- Cleaned dogfood IDE bridge files to the v3 managed-block-only form.
+[tests/**]
+- Added coverage for review mode output, missing conventions, install sync,
+  shipped instructions, and compatibility docs.
 
 ## Handoff & Next Steps
 
 ### Last Update
-2026-06-16 14:38
+2026-06-17 19:39
 
 ### What Was Done
-- Implemented ACE Pack v3.0.0 as one major release candidate with Memory Schema
-  v3 and config schema still at version `1`.
-- Added zero-human-effort migration from legacy task files to task-state with
-  local backups under `.ai/archive/migrations/`.
-- Added idempotent managed IDE rule blocks for Cursor, Windsurf, and Copilot,
-  plus surgical cleanup in `ace destroy`.
-- Updated small-task finish to avoid latest commits and use task-state plus
-  current git diff/status.
-- Updated docs, package version, tests, smoke fixtures, payload checks, and npm
-  dry-run release path.
-- Confirmed `ace-pack@3.0.0` is published on npm and tagged `latest`.
-- Fixed the v3 IDE bridge upgrade bug found in dogfood after publication.
-- Confirmed `ace-pack@3.0.1` is published on npm and tagged `latest`.
+- Implemented the v3.2 review hub mode and supporting tests/docs.
+- Kept review generation deterministic and local-only.
+- Completed full validation and release payload checks.
 
 ### Current State
-- `npm.cmd run release:ready` passes for `ace-pack@3.0.0`.
-- `npm.cmd run release:npm:dry` passes and stages a 39-file npm payload.
-- This repo's local `.ai` dogfood memory was migrated to `.ai/state/task-state.md`
-  during release checks with a backup under `.ai/archive/migrations/`.
-- No intermediate npm versions were published.
-- npm registry latest is `3.0.1`.
-- GitHub `main` matches `origin/main` at commit `6974eb4`.
+- Ready for maintainer review and release preparation.
 
 ### Quality Review
 Product Alignment:
-- The release directly addresses the requested DevEx outcomes: cleaner memory,
-  safer IDE integration, and lower small-task ceremony.
+- The mode directly supports stricter AI-code evaluation against original task
+  intent and project conventions.
 
 Architecture:
-- Migration and IDE block handling are centralized in shared helpers, while
-  old MCP/task reader surfaces remain compatibility aliases instead of parallel
-  state.
+- Review prompt construction is isolated in `ace-hub-review.mjs`; hub mode
+  routing lives in `ace-hub-modes.mjs`, keeping `ace-hub.mjs` small.
 
 Security:
-- Migration uses only local filesystem reads/writes and timestamped backups.
-  IDE cleanup removes only ACE-managed blocks and preserves custom user rules.
+- No external services, network calls, credentials, or LLM providers are used.
 
 Code Quality:
-- Large modules were split where needed to satisfy the 400 non-empty-line guard.
-  Tests cover migration, install, destroy, finish, reports, gate, hub, MCP, and
-  release smoke paths.
+- The implementation reuses existing Markdown readers, classification logic,
+  and Git primitives with targeted tests.
 
 ### Next Steps
-- No release action remains for v3.0.1.
+- Maintainer review, then run the npm release flow when ready.
 
 ### Known Issues
-- None known after release-readiness checks.
+- None known.
 
 ### Verification
-- `pnpm.cmd typecheck` passed.
-- `pnpm.cmd lint` passed.
-- `pnpm.cmd test` passed: 16 files, 123 tests.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
-- `npm.cmd run release:ready` passed.
-- `npm.cmd run release:npm:dry` passed.
-- `npm.cmd view ace-pack version dist-tags time --json` confirmed npm latest is
-  `3.0.0`, published at `2026-06-16T11:01:40.740Z`.
-- Focused install test passed after the IDE bridge fix: 1 file, 17 tests.
-- `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd test` passed after the
-  patch fix: 16 files, 125 tests.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
-- `npm.cmd run release:ready` passed for `ace-pack@3.0.1`, including npm
-  payload guard and publish dry-run.
-- `npm.cmd view ace-pack version dist-tags time --json` confirmed npm latest is
-  `3.0.1`, published at `2026-06-16T11:37:47.243Z`.
-- `git status -sb` showed `main...origin/main` clean before this final local
-  ACE memory closeout update.
+- `npm.cmd run ace:validate` passed: typecheck, line-limit lint, and Vitest
+  16 files / 131 tests.
+- `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
+- `npm.cmd run ace -- hub review --stdout` passed and showed phase/action,
+  triggered risk rules, and pseudo-diff entries for new untracked files.
+- `npm.cmd run ace -- check` passed.
+- `npm.cmd run ace -- classify` passed; current diff is large and design review
+  is required.
+- `npm.cmd run check:npm-payload` passed; 42 packed files checked.
+- `git diff --check` passed.
 
 ### Notes
-- NPM publish: not required; `ace-pack@3.0.1` is already published on npm and
-  tagged `latest`.
+- NPM publish: required because shipped scripts/templates/docs and package
+  version changed.

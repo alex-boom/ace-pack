@@ -87,6 +87,12 @@ current task.
   the autonomous handoff bus. Update those fields directly in Markdown when
   switching Planning, Implementation, Review, or Complete; CLI update commands
   are optional for scripts.
+- When Current Phase is \`Review\`, act as a strict reviewer. Run
+  \`pnpm ace hub review\` (or \`npm run ace -- hub review\`) to read the
+  evaluation context, compare the original intent and conventions against the
+  git diff, then either return to Implementation with specific fixes in
+  \`Next Autonomous Action\` or run \`ace:validate\` and \`pnpm ace finish\`
+  when review passes.
 - Treat \`.ai/*\` as the current source of task context and handoff state.
 - Use \`YYYY-MM-DD HH:mm\` timestamps in task state, work-log, reflection-log,
   and decisions entries.
@@ -172,6 +178,13 @@ While working:
   architecture decision is required, or when required validation cannot be run
   or interpreted safely. If blocked, set \`Status: blocked\` and
   \`Next Autonomous Action: Needs Human: <specific request>\`.
+- When \`Current Phase\` is \`Review\`, act as a strict reviewer. Run
+  \`pnpm ace hub review\` (or \`npm run ace -- hub review\`) and compare the
+  original intent, acceptance criteria, project conventions, and triggered risk
+  rules against the git diff. If review fails, set \`Current Phase:
+  Implementation\` and update \`Next Autonomous Action\` with the exact fixes.
+  If review passes, run the project-owned \`ace:validate\` gate and then
+  \`pnpm ace finish\`.
 - Keep project-specific tier and risk rules in
   \`.ai/config/memory-config.json\`, the canonical ACE config, not inside the
   scripts, so the toolset remains portable.

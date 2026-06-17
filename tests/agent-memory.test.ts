@@ -75,6 +75,8 @@ describe('ensureAgentMemory', () => {
     expect(agentsContent).toContain('task-state')
     expect(agentsContent).toContain('autonomous phase transitions')
     expect(agentsContent).toContain('Next Autonomous Action: Needs Human')
+    expect(agentsContent).toContain('pnpm ace hub review')
+    expect(agentsContent).toContain('If review fails')
     expect(agentsContent).toContain('.cursorrules')
     expect(agentsContent).toContain('dogfood/self-check routines before final publish')
     expect(memoryConfigContent).toContain('"ACE (Agentic Context Engine) Configuration"')
@@ -100,6 +102,8 @@ describe('ensureAgentMemory', () => {
     expect(claudeContent).toContain('pnpm.cmd ace:validate')
     expect(claudeContent).toContain('Current Phase and Next Autonomous Action')
     expect(claudeContent).toContain('Update those fields directly in Markdown')
+    expect(claudeContent).toContain('pnpm ace hub review')
+    expect(claudeContent).toContain('When Current Phase is `Review`')
     expect(claudeContent).toContain(
       'Do the smallest closeout that preserves future agent context and project',
     )

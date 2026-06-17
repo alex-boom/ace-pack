@@ -254,7 +254,7 @@ Keep this too.
       files?: string[]
     }
 
-    expect(schemaDocs).toContain('ACE v3.1 Schema and Compatibility')
+    expect(schemaDocs).toContain('ACE v3.2 Schema and Compatibility')
     expect(schemaDocs).toContain('Installed repositories expose only:')
     expect(schemaDocs).toContain('remain accepted only as router arguments')
     expect(schemaDocs).toContain('Canonical v3 Memory Layout')
@@ -264,6 +264,8 @@ Keep this too.
     expect(schemaDocs).toContain('Current Phase:')
     expect(schemaDocs).toContain('Next Autonomous Action:')
     expect(schemaDocs).toContain('Autonomous Phase Routing')
+    expect(schemaDocs).toContain('Agentic Evaluation Review Mode')
+    expect(schemaDocs).toContain('ace hub review')
     expect(schemaDocs).toContain('v2 Legacy Auto-Migration')
     expect(schemaDocs).toContain('IDE Managed Blocks')
     expect(schemaDocs).toContain('Small Task Finish')

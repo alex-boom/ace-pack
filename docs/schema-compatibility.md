@@ -1,7 +1,8 @@
-# ACE v3.1 Schema and Compatibility
+# ACE v3.2 Schema and Compatibility
 
 This document defines the compatibility contract for installed ACE repositories
-starting with `ace-pack@3.0.0`, including the additive v3.1 task-state fields.
+starting with `ace-pack@3.0.0`, including additive v3.1 task-state fields and
+the v3.2 review hub mode.
 
 ACE remains Markdown-first, local-first, and zero-dependency. v3 consolidates
 active task memory into one task-state file and keeps migration deterministic.
@@ -100,6 +101,26 @@ For blocked work, use `Status: blocked` and set
 Existing meaningful v3 task-state files without these fields remain valid.
 `ace check` does not fail old task-state files solely because the v3.1 labels
 are missing.
+
+## Agentic Evaluation Review Mode
+
+`ace hub review` generates a local reviewer prompt for AI-assisted code review.
+ACE does not call an LLM or network service; it writes or prints deterministic
+Markdown that users may hand to an explicitly chosen reviewer tool.
+
+The review payload includes:
+
+- a strict system instruction for code evaluation;
+- original intent from `.ai/state/task-state.md`, including Goal, Acceptance
+  Criteria, and Business Value & Approach;
+- `.ai/knowledge/project-conventions.md` when present;
+- triggered high-risk rules from `.ai/config/memory-config.json`;
+- detailed `git status --short -uall` and `git diff HEAD --`. Untracked text
+  files are added as bounded pseudo-diff entries so reviewer agents can
+  evaluate newly created files before they are staged.
+
+If `project-conventions.md` is missing, the payload records that fact and still
+generates the review prompt.
 
 ## v2 Legacy Auto-Migration
 

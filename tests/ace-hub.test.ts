@@ -12,6 +12,7 @@ import {
   generateContextPayload,
   listHubModes,
 } from '../scripts/ace-hub.mjs'
+import { REVIEW_SYSTEM_INSTRUCTION } from '../scripts/ace-hub-review.mjs'
 
 const tempDirs: string[] = []
 const execFileAsync = promisify(execFile)
@@ -55,6 +56,9 @@ Ready For Archive: no
 
 ### Goal
 Task notes.
+
+### Acceptance Criteria
+- Hub review payload includes task intent.
 
 ### Completion Checklist
 - [ ] Finish hub fixture.
@@ -203,6 +207,65 @@ describe('generateContextPayload', () => {
     expect(docs.missingOptionalFiles).toEqual(['DEVOPS.md'])
   })
 
+  it('generates strict review context with intent, risk rules, status, and diff', async () => {
+    const rootDir = await createHubRepo()
+    await writeRepoFile(
+      rootDir,
+      '.ai/config/memory-config.json',
+      `${JSON.stringify({
+        version: 1,
+        thresholds: {
+          small: { maxFiles: 2, maxDiffLines: 80 },
+          large: { minFiles: 8, minDiffLines: 300 },
+        },
+        highRiskPaths: [
+          {
+            label: 'Auth',
+            pattern: 'src/auth/**',
+            requiresDesignReview: true,
+            tier: 'large',
+          },
+        ],
+        highRiskKeywords: [],
+      }, null, 2)}\n`,
+    )
+    await initGitRepo(rootDir)
+    await writeRepoFile(rootDir, 'src/auth/session.ts', 'export const session = "changed"\n')
+
+    const result = await generateContextPayload(rootDir, 'review')
+
+    expect(result.mode.id).toBe('review')
+    expect(result.includedFiles).toEqual([
+      '.ai/state/task-state.md',
+      '.ai/config/memory-config.json',
+      '.ai/knowledge/project-conventions.md',
+    ])
+    expect(result.payload).toContain(REVIEW_SYSTEM_INSTRUCTION)
+    expect(result.payload).toContain('## Original Intent')
+    expect(result.payload).toContain('Task notes.')
+    expect(result.payload).toContain('- Hub review payload includes task intent.')
+    expect(result.payload).toContain('Hub tests need context.')
+    expect(result.payload).toContain('## Governance')
+    expect(result.payload).toContain('Auth (path: `src/auth/**`, tier: large')
+    expect(result.payload).toContain('matched: src/auth/session.ts')
+    expect(result.payload).toContain('## Current State')
+    expect(result.payload).toContain('?? src/auth/session.ts')
+    expect(result.payload).toContain('new file mode 100644')
+    expect(result.payload).toContain('+export const session = "changed"')
+  })
+
+  it('generates review context when project conventions are missing', async () => {
+    const rootDir = await createHubRepo()
+    await unlink(path.join(rootDir, '.ai', 'project-conventions.md'))
+
+    const result = await generateContextPayload(rootDir, 'eval')
+
+    expect(result.mode.id).toBe('review')
+    expect(result.missingOptionalFiles).toEqual(['.ai/knowledge/project-conventions.md'])
+    expect(result.payload).toContain('- Project conventions file not found.')
+    expect(result.payload).toContain('- No high-risk rules triggered by current diff.')
+  })
+
   it('generates architect-lite planning context without full decisions history', async () => {
     const rootDir = await createHubRepo()
 
@@ -279,9 +342,11 @@ describe('ace hub CLI', () => {
     expect(list).toContain('1, start, coder')
     expect(list).toContain('architect-lite, plan')
     expect(list).toContain('handoff')
+    expect(list).toContain('review, eval, evaluate')
     expect(list).toContain('pr')
     expect(HUB_MENU).toContain('[architect-lite] AI Architect Lite Context')
     expect(HUB_MENU).toContain('[handoff] Agent Handoff Context')
+    expect(HUB_MENU).toContain('[review] Agentic Evaluation Review')
     expect(HUB_MENU).toContain('[pr] PR Summary Context')
   })
 
@@ -290,6 +355,7 @@ describe('ace hub CLI', () => {
 
     expect(stdout).toContain('1, start, coder')
     expect(stdout).toContain('architect-lite, plan')
+    expect(stdout).toContain('review, eval, evaluate')
     expect(stdout).toContain('pr')
   })
 
@@ -321,5 +387,19 @@ describe('ace hub CLI', () => {
     await expect(readFile(path.join(rootDir, GENERATED_CONTEXT_PATH), 'utf8')).rejects.toThrow()
     expect(stdout).toContain('# ACE Hub Context')
     expect(stdout).toContain('# --- FILE: .ai/generated/report-brief.md ---')
+  })
+
+  it('prints review payload to stdout', async () => {
+    const rootDir = await createHubRepo()
+
+    const { stdout } = await execFileAsync(
+      process.execPath,
+      [hubScriptPath, 'review', '--stdout'],
+      { cwd: rootDir },
+    )
+
+    await expect(readFile(path.join(rootDir, GENERATED_CONTEXT_PATH), 'utf8')).rejects.toThrow()
+    expect(stdout).toContain('# ACE Agentic Evaluation Context')
+    expect(stdout).toContain(REVIEW_SYSTEM_INSTRUCTION)
   })
 })
