@@ -1,4 +1,5 @@
-const PLACEHOLDER_PATTERN = /\[[^\]]+\]|\bTODO\b|\bTBD\b|No .* recorded/i
+const PLACEHOLDER_PATTERN =
+  /\[(?:YYYY|Set|Describe|Explain|List|Add|Summarize|Confirm|Note|Short|Run|Document|path\/to\/file|content here|latest completed work|current project|next concrete steps|known gaps|publish\/deploy decision)[^\]]*\]|\bTODO\b|\bTBD\b|No .* recorded/giu
 
 export function formatBullets(items, fallback = '- [Add content here]') {
   if (items.length === 0) {
@@ -99,7 +100,12 @@ export function extractLabeledValue(content, label) {
 
 export function hasMeaningfulContent(content) {
   const normalizedContent = content.replace(/\s+/g, ' ').trim()
-  return normalizedContent.length > 0 && !PLACEHOLDER_PATTERN.test(normalizedContent)
+  if (normalizedContent.length === 0) {
+    return false
+  }
+
+  const contentWithoutPlaceholders = normalizedContent.replace(PLACEHOLDER_PATTERN, ' ')
+  return stripMarkdownScaffolding(contentWithoutPlaceholders).length > 0
 }
 
 function getMarkdownHeading(line) {
@@ -109,6 +115,15 @@ function getMarkdownHeading(line) {
 
 function normalizeTrailingNewline(content) {
   return content.endsWith('\n') ? content : `${content}\n`
+}
+
+function stripMarkdownScaffolding(content) {
+  return content
+    .replace(/^- \[(?: |x)\]\s*/gimu, '')
+    .replace(/^[-*]\s*/gmu, '')
+    .replace(/^#+\s*/gmu, '')
+    .replace(/[`:*_>()[\]\s.,;:-]/gu, '')
+    .trim()
 }
 
 function escapeRegExp(value) {

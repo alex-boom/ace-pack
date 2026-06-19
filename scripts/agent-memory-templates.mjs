@@ -255,8 +255,9 @@ safety:
    code-quality review notes.
 4. For large or high-risk tasks, confirm the design approach, add reflection
    only when useful, and let \`pnpm ace finish\` archive the snapshot.
-5. Update \`.ai/tech-docs.md\`, \`.ai/product-roadmap.md\`, durable decisions,
-   or release notes only when those facts actually changed.
+5. Update \`.ai/knowledge/tech-docs.md\`,
+   \`.ai/knowledge/product-roadmap.md\`, durable decisions, or release notes
+   only when those facts actually changed.
 6. For release-bound shipped changes, run the project's local smoke and
    dogfood/self-check routines before final publish or deploy when available.
 <!-- agent-memory-workflow:end -->

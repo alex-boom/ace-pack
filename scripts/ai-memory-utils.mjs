@@ -32,7 +32,6 @@ const timestampFormatter = new Intl.DateTimeFormat('sv-SE', {
   month: '2-digit',
   year: 'numeric',
 })
-const PLACEHOLDER_PATTERN = /\[[^\]]+\]|\bTODO\b|\bTBD\b|No .* recorded/i
 export const ACE_MEMORY_SCHEMA_VERSION = 3
 export const ACE_MEMORY_PATHS = {
   decisions: {
@@ -348,7 +347,7 @@ export function getArgValue(args, key) {
 function isPlaceholderDocument(content) {
   const placeholderMatches =
     content.match(
-      /\[(?:YYYY|Set|Describe|Explain|List|Add|Summarize|Confirm|Note|Short|Run|Document|path\/to\/file|content here|latest completed work|current project|next concrete steps|known gaps|publish\/deploy decision)[^\]]*\]|\bTODO\b|\bTBD\b/giu,
+      /\[(?:YYYY|Set|Describe|Explain|List|Add|Append|Summarize|Confirm|Note|Record|Short|Run|Document|path\/to\/file|content here|latest completed work|current project|next concrete steps|known gaps|publish\/deploy decision)[^\]]*\]|\bTODO\b|\bTBD\b/giu,
     ) ?? []
   return content.trim().length === 0 || placeholderMatches.length >= 2
 }

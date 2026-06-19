@@ -179,7 +179,7 @@ async function main() {
 
   if (classification.tier === 'large') {
     process.stderr.write(
-      'Large task reminder: update .ai/tech-docs.md for architecture changes and .ai/product-roadmap.md for business or roadmap changes when applicable.\n',
+      'Large task reminder: update .ai/knowledge/tech-docs.md for architecture changes and .ai/knowledge/product-roadmap.md for business or roadmap changes when applicable.\n',
     )
     const archivePath = await archiveCurrentTask(rootDir)
     process.stderr.write(`Archived current task to ${archivePath}\n`)

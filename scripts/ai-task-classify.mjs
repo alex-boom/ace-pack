@@ -103,7 +103,7 @@ export function getRequiredWorkflow(tier, designReviewRequired) {
   if (tier === 'large') {
     workflow.push('Maintain lifecycle goal fields and archive a final task snapshot.')
     workflow.push(
-      'Review .ai/tech-docs.md or .ai/product-roadmap.md when technical or business state changed.',
+      'Review .ai/knowledge/tech-docs.md or .ai/knowledge/product-roadmap.md when technical or business state changed.',
     )
     workflow.push('Add a reflection entry when the task exposes friction or repeated mistakes.')
     workflow.push('Generate pnpm ace report.')

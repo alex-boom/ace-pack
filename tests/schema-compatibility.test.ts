@@ -123,6 +123,10 @@ Option 2:
 Chosen Approach:
 - Migrate because it preserves compatibility.
 
+## Current Status
+- [x] Inspected [platform] legacy memory.
+- [ ] Preserve checklist migration.
+
 ## Acceptance Criteria
 - Legacy memory is preserved in task-state with a backup.
 
@@ -145,6 +149,15 @@ Chosen Approach:
       'Preserve legacy task memory.',
     )
     await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
+      '- [x] Inspected [platform] legacy memory.',
+    )
+    await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
+      '- [ ] Preserve checklist migration.',
+    )
+    await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
+      '- [ ] Migration checked.',
+    )
+    await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
       '## Handoff & Next Steps',
     )
     await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
@@ -159,6 +172,45 @@ Chosen Approach:
     await expect(readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')).resolves.toContain(
       '### Edge Cases & Red Teaming',
     )
+  })
+
+  it('promotes legacy knowledge aliases over fresh v3 templates during install', async () => {
+    const rootDir = await createRepo()
+
+    await writeRepoFile(
+      rootDir,
+      '.ai/work-log.md',
+      `# Work Log
+
+## 2026-06-19 15:30
+
+- Preserve this historical work-log entry.
+`,
+    )
+    await writeRepoFile(
+      rootDir,
+      '.ai/product-roadmap.md',
+      `# Product Roadmap
+
+## Business Goals
+- Preserve this platform roadmap entry.
+
+## Completed Epics
+- Legacy roadmap data exists.
+
+## Planned Features
+- Keep migration safe.
+`,
+    )
+
+    await installAcePack(rootDir)
+
+    await expect(readFile(path.join(rootDir, '.ai/knowledge/work-log.md'), 'utf8')).resolves.toContain(
+      'Preserve this historical work-log entry.',
+    )
+    await expect(
+      readFile(path.join(rootDir, '.ai/knowledge/product-roadmap.md'), 'utf8'),
+    ).resolves.toContain('Preserve this platform roadmap entry.')
   })
 
   it('updates only the marked ACE workflow section in AGENTS.md', async () => {

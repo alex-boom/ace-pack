@@ -349,3 +349,16 @@
 - ACE finished large task: ACE Pack v3.5 Knowledge Promotion & Context Pruning.
 - Friction Encountered: no.
 - Design Review Required: yes.
+
+## 2026-06-19 15:21
+
+- ACE finished large task: ACE v3.5.1 Safe Migration Patch and Platform Upgrade.
+- Friction Encountered: no.
+- Design Review Required: yes.
+
+## 2026-06-19 15:31
+
+- Confirmed `ace-pack@3.5.1` is published on npm and tagged `latest`.
+- Registry check: `npm.cmd view ace-pack version` returned `3.5.1`.
+- Registry `time` reports `3.5.1` published at `2026-06-19T12:29:24.608Z`.
+- NPM publish: completed.

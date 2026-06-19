@@ -3,69 +3,70 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-17 23:14
+- Generated: 2026-06-19 15:33
 - Freshness: Fresh
-- Current task version: v3.5.0
+- Current task version: v3.5.1
 - Current task tier: large
-- Source task-state: 2026-06-17 23:14
-- Verification level: smoke-tested
+- Source task-state: 2026-06-19 15:32
+- Verification level: test-backed
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (19 changed files)
-- Last commit: cb9f7a2 Update version to `3.4.0` and introduce friction tracking in task-state management. Enhanced documentation to reflect the new friction tracking functionality, including guidelines for recording systemic friction and its impact on task completion. Updated schema compatibility documentation for v3.4, ensuring clarity on new features while maintaining backward compatibility with existing task-state files.
-- Task: active (tier: large, version: v3.5.0, ready for archive: no)
+- Worktree: dirty (14 changed files)
+- Last commit: 0e0d184 Update version to `3.5.0` and introduce knowledge promotion and context pruning features. Implemented `ace hub distill` for generating durable project conventions from resolved reflections, and added `ace archive` for deterministic log rotation of work and reflection logs. Enhanced documentation to reflect these new functionalities and updated schema compatibility for v3.5, ensuring clarity on new features while maintaining backward compatibility.
+- Task: complete (tier: large, version: v3.5.1, ready for archive: yes)
 - Current Phase: Complete
 - Next Autonomous Action: No further autonomous action; task is complete.
 - Next command: No command detected
-- Release decision: NPM publish: required because shipped scripts/templates/docs and package
+- Release decision: Not recorded
 
 ## Stack
 Detected ecosystems: Generic repository | Package manager: pnpm
 
 ## Current Task
-ACE Pack v3.5 Knowledge Promotion & Context Pruning
+ACE v3.5.1 Safe Migration Patch and Platform Upgrade
 
 ## Lifecycle
-Status: active
-Version: v3.5.0
+Status: complete
+Version: v3.5.1
 Task Tier: large
 Design Review Required: yes
 Friction Encountered: no
 Current Phase: Complete
 Next Autonomous Action: No further autonomous action; task is complete.
-Started: 2026-06-17 20:45
-Ready For Archive: no
+Started: 2026-06-19 15:05
+Ready For Archive: yes
 
 ## Goal
-Add explicit knowledge promotion context and deterministic active-log rotation so
-ACE memory can stay useful without hidden AI/API calls or semantic processing in
-scripts.
+Fix ACE legacy task-state migration so real Markdown checklists and bracketed
+content are preserved, then safely migrate `D:\All\alex-work\platform` to the
+patched v3 canonical ACE layout without losing existing `.ai` memory.
 
 ## Business Value
-Knowledge promotion lets agents turn resolved friction into durable project
-rules, while archive rotation keeps daily context small and focused. This
-reduces repeated mistakes without adding runtime orchestration or provider
-integration.
+This patch protects installed repositories from losing meaningful legacy task
+checklists during v3 migration, which is essential for safe ACE upgrades in real
+projects with existing `.ai` history.
 
 ## Current Status
-- [x] Implemented `ace hub distill` / `promote`.
-- [x] Implemented `ace archive`.
-- [x] Updated shipped templates, docs, package version, and tests.
-- [x] Ran full validation, fake-project smoke, ACE check/classify, and npm
-  payload guard.
+- [x] Migration issue reproduced on a temporary copy of `platform`.
+- [x] User approved patch-first, canonical-only cleanup, and SaaS preset apply.
+- [x] Patch ACE placeholder detection and regression tests.
+- [x] Validate ACE package and npm payload dry-run.
+- [x] Back up and migrate `platform`.
+- [x] Validate platform ACE state and review diffs.
 
 ## Next Steps
-- Maintainer review, then run the npm release flow when ready.
+- Review and commit both repository diffs.
 
 ## Risks / Blockers
 - None known.
 
 ## Verification
-- `npm.cmd test -- tests/ace-hub.test.ts tests/ace-archive.test.ts tests/ace-cli.test.ts tests/agent-memory.test.ts tests/install-agent-memory-pack.test.ts tests/schema-compatibility.test.ts` passed.
+- `npm.cmd run ace -- classify` ran before edits; it reported `small` only
+because no diff existed yet.
+- `npm.cmd test -- tests/schema-compatibility.test.ts` passed.
 - `npm.cmd run typecheck` passed.
 - `npm.cmd run lint` passed.
-- `npm.cmd run test` passed: 17 files / 146 tests.
 
 ## Recent Decision
 ## 2026-06-16 13:51
@@ -94,11 +95,7 @@ Impact:
 - No unresolved reflections recorded.
 
 ## Changed Areas
-- `scripts/ace-hub-distill.mjs, scripts/ace-hub.mjs, scripts/ace-hub-modes.mjs`
-- `scripts/ace-archive.mjs, scripts/ace-cli.mjs, scripts/ace-uninstall-utils.mjs`
-- `scripts/agent-memory-templates.mjs`
-- `README.md, README.npm.md, docs/schema-compatibility.md, package.json`
-- `tests/**`
+- No changed files recorded.
 
 ## Overall Progress
 - Completion checklist: 6/6

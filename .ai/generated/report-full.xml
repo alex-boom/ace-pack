@@ -818,172 +818,168 @@ Impact:
 ## Lifecycle &amp; Meta
 
 ### Feature Name
-ACE Pack v3.5 Knowledge Promotion &amp; Context Pruning
+ACE v3.5.1 Safe Migration Patch and Platform Upgrade
 
 ### Lifecycle
-Status: active
-Version: v3.5.0
+Status: complete
+Version: v3.5.1
 Task Tier: large
 Design Review Required: yes
 Friction Encountered: no
 Current Phase: Complete
 Next Autonomous Action: No further autonomous action; task is complete.
-Started: 2026-06-17 20:45
-Ready For Archive: no
+Started: 2026-06-19 15:05
+Ready For Archive: yes
 
 ### Goal
-Add explicit knowledge promotion context and deterministic active-log rotation so
-ACE memory can stay useful without hidden AI/API calls or semantic processing in
-scripts.
+Fix ACE legacy task-state migration so real Markdown checklists and bracketed
+content are preserved, then safely migrate `D:\All\alex-work\platform` to the
+patched v3 canonical ACE layout without losing existing `.ai` memory.
 
 ### Current Status
-- [x] Implemented `ace hub distill` / `promote`.
-- [x] Implemented `ace archive`.
-- [x] Updated shipped templates, docs, package version, and tests.
-- [x] Ran full validation, fake-project smoke, ACE check/classify, and npm
-  payload guard.
+- [x] Migration issue reproduced on a temporary copy of `platform`.
+- [x] User approved patch-first, canonical-only cleanup, and SaaS preset apply.
+- [x] Patch ACE placeholder detection and regression tests.
+- [x] Validate ACE package and npm payload dry-run.
+- [x] Back up and migrate `platform`.
+- [x] Validate platform ACE state and review diffs.
 
 ### Affected Areas
-- `scripts/ace-hub*.mjs`
-- `scripts/ace-cli.mjs`
-- `scripts/ace-archive.mjs`
-- `scripts/agent-memory-templates.mjs`
-- `scripts/ace-uninstall-utils.mjs`
-- `README.md`, `README.npm.md`, `docs/schema-compatibility.md`
+- `scripts/ai-markdown-utils.mjs`
+- `scripts/ai-memory-utils.mjs`
+- `tests/schema-compatibility.test.ts`
 - `package.json`
-- `tests/**`
+- `D:\All\alex-work\platform` ACE scripts, memory, `AGENTS.md`, and `CLAUDE.md`
 
 ### Constraints
-- Keep ACE local-first, zero-dependency, and zero hidden AI/network calls.
-- Do not archive `decisions.md` in v3.5.
-- Preserve compatibility with existing memory files.
-- Keep script files under the 400-line guard.
-- Do not edit repo-local root `AGENTS.md` or `CLAUDE.md` to change product behavior.
+- Preserve ACE local-first, zero-dependency, no hidden AI/network calls.
+- Do not overwrite or lose `platform` legacy `.ai` memory; back it up before pruning.
+- Keep `platform` on `dev` and preserve project-owned `pnpm ace:validate`.
+- Keep heavy `.ai/graphql-schemas`, `.ai/logs`, and `.ai/tmp` out of daily ACE context.
+- NPM publish was required and completed because shipped migration behavior
+  changed.
 
 ### Acceptance Criteria
-- [x] `ace hub distill` and alias `promote` output knowledge promotion context.
-- [x] Distill handles optional conventions, empty resolved reflections, and
-  missing or broken `## Resolved` formatting with the specified fallback
-  instruction.
-- [x] `ace archive` rotates only work-log and reflection-log with `--max-lines`
-  and `--dry-run`.
-- [x] Fresh active logs contain clickable relative archive links.
-- [x] Same-day repeated archives do not overwrite existing archive files.
-- [x] Router, install sync, docs, schema tests, and full validation pass.
+- Legacy `Current Status` and `Completion Checklist` checkbox sections migrate into `.ai/state/task-state.md`.
+- Real bracketed content is not treated as placeholder-only content.
+- ACE package version is bumped to `3.5.1`.
+- ACE tests, typecheck, lint, payload check, and npm dry-run pass.
+- `platform` uses patched ACE v3 canonical paths and router commands.
+- `platform` legacy root memory files are pruned only after backup and canonical copy verification.
+- Final handoff states platform deploy and ACE npm publish decisions.
 
 ### Completion Checklist
 - [x] Goal completed
 - [x] Future agent context preserved
 - [x] Verification recorded
-- [x] Publish/deploy decision recorded when relevant
-- [x] Extra docs updated only where changed
-- [x] `ace:validate` and release checks passed
+- [x] Publish/deploy decision recorded
+- [x] Platform migration backup path recorded
+- [x] `ace finish` passed and generated reports
 
 ## Business Value &amp; Approach
 
 ### Business Value / Product Alignment
-Knowledge promotion lets agents turn resolved friction into durable project
-rules, while archive rotation keeps daily context small and focused. This
-reduces repeated mistakes without adding runtime orchestration or provider
-integration.
+This patch protects installed repositories from losing meaningful legacy task
+checklists during v3 migration, which is essential for safe ACE upgrades in real
+projects with existing `.ai` history.
 
 ### Technical Approach
 Option 1:
-- Add semantic summarization into `ace archive`. This would be convenient but
-  violates ACE&apos;s no hidden AI calls and deterministic local-first model.
+- Install ACE v3.5.0 into `platform` and manually repair the migrated task-state.
+  This is fast but leaves the product migration bug for every other user.
 
 Option 2:
-- Add `hub distill` as a prompt generator for explicit agent work, and keep
-  `ace archive` as a mechanical Markdown rotation command.
+- Fix ACE placeholder detection first, add regression coverage, release as
+  v3.5.1, and then migrate `platform` with the patched local package.
 
 Chosen Approach:
-- Use Option 2. It separates intelligence from mechanics, keeps scripts
-  dependency-free, and preserves human-readable Markdown as the data bus.
+- Use Option 2. The bug is in shipped migration behavior, so the product should
+  be corrected before using it for a high-value repository migration.
 
 ### Edge Cases &amp; Red Teaming
-- Failure mode: a human breaks the `reflection-log.md` headings. Mitigation:
-  distill falls back to the full file with a strict instruction to focus only on
-  `## Resolved` and ignore `## Unresolved`.
-- Failure mode: archive runs multiple times on the same date. Mitigation: archive
-  filenames get `-2`, `-3`, etc. suffixes without overwriting.
-- Failure mode: log rotation removes section headings needed by checks.
-  Mitigation: fresh `reflection-log.md` keeps `## Unresolved` and `## Resolved`.
+- Failure mode: placeholder detection becomes too loose and preserves template
+  sections as meaningful content. Mitigation: keep explicit placeholder labels
+  and add tests around checklist preservation, not broad removal of placeholder
+  handling.
+- Failure mode: platform cleanup removes the only copy of legacy memory.
+  Mitigation: create an external backup plus ACE migration backup before pruning
+  root aliases, then verify canonical files contain expected content.
+- Failure mode: platform instructions still mention old paths after migration.
+  Mitigation: manually update `AGENTS.md` and `CLAUDE.md`, then grep for stale
+  command/path references.
 
 ## Changed Files / Diff
 
-[scripts/ace-hub-distill.mjs, scripts/ace-hub.mjs, scripts/ace-hub-modes.mjs]
-- Added `distill` / `promote` hub mode with phase/action metadata, project
-  conventions context, resolved-reflection extraction, empty-resolved handling,
-  and the strict fallback instruction for missing or broken `## Resolved`.
+[ACE package]
+- Fixed placeholder detection for real Markdown checklist and bracketed content.
+- Added migration regression coverage for legacy `Current Status` and
+  `Completion Checklist`.
+- Bumped `package.json` to `3.5.1`.
 
-[scripts/ace-archive.mjs, scripts/ace-cli.mjs, scripts/ace-uninstall-utils.mjs]
-- Added deterministic `ace archive` routing, CLI flags, dry-run behavior,
-  same-day suffixes, fresh active log links, and managed script installation.
-
-[scripts/agent-memory-templates.mjs]
-- Added context hygiene rules for `hub distill`, `archive`, `.ai/archive/**`
-  deep-history treatment, and the v3.5 decision not to archive `decisions.md`.
-
-[README.md, README.npm.md, docs/schema-compatibility.md, package.json]
-- Documented v3.5 schema and command surfaces, updated command tables, and
-  bumped the package version to `3.5.0`.
-
-[tests/**]
-- Added/updated coverage for hub distill payloads, archive rotation, router
-  mappings, installed script sync, shipped instructions, and schema docs.
+[Platform]
+- Backed up legacy ACE state, installed patched ACE, applied the
+  `next-trpc-drizzle-saas` preset, migrated canonical memory, and pruned root
+  aliases after verification.
 
 ## Handoff &amp; Next Steps
 
 ### Last Update
-2026-06-17 23:12
+2026-06-19 15:20
 
 ### What Was Done
-- Implemented the v3.5 knowledge promotion and context pruning pipeline.
-- Kept semantic distillation in explicit agent prompts and archive rotation
-  deterministic.
+- Reproduced and fixed the v3.5.0 migration issue.
+- Validated the ACE package and npm dry-run.
+- Migrated `platform` to canonical ACE v3 layout using the patched local
+  package.
 
 ### Current State
-- Complete and ready for maintainer review.
+- ACE patch, `platform` migration, and npm publish are complete.
 
 ### Quality Review
 Product Alignment:
-- v3.5 directly supports self-healing ACE memory without adding hidden LLM calls
-  or runtime orchestration.
+- The fix improves safe upgrades for real repositories with existing ACE memory.
 
 Architecture:
-- Distill follows the existing hub payload-builder pattern; archive is a separate
-  deterministic CLI with no semantic summary logic.
+- The change stays inside deterministic Markdown helpers, migration utilities,
+  templates, and regression tests.
 
 Security:
-- No dependencies, network calls, credentials, provider integrations, or
-  background schedulers were added.
+- No new dependencies, network calls, providers, or hidden automation were
+  added.
 
 Code Quality:
-- New behavior is covered by focused tests and kept in isolated script modules
-  under the line-limit guard.
+- Regression coverage pins legacy checklist preservation and alias promotion
+  behavior.
 
 ### Next Steps
-- Maintainer review, then run the npm release flow when ready.
+- Review and commit both repository diffs.
 
 ### Known Issues
 - None known.
 
 ### Verification
-- `npm.cmd test -- tests/ace-hub.test.ts tests/ace-archive.test.ts tests/ace-cli.test.ts tests/agent-memory.test.ts tests/install-agent-memory-pack.test.ts tests/schema-compatibility.test.ts` passed.
+- `npm.cmd run ace -- classify` ran before edits; it reported `small` only
+  because no diff existed yet.
+- `npm.cmd test -- tests/schema-compatibility.test.ts` passed.
 - `npm.cmd run typecheck` passed.
 - `npm.cmd run lint` passed.
-- `npm.cmd run test` passed: 17 files / 146 tests.
-- `npm.cmd run ace:validate` passed: typecheck, line-limit lint, and Vitest.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS fake projects.
-- `npm.cmd run ace -- check` passed.
-- `npm.cmd run ace -- classify` passed; current diff is large and design review
-  is required.
-- `npm.cmd run check:npm-payload` passed; 46 packed files checked.
-- `git diff --check` passed.
+- `npm.cmd run test` passed.
+- `npm.cmd run release:npm:dry` passed, including payload guard, `npm pack`
+  dry-run, and `npm publish --dry-run`.
+- Before publish, `npm.cmd view ace-pack version` returned `3.5.0`, so
+  `3.5.1` was not already published.
+- After maintainer publish, `npm.cmd view ace-pack version` returned `3.5.1`;
+  registry `time` reports `3.5.1` published at `2026-06-19T12:29:24.608Z`.
+- `platform` backup created at
+  `D:\All\alex-work\backups\platform-ace-pre-v351-20260619-150734`.
+- `platform` `pnpm.cmd ace check`, `pnpm.cmd ace hub --mode start`,
+  `pnpm.cmd ace:validate`, and `pnpm.cmd ace finish` passed.
+- `npm.cmd run ace -- check` and `npm.cmd run ace -- finish` passed in the ACE
+  package repository.
 
 ### Notes
-- NPM publish: required because shipped scripts/templates/docs and package
-  version changed.</file><file path="AGENTS.md">&gt; [!WARNING]
+- NPM publish: completed for `ace-pack@3.5.1`.
+- Platform deploy: not required; only ACE workflow/memory files changed.</file><file path="AGENTS.md">&gt; [!WARNING]
 &gt; **META-ARCHITECTURE WARNING:** This repository BUILDS the ACE product, but also USES ACE locally. If you are instructed to modify ACE behavior for users, edit the product source and templates in `scripts/`. Do not edit this local `AGENTS.md`, `CLAUDE.md`, or `.ai/**` to change global product behavior.
 
 # AGENTS.md
@@ -1459,4 +1455,17 @@ safety:
 
 - ACE finished large task: ACE Pack v3.5 Knowledge Promotion &amp; Context Pruning.
 - Friction Encountered: no.
-- Design Review Required: yes.</file></files></repomix>
+- Design Review Required: yes.
+
+## 2026-06-19 15:21
+
+- ACE finished large task: ACE v3.5.1 Safe Migration Patch and Platform Upgrade.
+- Friction Encountered: no.
+- Design Review Required: yes.
+
+## 2026-06-19 15:31
+
+- Confirmed `ace-pack@3.5.1` is published on npm and tagged `latest`.
+- Registry check: `npm.cmd view ace-pack version` returned `3.5.1`.
+- Registry `time` reports `3.5.1` published at `2026-06-19T12:29:24.608Z`.
+- NPM publish: completed.</file></files></repomix>

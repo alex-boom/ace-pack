@@ -75,7 +75,7 @@ describe('classifyTask', () => {
     expect(classification.tier).toBe('large')
     expect(classification.designReviewRequired).toBe(true)
     expect(classification.requiredWorkflow).toContain(
-      'Review .ai/tech-docs.md or .ai/product-roadmap.md when technical or business state changed.',
+      'Review .ai/knowledge/tech-docs.md or .ai/knowledge/product-roadmap.md when technical or business state changed.',
     )
   })
 
