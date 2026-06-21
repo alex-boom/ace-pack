@@ -239,6 +239,17 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-21 12:50 Dirty worktrees can inflate hotfix ceremony
+Status: resolved
+- Stuck Point: A two-line low-risk hotfix can be classified as large when the
+  repository already has unrelated dirty files.
+- Likely Cause: ACE classified the full working tree by default and had no
+  first-class way to tell classify/finish which local scope belonged to the
+  current task.
+- Proposed Improvement: Keep full working-tree classification as the default,
+  but support explicit `--staged` and `--path` scopes that still run normal
+  risk rules and record the selected scope in closeout output.
+
 ### 2026-06-14 17:10 Uninstall must share install ownership rules
 Status: resolved
 - Stuck Point: A cleanup command can easily delete project-owned files if it
@@ -813,173 +824,27 @@ Impact:
 - `.cursorrules`, `.windsurfrules`, and Copilot instructions use
   `ace-managed-ide-rules` blocks that `ace destroy` can remove surgically.
 - `ace-pack@3.0.0` is a major release; npm publish is required only for the
-  final reviewed release.</file><file path=".ai/state/task-state.md"># Task State
+  final reviewed release.
 
-## Lifecycle &amp; Meta
+## 2026-06-21 12:50
 
-### Feature Name
-ACE v3.5.1 Safe Migration Patch and Platform Upgrade
+Decision:
+- Implement fast-fix relief as explicit scope flags on `ace classify` and
+  `ace finish`, not as a separate `ace fast-fix` command.
 
-### Lifecycle
-Status: complete
-Version: v3.5.1
-Task Tier: large
-Design Review Required: yes
-Friction Encountered: no
-Current Phase: Complete
-Next Autonomous Action: No further autonomous action; task is complete.
-Started: 2026-06-19 15:05
-Ready For Archive: yes
+Reason:
+- The daily friction comes from classifying unrelated dirty worktree changes,
+  not from missing risk policy. Reusing the existing classifier and finish
+  logic keeps high-risk path/keyword rules, closeout behavior, and audit output
+  consistent.
 
-### Goal
-Fix ACE legacy task-state migration so real Markdown checklists and bracketed
-content are preserved, then safely migrate `D:\All\alex-work\platform` to the
-patched v3 canonical ACE layout without losing existing `.ai` memory.
-
-### Current Status
-- [x] Migration issue reproduced on a temporary copy of `platform`.
-- [x] User approved patch-first, canonical-only cleanup, and SaaS preset apply.
-- [x] Patch ACE placeholder detection and regression tests.
-- [x] Validate ACE package and npm payload dry-run.
-- [x] Back up and migrate `platform`.
-- [x] Validate platform ACE state and review diffs.
-
-### Affected Areas
-- `scripts/ai-markdown-utils.mjs`
-- `scripts/ai-memory-utils.mjs`
-- `tests/schema-compatibility.test.ts`
-- `package.json`
-- `D:\All\alex-work\platform` ACE scripts, memory, `AGENTS.md`, and `CLAUDE.md`
-
-### Constraints
-- Preserve ACE local-first, zero-dependency, no hidden AI/network calls.
-- Do not overwrite or lose `platform` legacy `.ai` memory; back it up before pruning.
-- Keep `platform` on `dev` and preserve project-owned `pnpm ace:validate`.
-- Keep heavy `.ai/graphql-schemas`, `.ai/logs`, and `.ai/tmp` out of daily ACE context.
-- NPM publish was required and completed because shipped migration behavior
-  changed.
-
-### Acceptance Criteria
-- Legacy `Current Status` and `Completion Checklist` checkbox sections migrate into `.ai/state/task-state.md`.
-- Real bracketed content is not treated as placeholder-only content.
-- ACE package version is bumped to `3.5.1`.
-- ACE tests, typecheck, lint, payload check, and npm dry-run pass.
-- `platform` uses patched ACE v3 canonical paths and router commands.
-- `platform` legacy root memory files are pruned only after backup and canonical copy verification.
-- Final handoff states platform deploy and ACE npm publish decisions.
-
-### Completion Checklist
-- [x] Goal completed
-- [x] Future agent context preserved
-- [x] Verification recorded
-- [x] Publish/deploy decision recorded
-- [x] Platform migration backup path recorded
-- [x] `ace finish` passed and generated reports
-
-## Business Value &amp; Approach
-
-### Business Value / Product Alignment
-This patch protects installed repositories from losing meaningful legacy task
-checklists during v3 migration, which is essential for safe ACE upgrades in real
-projects with existing `.ai` history.
-
-### Technical Approach
-Option 1:
-- Install ACE v3.5.0 into `platform` and manually repair the migrated task-state.
-  This is fast but leaves the product migration bug for every other user.
-
-Option 2:
-- Fix ACE placeholder detection first, add regression coverage, release as
-  v3.5.1, and then migrate `platform` with the patched local package.
-
-Chosen Approach:
-- Use Option 2. The bug is in shipped migration behavior, so the product should
-  be corrected before using it for a high-value repository migration.
-
-### Edge Cases &amp; Red Teaming
-- Failure mode: placeholder detection becomes too loose and preserves template
-  sections as meaningful content. Mitigation: keep explicit placeholder labels
-  and add tests around checklist preservation, not broad removal of placeholder
-  handling.
-- Failure mode: platform cleanup removes the only copy of legacy memory.
-  Mitigation: create an external backup plus ACE migration backup before pruning
-  root aliases, then verify canonical files contain expected content.
-- Failure mode: platform instructions still mention old paths after migration.
-  Mitigation: manually update `AGENTS.md` and `CLAUDE.md`, then grep for stale
-  command/path references.
-
-## Changed Files / Diff
-
-[ACE package]
-- Fixed placeholder detection for real Markdown checklist and bracketed content.
-- Added migration regression coverage for legacy `Current Status` and
-  `Completion Checklist`.
-- Bumped `package.json` to `3.5.1`.
-
-[Platform]
-- Backed up legacy ACE state, installed patched ACE, applied the
-  `next-trpc-drizzle-saas` preset, migrated canonical memory, and pruned root
-  aliases after verification.
-
-## Handoff &amp; Next Steps
-
-### Last Update
-2026-06-19 15:20
-
-### What Was Done
-- Reproduced and fixed the v3.5.0 migration issue.
-- Validated the ACE package and npm dry-run.
-- Migrated `platform` to canonical ACE v3 layout using the patched local
-  package.
-
-### Current State
-- ACE patch, `platform` migration, and npm publish are complete.
-
-### Quality Review
-Product Alignment:
-- The fix improves safe upgrades for real repositories with existing ACE memory.
-
-Architecture:
-- The change stays inside deterministic Markdown helpers, migration utilities,
-  templates, and regression tests.
-
-Security:
-- No new dependencies, network calls, providers, or hidden automation were
-  added.
-
-Code Quality:
-- Regression coverage pins legacy checklist preservation and alias promotion
-  behavior.
-
-### Next Steps
-- Review and commit both repository diffs.
-
-### Known Issues
-- None known.
-
-### Verification
-- `npm.cmd run ace -- classify` ran before edits; it reported `small` only
-  because no diff existed yet.
-- `npm.cmd test -- tests/schema-compatibility.test.ts` passed.
-- `npm.cmd run typecheck` passed.
-- `npm.cmd run lint` passed.
-- `npm.cmd run test` passed.
-- `npm.cmd run release:npm:dry` passed, including payload guard, `npm pack`
-  dry-run, and `npm publish --dry-run`.
-- Before publish, `npm.cmd view ace-pack version` returned `3.5.0`, so
-  `3.5.1` was not already published.
-- After maintainer publish, `npm.cmd view ace-pack version` returned `3.5.1`;
-  registry `time` reports `3.5.1` published at `2026-06-19T12:29:24.608Z`.
-- `platform` backup created at
-  `D:\All\alex-work\backups\platform-ace-pre-v351-20260619-150734`.
-- `platform` `pnpm.cmd ace check`, `pnpm.cmd ace hub --mode start`,
-  `pnpm.cmd ace:validate`, and `pnpm.cmd ace finish` passed.
-- `npm.cmd run ace -- check` and `npm.cmd run ace -- finish` passed in the ACE
-  package repository.
-
-### Notes
-- NPM publish: completed for `ace-pack@3.5.1`.
-- Platform deploy: not required; only ACE workflow/memory files changed.</file><file path="AGENTS.md">&gt; [!WARNING]
+Impact:
+- `--staged` classifies and finishes only the cached diff.
+- Repeated `--path &lt;file&gt;` or comma-separated `--paths a,b` limits local
+  classification and small-task finish summaries to selected pathspecs.
+- PR refs remain a separate mode and cannot be combined with local scope flags.
+- `ai-task-scope.mjs` owns shared git diff and scope formatting helpers for
+  classifier and finish flows.</file><file path="AGENTS.md">&gt; [!WARNING]
 &gt; **META-ARCHITECTURE WARNING:** This repository BUILDS the ACE product, but also USES ACE locally. If you are instructed to modify ACE behavior for users, edit the product source and templates in `scripts/`. Do not edit this local `AGENTS.md`, `CLAUDE.md`, or `.ai/**` to change global product behavior.
 
 # AGENTS.md
@@ -1036,6 +901,9 @@ Before starting work:
    `.ai/knowledge/decisions.md` when you need detail or verification.
 4. Run `pnpm ace classify` before implementation to
    identify whether the task is small, standard, or large.
+   Use `pnpm ace classify --staged` or repeated `--path &lt;file&gt;` only when
+   the current task is an explicit low-risk hotfix inside an unrelated dirty
+   worktree.
 5. If this is a newly installed or unknown project and
    `.ai/config/memory-config.json` is still marked `unprofiled`, run
    `pnpm ace onboard` and apply an approved profile
@@ -1043,6 +911,11 @@ Before starting work:
 6. For large tasks, and standard tasks with high-risk signals, complete the
    `.ai/state/task-state.md` Business Value &amp; Approach section before writing
    code. Compare at least two viable patterns and choose explicitly.
+   For standard or large tasks, or tasks triggering high-risk rules, also fill
+   `Edge Cases &amp; Red Teaming` before moving from Planning to Implementation.
+   You may run `pnpm ace hub red-team` (or `npm run ace -- hub red-team`)
+   to generate a strict adversarial critique, or self-reflect adversarially;
+   document each identified flaw with a mitigation in task-state.
 7. Read `.ai/knowledge/work-log.md` only when you need extra historical
    context.
 8. If the memory files are missing, run `pnpm ace init`.
@@ -1069,6 +942,27 @@ While working:
 - Do not rewrite large components or architecture unless the task requires it.
 - Keep `.ai/state/task-state.md` aligned with the active task when scope
   changes.
+- ACE supports autonomous phase transitions through `.ai/state/task-state.md`.
+  When you complete the current objective, directly edit `Current Phase` and
+  `Next Autonomous Action`, then proceed to that next action without asking
+  the human for permission. Ask only when blocked, when a highly sensitive
+  architecture decision is required, or when required validation cannot be run
+  or interpreted safely. If blocked, set `Status: blocked` and
+  `Next Autonomous Action: Needs Human: &lt;specific request&gt;`.
+- Track productivity friction. If you fail `ace:validate` more than twice,
+  loop between Review and Implementation, or struggle with undocumented
+  architecture, set `Friction Encountered: yes` in
+  `.ai/state/task-state.md`. Before `pnpm ace finish`, add a compact
+  `.ai/knowledge/reflection-log.md` entry with the stuck point and likely
+  cause, or use `pnpm ace finish --friction &quot;&lt;reason&gt;&quot;` during manual
+  closeout.
+- When `Current Phase` is `Review`, act as a strict reviewer. Run
+  `pnpm ace hub review` (or `npm run ace -- hub review`) and compare the
+  original intent, acceptance criteria, project conventions, and triggered risk
+  rules against the git diff. If review fails, set `Current Phase:
+  Implementation` and update `Next Autonomous Action` with the exact fixes.
+  If review passes, run the project-owned `ace:validate` gate and then
+  `pnpm ace finish`.
 - Keep project-specific tier and risk rules in
   `.ai/config/memory-config.json`, the canonical ACE config, not inside the
   scripts, so the toolset remains portable.
@@ -1079,9 +973,16 @@ While working:
   timestamps in `YYYY-MM-DD HH:mm` format.
 - Keep `.ai/state/task-state.md` and `.ai/knowledge/reflection-log.md`
   compact.
-- Archive only `.ai/knowledge/work-log.md`,
-  `.ai/knowledge/reflection-log.md`, and `.ai/knowledge/decisions.md` into
-  `.ai/archive/` when they grow past the documented thresholds.
+- When `.ai/knowledge/reflection-log.md` has resolved items ready for durable
+  reuse, or active context is noisy, run `pnpm ace hub distill` (or
+  `npm run ace -- hub distill`) and promote only reusable rules into
+  `.ai/knowledge/project-conventions.md`.
+- When `.ai/knowledge/work-log.md` or
+  `.ai/knowledge/reflection-log.md` grows too large, run
+  `pnpm ace archive` (or `npm run ace -- archive`) to mechanically rotate
+  it into `.ai/archive/`. Do not archive `.ai/knowledge/decisions.md` in
+  ACE v3.5.
+- Treat `.ai/archive/**` as deep history, not daily context.
 - Use `.ai/state/task-state.md` lifecycle fields for task/version
   transitions.
   When a large task version is complete, mark its completion checklist and let
@@ -1101,11 +1002,220 @@ safety:
    code-quality review notes.
 4. For large or high-risk tasks, confirm the design approach, add reflection
    only when useful, and let `pnpm ace finish` archive the snapshot.
-5. Update `.ai/tech-docs.md`, `.ai/product-roadmap.md`, durable decisions,
-   or release notes only when those facts actually changed.
+5. Update `.ai/knowledge/tech-docs.md`,
+   `.ai/knowledge/product-roadmap.md`, durable decisions, or release notes
+   only when those facts actually changed.
 6. For release-bound shipped changes, run the project&apos;s local smoke and
    dogfood/self-check routines before final publish or deploy when available.
-&lt;!-- agent-memory-workflow:end --&gt;</file><file path=".ai/knowledge/work-log.md"># Work Log
+&lt;!-- agent-memory-workflow:end --&gt;</file><file path=".ai/state/task-state.md"># Task State
+
+## Lifecycle &amp; Meta
+
+### Feature Name
+ACE Scoped Fast Fix Workflow
+
+### Lifecycle
+Status: complete
+Version: v3.6.0
+Task Tier: large
+Design Review Required: yes
+Friction Encountered: no
+Current Phase: Complete
+Next Autonomous Action: No further autonomous action; task is complete.
+Started: 2026-06-21 12:39
+Ready For Archive: yes
+
+### Goal
+Reduce ACE ceremony for urgent, low-risk hotfixes in dirty worktrees by letting
+users classify and finish only the staged or explicitly selected paths while
+preserving existing risk rules and required validation.
+
+### Current Status
+- [x] User confirmed the fast-fix friction should be addressed.
+- [x] `npm.cmd run ace -- classify` ran before implementation and reported
+  `small` on a clean worktree.
+- [x] Implement scoped classify and finish flags.
+- [x] Add focused regression coverage.
+- [x] Update shipped documentation and templates.
+- [x] Update durable ACE knowledge and reflection notes.
+- [x] Run release readiness checks and dogfood self-check.
+- [x] Close out ACE state.
+
+### Affected Areas
+- `scripts/ai-task-classify.mjs`
+- `scripts/ai-task-finish.mjs`
+- `scripts/ai-task-scope.mjs`
+- `scripts/ace-cli.mjs`
+- `scripts/ace-uninstall-utils.mjs`
+- `scripts/agent-memory-templates.mjs`
+- `tests/ai-task-classify.test.ts`
+- `tests/ai-task-finish.test.ts`
+- `tests/install-agent-memory-pack.test.ts`
+- `README.md`
+- `README.npm.md`
+- `package.json`
+- `.ai/knowledge/tech-docs.md`
+- `.ai/knowledge/product-roadmap.md`
+- `.ai/knowledge/decisions.md`
+- `.ai/knowledge/reflection-log.md`
+- `.ai/generated/context.md`
+- `AGENTS.md`
+
+### Constraints
+- Preserve ACE local-first, zero-dependency, no hidden AI/network calls.
+- Keep existing default behavior for full working-tree classification.
+- Do not weaken high-risk path or keyword rules.
+- Keep fast-fix scope explicit and auditable in CLI output, JSON, task-state,
+  and work-log summaries.
+- Bump semver because shipped user-visible CLI behavior changes.
+
+### Acceptance Criteria
+- [x] `ace classify --staged` classifies only staged changes.
+- [x] `ace classify --path &lt;path&gt;` / repeated `--path` classifies only selected
+  paths from the working tree.
+- [x] `ace finish` supports the same scope flags so small low-risk auto-closeout can
+  operate on the intended hotfix instead of unrelated dirty files.
+- [x] Scoped classification refuses ambiguous combinations such as PR refs plus
+  staged/path scope.
+- [x] High-risk rules still escalate scoped changes when selected files or diff
+  content match configured policy.
+- [x] Tests cover staged and path-scoped false-positive reduction.
+- [x] Docs explain fast-fix usage as scoped safety, not a bypass.
+
+### Completion Checklist
+- [x] Goal completed
+- [x] Future agent context preserved
+- [x] Verification recorded
+- [x] Publish decision recorded
+- [x] `ace finish` passed or explicit reason recorded
+
+## Business Value &amp; Approach
+
+### Business Value / Product Alignment
+ACE is valuable when it behaves like a safety belt: it should keep validation,
+risk detection, and durable memory, but it should not force a large-task ritual
+for a two-line hotfix just because unrelated work is already dirty. Scoped
+fast-fix support directly addresses daily DevEx friction while preserving the
+local Markdown, no-dependency product promise.
+
+### Technical Approach
+Option 1:
+- Add a new top-level `ace fast-fix` command that wraps classify, validation,
+  and finish. This is discoverable, but it expands the command surface and risks
+  becoming a bypass path with separate policy.
+
+Option 2:
+- Extend existing `ace classify` and `ace finish` with explicit scope flags
+  (`--staged`, `--path`) and keep the existing tier/risk/finish machinery. This
+  keeps one policy engine and makes fast fixes a scoped version of the normal
+  workflow.
+
+Chosen Approach:
+- Use Option 2. The problem is scope selection, not missing policy. Reusing the
+  current classifier and finish path keeps behavior predictable and avoids a
+  second ritual.
+
+### Edge Cases &amp; Red Teaming
+- Failure mode: a user scopes away real risk. Mitigation: flags are explicit,
+  classification output records the scope, and selected paths still run all
+  configured path and keyword risk rules.
+- Failure mode: `--path` ignores untracked files. Mitigation: path scope uses
+  `git status --porcelain -uall -- &lt;paths&gt;` plus `git diff HEAD -- &lt;paths&gt;`.
+- Failure mode: staged scope includes unrelated staged work. Mitigation: this is
+  still explicit Git staging behavior and can be reviewed with `git diff
+  --cached`.
+- Failure mode: combining PR refs with local scope is ambiguous. Mitigation:
+  reject `--base/--head` with `--staged` or `--path`.
+
+## Changed Files / Diff
+
+[scripts/ai-task-scope.mjs]
+- Added shared scoped git diff input, scope formatting, and scoped diff summary
+  helpers for classifier and finish flows.
+
+[scripts/ai-task-classify.mjs]
+- Added `--staged`, repeated `--path`, and comma-separated `--paths` support,
+  scope metadata in JSON/CLI output, and PR/local scope conflict handling.
+
+[scripts/ai-task-finish.mjs]
+- Added matching scope flags for adaptive finish and scoped small-task
+  auto-closeout summaries.
+
+[scripts/ace-uninstall-utils.mjs, scripts/ace-cli.mjs]
+- Added the new managed script to install/destroy ownership lists and refreshed
+  router help text.
+
+[README.md, README.npm.md, scripts/agent-memory-templates.mjs]
+- Documented scoped fast fixes as an explicit low-risk hotfix workflow, not a
+  risk bypass.
+
+[tests]
+- Added staged/path-scope classifier coverage, high-risk scoped escalation,
+  invalid scope combination coverage, path-scoped finish coverage, and install
+  coverage for the new managed script.
+
+[package.json]
+- Bumped package version to `3.6.0` for the backward-compatible CLI workflow.
+
+## Handoff &amp; Next Steps
+
+### Last Update
+2026-06-21 12:53
+
+### What Was Done
+- Added scoped classification and finish behavior.
+- Added regression coverage and shipped docs/templates.
+- Updated durable ACE tech docs, roadmap, decisions, and reflection notes.
+
+### Current State
+- Implementation, release readiness, dogfood self-check, and ACE finish are
+  complete.
+
+### Quality Review
+Product Alignment:
+- The change targets a named daily DevEx pain without reducing ACE safety for
+  high-risk tasks.
+
+Architecture:
+- The implementation extends the existing classifier and finish flow instead of
+  adding a separate command or dependency.
+
+Security:
+- No new network calls, providers, secrets, or external services were added.
+
+Code Quality:
+- Focused unit/integration tests cover scoped diff inputs, closeout, and
+  install sync.
+
+### Next Steps
+- Review and publish `ace-pack@3.6.0` when ready.
+
+### Known Issues
+- None known.
+
+### Verification
+- `npm.cmd run ace -- classify` passed before implementation.
+- `npm.cmd test -- tests/ai-task-classify.test.ts` passed before extraction.
+- `npm.cmd test -- tests/ai-task-finish.test.ts` passed before extraction.
+- `npm.cmd test -- tests/ai-task-classify.test.ts tests/ai-task-finish.test.ts tests/install-agent-memory-pack.test.ts` passed after extraction.
+- `npm.cmd run typecheck` passed.
+- `npm.cmd run lint` passed.
+- `npm.cmd run ace -- classify` passed after implementation and reported
+  `large`, as expected for shipped `scripts/**` and `.ai/**` changes.
+- `npm.cmd run ace:validate` passed: 17 test files, 152 tests.
+- `npm.cmd view ace-pack version` returned `3.5.1`, so `3.6.0` is available
+  for publish.
+- `npm.cmd run release:ready` passed, including typecheck, lint, all tests,
+  fake-project smoke, ACE gate, npm payload guard, npm pack dry-run, and npm
+  publish dry-run for `ace-pack@3.6.0`.
+- `npm.cmd run dogfood:self-check -- --allow-dirty` passed; it updated local
+  `AGENTS.md` from the shipped template and refreshed generated ACE context.
+- `npm.cmd run ace -- finish` passed and archived the task to
+  `.ai/archive/tasks/v3.6.0-ace-scoped-fast-fix-workflow-2026-06-21-12-52.md`.
+
+### Notes
+- NPM publish: required before final release because shipped ACE CLI behavior,
+  installed scripts, package version, and npm payload documentation changed.</file><file path=".ai/knowledge/work-log.md"># Work Log
 
 ## 2026-06-13 20:59
 
@@ -1468,4 +1578,11 @@ safety:
 - Confirmed `ace-pack@3.5.1` is published on npm and tagged `latest`.
 - Registry check: `npm.cmd view ace-pack version` returned `3.5.1`.
 - Registry `time` reports `3.5.1` published at `2026-06-19T12:29:24.608Z`.
-- NPM publish: completed.</file></files></repomix>
+- NPM publish: completed.
+
+## 2026-06-21 12:52
+
+- ACE finished large task: ACE Scoped Fast Fix Workflow.
+- Scope: working tree.
+- Friction Encountered: no.
+- Design Review Required: yes.</file></files></repomix>

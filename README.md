@@ -62,7 +62,8 @@ write handoff notes.
 
 With ACE, the repository carries the discipline:
 
-- `ace classify` detects whether the change is small, standard, or large.
+- `ace classify` detects whether the change is small, standard, or large,
+  including staged-only and path-scoped hotfixes.
 - Large and high-risk work starts with a shift-left design review before code.
 - `ace hub` generates focused context instead of manual copy/paste bundles.
 - `task-state.md` carries `Current Phase` and `Next Autonomous Action`, so solo
@@ -111,6 +112,22 @@ npm run ace -- finish
 
 Legacy command names remain supported only as router arguments, such as
 `pnpm ace ai:task:finish` or `npm run ace -- ai:task:finish`.
+
+When a repository already has unrelated local work, scope the hotfix instead of
+letting the whole dirty worktree inflate the task tier:
+
+```bash
+pnpm ace classify --staged
+pnpm ace finish --staged
+
+pnpm ace classify --path src/button.tsx --path tests/button.test.ts
+pnpm ace finish --path src/button.tsx --path tests/button.test.ts
+```
+
+Use `--staged` after staging only the intended fix, or repeat `--path` for the
+files in scope. `--paths a,b` is also supported. Scoped fast fixes still run the
+same path and keyword risk rules, and PR refs (`--base` / `--head`) cannot be
+combined with local scope flags.
 
 The key behavior is **Shift-Left Design Review**. For large or high-risk tasks,
 the agent must fill `.ai/state/task-state.md` with the business value and
@@ -423,6 +440,10 @@ closeout notes, and `ace gate` does not demand design or quality-review
 sections for those changes. Standard, large, high-risk, and
 design-review-required work keeps stricter review expectations.
 
+For urgent hotfixes inside a dirty worktree, classify and finish the same
+explicit scope with `--staged` or repeated `--path` flags. This keeps the
+fast-fix path auditable without bypassing ACE risk rules.
+
 ```bash
 pnpm ace gate
 pnpm ace gate --base origin/main --head HEAD
@@ -574,11 +595,11 @@ then stops if unexpected files changed.
 | `ace onboard --preset next-trpc-drizzle-saas --apply` | Applies the built-in Next.js + tRPC + Drizzle SaaS profile. |
 | `ace onboard --check` | Fails if the repository is still unprofiled. |
 | `ace discover` | Generate a concise local project conventions and pattern registry. |
-| `ace classify` | Git diff risk analysis for small, standard, and large tasks. |
+| `ace classify` | Git diff risk analysis for small, standard, and large tasks, with `--staged` and `--path` scope flags for fast fixes. |
 | `ace:validate` | Project-owned mechanical quality gate for lint, typecheck, tests, or equivalent checks. ACE installs a placeholder only when absent. |
 | `ace eject` | Safe data-takeout step that exports active ACE memory before uninstall. |
 | `ace destroy` | Guarded cleanup that removes only ACE-owned files after export. |
-| `ace finish` | Adaptive closeout, phase completion, friction tracking, small low-risk auto-closeout, memory documentation, reports, and reflection. |
+| `ace finish` | Adaptive closeout, phase completion, friction tracking, scoped small low-risk auto-closeout, memory documentation, reports, and reflection. |
 | `ace gate` | Optional PR/CI quality gate with actionable failures, PR refs, JSON output, explicit human override, and opt-in hook/workflow generation. |
 | `ace hub` | Interactive and named-mode context generator with phase/action metadata for start, red-team, review, distill, architect-lite, architect, handoff, PR, business, and docs payloads. |
 | `ace archive` | Deterministic active-log rotation for work-log and reflection-log into `.ai/archive/`. |

@@ -1,12 +1,14 @@
-import { execFile } from 'node:child_process'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { promisify } from 'node:util'
 
 import { getRiskMatches, normalizeRepoPath, readMemoryConfig } from './ai-memory-config.mjs'
-import { getArgValue, parseCliArgs, writeAceBanner } from './ai-memory-utils.mjs'
+import { getArgList, getArgValue, parseCliArgs, writeAceBanner } from './ai-memory-utils.mjs'
+import {
+  formatClassificationScope,
+  getDiffInputs,
+  normalizeClassificationScope,
+} from './ai-task-scope.mjs'
 
-const execFileAsync = promisify(execFile)
 const TIER_RANK = {
   small: 0,
   standard: 1,
@@ -14,10 +16,8 @@ const TIER_RANK = {
 }
 
 export async function classifyRepositoryTask(rootDir, options = {}) {
-  const hasDiffRefs = Boolean(options.baseRef || options.headRef)
-  const diffInputs = hasDiffRefs
-    ? await getDiffInputsForRefs(rootDir, options.baseRef, options.headRef)
-    : await getWorkingTreeDiffInputs(rootDir)
+  const scope = normalizeClassificationScope(options)
+  const diffInputs = await getDiffInputs(rootDir, scope)
   const config = await readMemoryConfig(rootDir)
 
   const classification = classifyTask({
@@ -34,6 +34,7 @@ export async function classifyRepositoryTask(rootDir, options = {}) {
     baseRef: options.baseRef ?? null,
     gitError: diffInputs.gitError,
     headRef: options.headRef ?? null,
+    scope: diffInputs.scope,
   }
 }
 
@@ -113,159 +114,28 @@ export function getRequiredWorkflow(tier, designReviewRequired) {
 }
 
 export function formatClassification(classification) {
-  return [
+  const lines = [
     'AI task classification',
     `Tier: ${classification.tier}`,
     `Detected tier: ${classification.detectedTier}`,
     `Design review required: ${classification.designReviewRequired ? 'yes' : 'no'}`,
+    `Scope: ${formatClassificationScope(classification.scope)}`,
     '',
     'Reasons:',
     ...classification.reasons.map((reason) => `- ${reason}`),
+  ]
+
+  if (classification.gitError) {
+    lines.push('', 'Git issue:', `- ${classification.gitError}`)
+  }
+
+  lines.push(
     '',
     'Required workflow:',
     ...classification.requiredWorkflow.map((item) => `- ${item}`),
-  ].join('\n')
-}
-
-async function getChangedFiles(rootDir) {
-  const output = await gitOutput(rootDir, ['status', '--porcelain', '-uall'])
-
-  return output
-    .split('\n')
-    .map((line) => line.trimEnd())
-    .filter(Boolean)
-    .map((line) => line.slice(3).trim())
-    .map((filePath) => filePath.split(' -> ').at(-1) ?? filePath)
-    .map(normalizeRepoPath)
-    .filter(Boolean)
-}
-
-async function getWorkingTreeDiffInputs(rootDir) {
-  const [changedFiles, diffStats, diffText] = await Promise.all([
-    getChangedFiles(rootDir),
-    getDiffStats(rootDir),
-    getDiffText(rootDir),
-  ])
-
-  return {
-    changedFiles,
-    diffLineCount: diffStats.diffLineCount,
-    diffText,
-    gitError: null,
-  }
-}
-
-async function getDiffInputsForRefs(rootDir, baseRef, headRef) {
-  if (!baseRef || !headRef) {
-    return {
-      changedFiles: [],
-      diffLineCount: 0,
-      diffText: '',
-      gitError: 'Both --base and --head are required for PR diff classification.',
-    }
-  }
-
-  const rangeArgs = [`${baseRef}...${headRef}`, '--']
-  const [changedFilesResult, diffStatsResult, diffTextResult] = await Promise.all([
-    gitOutputResult(rootDir, [
-      'diff',
-      '--name-only',
-      '--find-renames',
-      '--diff-filter=ACMR',
-      ...rangeArgs,
-    ]),
-    gitOutputResult(rootDir, ['diff', '--numstat', ...rangeArgs]),
-    gitOutputResult(rootDir, ['diff', '--unified=0', ...rangeArgs]),
-  ])
-  const failedResult = [changedFilesResult, diffStatsResult, diffTextResult].find(
-    (result) => !result.ok,
   )
 
-  if (failedResult) {
-    return {
-      changedFiles: [],
-      diffLineCount: 0,
-      diffText: '',
-      gitError: `Unable to read git diff for ${baseRef}...${headRef}: ${failedResult.message}`,
-    }
-  }
-
-  return {
-    changedFiles: changedFilesResult.stdout
-      .split('\n')
-      .map((line) => normalizeRepoPath(line.trim()))
-      .filter(Boolean),
-    diffLineCount: countDiffNumstatLines(diffStatsResult.stdout),
-    diffText: diffTextResult.stdout,
-    gitError: null,
-  }
-}
-
-async function getDiffStats(rootDir) {
-  const output = await gitOutput(rootDir, ['diff', '--numstat', 'HEAD', '--'])
-
-  return { diffLineCount: countDiffNumstatLines(output) }
-}
-
-function countDiffNumstatLines(output) {
-  let diffLineCount = 0
-
-  for (const line of output.split('\n')) {
-    const [added, removed] = line.split('\t')
-    const addedLines = Number.parseInt(added, 10)
-    const removedLines = Number.parseInt(removed, 10)
-
-    if (Number.isFinite(addedLines)) {
-      diffLineCount += addedLines
-    }
-
-    if (Number.isFinite(removedLines)) {
-      diffLineCount += removedLines
-    }
-  }
-
-  return diffLineCount
-}
-
-async function getDiffText(rootDir) {
-  return gitOutput(rootDir, ['diff', '--unified=0', 'HEAD', '--'])
-}
-
-async function gitOutput(rootDir, args) {
-  try {
-    const result = await execFileAsync('git', args, {
-      cwd: rootDir,
-      encoding: 'utf8',
-      maxBuffer: 20 * 1024 * 1024,
-    })
-
-    return result.stdout
-  } catch {
-    return ''
-  }
-}
-
-async function gitOutputResult(rootDir, args) {
-  try {
-    const result = await execFileAsync('git', args, {
-      cwd: rootDir,
-      encoding: 'utf8',
-      maxBuffer: 20 * 1024 * 1024,
-    })
-
-    return {
-      ok: true,
-      stdout: result.stdout,
-    }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-
-    return {
-      message,
-      ok: false,
-      stdout: '',
-    }
-  }
+  return lines.join('\n')
 }
 
 function getBaselineTier(fileCount, diffLineCount, config) {
@@ -312,19 +182,28 @@ async function main() {
   const rawArgs = process.argv.slice(2)
   const args = parseCliArgs(rawArgs)
   const rootDir = path.resolve(process.cwd(), getArgValue(args, 'root') ?? '.')
+  const paths = [...getArgList(args, 'path'), ...getArgList(args, 'paths')]
   const classification = await classifyRepositoryTask(rootDir, {
     baseRef: getArgValue(args, 'base'),
     headRef: getArgValue(args, 'head'),
     overrideReason: getArgValue(args, 'reason'),
     overrideTier: getArgValue(args, 'tier'),
+    paths,
+    staged: getArgValue(args, 'staged') === 'true',
   })
 
   if (getArgValue(args, 'json') === 'true') {
     process.stdout.write(`${JSON.stringify(classification, null, 2)}\n`)
+    if (classification.gitError) {
+      process.exit(1)
+    }
     return
   }
 
   process.stdout.write(`${formatClassification(classification)}\n`)
+  if (classification.gitError) {
+    process.exit(1)
+  }
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

@@ -90,6 +90,7 @@ describe('installAcePack', () => {
     expect(result.createdFiles).toContain('scripts/agent-memory-lib.mjs')
     expect(result.createdFiles).toContain('scripts/ai-task-classify.mjs')
     expect(result.createdFiles).toContain('scripts/ai-task-finish.mjs')
+    expect(result.createdFiles).toContain('scripts/ai-task-scope.mjs')
     expect(result.createdFiles).toContain('scripts/ai-report.mjs')
     expect(result.createdFiles).toContain('scripts/ai-update.mjs')
     expect(result.createdFiles).toContain('.cursorrules')

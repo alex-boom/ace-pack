@@ -451,3 +451,23 @@ Impact:
   `ace-managed-ide-rules` blocks that `ace destroy` can remove surgically.
 - `ace-pack@3.0.0` is a major release; npm publish is required only for the
   final reviewed release.
+
+## 2026-06-21 12:50
+
+Decision:
+- Implement fast-fix relief as explicit scope flags on `ace classify` and
+  `ace finish`, not as a separate `ace fast-fix` command.
+
+Reason:
+- The daily friction comes from classifying unrelated dirty worktree changes,
+  not from missing risk policy. Reusing the existing classifier and finish
+  logic keeps high-risk path/keyword rules, closeout behavior, and audit output
+  consistent.
+
+Impact:
+- `--staged` classifies and finishes only the cached diff.
+- Repeated `--path <file>` or comma-separated `--paths a,b` limits local
+  classification and small-task finish summaries to selected pathspecs.
+- PR refs remain a separate mode and cannot be combined with local scope flags.
+- `ai-task-scope.mjs` owns shared git diff and scope formatting helpers for
+  classifier and finish flows.

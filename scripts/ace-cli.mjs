@@ -104,8 +104,8 @@ Usage:
 Commands:
   init                 Initialize ACE memory files.
   check                Validate ACE memory.
-  classify             Classify current repository changes.
-  finish               Run adaptive task finish.
+  classify             Classify repository changes, with --staged/--path scope support.
+  finish               Run adaptive task finish, with matching --staged/--path scope support.
   archive              Rotate oversized active ACE logs into .ai/archive/.
   discover             Generate project conventions summary.
   eject                Export active ACE memory before uninstall.

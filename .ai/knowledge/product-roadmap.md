@@ -76,6 +76,10 @@ handoff and browser-context workflows.
   deterministic scanner that writes a concise
   `.ai/knowledge/project-conventions.md` registry for `ace hub` context.
   `ace-pack@2.2.0` is published on npm.
+- **v3.6 Scoped Fast Fix Workflow.** ACE now lets users classify and finish
+  staged-only or path-scoped hotfixes with `--staged` and repeated `--path`
+  flags, reducing ceremony in dirty worktrees without bypassing configured
+  risk rules.
 
 ## Planned Features
 

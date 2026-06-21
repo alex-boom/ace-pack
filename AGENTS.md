@@ -55,6 +55,9 @@ Before starting work:
    `.ai/knowledge/decisions.md` when you need detail or verification.
 4. Run `pnpm ace classify` before implementation to
    identify whether the task is small, standard, or large.
+   Use `pnpm ace classify --staged` or repeated `--path <file>` only when
+   the current task is an explicit low-risk hotfix inside an unrelated dirty
+   worktree.
 5. If this is a newly installed or unknown project and
    `.ai/config/memory-config.json` is still marked `unprofiled`, run
    `pnpm ace onboard` and apply an approved profile
@@ -62,6 +65,11 @@ Before starting work:
 6. For large tasks, and standard tasks with high-risk signals, complete the
    `.ai/state/task-state.md` Business Value & Approach section before writing
    code. Compare at least two viable patterns and choose explicitly.
+   For standard or large tasks, or tasks triggering high-risk rules, also fill
+   `Edge Cases & Red Teaming` before moving from Planning to Implementation.
+   You may run `pnpm ace hub red-team` (or `npm run ace -- hub red-team`)
+   to generate a strict adversarial critique, or self-reflect adversarially;
+   document each identified flaw with a mitigation in task-state.
 7. Read `.ai/knowledge/work-log.md` only when you need extra historical
    context.
 8. If the memory files are missing, run `pnpm ace init`.
@@ -88,6 +96,27 @@ While working:
 - Do not rewrite large components or architecture unless the task requires it.
 - Keep `.ai/state/task-state.md` aligned with the active task when scope
   changes.
+- ACE supports autonomous phase transitions through `.ai/state/task-state.md`.
+  When you complete the current objective, directly edit `Current Phase` and
+  `Next Autonomous Action`, then proceed to that next action without asking
+  the human for permission. Ask only when blocked, when a highly sensitive
+  architecture decision is required, or when required validation cannot be run
+  or interpreted safely. If blocked, set `Status: blocked` and
+  `Next Autonomous Action: Needs Human: <specific request>`.
+- Track productivity friction. If you fail `ace:validate` more than twice,
+  loop between Review and Implementation, or struggle with undocumented
+  architecture, set `Friction Encountered: yes` in
+  `.ai/state/task-state.md`. Before `pnpm ace finish`, add a compact
+  `.ai/knowledge/reflection-log.md` entry with the stuck point and likely
+  cause, or use `pnpm ace finish --friction "<reason>"` during manual
+  closeout.
+- When `Current Phase` is `Review`, act as a strict reviewer. Run
+  `pnpm ace hub review` (or `npm run ace -- hub review`) and compare the
+  original intent, acceptance criteria, project conventions, and triggered risk
+  rules against the git diff. If review fails, set `Current Phase:
+  Implementation` and update `Next Autonomous Action` with the exact fixes.
+  If review passes, run the project-owned `ace:validate` gate and then
+  `pnpm ace finish`.
 - Keep project-specific tier and risk rules in
   `.ai/config/memory-config.json`, the canonical ACE config, not inside the
   scripts, so the toolset remains portable.
@@ -98,9 +127,16 @@ While working:
   timestamps in `YYYY-MM-DD HH:mm` format.
 - Keep `.ai/state/task-state.md` and `.ai/knowledge/reflection-log.md`
   compact.
-- Archive only `.ai/knowledge/work-log.md`,
-  `.ai/knowledge/reflection-log.md`, and `.ai/knowledge/decisions.md` into
-  `.ai/archive/` when they grow past the documented thresholds.
+- When `.ai/knowledge/reflection-log.md` has resolved items ready for durable
+  reuse, or active context is noisy, run `pnpm ace hub distill` (or
+  `npm run ace -- hub distill`) and promote only reusable rules into
+  `.ai/knowledge/project-conventions.md`.
+- When `.ai/knowledge/work-log.md` or
+  `.ai/knowledge/reflection-log.md` grows too large, run
+  `pnpm ace archive` (or `npm run ace -- archive`) to mechanically rotate
+  it into `.ai/archive/`. Do not archive `.ai/knowledge/decisions.md` in
+  ACE v3.5.
+- Treat `.ai/archive/**` as deep history, not daily context.
 - Use `.ai/state/task-state.md` lifecycle fields for task/version
   transitions.
   When a large task version is complete, mark its completion checklist and let
@@ -120,8 +156,9 @@ safety:
    code-quality review notes.
 4. For large or high-risk tasks, confirm the design approach, add reflection
    only when useful, and let `pnpm ace finish` archive the snapshot.
-5. Update `.ai/tech-docs.md`, `.ai/product-roadmap.md`, durable decisions,
-   or release notes only when those facts actually changed.
+5. Update `.ai/knowledge/tech-docs.md`,
+   `.ai/knowledge/product-roadmap.md`, durable decisions, or release notes
+   only when those facts actually changed.
 6. For release-bound shipped changes, run the project's local smoke and
    dogfood/self-check routines before final publish or deploy when available.
 <!-- agent-memory-workflow:end -->

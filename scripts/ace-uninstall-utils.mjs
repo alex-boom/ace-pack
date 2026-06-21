@@ -79,6 +79,7 @@ export const MANAGED_SCRIPT_FILES = [
   'ai-report-utils.mjs',
   'ai-task-classify.mjs',
   'ai-task-finish.mjs',
+  'ai-task-scope.mjs',
   'ai-update.mjs',
   'bootstrap-agent-memory.mjs',
   'check-agent-memory.mjs',

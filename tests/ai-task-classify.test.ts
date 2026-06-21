@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { promisify } from 'node:util'
@@ -158,4 +158,117 @@ describe('ai-task-classify CLI', () => {
     expect(stderr).toContain(ACE_BANNER)
     expect(stdout).toContain('AI task classification')
   })
+
+  it('classifies only staged changes when --staged is used', async () => {
+    const rootDir = await mkdtemp(path.join(os.tmpdir(), 'ace-classify-staged-'))
+    tempDirs.push(rootDir)
+
+    await writeRepoFile(rootDir, 'README.md', 'base\n')
+    await initGitFixture(rootDir)
+    await writeRepoFile(rootDir, 'README.md', 'base\nstaged hotfix\n')
+    await execFileAsync('git', ['add', 'README.md'], { cwd: rootDir })
+    for (let index = 0; index < 8; index += 1) {
+      await writeRepoFile(rootDir, `unrelated-${index}.ts`, `export const v${index} = true\n`)
+    }
+
+    const parsed = await runClassifyJson(rootDir, ['--staged'])
+
+    expect(parsed.scope).toMatchObject({ mode: 'staged', paths: [] })
+    expect(parsed.tier).toBe('small')
+    expect(parsed.changedFiles).toEqual(['readme.md'])
+  })
+
+  it('classifies only selected working-tree paths when --path is used', async () => {
+    const rootDir = await mkdtemp(path.join(os.tmpdir(), 'ace-classify-path-'))
+    tempDirs.push(rootDir)
+
+    await writeRepoFile(rootDir, 'src/button.ts', 'export const label = "Save"\n')
+    await initGitFixture(rootDir)
+    await writeRepoFile(rootDir, 'src/button.ts', 'export const label = "Save now"\n')
+    for (let index = 0; index < 8; index += 1) {
+      await writeRepoFile(rootDir, `unrelated-${index}.ts`, `export const v${index} = true\n`)
+    }
+
+    const full = await runClassifyJson(rootDir)
+    const scoped = await runClassifyJson(rootDir, ['--path', 'src/button.ts'])
+
+    expect(full.tier).toBe('large')
+    expect(scoped.scope).toMatchObject({ mode: 'working-tree', paths: ['src/button.ts'] })
+    expect(scoped.tier).toBe('small')
+    expect(scoped.changedFiles).toEqual(['src/button.ts'])
+  })
+
+  it('still escalates scoped high-risk paths', async () => {
+    const rootDir = await mkdtemp(path.join(os.tmpdir(), 'ace-classify-risk-path-'))
+    tempDirs.push(rootDir)
+
+    await writeRepoFile(
+      rootDir,
+      '.ai/config/memory-config.json',
+      JSON.stringify({
+        highRiskPaths: [{ label: 'auth boundary', pattern: 'src/auth/**', tier: 'large' }],
+        thresholds: baseConfig.thresholds,
+        version: 1,
+      }),
+    )
+    await writeRepoFile(rootDir, 'src/auth/session.ts', 'export const timeout = 30\n')
+    await initGitFixture(rootDir)
+    await writeRepoFile(rootDir, 'src/auth/session.ts', 'export const timeout = 60\n')
+
+    const parsed = await runClassifyJson(rootDir, ['--path', 'src/auth/session.ts'])
+
+    expect(parsed.tier).toBe('large')
+    expect(parsed.designReviewRequired).toBe(true)
+    expect(parsed.reasons.join('\n')).toContain('auth boundary')
+  })
+
+  it('refuses to combine PR refs with local scope flags', async () => {
+    const rootDir = await mkdtemp(path.join(os.tmpdir(), 'ace-classify-scope-error-'))
+    tempDirs.push(rootDir)
+
+    await writeRepoFile(rootDir, 'README.md', 'base\n')
+    await initGitFixture(rootDir)
+
+    const error = await execFileAsync(process.execPath, [
+      path.resolve('scripts', 'ai-task-classify.mjs'),
+      '--root',
+      rootDir,
+      '--base',
+      'HEAD',
+      '--head',
+      'HEAD',
+      '--staged',
+      '--json',
+    ]).catch((caught) => caught)
+
+    expect(error.code).toBe(1)
+    const parsed = JSON.parse(error.stdout)
+    expect(parsed.gitError).toContain('Cannot combine --base/--head')
+  })
 })
+
+async function runClassifyJson(rootDir: string, args: string[] = []) {
+  const { stdout } = await execFileAsync(process.execPath, [
+    path.resolve('scripts', 'ai-task-classify.mjs'),
+    '--root',
+    rootDir,
+    '--json',
+    ...args,
+  ])
+
+  return JSON.parse(stdout)
+}
+
+async function initGitFixture(rootDir: string) {
+  await execFileAsync('git', ['init'], { cwd: rootDir })
+  await execFileAsync('git', ['config', 'user.email', 'ace@example.com'], { cwd: rootDir })
+  await execFileAsync('git', ['config', 'user.name', 'ACE Test'], { cwd: rootDir })
+  await execFileAsync('git', ['add', '.'], { cwd: rootDir })
+  await execFileAsync('git', ['commit', '-m', 'Initial fixture'], { cwd: rootDir })
+}
+
+async function writeRepoFile(rootDir: string, relativePath: string, content: string) {
+  const filePath = path.join(rootDir, relativePath)
+  await mkdir(path.dirname(filePath), { recursive: true })
+  await writeFile(filePath, content, 'utf8')
+}

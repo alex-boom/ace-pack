@@ -321,6 +321,63 @@ TODO
     expect(reflectionLog).toContain('Friction fixture friction')
   })
 
+  it('auto-closes a path-scoped hotfix without including unrelated dirty files', async () => {
+    const rootDir = await mkdtemp(path.join(os.tmpdir(), 'ace-finish-scoped-'))
+    tempDirs.push(rootDir)
+
+    await writeFile(path.join(rootDir, 'AGENTS.md'), '# AGENTS.md\n\n## Project Rules\n\nTest.\n')
+    await writeRepoFile(rootDir, 'README.md', 'before\n')
+    await installAcePack(rootDir)
+    await writeFile(
+      path.join(rootDir, '.ai/state/task-state.md'),
+      `# Task State
+
+## Lifecycle & Meta
+
+### Feature Name
+Scoped README hotfix
+
+### Lifecycle
+Status: active
+Version: v1
+Task Tier: small
+Design Review Required: no
+Friction Encountered: no
+Started: 2026-06-21 12:45
+Ready For Archive: no
+
+### Goal
+Fix a small README issue while unrelated local work exists.
+
+## Handoff & Next Steps
+
+### Verification
+- Scoped finish fixture prepared.
+`,
+    )
+    await initGitFixture(rootDir)
+    await writeRepoFile(rootDir, 'README.md', 'before\nafter\n')
+    for (let index = 0; index < 8; index += 1) {
+      await writeRepoFile(rootDir, `unrelated-${index}.ts`, `export const v${index} = true\n`)
+    }
+
+    await execFileAsync(
+      process.execPath,
+      [path.join(rootDir, 'scripts/ai-task-finish.mjs'), '--path', 'README.md'],
+      { cwd: rootDir },
+    )
+
+    const taskState = await readFile(path.join(rootDir, '.ai/state/task-state.md'), 'utf8')
+    const workLog = await readFile(path.join(rootDir, '.ai/knowledge/work-log.md'), 'utf8')
+
+    expect(taskState).toContain('Status: complete')
+    expect(taskState).toContain('Scope: working-tree paths (README.md)')
+    expect(workLog).toContain('ACE auto-closed small task: Scoped README hotfix.')
+    expect(workLog).toContain('Scope: working-tree paths (README.md).')
+    expect(workLog).toContain('README.md')
+    expect(workLog).not.toContain('unrelated-0.ts')
+  })
+
   it('marks standard task autonomy complete without archiving', async () => {
     const rootDir = await mkdtemp(path.join(os.tmpdir(), 'ace-finish-standard-'))
     tempDirs.push(rootDir)
@@ -406,6 +463,11 @@ async function initGitFixture(rootDir: string) {
   await execFileAsync('git', ['config', 'user.name', 'ACE Test'], { cwd: rootDir })
   await execFileAsync('git', ['add', '.'], { cwd: rootDir })
   await execFileAsync('git', ['commit', '-m', 'Initial fixture'], { cwd: rootDir })
+}
+
+async function writeRepoFile(rootDir: string, relativePath: string, content: string) {
+  const filePath = path.join(rootDir, relativePath)
+  await writeFile(filePath, content, 'utf8')
 }
 
 function finishReadyTaskState() {

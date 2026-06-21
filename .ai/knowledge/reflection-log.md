@@ -14,6 +14,17 @@ Status: unresolved
 
 ## Resolved
 
+### 2026-06-21 12:50 Dirty worktrees can inflate hotfix ceremony
+Status: resolved
+- Stuck Point: A two-line low-risk hotfix can be classified as large when the
+  repository already has unrelated dirty files.
+- Likely Cause: ACE classified the full working tree by default and had no
+  first-class way to tell classify/finish which local scope belonged to the
+  current task.
+- Proposed Improvement: Keep full working-tree classification as the default,
+  but support explicit `--staged` and `--path` scopes that still run normal
+  risk rules and record the selected scope in closeout output.
+
 ### 2026-06-14 17:10 Uninstall must share install ownership rules
 Status: resolved
 - Stuck Point: A cleanup command can easily delete project-owned files if it

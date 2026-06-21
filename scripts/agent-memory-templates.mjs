@@ -75,6 +75,11 @@ current task.
   otherwise.
 - Use \`pnpm ace classify\` to select the adaptive task tier. With npm, use
   \`npm run ace -- classify\`.
+- If unrelated dirty files would inflate a small low-risk hotfix, scope both
+  classification and finish explicitly with \`pnpm ace classify --staged\` /
+  \`pnpm ace finish --staged\` after staging only the intended fix, or repeat
+  \`--path <file>\` for the files in scope. Do not use scoped fast-fix flags to
+  hide high-risk work.
 - Run \`pnpm ace onboard\` after fresh installation in an unfamiliar project
   before trusting project-specific risk rules.
 - On Windows PowerShell, use \`pnpm.cmd ace classify\`,
@@ -157,6 +162,9 @@ Before starting work:
    \`.ai/knowledge/decisions.md\` when you need detail or verification.
 4. Run \`pnpm ace classify\` before implementation to
    identify whether the task is small, standard, or large.
+   Use \`pnpm ace classify --staged\` or repeated \`--path <file>\` only when
+   the current task is an explicit low-risk hotfix inside an unrelated dirty
+   worktree.
 5. If this is a newly installed or unknown project and
    \`.ai/config/memory-config.json\` is still marked \`unprofiled\`, run
    \`pnpm ace onboard\` and apply an approved profile

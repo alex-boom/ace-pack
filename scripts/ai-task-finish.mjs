@@ -17,6 +17,7 @@ import {
   extractMarkdownSection,
   extractUnresolvedReflections,
   formatTimestamp,
+  getArgList,
   getArgValue,
   hasMeaningfulContent,
   parseCliArgs,
@@ -27,6 +28,7 @@ import {
   writeTextFile,
 } from './ai-memory-utils.mjs'
 import { classifyRepositoryTask } from './ai-task-classify.mjs'
+import { formatClassificationScope, readGitDiffSummary } from './ai-task-scope.mjs'
 
 const execFileAsync = promisify(execFile)
 
@@ -119,10 +121,17 @@ async function main() {
     process.stderr.write('--friction requires a short reason.\n')
     process.exit(1)
   }
+  const paths = [...getArgList(args, 'path'), ...getArgList(args, 'paths')]
   const classification = await classifyRepositoryTask(rootDir, {
     overrideReason: getArgValue(args, 'reason'),
     overrideTier: getArgValue(args, 'tier'),
+    paths,
+    staged: getArgValue(args, 'staged') === 'true',
   })
+  if (classification.gitError) {
+    process.stderr.write(`Adaptive task finish blocked by git scope issue:\n- ${classification.gitError}\n`)
+    process.exit(1)
+  }
   let [currentTaskContent, handoffContent, reflectionLogContent] = await Promise.all([
     requireAiFile(rootDir, 'taskState', '.ai/state/task-state.md'),
     requireAiFile(rootDir, 'taskState', '.ai/state/task-state.md'),
@@ -163,6 +172,7 @@ async function main() {
   const frictionEncountered = extractFrictionEncountered(currentTaskContent)
   if (isSmallLowRiskClassification(classification)) {
     await autoCloseSmallTask(rootDir, {
+      classification,
       frictionEncountered,
       taskStateContent: currentTaskContent,
     })
@@ -194,11 +204,12 @@ async function main() {
   process.stderr.write(`Adaptive task finish passed for ${classification.tier} task.\n`)
 }
 
-async function autoCloseSmallTask(rootDir, { frictionEncountered, taskStateContent }) {
+async function autoCloseSmallTask(rootDir, { classification, frictionEncountered, taskStateContent }) {
   const timestamp = formatTimestamp(new Date())
   const taskTitle = extractTaskTitle(taskStateContent)
-  const diffSummary = await readGitDiffSummary(rootDir)
-  const changedSummary = summarizeGitState(diffSummary)
+  const scopeSummary = formatClassificationScope(classification.scope)
+  const diffSummary = await readGitDiffSummary(rootDir, classification.scope)
+  const changedSummary = `Scope: ${scopeSummary}; ${summarizeGitState(diffSummary)}`
   const verification = extractMarkdownSection(taskStateContent, 'Verification')
   const verificationLine = hasMeaningfulContent(verification)
     ? 'Existing verification notes were preserved.'
@@ -208,6 +219,7 @@ async function autoCloseSmallTask(rootDir, { frictionEncountered, taskStateConte
     writeSmallWorkLog(rootDir, {
       diffSummary,
       frictionEncountered,
+      scopeSummary,
       taskTitle,
       timestamp,
       verificationLine,
@@ -225,6 +237,7 @@ async function autoCloseSmallTask(rootDir, { frictionEncountered, taskStateConte
 async function writeSmallWorkLog(rootDir, {
   diffSummary,
   frictionEncountered,
+  scopeSummary,
   taskTitle,
   timestamp,
   verificationLine,
@@ -234,6 +247,7 @@ async function writeSmallWorkLog(rootDir, {
     `## ${timestamp}`,
     '',
     `- ACE auto-closed small task: ${taskTitle}.`,
+    `- Scope: ${scopeSummary}.`,
     `- Friction Encountered: ${frictionEncountered ? 'yes' : 'no'}.`,
     `- ${verificationLine}`,
     '- NPM publish: not required for this small low-risk closeout unless repository release policy says otherwise.',
@@ -258,6 +272,7 @@ async function writeFinishWorkLog(rootDir, {
     `## ${timestamp}`,
     '',
     `- ACE finished ${classification.tier} task: ${taskTitle}.`,
+    `- Scope: ${formatClassificationScope(classification.scope)}.`,
     `- Friction Encountered: ${frictionEncountered ? 'yes' : 'no'}.`,
     `- Design Review Required: ${classification.designReviewRequired ? 'yes' : 'no'}.`,
   ].join('\n')
@@ -292,31 +307,6 @@ async function requireAiFile(rootDir, memoryKey, displayPath) {
   }
 
   return content
-}
-
-async function readGitDiffSummary(rootDir) {
-  const diffStat = await gitOutput(rootDir, ['diff', '--stat', 'HEAD', '--'])
-
-  if (diffStat.trim()) {
-    return diffStat.trim()
-  }
-
-  const status = await gitOutput(rootDir, ['status', '--short'])
-  return status.trim() || 'No working-tree changes detected.'
-}
-
-async function gitOutput(rootDir, args) {
-  try {
-    const result = await execFileAsync('git', args, {
-      cwd: rootDir,
-      encoding: 'utf8',
-      maxBuffer: 1024 * 1024,
-    })
-
-    return result.stdout
-  } catch {
-    return ''
-  }
 }
 
 function summarizeGitState(diffSummary) {

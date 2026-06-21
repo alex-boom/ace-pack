@@ -1,7 +1,9 @@
 # ACE Hub Context
 - Mode: start (Start / AI Coder Context)
-- Generated: 2026-06-16T09:47:45.520Z
-- Included files: .ai/generated/report-brief.md, .ai/state/current-task.md, .ai/state/session-handoff.md, .ai/state/changed-files.md, .ai/knowledge/reflection-log.md
+- Current Phase: Review
+- Next Autonomous Action: Run release readiness checks and final ACE closeout.
+- Generated: 2026-06-21T09:51:58.570Z
+- Included files: .ai/generated/report-brief.md, .ai/state/task-state.md, .ai/knowledge/reflection-log.md
 - Missing optional files: .ai/knowledge/project-conventions.md
 
 # --- FILE: .ai/generated/report-brief.md ---
@@ -11,19 +13,20 @@
 Project: `ace-pack`
 
 ## Report Metadata
-- Generated: 2026-06-16 12:47
+- Generated: 2026-06-19 15:33
 - Freshness: Fresh
-- Current task version: v1
+- Current task version: v3.5.1
 - Current task tier: large
-- Source current-task: 2026-06-16 12:47
-- Source session-handoff: 2026-06-16 12:47
-- Verification level: smoke-tested
+- Source task-state: 2026-06-19 15:32
+- Verification level: test-backed
 
 ## Start Snapshot
 - Branch: main
-- Worktree: dirty (5 changed files)
-- Last commit: 770ba13 Bump version to 2.2.0 and implement Project Conventions Discovery feature. Added `ace discover` command to generate a concise project conventions registry, enhancing agent context. Updated documentation across README, ROADMAP, and schema compatibility files to reflect new functionality and integration. Ensured backward compatibility with legacy paths and maintained zero-dependency principles.
-- Task: complete (tier: large, version: v1, ready for archive: yes)
+- Worktree: dirty (14 changed files)
+- Last commit: 0e0d184 Update version to `3.5.0` and introduce knowledge promotion and context pruning features. Implemented `ace hub distill` for generating durable project conventions from resolved reflections, and added `ace archive` for deterministic log rotation of work and reflection logs. Enhanced documentation to reflect these new functionalities and updated schema compatibility for v3.5, ensuring clarity on new features while maintaining backward compatibility.
+- Task: complete (tier: large, version: v3.5.1, ready for archive: yes)
+- Current Phase: Complete
+- Next Autonomous Action: No further autonomous action; task is complete.
 - Next command: No command detected
 - Release decision: Not recorded
 
@@ -31,274 +34,283 @@ Project: `ace-pack`
 Detected ecosystems: Generic repository | Package manager: pnpm
 
 ## Current Task
-v2.2.0 Project Conventions Discovery
+ACE v3.5.1 Safe Migration Patch and Platform Upgrade
 
 ## Lifecycle
 Status: complete
-Version: v1
+Version: v3.5.1
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-16 12:33
+Friction Encountered: no
+Current Phase: Complete
+Next Autonomous Action: No further autonomous action; task is complete.
+Started: 2026-06-19 15:05
 Ready For Archive: yes
 
 ## Goal
-Ship `ace discover` so installed repositories can generate a concise local
-Project Conventions and Pattern Registry for AI agents.
+Fix ACE legacy task-state migration so real Markdown checklists and bracketed
+content are preserved, then safely migrate `D:\All\alex-work\platform` to the
+patched v3 canonical ACE layout without losing existing `.ai` memory.
 
 ## Business Value
-This directly addresses architectural drift in established codebases. ACE will
-help agents reuse a project's existing UI, routing, logging, error-handling,
-database, and package-layout patterns instead of inventing parallel ones.
+This patch protects installed repositories from losing meaningful legacy task
+checklists during v3 migration, which is essential for safe ACE upgrades in real
+projects with existing `.ai` history.
 
 ## Current Status
-- [x] Implement `ace discover` scanner and overwrite protection.
-- [x] Wire router, install, hub, memory paths, MCP, docs, and version.
-- [x] Add focused tests and release-readiness checks.
-- [x] Publish `ace-pack@2.2.0` to npm.
+- [x] Migration issue reproduced on a temporary copy of `platform`.
+- [x] User approved patch-first, canonical-only cleanup, and SaaS preset apply.
+- [x] Patch ACE placeholder detection and regression tests.
+- [x] Validate ACE package and npm payload dry-run.
+- [x] Back up and migrate `platform`.
+- [x] Validate platform ACE state and review diffs.
 
 ## Next Steps
-- Commit the completed v2.2.0 release work when ready.
+- Review and commit both repository diffs.
 
 ## Risks / Blockers
-- None known for the published v2.2.0 release.
+- None known.
 
 ## Verification
-- `npm.cmd run ace -- classify` passed before implementation; the clean
-worktree detected as `small`, but the shipped command scope is treated as
-large.
-- Focused Vitest passed: 7 files, 54 tests.
-- `npm.cmd run test` passed: 16 files, 123 tests.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
+- `npm.cmd run ace -- classify` ran before edits; it reported `small` only
+because no diff existed yet.
+- `npm.cmd test -- tests/schema-compatibility.test.ts` passed.
+- `npm.cmd run typecheck` passed.
+- `npm.cmd run lint` passed.
 
 ## Recent Decision
-## 2026-06-16 12:33
+## 2026-06-16 13:51
 
 Decision:
-- Implement Project Conventions Discovery as deterministic local `ace discover`
-  heuristics instead of AI-provider analysis.
+- Implement ACE Pack v3.0.0 as a consolidated task-state memory schema with
+  deterministic legacy auto-migration, managed IDE rule blocks, and
+  zero-ceremony small-task finish.
 
 Reason:
-- ACE must preserve its local-first, zero-dependency, no-hidden-AI-calls
-  promise while still helping agents reuse established repository patterns.
-  Simple import/dependency/path signals are less brittle than pseudo-AST regex
-  parsing and safer for large private repositories.
+- The old current-task, session-handoff, and changed-files split created
+  avoidable file sprawl and agent desynchronization. IDE rule bridging must be
+  native but must never overwrite user-owned editor instructions.
 
 Impact:
-- `ace discover` writes `.ai/knowledge/project-conventions.md` with a managed
-  marker and protects human-written files unless `--force` is passed.
-- `ace hub` and the read-only MCP adapter can expose the conventions summary
-  when it exists.
-- Future AI-assisted convention discovery remains a separate explicit opt-in
-  feature, not part of the default v2.2 workflow.
+- `.ai/state/task-state.md` is the canonical active task file, with
+  `.ai/task-state.md` as a legacy alias.
+- Legacy task files are backed up under `.ai/archive/migrations/` before safe
+  cleanup.
+- `.cursorrules`, `.windsurfrules`, and Copilot instructions use
+  `ace-managed-ide-rules` blocks that `ace destroy` can remove surgically.
+- `ace-pack@3.0.0` is a major release; npm publish is required only for the
+  final reviewed release.
 
 ## Unresolved Reflections
 - No unresolved reflections recorded.
 
 ## Changed Areas
-- `package.json`
-- `scripts/ace-discover.mjs`
-- `scripts/ace-cli.mjs, scripts/ai-memory-utils.mjs, scripts/ace-hub.mjs, scripts/ace-mcp-server.mjs`
-- `scripts/ace-uninstall-utils.mjs, install/tests`
-- `README.md, README.npm.md, docs/schema-compatibility.md, ROADMAP.md`
-- `.ai/**`
+- No changed files recorded.
 
 ## Overall Progress
-- Completion checklist: 9/9
-- Source of truth: `.ai/*` files remain authoritative.
+- Completion checklist: 6/6
+- Source of truth: `.ai/state/task-state.md` and `.ai/*` files remain authoritative.
 
-# --- FILE: .ai/state/current-task.md ---
+# --- FILE: .ai/state/task-state.md ---
 
-# Current Task
+# Task State
 
-## Feature Name
-v2.2.0 Project Conventions Discovery
+## Lifecycle & Meta
 
-## Lifecycle
-Status: complete
-Version: v1
+### Feature Name
+ACE Scoped Fast Fix Workflow
+
+### Lifecycle
+Status: active
+Version: v3.6.0
 Task Tier: large
 Design Review Required: yes
-Started: 2026-06-16 12:33
-Ready For Archive: yes
+Friction Encountered: no
+Current Phase: Review
+Next Autonomous Action: Run release readiness checks and final ACE closeout.
+Started: 2026-06-21 12:39
+Ready For Archive: no
 
-## Goal
-Ship `ace discover` so installed repositories can generate a concise local
-Project Conventions and Pattern Registry for AI agents.
+### Goal
+Reduce ACE ceremony for urgent, low-risk hotfixes in dirty worktrees by letting
+users classify and finish only the staged or explicitly selected paths while
+preserving existing risk rules and required validation.
 
-## Business Value / Product Alignment
-This directly addresses architectural drift in established codebases. ACE will
-help agents reuse a project's existing UI, routing, logging, error-handling,
-database, and package-layout patterns instead of inventing parallel ones.
+### Current Status
+- [x] User confirmed the fast-fix friction should be addressed.
+- [x] `npm.cmd run ace -- classify` ran before implementation and reported
+  `small` on a clean worktree.
+- [x] Implement scoped classify and finish flags.
+- [x] Add focused regression coverage.
+- [x] Update shipped documentation and templates.
+- [x] Update durable ACE knowledge and reflection notes.
+- [ ] Run release readiness checks and close out ACE state.
 
-## Technical Approach
+### Affected Areas
+- `scripts/ai-task-classify.mjs`
+- `scripts/ai-task-finish.mjs`
+- `scripts/ai-task-scope.mjs`
+- `scripts/ace-cli.mjs`
+- `scripts/ace-uninstall-utils.mjs`
+- `scripts/agent-memory-templates.mjs`
+- `tests/ai-task-classify.test.ts`
+- `tests/ai-task-finish.test.ts`
+- `tests/install-agent-memory-pack.test.ts`
+- `README.md`
+- `README.npm.md`
+- `package.json`
+- `.ai/knowledge/tech-docs.md`
+- `.ai/knowledge/product-roadmap.md`
+- `.ai/knowledge/decisions.md`
+- `.ai/knowledge/reflection-log.md`
+
+### Constraints
+- Preserve ACE local-first, zero-dependency, no hidden AI/network calls.
+- Keep existing default behavior for full working-tree classification.
+- Do not weaken high-risk path or keyword rules.
+- Keep fast-fix scope explicit and auditable in CLI output, JSON, task-state,
+  and work-log summaries.
+- Bump semver because shipped user-visible CLI behavior changes.
+
+### Acceptance Criteria
+- [x] `ace classify --staged` classifies only staged changes.
+- [x] `ace classify --path <path>` / repeated `--path` classifies only selected
+  paths from the working tree.
+- [x] `ace finish` supports the same scope flags so small low-risk auto-closeout can
+  operate on the intended hotfix instead of unrelated dirty files.
+- [x] Scoped classification refuses ambiguous combinations such as PR refs plus
+  staged/path scope.
+- [x] High-risk rules still escalate scoped changes when selected files or diff
+  content match configured policy.
+- [x] Tests cover staged and path-scoped false-positive reduction.
+- [x] Docs explain fast-fix usage as scoped safety, not a bypass.
+
+### Completion Checklist
+- [ ] Goal completed
+- [x] Future agent context preserved
+- [x] Verification recorded
+- [x] Publish decision recorded
+- [ ] `ace finish` passed or explicit reason recorded
+
+## Business Value & Approach
+
+### Business Value / Product Alignment
+ACE is valuable when it behaves like a safety belt: it should keep validation,
+risk detection, and durable memory, but it should not force a large-task ritual
+for a two-line hotfix just because unrelated work is already dirty. Scoped
+fast-fix support directly addresses daily DevEx friction while preserving the
+local Markdown, no-dependency product promise.
+
+### Technical Approach
 Option 1:
-- Add an AI-provider-backed discovery flow. This may produce richer analysis,
-  but it requires API keys, privacy configuration, provider fallback policy, and
-  more release risk.
+- Add a new top-level `ace fast-fix` command that wraps classify, validation,
+  and finish. This is discoverable, but it expands the command surface and risks
+  becoming a bypass path with separate policy.
 
 Option 2:
-- Add a deterministic local scanner that uses simple path, dependency, and
-  import-string heuristics to write a short Markdown conventions summary.
+- Extend existing `ace classify` and `ace finish` with explicit scope flags
+  (`--staged`, `--path`) and keep the existing tier/risk/finish machinery. This
+  keeps one policy engine and makes fast fixes a scoped version of the normal
+  workflow.
 
 Chosen Approach:
-- Use Option 2 for v2.2.0. It preserves ACE's local-first, zero-dependency,
-  zero-hidden-AI-calls promise while still giving agents useful repo-specific
-  convention context.
+- Use Option 2. The problem is scope selection, not missing policy. Reusing the
+  current classifier and finish path keeps behavior predictable and avoids a
+  second ritual.
 
-## Current Status
-- [x] Implement `ace discover` scanner and overwrite protection.
-- [x] Wire router, install, hub, memory paths, MCP, docs, and version.
-- [x] Add focused tests and release-readiness checks.
-- [x] Publish `ace-pack@2.2.0` to npm.
+### Edge Cases & Red Teaming
+- Failure mode: a user scopes away real risk. Mitigation: flags are explicit,
+  classification output records the scope, and selected paths still run all
+  configured path and keyword risk rules.
+- Failure mode: `--path` ignores untracked files. Mitigation: path scope uses
+  `git status --porcelain -uall -- <paths>` plus `git diff HEAD -- <paths>`.
+- Failure mode: staged scope includes unrelated staged work. Mitigation: this is
+  still explicit Git staging behavior and can be reviewed with `git diff
+  --cached`.
+- Failure mode: combining PR refs with local scope is ambiguous. Mitigation:
+  reject `--base/--head` with `--staged` or `--path`.
 
-## Affected Areas
-- `package.json`
-- `scripts/ace-discover.mjs`
-- ACE router, memory utils, hub, MCP, installer-managed script lists
-- README surfaces, schema docs, roadmap, tests, smoke tooling
+## Changed Files / Diff
 
-## Constraints
-- Use native Node.js APIs only. Do not add dependencies.
-- Do not make AI calls, network calls, AST parsing, or complex regex analysis.
-- Keep regex heuristics simple: detect imports, dependencies, and obvious path
-  patterns.
-- Keep generated `project-conventions.md` concise and aggregated so it does not
-  bloat `ace hub` context.
-- Protect human-written conventions files; overwrite unmanaged files only with
-  `--force`.
+[scripts/ai-task-scope.mjs]
+- Added shared scoped git diff input, scope formatting, and scoped diff summary
+  helpers for classifier and finish flows.
 
-## Acceptance Criteria
-- `ace discover` writes `.ai/knowledge/project-conventions.md` with a managed
-  marker and concise detected conventions.
-- `ace discover --stdout` prints without writing, and `--json` prints parseable
-  metadata.
-- Router, install, hub, MCP, README, schema docs, and tests cover the new
-  shipped command and memory file.
-- Package version is `2.2.0`.
+[scripts/ai-task-classify.mjs]
+- Added `--staged`, repeated `--path`, and comma-separated `--paths` support,
+  scope metadata in JSON/CLI output, and PR/local scope conflict handling.
 
-## Completion Checklist
-- [x] Goal completed
-- [x] Always: summarize what changed in `.ai/session-handoff.md`
-- [x] Always: update `.ai/changed-files.md`, record verification, and run project-owned `ace:validate`
-- [x] Always: state publish/deploy decision when relevant
-- [x] If standard/large: add product, architecture, security, and code-quality review notes
-- [x] If large/high-risk: confirm design approach, add useful reflection, and let `ace finish` archive the snapshot
-- [x] If release-bound shipped behavior changed: run local smoke and dogfood/self-check routines when available
-- [x] Only if changed: update tech docs, product roadmap, durable decisions, or release notes
-- [x] `ace finish` passed and generated reports
+[scripts/ai-task-finish.mjs]
+- Added matching scope flags for adaptive finish and scoped small-task
+  auto-closeout summaries.
 
-# --- FILE: .ai/state/session-handoff.md ---
+[scripts/ace-uninstall-utils.mjs, scripts/ace-cli.mjs]
+- Added the new managed script to install/destroy ownership lists and refreshed
+  router help text.
 
-# Session Handoff
+[README.md, README.npm.md, scripts/agent-memory-templates.mjs]
+- Documented scoped fast fixes as an explicit low-risk hotfix workflow, not a
+  risk bypass.
 
-## Last Update
-2026-06-16 12:46
-
-## What Was Done
-- Implemented `ace discover` as a deterministic local project conventions
-  scanner for `ace-pack@2.2.0`.
-- Added `.ai/knowledge/project-conventions.md` with
-  `.ai/project-conventions.md` as a legacy read alias.
-- Wired discover into the ACE router, installer-managed scripts, hub context,
-  MCP resources, README surfaces, schema docs, roadmap, smoke tests, and
-  focused unit tests.
-- Bumped package version from `2.1.0` to `2.2.0`.
-
-## Current State
-- `ace discover` writes a concise ACE-managed conventions registry with
-  `<!-- ace-discover:managed -->`.
-- Existing human-written conventions files are preserved unless `--force` is
-  used.
-- `ace hub` includes project conventions in start, architect, and
-  architect-lite contexts when the file exists.
-- Release dry-run passed for `ace-pack@2.2.0`.
-- `ace-pack@2.2.0` is published on npm and tagged `latest`.
-- Local `package.json` and npm registry latest both report `2.2.0`.
-
-## Quality Review
-Product Alignment:
-- The feature addresses architectural drift by giving agents a local summary of
-  existing UI, routing, logging, error-handling, package-layout, and persistence
-  patterns.
-
-Architecture:
-- The scanner is a zero-dependency managed script using simple file, dependency,
-  and import-string heuristics. It avoids AST parsing and keeps generated
-  Markdown aggregated for LLM context safety.
-
-Security:
-- No AI providers, API keys, network calls, dependency installs, or external
-  services were added. Discovery reads local files only and skips heavy
-  generated directories.
-
-Code Quality:
-- Focused tests cover React/Tailwind, Go, FastAPI, overwrite protection,
-  stdout/JSON behavior, concise output, router/install/hub/MCP integration, and
-  release smoke coverage.
-
-## Next Steps
-- Commit the completed v2.2.0 release work when ready.
-
-## Known Issues
-- None known for the published v2.2.0 release.
-
-## Verification
-- `npm.cmd run ace -- classify` passed before implementation; the clean
-  worktree detected as `small`, but the shipped command scope is treated as
-  large.
-- Focused Vitest passed: 7 files, 54 tests.
-- `npm.cmd run test` passed: 16 files, 123 tests.
-- `npm.cmd run smoke:fake-project` passed for JS and non-JS projects.
-- `npm.cmd run check:npm-payload` passed and checked 35 packed files.
-- `npm.cmd run release:npm:dry` passed for `ace-pack@2.2.0`.
-- `npm.cmd run ace -- gate` passed with tier `large`.
-- `npm.cmd run dogfood:self-check -- --allow-dirty` passed with no created or
-  updated installed files.
-- `npm.cmd run ace:validate` passed after closeout updates: 16 files,
-  123 tests.
-- `npm.cmd run release:npm` failed at publish with npm `E404` permission/package
-  access error.
-- `npm.cmd view ace-pack version` still returns `2.1.0`.
-- `npm.cmd run ace -- check` passed after blocked-publish memory updates.
-- `npm.cmd run ace -- brief` regenerated `.ai/generated/report-brief.md`.
-- Final `npm.cmd run ace -- gate` passed with tier `large`.
-- `npm.cmd view ace-pack version dist-tags time --json` confirmed npm latest is
-  `2.2.0`, published at `2026-06-16T09:44:24.625Z`.
-- Local `package.json` version is `2.2.0`.
-
-## Notes
-- NPM publish: completed. npm latest is `2.2.0`.
-
-# --- FILE: .ai/state/changed-files.md ---
-
-# Changed Files
+[tests]
+- Added staged/path-scope classifier coverage, high-risk scoped escalation,
+  invalid scope combination coverage, path-scoped finish coverage, and install
+  coverage for the new managed script.
 
 [package.json]
-- Bumped `ace-pack` to `2.2.0` for the shipped `ace discover` feature.
+- Bumped package version to `3.6.0` for the backward-compatible CLI workflow.
 
-[scripts/ace-discover.mjs]
-- Added deterministic local Project Conventions discovery with managed-marker
-  overwrite protection, concise Markdown output, `--stdout`, `--json`,
-  `--root`, and `--force`.
+## Handoff & Next Steps
 
-[scripts/ace-cli.mjs, scripts/ai-memory-utils.mjs, scripts/ace-hub.mjs, scripts/ace-mcp-server.mjs]
-- Registered discover routing, project conventions memory aliases, optional hub
-  inclusion, and the read-only MCP resource.
+### Last Update
+2026-06-21 12:50
 
-[scripts/ace-uninstall-utils.mjs, install/tests]
-- Added `ace-discover.mjs` to installed managed scripts and covered install,
-  router, hub, MCP, smoke, and discover behavior.
+### What Was Done
+- Added scoped classification and finish behavior.
+- Added regression coverage and shipped docs/templates.
+- Updated durable ACE tech docs, roadmap, decisions, and reflection notes.
 
-[README.md, README.npm.md, docs/schema-compatibility.md, ROADMAP.md]
-- Documented Project Conventions Discovery, CLI usage, schema compatibility,
-  hub/MCP integration, and v2.2 roadmap status.
+### Current State
+- Implementation is complete and project validation has passed. Release
+  readiness checks remain.
 
-[.ai/**]
-- Updated current task, handoff, changed files, tech docs, product roadmap,
-  durable decision, work log, generated context, and brief report for v2.2.0
-  release work.
-- Confirmed npm latest is `2.2.0` and updated closeout state from blocked to
-  published.
+### Quality Review
+Product Alignment:
+- The change targets a named daily DevEx pain without reducing ACE safety for
+  high-risk tasks.
+
+Architecture:
+- The planned implementation extends the existing classifier and finish flow
+  instead of adding a separate command or dependency.
+
+Security:
+- No new network calls, providers, secrets, or external services are planned.
+
+Code Quality:
+- Focused unit/integration tests will cover scoped diff inputs and closeout.
+
+### Next Steps
+- Implement the scoped diff input selection.
+- Add tests and docs.
+- Run validation.
+
+### Known Issues
+- None known.
+
+### Verification
+- `npm.cmd run ace -- classify` passed before implementation.
+- `npm.cmd test -- tests/ai-task-classify.test.ts` passed before extraction.
+- `npm.cmd test -- tests/ai-task-finish.test.ts` passed before extraction.
+- `npm.cmd test -- tests/ai-task-classify.test.ts tests/ai-task-finish.test.ts tests/install-agent-memory-pack.test.ts` passed after extraction.
+- `npm.cmd run typecheck` passed.
+- `npm.cmd run lint` passed.
+- `npm.cmd run ace -- classify` passed after implementation and reported
+  `large`, as expected for shipped `scripts/**` and `.ai/**` changes.
+- `npm.cmd run ace:validate` passed: 17 test files, 152 tests.
+
+### Notes
+- NPM publish: required before final release because shipped ACE CLI behavior,
+  installed scripts, package version, and npm payload documentation changed.
 
 # --- FILE: .ai/knowledge/reflection-log.md ---
 
@@ -317,6 +329,17 @@ Status: unresolved
 - Proposed Improvement: [Concrete change to try next time]
 
 ## Resolved
+
+### 2026-06-21 12:50 Dirty worktrees can inflate hotfix ceremony
+Status: resolved
+- Stuck Point: A two-line low-risk hotfix can be classified as large when the
+  repository already has unrelated dirty files.
+- Likely Cause: ACE classified the full working tree by default and had no
+  first-class way to tell classify/finish which local scope belonged to the
+  current task.
+- Proposed Improvement: Keep full working-tree classification as the default,
+  but support explicit `--staged` and `--path` scopes that still run normal
+  risk rules and record the selected scope in closeout output.
 
 ### 2026-06-14 17:10 Uninstall must share install ownership rules
 Status: resolved
